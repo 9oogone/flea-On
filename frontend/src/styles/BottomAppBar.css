@@ -2,7 +2,12 @@
     width: 24px;
     position: relative;
     height: 24px;
-    color: pink !important;
+}
+.AddCircleIcon {
+    width: 24px;
+    position: relative;
+    height: 24px;
+    color: #FF0B55;
 }
 .tab1 {
     flex: 1;

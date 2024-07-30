@@ -6,10 +6,10 @@ import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import HomeIcon from '@mui/icons-material/Home';
 import SearchIcon from '@mui/icons-material/Search';
-import AddIcon from '@mui/icons-material/Add';
-import ChatIcon from '@mui/icons-material/Chat';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import Box from '@mui/material/Box';
+// import Box from '@mui/material/Box';
 import '../styles/BottomAppBar.css';
 
 const TabBar = () => {
@@ -34,8 +34,8 @@ const TabBar = () => {
         <BottomNavigation value={value} onChange={onTabClick}>
           <BottomNavigationAction icon={<HomeIcon className="homeIcon" />} />
           <BottomNavigationAction icon={<SearchIcon className="SearchIcon" />} />
-          <BottomNavigationAction icon={<AddIcon className="AddIcon" />} onClick={openSellerform} />
-          <BottomNavigationAction icon={<ChatIcon className="ChatIcon" />} />
+          <BottomNavigationAction icon={<AddCircleIcon className="AddCircleIcon" />} onClick={openSellerform} />
+          <BottomNavigationAction icon={<ChatBubbleOutlineIcon className="ChatBubbleOutlineIcon" />} />
           <BottomNavigationAction icon={<AccountCircleIcon className="AccountCircleIcon" />} />
         </BottomNavigation>
       </AppBar>
