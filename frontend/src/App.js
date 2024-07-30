@@ -11,6 +11,7 @@ import LoginPage from "./pages/LoginPage";
 // import { checkLoginStatus } from "./features/auth/actions";
 import BottomAppBar from "./components/BottomAppBar";
 import CheckLogin from "./features/auth/components/CheckLogin";
+import MyPage from "";
 function App() {
   // const dispatch = useDispatch();
 
@@ -37,7 +38,6 @@ function App() {
         <Routes>
           <Route path="/check" element={<CheckLogin />} />
           <Route path="/login" element={<LoginPage />} />
-
           <Route path="/" element={<HomePage />} />
         </Routes>
       </LocationWrapper>
