@@ -3,7 +3,8 @@ package com.ssafy.fleaOn.web.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.Date;
+import java.sql.Time;
+import java.time.LocalDate;
 
 @AllArgsConstructor
 @Table(name = "trade")
@@ -28,18 +29,30 @@ public class Trade {
     private int productId;
 
     @Column(name = "trade_date")
-    private Date tradeDate;
+    private LocalDate tradeDate;
 
     @Column(name = "trade_time")
-    private Date tradeTime;
+    private Time tradeTime;
 
     @Column(name = "trade_place")
     private String tradePlace;
 
     @Id
     @Column(name = "chatting_id")
-    private int chattingId ;
+    private int chattingId;
 
     @Column(name = "buyer_id")
     private int buyerId;
+
+    @Column(name = "shorts_id")
+    private int shortsId;
+
+    @OneToOne
+    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    private User user;
+
+    @OneToOne
+    @JoinColumn(name = "shorts_id", insertable = false, updatable = false)
+    private Shorts shorts;
+
 }

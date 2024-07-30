@@ -48,7 +48,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .username(username)
                     .email(oAuth2Response.getEmail())
                     .name(oAuth2Response.getName())
-                    .profilePicture(oAuth2Response.getProfile_picture())
+                    .profilePicture(oAuth2Response.getProfilePicture())
                     .role("ROLE_USER")
                     .build();
 
@@ -58,7 +58,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .username(username)
                     .email(oAuth2Response.getEmail())
                     .name(oAuth2Response.getName())
-                    .profilePicture(oAuth2Response.getProfile_picture())
+                    .profilePicture(oAuth2Response.getProfilePicture())
                     .role("ROLE_USER")
                     .build();
 
@@ -68,14 +68,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             existData.builder()
                     .email(oAuth2Response.getEmail())
                     .name(oAuth2Response.getName())
-                    .profilePicture(oAuth2Response.getProfile_picture())
+                    .profilePicture(oAuth2Response.getProfilePicture())
                     .build();
             userRepository.save(existData);
 
             User user = User.builder()
                     .username(existData.getUsername())
                     .name(oAuth2Response.getName())
-                    .profilePicture(oAuth2Response.getProfile_picture())
+                    .profilePicture(oAuth2Response.getProfilePicture())
                     .role(existData.getRole()).build();
             return new CustomOAuth2User(user);
         }

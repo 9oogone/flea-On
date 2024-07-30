@@ -11,10 +11,17 @@ import lombok.*;
 @Entity
 public class UserRegion {
 
-    @Id
-    @Column(name = "user_id")
-    private int user_id;
+    @EmbeddedId
+    private UserId id;
 
-    @Column(name = "region_code")
-    private String region_code;
+
+    // regionCode를 가져오는 메서드 추가
+    public String getRegionCode() {
+        return id.getRegionCode();
+    }
+
+    // userId를 가져오는 메서드 추가
+    public int getUserId() {
+        return id.getUserId();
+    }
 }

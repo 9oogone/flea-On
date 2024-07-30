@@ -13,11 +13,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/fleaOn/users")
+@RequestMapping("/fleaon/users")
 public class UserApiController {
 
 
@@ -83,5 +86,38 @@ public class UserApiController {
             return ResponseEntity.status(HttpStatus.OK).body(user);
         }
     }
+
+    @GetMapping("/{email}/mypage")
+    public ResponseEntity<?> getMyPage(@PathVariable String email) {
+        Map<String, Object> userInfo = userService.getUserInfoByEmail(email);
+
+        if(userInfo == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        else {
+            return ResponseEntity.status(HttpStatus.OK).body(userInfo);
+        }
+    }
+
+    @GetMapping("/{email}/{TradeDate}/schedule")
+    public ResponseEntity<?> getUserSchedule(@PathVariable String email, @PathVariable LocalDate tradeDate) {
+        User user = userService.findByEmail(email);
+        List<Map<String, Object>> userSchedule = userService.getUserScheduleByIdAndDate(user.getUserId(), tradeDate);
+
+        if(userSchedule == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        else {
+            return ResponseEntity.status(HttpStatus.OK).body(userSchedule);
+        }
+    }
+
+//    @GetMapping("/{email}/purchaseList")
+//    public ResponseEntity<?> getUserPurchaseList(@PathVariable String email) {
+//        User user = userService.findByEmail(email);
+//
+//    }
+
+
 }
 

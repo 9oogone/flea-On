@@ -17,9 +17,8 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
-    @Column(name = "user_id", updatable = false)
-    private String id;
+    @Column(name = "user_id")
+    private int userId;
 
     @Column(name = "username", nullable = false)
     private String username;
@@ -44,5 +43,4 @@ public class User {
 
     @Column(name = "level")
     private int level;
-
 }
