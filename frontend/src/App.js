@@ -8,10 +8,12 @@ import {
 } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
-// import { checkLoginStatus } from "./features/auth/actions";
+import LoginSuccess from "./features/auth/components/LoginSuccess";
+// import PrivateRoute from "./components/PrivateRoute";
+import { checkLoginStatus } from "./features/auth/actions";
 import BottomAppBar from "./components/BottomAppBar";
-import CheckLogin from "./features/auth/components/CheckLogin";
-import MyPage from "";
+import MyPage from "./pages/MyPage";
+
 function App() {
   // const dispatch = useDispatch();
 
@@ -38,7 +40,9 @@ function App() {
         <Routes>
           <Route path="/check" element={<CheckLogin />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/login-success" element={<LoginSuccess />} />
           <Route path="/" element={<HomePage />} />
+          <Route path="/mypage" element={<MyPage />} />
         </Routes>
       </LocationWrapper>
     </Router>
