@@ -1,12 +1,18 @@
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import LoginSuccess from "./features/auth/components/LoginSuccess";
-import PrivateRoute from "./components/PrivateRoute";
+// import PrivateRoute from "./components/PrivateRoute";
 import { checkLoginStatus } from "./features/auth/actions";
-import BottomAppBar from './components/BottomAppBar';
+import BottomAppBar from "./components/BottomAppBar";
+import MyPage from "./pages/MyPage";
 
 function App() {
   const dispatch = useDispatch();
@@ -22,9 +28,7 @@ function App() {
 
     return (
       <div>
-        <div style={{ flex: 1 }}>
-          {children}
-        </div>
+        <div style={{ flex: 1 }}>{children}</div>
         {!isLoginPage && <BottomAppBar />}
       </div>
     );
@@ -36,14 +40,8 @@ function App() {
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/login-success" element={<LoginSuccess />} />
-          <Route
-            path="/"
-            element={
-
-                <HomePage />
-
-            }
-          />
+          <Route path="/" element={<HomePage />} />
+          <Route path="/mypage" element={<MyPage />} />
         </Routes>
       </LocationWrapper>
     </Router>
