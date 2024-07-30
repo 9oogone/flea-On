@@ -3,8 +3,6 @@ import { useDispatch } from "react-redux";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
-import LoginSuccess from "./features/auth/components/LoginSuccess";
-import PrivateRoute from "./components/PrivateRoute";
 import { checkLoginStatus } from "./features/auth/actions";
 import BottomAppBar from './components/BottomAppBar';
 
