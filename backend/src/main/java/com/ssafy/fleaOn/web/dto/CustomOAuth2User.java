@@ -1,5 +1,6 @@
 package com.ssafy.fleaOn.web.dto;
 
+import com.ssafy.fleaOn.web.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
@@ -9,11 +10,11 @@ import java.util.Map;
 
 public class CustomOAuth2User implements OAuth2User {
 
-    private final UserDTO userDTO;
+    private final User user;
 
-    public CustomOAuth2User(UserDTO userDTO) {
+    public CustomOAuth2User(User user) {
 
-        this.userDTO = userDTO;
+        this.user = user;
     }
 
     @Override
@@ -32,7 +33,7 @@ public class CustomOAuth2User implements OAuth2User {
             @Override
             public String getAuthority() {
 
-                return userDTO.getRole();
+                return user.getRole();
             }
         });
 
@@ -42,21 +43,21 @@ public class CustomOAuth2User implements OAuth2User {
     @Override
     public String getName() {
 
-        return userDTO.getName();
+        return user.getName();
     }
 
     public String getUsername() {
 
-        return userDTO.getUsername();
+        return user.getUsername();
     }
 
     public String getProfileImg() {
 
-        return userDTO.getProfileImg();
+        return user.getProfileImg();
     }
 
     public String getId(){
 
-        return userDTO.getId();
+        return user.getId();
     }
 }
