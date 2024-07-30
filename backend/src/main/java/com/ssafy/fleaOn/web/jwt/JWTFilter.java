@@ -1,7 +1,7 @@
 package com.ssafy.fleaOn.web.jwt;
 
 import com.ssafy.fleaOn.web.dto.CustomOAuth2User;
-import com.ssafy.fleaOn.web.dto.UserDTO;
+import com.ssafy.fleaOn.web.entity.User;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -64,13 +64,13 @@ public class JWTFilter extends OncePerRequestFilter {
         String username = jwtUtil.getUsername(token);
         String role = jwtUtil.getRole(token);
 
-        // userDTO를 생성하여 값 set
-        UserDTO userDTO = new UserDTO();
-        userDTO.setUsername(username);
-        userDTO.setRole(role);
-
+        // userEntity를 생성하여 값 set
+        User user = User.builder()
+                .username(username)
+                .role(role)
+                .build();
         // UserDetails에 회원 정보 객체 담기
-        CustomOAuth2User customOAuth2User = new CustomOAuth2User(userDTO);
+        CustomOAuth2User customOAuth2User = new CustomOAuth2User(user);
 
         // 스프링 시큐리티 인증 토큰 생성
         Authentication authToken = new UsernamePasswordAuthenticationToken(customOAuth2User, null, customOAuth2User.getAuthorities());

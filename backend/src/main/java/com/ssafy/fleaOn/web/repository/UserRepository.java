@@ -1,13 +1,14 @@
 package com.ssafy.fleaOn.web.repository;
 
-import com.ssafy.fleaOn.web.dto.UserDTO;
-import com.ssafy.fleaOn.web.entity.UserEntity;
+import com.ssafy.fleaOn.web.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserRepository extends JpaRepository<UserEntity, Long> {
+public interface UserRepository extends JpaRepository<User, Long> {
 
-    UserEntity findByUsername(String username);
+    User findByUsername(String username);
 
-    UserEntity findByEmail(String email);
+    User findByEmail(String email);
+
+    void deleteByEmail(String email);
 
 }

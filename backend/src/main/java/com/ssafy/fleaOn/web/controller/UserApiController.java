@@ -1,10 +1,7 @@
 package com.ssafy.fleaOn.web.controller;
 
-import com.ssafy.fleaOn.web.dto.UserDTO;
-import com.ssafy.fleaOn.web.entity.UserEntity;
-import com.ssafy.fleaOn.web.jwt.JWTFilter;
+import com.ssafy.fleaOn.web.entity.User;
 import com.ssafy.fleaOn.web.jwt.JWTUtil;
-import com.ssafy.fleaOn.web.repository.UserRepository;
 import com.ssafy.fleaOn.web.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -50,12 +47,12 @@ public class UserApiController {
                 String jwtToken = jwtCookie.getValue();
 
                 String email = JWTUtil.getEmail(jwtToken);
-                UserEntity user = userService.findByEmail(email);
+                User user = userService.findByEmail(email);
 
                 System.out.println("해당 회원 찾음 : " + user);
 
                 if(user != null) {
-                    userService.deleteMember(email);
+                    userService.deleteUserByEmail(email);
 
                     return ResponseEntity.ok("회원 탈퇴 성공");
                 }
