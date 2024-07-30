@@ -22,6 +22,12 @@ public class UserService {
         userRepository.deleteByEmail(email);
     }
 
+    public void updateUserByEmail(String email, User user) {
+        userRepository.updateUserByEmail(email, user);
+    }
+
+
+
 
 
 

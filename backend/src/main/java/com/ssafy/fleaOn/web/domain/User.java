@@ -1,63 +1,42 @@
 package com.ssafy.fleaOn.web.domain;
 
-<<<<<<< HEAD
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-=======
 import jakarta.persistence.*;
->>>>>>> song
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
 @Builder
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@Table(name = "user")
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-<<<<<<< HEAD
+
+    @Column(name = "user_id", updatable = false)
     private String id;
 
+    @Column(name = "username", nullable = false)
     private String username;
 
-    private String profileImg;
-
-    private String name;
-
-    private String email;
-
-    private String role;
-
-    private String phoneNumber;
-
-    private String preferredRegion;
-=======
-    @Column(name = "user_id")
-    private String id;
-
-    @Column(name = "username")
-    private String username;
-
-    @Column(name = "profile_picture")
+    @Column(name = "profile_picture", nullable = false)
     private String profile_picture;
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
     @Column(name = "nickname")
     private String nickname;
 
-    @Column(name = "email")
+    @Column(name = "email", nullable = false)
     private String email;
 
-    @Column(name = "role")
+    @Column(name = "role", nullable = false)
     private String role;
 
     @Column(name = "phone")
@@ -68,7 +47,5 @@ public class User {
 
     @Column(name = "level")
     private int level;
->>>>>>> song
-
 
 }

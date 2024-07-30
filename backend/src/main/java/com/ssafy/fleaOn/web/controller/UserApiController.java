@@ -62,26 +62,26 @@ public class UserApiController {
         return ResponseEntity.status(HttpStatus.CREATED).body("회원 탈퇴 실패");
     }
 
-//    @GetMapping("/{email}/myPage")
-//    public String myPage(HttpServletRequest request, HttpServletResponse response, @PathVariable String email) {
-//        Cookie[] cookies = request.getCookies();
-//        if (cookies != null) {
-//            Cookie jwtCookie = Arrays.stream(cookies)
-//                    .filter(cookie -> "Authorizatoin".equals(cookie.getName()))
-//                    .findFirst().orElse(null);
-//
-//            if (jwtCookie != null) {
-//                String jwtToken = jwtCookie.getValue();
-//
-//                String userEmail = JWTUtil.getEmail(jwtToken);
-//
-//
-//            }
-////
-//    @GetMapping("/main")
-//    public String main(HttpServletRequest request, HttpServletResponse response) {
-//
-//    }
-
-
+    @GetMapping("/{email}/info")
+    public ResponseEntity<?> getUserInfo(@PathVariable String email) {
+        User user = userService.findByEmail(email);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } else {
+            return ResponseEntity.status(HttpStatus.OK).body(user);
         }
+    }
+
+    @PutMapping("{email}/info")
+    public ResponseEntity<?> updateUserInfo(@PathVariable String email, @RequestBody User user) {
+        User getUser = userService.findByEmail(email);
+        if (getUser == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        else{
+            userService.updateUserByEmail(email, user);
+            return ResponseEntity.status(HttpStatus.OK).body(user);
+        }
+    }
+}
+
