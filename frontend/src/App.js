@@ -1,17 +1,22 @@
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
-import { checkLoginStatus } from "./features/auth/actions";
-import BottomAppBar from './components/BottomAppBar';
-
+// import { checkLoginStatus } from "./features/auth/actions";
+import BottomAppBar from "./components/BottomAppBar";
+import CheckLogin from "./features/auth/components/CheckLogin";
 function App() {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
-  useEffect(() => {
-    dispatch(checkLoginStatus());
-  }, [dispatch]);
+  // // useEffect(() => {
+  // //   dispatch(checkLoginStatus());
+  // // }, [dispatch]);
 
   // 로그인 페이지가 아닌 경우에만 하단 앱 바를 표시
   const LocationWrapper = ({ children }) => {
@@ -20,9 +25,7 @@ function App() {
 
     return (
       <div>
-        <div style={{ flex: 1 }}>
-          {children}
-        </div>
+        <div style={{ flex: 1 }}>{children}</div>
         {!isLoginPage && <BottomAppBar />}
       </div>
     );
@@ -32,16 +35,10 @@ function App() {
     <Router>
       <LocationWrapper>
         <Routes>
+          <Route path="/check" element={<CheckLogin />} />
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/login-success" element={<LoginSuccess />} />
-          <Route
-            path="/"
-            element={
 
-                <HomePage />
-
-            }
-          />
+          <Route path="/" element={<HomePage />} />
         </Routes>
       </LocationWrapper>
     </Router>
