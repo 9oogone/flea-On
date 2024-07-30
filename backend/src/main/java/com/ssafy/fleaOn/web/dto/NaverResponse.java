@@ -36,7 +36,7 @@ public class NaverResponse implements OAuth2Response{
     }
 
     @Override
-    public String getProfileImg(){
+    public String getProfile_picture(){
         return attribute.get("profile_image").toString();
     }
 }

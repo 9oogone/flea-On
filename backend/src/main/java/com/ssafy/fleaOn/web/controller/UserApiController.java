@@ -36,14 +36,14 @@ public class UserApiController {
     }
 
     @DeleteMapping("/")
-    public ResponseEntity<?> deleteMember(HttpServletRequest request, HttpServletResponse response){
+    public ResponseEntity<?> deleteUser(HttpServletRequest request, HttpServletResponse response) {
         Cookie[] cookies = request.getCookies();
-        if(cookies != null) {
+        if (cookies != null) {
             Cookie jwtCookie = Arrays.stream(cookies)
                     .filter(cookie -> "Authorizatoin".equals(cookie.getName()))
                     .findFirst().orElse(null);
 
-            if(jwtCookie != null) {
+            if (jwtCookie != null) {
                 String jwtToken = jwtCookie.getValue();
 
                 String email = JWTUtil.getEmail(jwtToken);
@@ -51,7 +51,7 @@ public class UserApiController {
 
                 System.out.println("해당 회원 찾음 : " + user);
 
-                if(user != null) {
+                if (user != null) {
                     userService.deleteUserByEmail(email);
 
                     return ResponseEntity.ok("회원 탈퇴 성공");
@@ -62,16 +62,26 @@ public class UserApiController {
         return ResponseEntity.status(HttpStatus.CREATED).body("회원 탈퇴 실패");
     }
 
-//    @GetMapping("/{id}/myPage")
-//    public String myPage() {
+//    @GetMapping("/{email}/myPage")
+//    public String myPage(HttpServletRequest request, HttpServletResponse response, @PathVariable String email) {
+//        Cookie[] cookies = request.getCookies();
+//        if (cookies != null) {
+//            Cookie jwtCookie = Arrays.stream(cookies)
+//                    .filter(cookie -> "Authorizatoin".equals(cookie.getName()))
+//                    .findFirst().orElse(null);
 //
-//    }
+//            if (jwtCookie != null) {
+//                String jwtToken = jwtCookie.getValue();
 //
+//                String userEmail = JWTUtil.getEmail(jwtToken);
+//
+//
+//            }
+////
 //    @GetMapping("/main")
 //    public String main(HttpServletRequest request, HttpServletResponse response) {
 //
 //    }
 
 
-
-}
+        }
