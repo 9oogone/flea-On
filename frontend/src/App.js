@@ -5,6 +5,7 @@ import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import { checkLoginStatus } from "./features/auth/actions";
 import BottomAppBar from './components/BottomAppBar';
+import MyPage from ""
 
 function App() {
   const dispatch = useDispatch();
@@ -33,7 +34,6 @@ function App() {
       <LocationWrapper>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/login-success" element={<LoginSuccess />} />
           <Route
             path="/"
             element={
@@ -42,6 +42,7 @@ function App() {
 
             }
           />
+          <Route path="/mypage" element={<MyPage />} />
         </Routes>
       </LocationWrapper>
     </Router>
