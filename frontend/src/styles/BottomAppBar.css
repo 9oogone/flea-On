@@ -1,44 +1,52 @@
-.homeIcon {
+/* src/styles/BottomAppBar.css */
+
+.appBar {
+    top: auto;
+    bottom: 0;
+    width: 100%;
+  }
+  
+  .homeIcon {
     width: 24px;
-    position: relative;
     height: 24px;
-}
-.AddCircleIcon {
+    position: relative;
+  }
+  
+  .searchIcon {
     width: 24px;
-    position: relative;
     height: 24px;
+    position: relative;
+  }
+  
+  .AddCircleIcon {
+    width: 24px;
+    height: 24px;
+    position: relative;
     color: #FF0B55;
-}
-.tab1 {
-    flex: 1;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    padding: 1px 15px;
-}
-.searchIcon {
-    width: 18px;
-    position: relative;
-    height: 18px;
-}
-.tab2 {
-    flex: 1;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    padding: 1px 15px;
-    cursor: pointer;
-}
-.tab3Child {
+  }
+  
+  .chatIcon {
     width: 24px;
-    position: relative;
-    border-radius: 50px;
     height: 24px;
-    object-fit: cover;
-}
-.tabBarButtons {
+    position: relative;
+  }
+  
+  .accountIcon {
+    width: 24px;
+    height: 24px;
+    position: relative;
+  }
+  
+  .tab1, .tab2, .tab3, .tab4, .tab5 {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 1px 15px;
+  }
+  
+  .tabBarButtons {
     position: absolute;
     width: calc(100% + 1px);
     top: 7px;
@@ -50,8 +58,9 @@
     justify-content: space-between;
     padding: 10px 0px;
     box-sizing: border-box;
-}
-.tabBar {
+  }
+  
+  .tabBar {
     width: 100%;
     position: absolute;
     margin: 0 !important;
@@ -61,5 +70,5 @@
     border-top: 1px solid #000;
     box-sizing: border-box;
     height: 83px;
-}
-
+  }
+  
