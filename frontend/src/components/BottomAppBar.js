@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Sellerform from '../components/Sellerform';
 import PortalPopup from '../components/PortalPopup';
 import AppBar from '@mui/material/AppBar';
@@ -11,9 +12,11 @@ import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import '../styles/BottomAppBar.css';
 
+
 const TabBar = () => {
   const [isSellerformOpen, setSellerformOpen] = useState(false);
   const [value, setValue] = useState(0);
+  const navigate = useNavigate();
 
   const openSellerform = useCallback(() => {
     setSellerformOpen(true);
@@ -27,6 +30,10 @@ const TabBar = () => {
     setValue(newValue);
   }, []);
 
+  const goToMyPage = useCallback(() => {
+    navigate('/mypage'); 
+  }, [navigate]);
+
   return (
     <>
       <AppBar position="fixed" sx={{ top: 'auto', bottom: 0, borderTop: '0.5px solid #1C1B1F', boxShadow: "none" }}>
@@ -35,7 +42,7 @@ const TabBar = () => {
           <BottomNavigationAction icon={<SearchIcon className="searchIcon" />} className="tab2" />
           <BottomNavigationAction icon={<AddCircleIcon className="AddCircleIcon" />} className="tab3" onClick={openSellerform} />
           <BottomNavigationAction icon={<ChatBubbleOutlineIcon className="chatIcon" />} className="tab4" />
-          <BottomNavigationAction icon={<AccountCircleIcon className="accountIcon" />} className="tab5" />
+          <BottomNavigationAction icon={<AccountCircleIcon className="accountIcon" />} className="tab5" onClick={goToMyPage}/>
         </BottomNavigation>
       </AppBar>
       {isSellerformOpen && (
