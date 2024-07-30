@@ -51,9 +51,9 @@ public class CustomOAuth2User implements OAuth2User {
         return user.getUsername();
     }
 
-    public String getProfile_picture() {
+    public String getProfilePicture() {
 
-        return user.getProfile_picture();
+        return user.getProfilePicture();
     }
 
     public String getId(){

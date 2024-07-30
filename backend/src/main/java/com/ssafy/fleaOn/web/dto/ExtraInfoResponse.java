@@ -9,5 +9,5 @@ import lombok.Setter;
 public class ExtraInfoResponse {
 
     private String phone;
-    private String preferred_region;
+    private String preferredRegion;
 }

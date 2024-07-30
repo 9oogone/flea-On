@@ -25,7 +25,7 @@ public class User {
     private String username;
 
     @Column(name = "profile_picture", nullable = false)
-    private String profile_picture;
+    private String profilePicture;
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -41,9 +41,6 @@ public class User {
 
     @Column(name = "phone")
     private String phone;
-
-    @Column(name = "preferred_region")
-    private String preferred_region;
 
     @Column(name = "level")
     private int level;
