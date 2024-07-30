@@ -15,11 +15,11 @@ import BottomAppBar from "./components/BottomAppBar";
 import MyPage from "./pages/MyPage";
 
 function App() {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
-  useEffect(() => {
-    dispatch(checkLoginStatus());
-  }, [dispatch]);
+  // // useEffect(() => {
+  // //   dispatch(checkLoginStatus());
+  // // }, [dispatch]);
 
   // 로그인 페이지가 아닌 경우에만 하단 앱 바를 표시
   const LocationWrapper = ({ children }) => {
@@ -38,6 +38,7 @@ function App() {
     <Router>
       <LocationWrapper>
         <Routes>
+          <Route path="/check" element={<CheckLogin />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/login-success" element={<LoginSuccess />} />
           <Route path="/" element={<HomePage />} />

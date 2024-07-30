@@ -5,11 +5,16 @@ import { Provider } from "react-redux";
 import App from "./App";
 // import reportWebVitals from "./reportWebVitals";
 import * as serviceWorker from "./serviceWorker";
+import theme from "./theme";
+import { ThemeProvider } from "@mui/material/styles";
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <Provider store={store}>
     <React.StrictMode>
-      <App />
+      <ThemeProvider theme={theme}>
+        <App />
+      </ThemeProvider>
     </React.StrictMode>
   </Provider>
 );
