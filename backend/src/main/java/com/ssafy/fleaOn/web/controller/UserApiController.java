@@ -1,7 +1,7 @@
 package com.ssafy.fleaOn.web.controller;
 
-import com.ssafy.fleaOn.web.entity.User;
-import com.ssafy.fleaOn.web.jwt.JWTUtil;
+import com.ssafy.fleaOn.web.domain.User;
+import com.ssafy.fleaOn.web.config.jwt.JWTUtil;
 import com.ssafy.fleaOn.web.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;

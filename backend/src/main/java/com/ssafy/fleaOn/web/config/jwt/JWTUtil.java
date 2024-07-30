@@ -1,4 +1,4 @@
-package com.ssafy.fleaOn.web.jwt;
+package com.ssafy.fleaOn.web.config.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

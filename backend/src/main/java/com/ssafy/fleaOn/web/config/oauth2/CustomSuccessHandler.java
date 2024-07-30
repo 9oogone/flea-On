@@ -1,7 +1,7 @@
-package com.ssafy.fleaOn.web.oauth2;
+package com.ssafy.fleaOn.web.config.oauth2;
 
+import com.ssafy.fleaOn.web.config.jwt.JWTUtil;
 import com.ssafy.fleaOn.web.dto.CustomOAuth2User;
-import com.ssafy.fleaOn.web.jwt.JWTUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;

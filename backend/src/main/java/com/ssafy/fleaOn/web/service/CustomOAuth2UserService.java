@@ -1,7 +1,7 @@
 package com.ssafy.fleaOn.web.service;
 
 import com.ssafy.fleaOn.web.dto.*;
-import com.ssafy.fleaOn.web.entity.User;
+import com.ssafy.fleaOn.web.domain.User;
 import com.ssafy.fleaOn.web.repository.UserRepository;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;

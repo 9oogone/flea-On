@@ -1,7 +1,7 @@
 package com.ssafy.fleaOn.web.service;
 
 
-import com.ssafy.fleaOn.web.entity.User;
+import com.ssafy.fleaOn.web.domain.User;
 import com.ssafy.fleaOn.web.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;

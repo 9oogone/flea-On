@@ -1,4 +1,4 @@
-package com.ssafy.fleaOn.web.entity;
+package com.ssafy.fleaOn.web.domain;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

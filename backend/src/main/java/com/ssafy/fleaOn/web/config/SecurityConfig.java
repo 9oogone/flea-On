@@ -1,8 +1,8 @@
 package com.ssafy.fleaOn.web.config;
 
-import com.ssafy.fleaOn.web.jwt.JWTFilter;
-import com.ssafy.fleaOn.web.jwt.JWTUtil;
-import com.ssafy.fleaOn.web.oauth2.CustomSuccessHandler;
+import com.ssafy.fleaOn.web.config.jwt.JWTFilter;
+import com.ssafy.fleaOn.web.config.jwt.JWTUtil;
+import com.ssafy.fleaOn.web.config.oauth2.CustomSuccessHandler;
 import com.ssafy.fleaOn.web.service.CustomOAuth2UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
