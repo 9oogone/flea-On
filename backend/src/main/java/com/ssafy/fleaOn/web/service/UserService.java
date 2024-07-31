@@ -85,26 +85,60 @@ public class UserService {
         return userInfo;
 
     }
-    public List<Map<String, Object>> getUserScheduleByIdAndDate(int userId, LocalDate tradeDate) {
+    public Optional<List<Map<String, Object>>> getUserScheduleByIdAndDate(int userId, LocalDate tradeDate) {
         LocalDate endDate = tradeDate.plusDays(6);
         List<Trade> trades = tradeRepository.findByTradeDateBetweenAndBuyerIdOrSellerId(tradeDate, endDate, userId, userId);
+
+        if (trades.isEmpty()) {
+            return Optional.empty();
+        }
+
         List<Map<String, Object>> tradeList = new ArrayList<>();
 
         for (Trade trade : trades) {
             Map<String, Object> tradeResult = new HashMap<>();
-            Product product = productRepository.findById(trade.getProductId());
+            Optional<Product> productOptional = productRepository.findById(trade.getProductId());
 
-            if(product != null) {
+            productOptional.ifPresent(product -> {
                 tradeResult.put("product_name", product.getName());
                 tradeResult.put("product_price", product.getPrice());
-            }
+            });
+
             tradeResult.put("buyer_id", trade.getBuyerId());
             tradeResult.put("seller_id", trade.getSellerId());
             tradeResult.put("trade_place", trade.getTradePlace());
             tradeResult.put("trade_time", trade.getTradeTime());
             tradeList.add(tradeResult);
         }
-        return tradeList;
+
+        return Optional.of(tradeList);
+    }
+
+    public Optional<List<Map<String, Object>>> getUserPurchaseListByUserId(int userId) {
+        List<Trade> trades = tradeRepository.findByBuyerId(userId);
+        if (trades.isEmpty()) {
+            return Optional.empty();
+        }
+
+        List<Map<String, Object>> purchaseList = new ArrayList<>();
+
+        for (Trade trade : trades) {
+            Map<String, Object> purchaseResult = new HashMap<>();
+            Optional<Product> productOptional = productRepository.findById(trade.getProductId());
+
+            if(productOptional.isPresent()) {
+                Product product = productOptional.get();
+                purchaseResult.put("name", product.getName());
+                purchaseResult.put("price", product.getPrice());
+                purchaseResult.put("live_id", trade.getLiveId());
+            }
+            purchaseResult.put("product_id", trade.getProductId());
+            purchaseResult.put("trade_place", trade.getTradePlace());
+            purchaseResult.put("trade_time", trade.getTradeTime());
+            purchaseList.add(purchaseResult);
+        }
+
+        return Optional.of(purchaseList);
     }
 
 }
