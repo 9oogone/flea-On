@@ -11,17 +11,21 @@ import lombok.*;
 @Entity
 public class UserRegion {
 
-    @EmbeddedId
-    private UserId id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "region_id", nullable = false)
+    private int regionId;
+
+    @Column(name = "user_id", nullable = false)
+    private int userId;
+
+    @Column(name = "region_code", nullable = false)
+    private String regionCode;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    private User user;
 
 
-    // regionCode를 가져오는 메서드 추가
-    public String getRegionCode() {
-        return id.getRegionCode();
-    }
 
-    // userId를 가져오는 메서드 추가
-    public int getUserId() {
-        return id.getUserId();
-    }
 }

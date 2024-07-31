@@ -47,11 +47,11 @@ public class Trade {
     @Column(name = "shorts_id")
     private int shortsId;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private User user;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "shorts_id", insertable = false, updatable = false)
     private Shorts shorts;
 
