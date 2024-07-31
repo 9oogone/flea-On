@@ -10,5 +10,5 @@ public interface TradeRepository extends JpaRepository<Trade, Integer> {
 
      List<Trade> findByUserId(int userId);
 
-     List<Trade> findByUserIdAndTradeDate(int buyerId, int sellerId, LocalDate tradeDate);
+     List<Trade> findByTradeDateBetweenAndBuyerIdOrSellerId(LocalDate tradeDate, LocalDate endDate, int buyrerId, int sellerId);
 }

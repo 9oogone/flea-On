@@ -1,10 +1,7 @@
 package com.ssafy.fleaOn.web.service;
 
 
-import com.ssafy.fleaOn.web.domain.Product;
-import com.ssafy.fleaOn.web.domain.Trade;
-import com.ssafy.fleaOn.web.domain.User;
-import com.ssafy.fleaOn.web.domain.UserRegion;
+import com.ssafy.fleaOn.web.domain.*;
 import com.ssafy.fleaOn.web.repository.ProductRepository;
 import com.ssafy.fleaOn.web.repository.TradeRepository;
 import com.ssafy.fleaOn.web.repository.UserRegionRepository;
@@ -81,7 +78,8 @@ public class UserService {
 
     }
     public List<Map<String, Object>> getUserScheduleByIdAndDate(int userId, LocalDate tradeDate) {
-        List<Trade> trades = tradeRepository.findByUserIdAndTradeDate(userId, userId, tradeDate);
+        LocalDate endDate = tradeDate.plusDays(6);
+        List<Trade> trades = tradeRepository.findByTradeDateBetweenAndBuyerIdOrSellerId(tradeDate, endDate, userId, userId);
         List<Map<String, Object>> tradeList = new ArrayList<>();
 
         for (Trade trade : trades) {
