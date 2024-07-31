@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Sellerform from '../components/Sellerform';
 import PortalPopup from '../components/PortalPopup';
 import AppBar from '@mui/material/AppBar';
@@ -6,15 +7,16 @@ import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import HomeIcon from '@mui/icons-material/Home';
 import SearchIcon from '@mui/icons-material/Search';
-import AddIcon from '@mui/icons-material/Add';
-import ChatIcon from '@mui/icons-material/Chat';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import Box from '@mui/material/Box';
 import '../styles/BottomAppBar.css';
+
 
 const TabBar = () => {
   const [isSellerformOpen, setSellerformOpen] = useState(false);
   const [value, setValue] = useState(0);
+  const navigate = useNavigate();
 
   const openSellerform = useCallback(() => {
     setSellerformOpen(true);
@@ -28,15 +30,19 @@ const TabBar = () => {
     setValue(newValue);
   }, []);
 
+  const goToMyPage = useCallback(() => {
+    navigate('/mypage'); 
+  }, [navigate]);
+
   return (
     <>
-      <AppBar position="fixed" sx={{ top: 'auto', bottom: 0 }}>
+      <AppBar position="fixed" sx={{ top: 'auto', bottom: 0, borderTop: '0.5px solid #1C1B1F', boxShadow: "none" }}>
         <BottomNavigation value={value} onChange={onTabClick}>
-          <BottomNavigationAction icon={<HomeIcon className="homeIcon" />} />
-          <BottomNavigationAction icon={<SearchIcon className="SearchIcon" />} />
-          <BottomNavigationAction icon={<AddIcon className="AddIcon" />} onClick={openSellerform} />
-          <BottomNavigationAction icon={<ChatIcon className="ChatIcon" />} />
-          <BottomNavigationAction icon={<AccountCircleIcon className="AccountCircleIcon" />} />
+          <BottomNavigationAction icon={<HomeIcon className="homeIcon" />} className="tab1" />
+          <BottomNavigationAction icon={<SearchIcon className="searchIcon" />} className="tab2" />
+          <BottomNavigationAction icon={<AddCircleIcon className="AddCircleIcon" />} className="tab3" onClick={openSellerform} />
+          <BottomNavigationAction icon={<ChatBubbleOutlineIcon className="chatIcon" />} className="tab4" />
+          <BottomNavigationAction icon={<AccountCircleIcon className="accountIcon" />} className="tab5" onClick={goToMyPage}/>
         </BottomNavigation>
       </AppBar>
       {isSellerformOpen && (
