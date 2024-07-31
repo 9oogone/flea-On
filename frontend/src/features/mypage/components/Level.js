@@ -3,7 +3,7 @@ import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { updateSalesCount } from "../levelSlice"; // 수정된 부분
 
-const UserLevel = () => {
+const Level = () => {
   const dispatch = useDispatch();
   const salesCount = useSelector((state) => state.level.salesCount);
   const level = useSelector((state) => state.level.level);
@@ -44,4 +44,4 @@ const UserLevel = () => {
   );
 };
 
-export default UserLevel;
+export default Level;
