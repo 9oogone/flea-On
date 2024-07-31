@@ -7,35 +7,36 @@ import com.ssafy.fleaOn.web.repository.TradeRepository;
 import com.ssafy.fleaOn.web.repository.UserRegionRepository;
 import com.ssafy.fleaOn.web.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
+import com.ssafy.fleaOn.web.domain.User;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 @Transactional
 public class UserService {
 
-    @Autowired
     private UserRepository userRepository;
 
-    @Autowired
     private UserRegionRepository userRegionRepository;
 
-    @Autowired
     private TradeRepository tradeRepository;
 
-    @Autowired
     private ProductRepository productRepository;
 
-
     public User findByEmail(String email) {
-        return userRepository.findByEmail(email);
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + email));
+    }
+
+    public int getUserIdByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with email: " + email))
+                .getUserId();
     }
 
     public void deleteUserByEmail(String email) {
@@ -47,18 +48,18 @@ public class UserService {
     }
 
     public Map<String, Object> getUserInfoByEmail(String email) {
-        User user = userRepository.findByEmail(email);
+        Optional<User> user = userRepository.findByEmail(email);
 
-        if (user == null) {
+        if (user.isEmpty()) {
             return null;
         }
 
         Map<String, Object> userInfo = new HashMap<>();
-        userInfo.put("nickname", user.getNickname());
-        userInfo.put("level", user.getLevel());
-        userInfo.put("profile_picture", user.getProfilePicture());
+        userInfo.put("nickname", user.get().getNickname());
+        userInfo.put("level", user.get().getLevel());
+        userInfo.put("profile_picture", user.get().getProfilePicture());
 
-        List<UserRegion> userRegionList = userRegionRepository.findByUserId(user.getUserId());
+        List<UserRegion> userRegionList = userRegionRepository.findByUserId(user.get().getUserId());
         if (!userRegionList.isEmpty()) {
             List<String> regionList = userRegionList.stream()
                     .map(UserRegion::getRegionCode)
@@ -67,7 +68,7 @@ public class UserService {
             userInfo.put("user_region", regionList);
         }
 
-        List<Trade> tradeList = tradeRepository.findByUserId(user.getUserId());
+        List<Trade> tradeList = tradeRepository.findByUserId(user.get().getUserId());
         if (!tradeList.isEmpty()) {
             List<LocalDate> tradeDates = tradeList.stream()
                     .map(Trade::getTradeDate)
