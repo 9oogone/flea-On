@@ -1,4 +1,3 @@
-
 package com.ssafy.fleaOn.web.domain;
 
 import jakarta.persistence.*;

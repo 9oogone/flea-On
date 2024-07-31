@@ -14,10 +14,12 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
+import com.ssafy.fleaOn.web.domain.User;
+import lombok.RequiredArgsConstructor;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
+@Transactional
 public class UserService {
 
     private UserRepository userRepository;
@@ -28,9 +30,15 @@ public class UserService {
 
     private ProductRepository productRepository;
 
-
     public User findByEmail(String email) {
-        return userRepository.findByEmail(email);
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + email));
+    }
+
+    public int getUserIdByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with email: " + email))
+                .getUserId();
     }
 
     public void deleteUserByEmail(String email) {
@@ -47,18 +55,18 @@ public class UserService {
     }
 
     public Map<String, Object> getUserInfoByEmail(String email) {
-        User user = userRepository.findByEmail(email);
+        Optional<User> user = userRepository.findByEmail(email);
 
-        if (user == null) {
+        if (user.isEmpty()) {
             return null;
         }
 
         Map<String, Object> userInfo = new HashMap<>();
-        userInfo.put("nickname", user.getNickname());
-        userInfo.put("level", user.getLevel());
-        userInfo.put("profile_picture", user.getProfilePicture());
+        userInfo.put("nickname", user.get().getNickname());
+        userInfo.put("level", user.get().getLevel());
+        userInfo.put("profile_picture", user.get().getProfilePicture());
 
-        List<UserRegion> userRegionList = userRegionRepository.findByUserId(user.getUserId());
+        List<UserRegion> userRegionList = userRegionRepository.findByUserId(user.get().getUserId());
         if (!userRegionList.isEmpty()) {
             List<String> regionList = userRegionList.stream()
                     .map(UserRegion::getRegionCode)
