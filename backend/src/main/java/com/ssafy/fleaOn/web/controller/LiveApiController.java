@@ -38,12 +38,12 @@ public class LiveApiController {
         return ResponseEntity.ok(updatedLive); // 업데이트된 Live 정보 반환
     }
 
-//    @DeleteMapping("/{id}/")
-//    public ResponseEntity<Void> deleteLive(@PathVariable long id) {
-//        liveService.delete(id);
-//
-//        return ResponseEntity.ok()
-//                .build();
-//    }
+    @DeleteMapping("/{id}/")
+    public ResponseEntity<Void> deleteLive(@PathVariable int id) {
+        liveService.delete(id);
+
+        return ResponseEntity.ok()
+                .build();
+    }
 }
 
