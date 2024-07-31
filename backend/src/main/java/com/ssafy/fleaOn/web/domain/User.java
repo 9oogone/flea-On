@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
@@ -11,25 +12,35 @@ import lombok.*;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@Table(name = "user")
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
+    @Column(name = "user_id")
+    private int userId;
 
+    @Column(name = "username", nullable = false)
     private String username;
 
-    private String profileImg;
+    @Column(name = "profile_picture", nullable = false)
+    private String profilePicture;
 
+    @Column(name = "name", nullable = false)
     private String name;
 
+    @Column(name = "nickname")
+    private String nickname;
+
+    @Column(name = "email", nullable = false)
     private String email;
 
+    @Column(name = "role", nullable = false)
     private String role;
 
-    private String phoneNumber;
+    @Column(name = "phone")
+    private String phone;
 
-    private String preferredRegion;
-
-
+    @Column(name = "level")
+    private int level;
 }

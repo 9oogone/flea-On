@@ -13,11 +13,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/fleaOn/users")
+@RequestMapping("/fleaon/users")
 public class UserApiController {
 
 
@@ -36,14 +39,14 @@ public class UserApiController {
     }
 
     @DeleteMapping("/")
-    public ResponseEntity<?> deleteMember(HttpServletRequest request, HttpServletResponse response){
+    public ResponseEntity<?> deleteUser(HttpServletRequest request, HttpServletResponse response) {
         Cookie[] cookies = request.getCookies();
-        if(cookies != null) {
+        if (cookies != null) {
             Cookie jwtCookie = Arrays.stream(cookies)
                     .filter(cookie -> "Authorizatoin".equals(cookie.getName()))
                     .findFirst().orElse(null);
 
-            if(jwtCookie != null) {
+            if (jwtCookie != null) {
                 String jwtToken = jwtCookie.getValue();
 
                 String email = JWTUtil.getEmail(jwtToken);
@@ -51,7 +54,7 @@ public class UserApiController {
 
                 System.out.println("해당 회원 찾음 : " + user);
 
-                if(user != null) {
+                if (user != null) {
                     userService.deleteUserByEmail(email);
 
                     return ResponseEntity.ok("회원 탈퇴 성공");
@@ -62,16 +65,59 @@ public class UserApiController {
         return ResponseEntity.status(HttpStatus.CREATED).body("회원 탈퇴 실패");
     }
 
-//    @GetMapping("/{id}/myPage")
-//    public String myPage() {
-//
-//    }
-//
-//    @GetMapping("/main")
-//    public String main(HttpServletRequest request, HttpServletResponse response) {
-//
-//    }
+    @GetMapping("/{email}/info")
+    public ResponseEntity<?> getUserInfo(@PathVariable String email) {
+        User user = userService.findByEmail(email);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } else {
+            return ResponseEntity.status(HttpStatus.OK).body(user);
+        }
+    }
 
+    @PutMapping("{email}/info")
+    public ResponseEntity<?> updateUserInfo(@PathVariable String email, @RequestBody User user) {
+        User getUser = userService.findByEmail(email);
+        if (getUser == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        else{
+            userService.updateUserByEmail(email, user);
+            return ResponseEntity.status(HttpStatus.OK).body(user);
+        }
+    }
+
+    @GetMapping("/{email}/mypage")
+    public ResponseEntity<?> getMyPage(@PathVariable String email) {
+        Map<String, Object> userInfo = userService.getUserInfoByEmail(email);
+
+        if(userInfo == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        else {
+            return ResponseEntity.status(HttpStatus.OK).body(userInfo);
+        }
+    }
+
+    @GetMapping("/{email}/{TradeDate}/schedule")
+    public ResponseEntity<?> getUserSchedule(@PathVariable String email, @PathVariable LocalDate tradeDate) {
+        User user = userService.findByEmail(email);
+        List<Map<String, Object>> userSchedule = userService.getUserScheduleByIdAndDate(user.getUserId(), tradeDate);
+
+        if(userSchedule == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        else {
+            return ResponseEntity.status(HttpStatus.OK).body(userSchedule);
+        }
+    }
+
+//    @GetMapping("/{email}/purchaseList")
+//    public ResponseEntity<?> getUserPurchaseList(@PathVariable String email) {
+//        User user = userService.findByEmail(email);
+//
+//    }
 
 
 }
+
