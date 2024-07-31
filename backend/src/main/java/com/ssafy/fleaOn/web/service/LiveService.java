@@ -53,6 +53,15 @@ public class LiveService {
         return liveRepository.save(live);
     }
 
+
+    public void delete(int id) {
+        Live live = liveRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("not found : " + id));
+
+        authorizeArticleAuthor(live);
+        liveRepository.delete(live);
+    }
+
     // 게시글을 작성한 유저인지 확인
     private static void authorizeArticleAuthor(Live live) {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -60,5 +69,4 @@ public class LiveService {
             throw new IllegalArgumentException("not authorized");
         }
     }
-
 }
