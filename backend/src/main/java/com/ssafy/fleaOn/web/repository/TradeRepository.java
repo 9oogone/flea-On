@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface TradeRepository extends JpaRepository<Trade, Integer> {
 
-     List<Trade> findByUserId(int userId);
+     List<Trade> findByUser_UserId(int userId);
 
-     List<Trade> findByTradeDateBetweenAndBuyerIdOrSellerId(LocalDate tradeDate, LocalDate endDate, int buyrerId, int sellerId);
+     List<Trade> findByTradeDateBetweenAndBuyerIdOrSellerId(LocalDate startDate, LocalDate endDate, int buyerId, int sellerId);
 }

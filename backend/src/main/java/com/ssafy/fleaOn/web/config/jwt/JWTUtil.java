@@ -20,9 +20,9 @@ public class JWTUtil {
         secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
     }
 
-    public String getUsername(String token) {
+    public String getUserIdentifier(String token) {
 
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("username", String.class);
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("userIdentifier", String.class);
     }
 
     public static String getEmail(String token) {
@@ -49,10 +49,10 @@ public class JWTUtil {
     }
 
 
-    public static String createJwt(String username, String role, Long expiredMs) {
+    public static String createJwt(String userIdentifier, String role, Long expiredMs) {
 
         return Jwts.builder()
-                .claim("username", username)
+                .claim("userIdentifier", userIdentifier)
                 .claim("role", role)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expiredMs))
@@ -67,9 +67,9 @@ public class JWTUtil {
                 .parseClaimsJws(token)
                 .getBody();
 
-        String username = claims.get("username", String.class);
+        String userIdentifier = claims.get("userIdentifier", String.class);
         String role = claims.get("role", String.class);
 
-        return createJwt(username, role, 3600000L); // 1시간 연장
+        return createJwt(userIdentifier, role, 3600000L); // 1시간 연장
     }
 }

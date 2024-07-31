@@ -40,12 +40,12 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
             return null;
         }
-        String username = oAuth2Response.getProvider() + " " + oAuth2Response.getProviderId();
-        User existData = userRepository.findByUsername(username);
+        String userIdentifier = oAuth2Response.getProvider() + " " + oAuth2Response.getProviderId();
+        User existData = userRepository.findByUserIdentifier(userIdentifier);
 
         if (existData == null) {
             User user = User.builder()
-                    .username(username)
+                    .userIdentifier(userIdentifier)
                     .email(oAuth2Response.getEmail())
                     .name(oAuth2Response.getName())
                     .profilePicture(oAuth2Response.getProfilePicture())
@@ -55,7 +55,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             userRepository.save(user);
 
             User user2 = User.builder()
-                    .username(username)
+                    .userIdentifier(userIdentifier)
                     .email(oAuth2Response.getEmail())
                     .name(oAuth2Response.getName())
                     .profilePicture(oAuth2Response.getProfilePicture())
@@ -73,7 +73,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             userRepository.save(existData);
 
             User user = User.builder()
-                    .username(existData.getUsername())
+                    .userIdentifier(existData.getUserIdentifier())
                     .name(oAuth2Response.getName())
                     .profilePicture(oAuth2Response.getProfilePicture())
                     .role(existData.getRole()).build();
