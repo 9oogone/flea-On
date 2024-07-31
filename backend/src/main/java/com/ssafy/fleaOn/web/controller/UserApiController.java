@@ -24,8 +24,6 @@ import java.util.Optional;
 @RequestMapping("/fleaon/users")
 public class UserApiController {
 
-
-    @Autowired
     private UserService userService;
 
 
@@ -81,9 +79,8 @@ public class UserApiController {
         User getUser = userService.findByEmail(email);
         if (getUser == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        else{
-           userService.updateUserByEmail(email, user);
+        } else {
+            userService.updateUserByEmail(email, user);
             return ResponseEntity.status(HttpStatus.OK).build();
         }
     }
@@ -92,10 +89,9 @@ public class UserApiController {
     public ResponseEntity<?> getMyPage(@PathVariable String email) {
         Map<String, Object> userInfo = userService.getUserInfoByEmail(email);
 
-        if(userInfo == null) {
+        if (userInfo == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        else {
+        } else {
             return ResponseEntity.status(HttpStatus.OK).body(userInfo);
         }
     }
@@ -115,31 +111,27 @@ public class UserApiController {
     public ResponseEntity<?> getUserPurchaseList(@PathVariable String email) {
         User user = userService.findByEmail(email);
 
-       Optional<List<Map<String, Object>>> userPurchaseList = userService.getUserPurchaseListByUserId(user.getUserId());
-       if(userPurchaseList.isPresent()) {
-           return ResponseEntity.status(HttpStatus.OK).body(userPurchaseList.get());
-       }
-       return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        Optional<List<Map<String, Object>>> userPurchaseList = userService.getUserPurchaseListByUserId(user.getUserId());
+        if (userPurchaseList.isPresent()) {
+            return ResponseEntity.status(HttpStatus.OK).body(userPurchaseList.get());
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 
     }
 
     @GetMapping("/{email}/reservationList")
     public ResponseEntity<?> getUserReservationList(@PathVariable String email) {
         User user = userService.findByEmail(email);
-
         Optional<List<Map<String, Object>>> userReservationList = userService.getUserReservationListByUserId(user.getUserId());
-        if(userReservationList.isPresent()) {
-            return ResponseEntity.status(HttpStatus.OK).body(userReservationList.get());
+
+        if (userReservationList.isPresent()) {
+            Optional<List<Map<String, Object>>> userPurchaseList = userService.getUserPurchaseListByUserId(user.getUserId());
+            if (userPurchaseList.isPresent()) {
+                return ResponseEntity.status(HttpStatus.OK).body(userPurchaseList.get());
+            }
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
-
-//    @GetMapping("/{email}/purchaseList")
-//    public ResponseEntity<?> getUserPurchaseList(@PathVariable String email) {
-//        User user = userService.findByEmail(email);
-//
-//    }
-
-
 }
+
 

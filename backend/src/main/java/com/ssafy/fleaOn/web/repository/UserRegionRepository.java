@@ -4,8 +4,9 @@ import com.ssafy.fleaOn.web.domain.UserRegion;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserRegionRepository extends JpaRepository<UserRegion, Integer> {
 
-    List<UserRegion> findByUserId(int userId);
+    Optional<List<UserRegion>> findByUserId(int userId);
 }

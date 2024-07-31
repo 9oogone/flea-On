@@ -8,27 +8,25 @@ import com.ssafy.fleaOn.web.repository.UserRegionRepository;
 import com.ssafy.fleaOn.web.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 import com.ssafy.fleaOn.web.domain.User;
-import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class UserService {
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    private UserRegionRepository userRegionRepository;
+    private final UserRegionRepository userRegionRepository;
 
-    private TradeRepository tradeRepository;
+    private final TradeRepository tradeRepository;
 
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
 
     public User findByEmail(String email) {
         return userRepository.findByEmail(email)
@@ -55,44 +53,47 @@ public class UserService {
     }
 
     public Map<String, Object> getUserInfoByEmail(String email) {
-        Optional<User> user = userRepository.findByEmail(email);
+        Optional<User> userOptional = userRepository.findByEmail(email);
 
-        if (user.isEmpty()) {
+        if (userOptional.isEmpty()) {
             return null;
         }
 
+        User user = userOptional.get();
         Map<String, Object> userInfo = new HashMap<>();
-        userInfo.put("nickname", user.get().getNickname());
-        userInfo.put("level", user.get().getLevel());
-        userInfo.put("profile_picture", user.get().getProfilePicture());
+        userInfo.put("nickname", user.getNickname());
+        userInfo.put("level", user.getLevel());
+        userInfo.put("profile_picture", user.getProfilePicture());
 
-        List<UserRegion> userRegionList = userRegionRepository.findByUserId(user.get().getUserId());
-        if (!userRegionList.isEmpty()) {
+        // UserRegion 리스트 처리
+        Optional<List<UserRegion>> userRegionListOptional = userRegionRepository.findByUserId(user.getUserId());
+        userRegionListOptional.ifPresent(userRegionList -> {
             List<String> regionList = userRegionList.stream()
                     .map(UserRegion::getRegionCode)
                     .collect(Collectors.toList());
-
             userInfo.put("user_region", regionList);
-        }
+        });
 
-        List<Trade> tradeList = tradeRepository.findByUser_UserId(user.getUserId());
-        if (!tradeList.isEmpty()) {
+        // Trade 리스트 처리
+        Optional<List<Trade>> tradeListOptional = tradeRepository.findByUser_UserId(user.getUserId());
+        tradeListOptional.ifPresent(tradeList -> {
             List<LocalDate> tradeDates = tradeList.stream()
                     .map(Trade::getTradeDate)
                     .collect(Collectors.toList());
             userInfo.put("trade", tradeDates);
-        }
-        return userInfo;
+        });
 
+        return userInfo;
     }
     public Optional<List<Map<String, Object>>> getUserScheduleByIdAndDate(int userId, LocalDate tradeDate) {
         LocalDate endDate = tradeDate.plusDays(6);
-        List<Trade> trades = tradeRepository.findByTradeDateBetweenAndBuyerIdOrSellerId(tradeDate, endDate, userId, userId);
+        Optional<List<Trade>> tradesOptional = tradeRepository.findByTradeDateBetweenAndBuyerIdOrSellerId(tradeDate, endDate, userId, userId);
 
-        if (trades.isEmpty()) {
+        if (tradesOptional.isEmpty()) {
             return Optional.empty();
         }
 
+        List<Trade> trades = tradesOptional.get();
         List<Map<String, Object>> tradeList = new ArrayList<>();
 
         for (Trade trade : trades) {
@@ -114,24 +115,29 @@ public class UserService {
         return Optional.of(tradeList);
     }
 
+
     public Optional<List<Map<String, Object>>> getUserPurchaseListByUserId(int userId) {
-        List<Trade> trades = tradeRepository.findByBuyerId(userId);
-        if (trades.isEmpty()) {
+        Optional<List<Trade>> tradesOptional = tradeRepository.findByBuyerId(userId);
+
+        // tradesOptional이 비어 있으면 Optional.empty() 반환
+        if (tradesOptional.isEmpty()) {
             return Optional.empty();
         }
 
+        List<Trade> trades = tradesOptional.get();
         List<Map<String, Object>> purchaseList = new ArrayList<>();
 
         for (Trade trade : trades) {
             Map<String, Object> purchaseResult = new HashMap<>();
             Optional<Product> productOptional = productRepository.findById(trade.getProductId());
 
-            if(productOptional.isPresent()) {
-                Product product = productOptional.get();
+            // productOptional이 비어 있지 않으면 값을 가져와서 처리
+            productOptional.ifPresent(product -> {
                 purchaseResult.put("name", product.getName());
                 purchaseResult.put("price", product.getPrice());
                 purchaseResult.put("live_id", trade.getLiveId());
-            }
+            });
+
             purchaseResult.put("product_id", trade.getProductId());
             purchaseResult.put("trade_place", trade.getTradePlace());
             purchaseResult.put("trade_time", trade.getTradeTime());
@@ -139,6 +145,36 @@ public class UserService {
         }
 
         return Optional.of(purchaseList);
+    }
+
+
+    public Optional<List<Map<String, Object>>> getUserReservationListByUserId(int userId) {
+        Optional<List<Trade>> tradesOptional = tradeRepository.findByBuyerId(userId);
+
+        // tradesOptional이 비어 있으면 Optional.empty() 반환
+        if (tradesOptional.isEmpty()) {
+            return Optional.empty();
+        }
+
+        List<Trade> trades = tradesOptional.get();
+        List<Map<String, Object>> reservationList = new ArrayList<>();
+
+        for (Trade trade : trades) {
+            Map<String, Object> reservationResult = new HashMap<>();
+            Optional<Product> productOptional = productRepository.findById(trade.getProductId());
+
+            // productOptional이 비어 있지 않으면 값을 가져와서 처리
+            productOptional.ifPresent(product -> {
+                reservationResult.put("name", product.getName());
+                reservationResult.put("price", product.getPrice());
+            });
+
+            reservationResult.put("trade_place", trade.getTradePlace());
+            reservationResult.put("trade_time", trade.getTradeTime());
+            reservationList.add(reservationResult);
+        }
+
+        return Optional.of(reservationList);
     }
 
 }
