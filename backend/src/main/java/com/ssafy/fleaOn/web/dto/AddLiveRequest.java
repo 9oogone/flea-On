@@ -1,10 +1,10 @@
 package com.ssafy.fleaOn.web.dto;
 
 import com.ssafy.fleaOn.web.domain.Live;
+import com.ssafy.fleaOn.web.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,13 +19,13 @@ public class AddLiveRequest {
     private String trade_place;
     private List<AddProductRequest> product;
 
-    public Live toEntity(int id) {
+    public Live toEntity(User user) {
         return Live.builder()
                 .title(title)
-                .seller_id(id)
                 .live_date(live_date)
                 .thumbnail(thumbnail)
                 .trade_place(trade_place)
+                .user(user)  // User 객체를 Live 객체에 설정합니다.
                 .build();
     }
 }
