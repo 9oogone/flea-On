@@ -42,6 +42,14 @@ public class Product {
     @Column(name="cur_buyer_rear", nullable = false)
     private int cur_buyer_rear;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "live_id", insertable = false, updatable = false)
+    private Live live;
+
     @Builder
     public Product(int live_id, int seller_id, String name, int price, int first_category, int second_category) {
         this.live_id = live_id;
