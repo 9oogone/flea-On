@@ -41,7 +41,12 @@ public class UserService {
     }
 
     public void updateUserByEmail(String email, User user) {
-        userRepository.updateUserByEmail(email, user);
+        User newUser = User.builder()
+                .nickname(user.getNickname())
+                .phone(user.getPhone())
+                .profilePicture(user.getProfilePicture())
+                .build();
+        userRepository.save(newUser);
     }
 
     public Map<String, Object> getUserInfoByEmail(String email) {
@@ -65,7 +70,7 @@ public class UserService {
             userInfo.put("user_region", regionList);
         }
 
-        List<Trade> tradeList = tradeRepository.findByUserId(user.getUserId());
+        List<Trade> tradeList = tradeRepository.findByUser_UserId(user.getUserId());
         if (!tradeList.isEmpty()) {
             List<LocalDate> tradeDates = tradeList.stream()
                     .map(Trade::getTradeDate)
@@ -96,5 +101,7 @@ public class UserService {
         }
         return tradeList;
     }
+
+
 
 }

@@ -1,3 +1,4 @@
+
 package com.ssafy.fleaOn.web.domain;
 
 import jakarta.persistence.Entity;
@@ -20,8 +21,11 @@ public class User {
     @Column(name = "user_id")
     private int userId;
 
-    @Column(name = "username", nullable = false)
-    private String username;
+    @Column(name = "email", nullable = false, unique = true)
+    private String email;
+
+    @Column(name = "user_identifier", nullable = false)
+    private String userIdentifier;
 
     @Column(name = "profile_picture", nullable = false)
     private String profilePicture;
@@ -31,9 +35,6 @@ public class User {
 
     @Column(name = "nickname")
     private String nickname;
-
-    @Column(name = "email", nullable = false)
-    private String email;
 
     @Column(name = "role", nullable = false)
     private String role;

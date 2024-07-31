@@ -5,12 +5,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserRepository extends JpaRepository<User, Integer> {
 
-    User findByUsername(String username);
+    User findByUserIdentifier(String userIdentifier);
 
     User findByEmail(String email);
 
     void deleteByEmail(String email);
 
-    void updateUserByEmail(String email, User user);
+//    User updateUserByEmail(String email, User user);
 
 }

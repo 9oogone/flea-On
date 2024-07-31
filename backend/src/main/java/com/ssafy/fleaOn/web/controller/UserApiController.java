@@ -17,6 +17,7 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -82,8 +83,8 @@ public class UserApiController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         else{
-            userService.updateUserByEmail(email, user);
-            return ResponseEntity.status(HttpStatus.OK).body(user);
+           userService.updateUserByEmail(email, user);
+            return ResponseEntity.status(HttpStatus.OK).build();
         }
     }
 
@@ -111,10 +112,19 @@ public class UserApiController {
             return ResponseEntity.status(HttpStatus.OK).body(userSchedule);
         }
     }
-
+//
 //    @GetMapping("/{email}/purchaseList")
 //    public ResponseEntity<?> getUserPurchaseList(@PathVariable String email) {
 //        User user = userService.findByEmail(email);
+//
+//        Optional<List<Map<String, Object>>> userPurchaseList = userService.getUserPurchaseList(user.getUserId());
+//
+//        if(userPurchaseList.isPresent()) {
+//            return ResponseEntity.status(HttpStatus.OK).body(userPurchaseList.get());
+//        }
+//        else{
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+//        }
 //
 //    }
 

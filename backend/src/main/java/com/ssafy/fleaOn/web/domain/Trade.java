@@ -37,7 +37,6 @@ public class Trade {
     @Column(name = "trade_place")
     private String tradePlace;
 
-    @Id
     @Column(name = "chatting_id")
     private int chattingId;
 
@@ -54,5 +53,9 @@ public class Trade {
     @ManyToOne
     @JoinColumn(name = "shorts_id", insertable = false, updatable = false)
     private Shorts shorts;
+
+    @OneToOne
+    @JoinColumn(name = "product_id", insertable = false, updatable = false)
+    private Product product;
 
 }
