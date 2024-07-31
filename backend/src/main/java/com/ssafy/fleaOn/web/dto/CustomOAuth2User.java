@@ -1,6 +1,6 @@
 package com.ssafy.fleaOn.web.dto;
 
-import com.ssafy.fleaOn.web.entity.User;
+import com.ssafy.fleaOn.web.domain.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
@@ -46,18 +46,18 @@ public class CustomOAuth2User implements OAuth2User {
         return user.getName();
     }
 
-    public String getUsername() {
+    public String getUserIdentifier() {
 
-        return user.getUsername();
+        return user.getUserIdentifier();
     }
 
-    public String getProfileImg() {
+    public String getProfilePicture() {
 
-        return user.getProfileImg();
+        return user.getProfilePicture();
     }
 
-    public String getId(){
+    public int getUserId(){
 
-        return user.getId();
+        return user.getUserId();
     }
 }
