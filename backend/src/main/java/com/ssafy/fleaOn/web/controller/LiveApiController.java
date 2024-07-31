@@ -45,5 +45,11 @@ public class LiveApiController {
         return ResponseEntity.ok()
                 .build();
     }
+
+    @GetMapping("/${liveID}/detail")
+    public ResponseEntity<Live> findLive(@PathVariable int liveID) {
+        Live live = liveService.findById(liveID);
+        return ResponseEntity.ok().body(live); // 일단은 live 통으로 보내주는데 프론트측에서 원하는 정보에 따라 liveReponse 생성
+    }
 }
 
