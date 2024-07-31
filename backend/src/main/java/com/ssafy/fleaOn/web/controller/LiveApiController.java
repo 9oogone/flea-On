@@ -3,6 +3,7 @@ package com.ssafy.fleaOn.web.controller;
 import com.ssafy.fleaOn.web.domain.Live;
 import com.ssafy.fleaOn.web.domain.User;
 import com.ssafy.fleaOn.web.dto.AddLiveRequest;
+import com.ssafy.fleaOn.web.dto.UpdateLiveRequest;
 import com.ssafy.fleaOn.web.service.LiveService;
 import com.ssafy.fleaOn.web.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -29,5 +30,20 @@ public class LiveApiController {
         // 요청한 자원이 성공적으로 생성되었으며 저장된 Live 정보를 응답 객체에 담아 전송
         return ResponseEntity.status(HttpStatus.CREATED).body(savedLive);
     }
+
+    @PutMapping("/{liveID}")
+    public ResponseEntity<Live> updateLive(@PathVariable int liveID, @RequestBody UpdateLiveRequest request) {
+        User user = userService.findByEmail(request.getUserEmail()); // 이메일로 사용자 정보를 가져옴
+        Live updatedLive = liveService.updateLive(liveID, request, user); // 서비스를 통해 Live 정보를 업데이트
+        return ResponseEntity.ok(updatedLive); // 업데이트된 Live 정보 반환
+    }
+
+//    @DeleteMapping("/{id}/")
+//    public ResponseEntity<Void> deleteLive(@PathVariable long id) {
+//        liveService.delete(id);
+//
+//        return ResponseEntity.ok()
+//                .build();
+//    }
 }
 
