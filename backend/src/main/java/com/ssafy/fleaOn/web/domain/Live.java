@@ -17,14 +17,11 @@ import java.time.LocalDateTime;
 public class Live {
     @Id // id 필드를 기본키로 지정
     @GeneratedValue(strategy = GenerationType.IDENTITY) // 기본키를 자동으로 1씩 증가
-    @Column(name = "id", updatable = false)
+    @Column(name = "live_id", updatable = false)
     private int id;
 
-    @Column(name = "title", nullable = false) // 'title'이라는 not null 컬럼과 매핑
+    @Column(name = "title", nullable = false)
     private String title;
-
-    @Column(name="content", nullable = false)
-    private String content;
 
     @Column(name="seller_id", nullable = false)
     private int seller_id;
@@ -44,16 +41,13 @@ public class Live {
     // 객체를 유연하고 직관적으로 생성 가능 <- 디자인 패턴 중 하나
     // 빌더 패턴을 사용하면 어느 필드에 어떤 값이 들어가는지 명시적으로 파악 가능
     @Builder // 빌더 패턴으로 객체 생성
-    public Live(String title, String content, String seller_id, LocalDateTime live_date, String trade_place) {
+    public Live(String title, int seller_id, LocalDateTime live_date,String thumbnail, String trade_place) {
         this.title = title;
-        this.content = content;
-        this.seller_id = Integer.parseInt(seller_id);
+        this.seller_id = seller_id;
         this.live_date = live_date;
+        this.thumbnail = thumbnail;
         this.trade_place = trade_place;
         this.is_live = false;
     }
 
-    public void updateThumbnail(String thumbnail) {
-        this.thumbnail = thumbnail;
-    }
 }
