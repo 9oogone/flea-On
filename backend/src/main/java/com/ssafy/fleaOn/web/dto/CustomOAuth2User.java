@@ -20,7 +20,12 @@ public class CustomOAuth2User implements OAuth2User {
     @Override
     public Map<String, Object> getAttributes() {
 
-        return null;
+        return Map.of(
+                "name", user.getName(),
+                "email", user.getEmail(),
+                "userIdentifier", user.getUserIdentifier(),
+                "role", user.getRole()
+        );
     }
 
     @Override

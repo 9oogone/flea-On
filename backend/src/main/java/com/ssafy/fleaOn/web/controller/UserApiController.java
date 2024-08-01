@@ -66,10 +66,6 @@ public class UserApiController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("회원 탈퇴 실패: 토큰이 없습니다.");
     }
 
-
-
-
-
     @GetMapping("/{email}/info")
     public ResponseEntity<?> getUserInfo(@PathVariable("email") String email) {
         User user = userService.findByEmail(email);

@@ -1,4 +1,4 @@
-package com.ssafy.fleaOn.web.config.oauth2;
+package com.ssafy.fleaOn.web.config.handler;
 
 import com.ssafy.fleaOn.web.config.jwt.JWTUtil;
 import com.ssafy.fleaOn.web.dto.CustomOAuth2User;
@@ -30,7 +30,8 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         //OAuth2User
         CustomOAuth2User customUserDetails = (CustomOAuth2User) authentication.getPrincipal();
-        System.out.println(customUserDetails);
+
+        System.out.println("details: " + customUserDetails);
         String userIdentifier = customUserDetails.getUserIdentifier();
         String email = customUserDetails.getEmail();
 

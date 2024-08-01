@@ -89,6 +89,10 @@ public class JWTFilter extends OncePerRequestFilter {
 
         // 세션에 사용자 등록
         SecurityContextHolder.getContext().setAuthentication(authToken);
+
+//        filterChain.doFilter(request, response);
+//
+//        String requestUri = request.getRequestURI();
     }
 
     private Cookie createCookie(String name, String value) {
