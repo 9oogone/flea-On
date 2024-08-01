@@ -33,21 +33,17 @@ public class Live {
     @Column(name = "is_live", nullable = false)
     private Boolean is_live;
 
-    @Column(name = "seller_id", nullable = false)
-    private int sellerId;
-
     @ManyToOne
-    @JoinColumn(name = "user_id", insertable = false, updatable = false)
-    private User user;
+    @JoinColumn(name = "seller_id", nullable = false)
+    private User seller;
 
     @Builder
-    public Live(String title, LocalDateTime live_date, String thumbnail, String trade_place, int sellerId, User user) {
+    public Live(String title, LocalDateTime live_date, String thumbnail, String trade_place, User seller) {
         this.title = title;
         this.live_date = live_date;
         this.thumbnail = thumbnail;
         this.trade_place = trade_place;
-        this.sellerId = sellerId;
-        this.user = user;
+        this.seller = seller;
         this.is_live = false;
     }
 

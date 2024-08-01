@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface LiveRepository extends JpaRepository<Live, Integer> {
 
-    Optional<List<Live>> findBySellerId(int sellerID);
+    Optional<List<Live>> findBySeller_UserId(int sellerID);
 
     Optional<Live> findById(int liveId);
 

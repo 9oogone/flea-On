@@ -64,7 +64,7 @@ public class LiveService {
 
     private static void authorizeArticleAuthor(Live live) {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        if (!live.getUser().getEmail().equals(userName)) {
+        if (!live.getSeller().getEmail().equals(userName)) {
             throw new IllegalArgumentException("not authorized");
         }
     }
