@@ -1,14 +1,9 @@
-// HomePage.js
-import React from "react";
-import { useSelector } from "react-redux";
-import Switch from "../components/Switch";
-import LiveBroadcasts from "../components/LiveBroadcasts";
-import Shorts from "../components/Shorts";
-import { Grid } from "@mui/material";
-const HomePage = () => {
-  const selectedTab = useSelector((state) => state.content.selectedTab);
-  // const contents = useSelector((state) => state.content.contents);
-  const contents = {
+// features/contentSlice.js
+import { createSlice } from '@reduxjs/toolkit';
+
+const initialState = {
+  selectedTab: 'live',
+  contents: {
     live: [
       {
         id: 1,
@@ -55,23 +50,18 @@ const HomePage = () => {
         shorts_id: 2,
       },
     ],
-  };
-  const switchOptions = [
-    { value: "live", label: "Live" },
-    { value: "shorts", label: "Shorts" },
-  ];
-
-  return (
-    <Grid container>
-      <Grid item xs={12}>
-        {selectedTab === "live" && <LiveBroadcasts items={contents.live} />}
-      </Grid>
-      <Grid item xs={12}>
-        {selectedTab === "shorts" && <Shorts items={contents.shorts} />}
-      </Grid>
-      <Switch options={switchOptions} />
-    </Grid>
-  );
+  },
 };
 
-export default HomePage;
+const contentSlice = createSlice({
+  name: 'content',
+  initialState,
+  reducers: {
+    switchTab: (state, action) => {
+      state.selectedTab = action.payload;
+    },
+  },
+});
+
+export const { switchTab } = contentSlice.actions;
+export default contentSlice.reducer;
