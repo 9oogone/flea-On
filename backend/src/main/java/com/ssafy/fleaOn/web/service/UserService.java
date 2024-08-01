@@ -204,9 +204,9 @@ public class UserService {
         }
         return Optional.of(userCommerceLiveList);
     }
-
+//
 //    public Optional<List<Map<String, Object>>> getUserCommerceItemListById(int userId) {
-//        Optional<List<Shorts>> shortsList = shortsRepository.findByBuyerId(userId);
+//        Optional<List<Shorts>> shortsListOptional = shortsRepository.findByBuyerId(userId);
 //    }
 
 }
