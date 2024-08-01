@@ -88,10 +88,17 @@ public class LiveService {
         return live;
     }
 
+    @Transactional
     public void delete(int id) {
         Live live = liveRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("not found : " + id));
         authorizeArticleAuthor(live);
+
+        // 라이브와 연관된 모든 제품 삭제
+        List<Product> products = productRepository.findByLive_LiveId(id).orElseThrow(() -> new IllegalArgumentException("no products found for live id: " + id));
+        productRepository.deleteAll(products);
+
+        // 라이브 삭제
         liveRepository.delete(live);
     }
 
