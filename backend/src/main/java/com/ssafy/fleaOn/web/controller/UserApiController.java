@@ -1,9 +1,8 @@
 package com.ssafy.fleaOn.web.controller;
 
-import com.ssafy.fleaOn.web.domain.User;
 import com.ssafy.fleaOn.web.config.jwt.JWTUtil;
+import com.ssafy.fleaOn.web.domain.User;
 import com.ssafy.fleaOn.web.service.UserService;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -143,15 +141,17 @@ public class UserApiController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
-//    @GetMapping("/{email}/commerceLive")
-//    public ResponseEntity<?> getUserCommerceLive(@PathVariable String email) {
-//        User user = userService.findByEmail(email);
-//        Optional<List<Map<String, Object>>> userCommerceLiveList = UserService.getUserCommerceLiveListById(user.getUserId());
-//        if (userCommerceLiveList.isPresent()) {
-//            return ResponseEntity.status(HttpStatus.OK).body(userCommerceLiveList.get());
-//        }
-//        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-//    }
+    @GetMapping("/{email}/commerceLive")
+    public ResponseEntity<?> getUserCommerceLive(@PathVariable("email") String email) {
+        System.out.println("GGgg");
+        User user = userService.findByEmail(email);
+        System.out.println("findUser : " + user);
+        Optional<List<Map<String, Object>>> userCommerceLiveList = userService.getUserCommerceLiveListById(user.getUserId());
+        if (userCommerceLiveList.isPresent()) {
+            return ResponseEntity.status(HttpStatus.OK).body(userCommerceLiveList.get());
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
 
 //    @GetMapping("/{email}/commerceItem")
 //    public ResponseEntity<?> getUserCommerceItem(@PathVariable String email) {
