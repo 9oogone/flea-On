@@ -12,14 +12,14 @@ const levels = [
   },
   {
     name: "작은손",
-    minSales: 1,
-    maxSales: 6,
+    minSales: 2,
+    maxSales: 5,
     icon: levelSmall,
   },
   {
     name: "중간손",
-    minSales: 6,
-    maxSales: 26,
+    minSales: 7,
+    maxSales: 25,
     icon: levelMiddle,
   },
   {
@@ -38,8 +38,7 @@ const levelSlice = createSlice({
     nextLevel: levels[1].name,
     levelIcon: levels[0].icon,
     nextLevelIcon: levels[1].icon,
-    salesGoal: levels[0].maxSales - levels[0].minSales,
-    currentLevelSales: 0,
+    salesGoal: levels[0].maxSales,
   },
   reducers: {
     updateSalesCount: (state, action) => {
@@ -60,10 +59,7 @@ const levelSlice = createSlice({
       state.levelIcon = currentLevel.icon;
       state.nextLevelIcon = nextLevel ? nextLevel.icon : null;
       state.salesGoal =
-        currentLevel.maxSales === "MAX"
-          ? "MAX"
-          : currentLevel.maxSales - currentLevel.minSales;
-      state.currentLevelSales = salesCount - currentLevel.minSales;
+        currentLevel.maxSales === "MAX" ? "MAX" : currentLevel.maxSales;
     },
   },
 });
