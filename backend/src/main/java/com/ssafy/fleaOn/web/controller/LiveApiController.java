@@ -5,6 +5,7 @@ import com.ssafy.fleaOn.web.domain.Live;
 import com.ssafy.fleaOn.web.domain.User;
 import com.ssafy.fleaOn.web.dto.AddLiveRequest;
 import com.ssafy.fleaOn.web.dto.CustomOAuth2User;
+import com.ssafy.fleaOn.web.dto.LiveDetailResponse;
 import com.ssafy.fleaOn.web.dto.UpdateLiveRequest;
 import com.ssafy.fleaOn.web.service.LiveService;
 import com.ssafy.fleaOn.web.service.UserService;
@@ -86,8 +87,8 @@ public class LiveApiController {
     @Operation(summary = "라이브 상세 조회", description = "특정 라이브의 상세 정보를 조회합니다.")
     public ResponseEntity<?> findLive(@PathVariable int liveID) {
         try {
-            Live live = liveService.findById(liveID);
-            return ResponseEntity.ok().body(live);
+            LiveDetailResponse liveDetailResponse = liveService.findLiveWithProducts(liveID);
+            return ResponseEntity.ok().body(liveDetailResponse);
         } catch (Exception ex) {
             ex.printStackTrace();
             return new ResponseEntity<>("조회할 라이브를 찾을 수 없습니다: " + ex.getMessage(), HttpStatus.NOT_FOUND);
