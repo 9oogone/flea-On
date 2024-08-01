@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @NoArgsConstructor
@@ -15,22 +16,20 @@ import java.util.List;
 @Getter
 public class AddLiveRequest {
     private String title;
-
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime live_date;
-
+    private String live_date; // LocalDateTime 대신 String 사용
     private String thumbnail;
     private String trade_place;
     private List<AddProductRequest> product;
 
     public Live toEntity(User user) {
-        System.out.println("here@!! "+ live_date);
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+        LocalDateTime parsedDate = LocalDateTime.parse(live_date, formatter);
         return Live.builder()
                 .title(title)
-                .live_date(live_date)
+                .live_date(parsedDate)
                 .thumbnail(thumbnail)
                 .trade_place(trade_place)
-                .seller(user)
+                .user(user)
                 .build();
     }
 }
