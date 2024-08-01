@@ -1,20 +1,18 @@
 package com.ssafy.fleaOn.web.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 public class UpdateLiveRequest {
     private String title;
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime live_date;
+    private String live_date; // LocalDateTime 대신 String 사용
     private String thumbnail;
     private String trade_place;
-    private String userEmail;
+    private List<UpdateProductRequest> product;
 }
