@@ -10,7 +10,7 @@ const UserLevel = () => {
 
   // 예를 들어, 판매 갯수를 5로 업데이트
   const handleUpdateSalesCount = () => {
-    dispatch(updateSalesCount(5));
+    dispatch(updateSalesCount(21));
   };
 
   return (

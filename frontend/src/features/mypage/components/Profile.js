@@ -4,7 +4,7 @@ import "../../../styles/Profile.css";
 
 // 임시 사용자 정보
 const mockUserInfo = {
-  profileImage: "/icons/profile_default.png",
+  profileImage: "../../../assets/images/profile_defualt.svg.svg",
   nickname: "이것저것팝니다",
   email: "hong@example.com",
   phoneNumber: "010-1234-5902",
