@@ -20,6 +20,7 @@ public class AddLiveRequest {
     private List<AddProductRequest> product;
 
     public Live toEntity(User user) {
+        System.out.println(LocalDateTime.parse(live_date) +" "+user.getUserId());
         return Live.builder()
                 .title(title)
                 .live_date(LocalDateTime.parse(live_date))
