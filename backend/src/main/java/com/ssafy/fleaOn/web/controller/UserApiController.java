@@ -141,6 +141,7 @@ public class UserApiController {
     @GetMapping("/{email}/commerceLive")
     public ResponseEntity<?> getUserCommerceLive(@PathVariable("email") String email) {
         User user = userService.findByEmail(email);
+        System.out.println(user);
         Optional<List<Map<String, Object>>> userCommerceLiveList = userService.getUserCommerceLiveListById(user.getUserId());
         if (userCommerceLiveList.isPresent()) {
             return ResponseEntity.status(HttpStatus.OK).body(userCommerceLiveList.get());
@@ -148,6 +149,28 @@ public class UserApiController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
+    @GetMapping("{email}/scrapLive")
+    public ResponseEntity<?> getUserScrapLive(@PathVariable("email") String email) {
+        User user = userService.findByEmail(email);
+
+        Optional<List<Map<String, Object>>> userScrapLiveList = userService.getUserScrapLiveById(user.getUserId());
+        if (userScrapLiveList.isPresent()) {
+            return ResponseEntity.status(HttpStatus.OK).body(userScrapLiveList.get());
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+
+    @GetMapping("/{email}/scrapShorts")
+    public ResponseEntity<?> getUserScrapShorts(@PathVariable("email") String email) {
+        User user = userService.findByEmail(email);
+
+        Optional<List<Map<String, Object>>> userScrapShortsList = userService.getUserScrapShortsById(user.getUserId());
+        if (userScrapShortsList.isPresent()) {
+            return ResponseEntity.status(HttpStatus.OK).body(userScrapShortsList.get());
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
 //    @GetMapping("{email}/scrapLive")
 //    public ResponseEntity<?> getUserScrapLive(@PathVariable("email") String email) {
 //        User user = userService.findByEmail(email);

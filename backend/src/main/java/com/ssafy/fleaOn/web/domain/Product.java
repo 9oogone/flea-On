@@ -16,13 +16,13 @@ public class Product {
     @Id // id 필드를 기본키로 지정
     @GeneratedValue(strategy = GenerationType.IDENTITY) // 기본키를 자동으로 1씩 증가
     @Column(name = "product_id", updatable = false)
-    private int product_id;
+    private int productId;
 
     @Column(name="live_id", nullable = false)
-    private int live_id;
+    private int liveId;
 
     @Column(name="seller_id", nullable = false)
-    private int seller_id;
+    private int sellerId;
 
     @Column(name="name", nullable = false)
     private String name;
@@ -51,9 +51,9 @@ public class Product {
     private Live live;
 
     @Builder
-    public Product(int live_id, int seller_id, String name, int price, int first_category, int second_category) {
-        this.live_id = live_id;
-        this.seller_id = seller_id;
+    public Product(int liveId, int sellerId, String name, int price, int first_category, int second_category) {
+        this.liveId = liveId;
+        this.sellerId = sellerId;
         this.name = name;
         this.price = price;
         this.first_category = first_category;

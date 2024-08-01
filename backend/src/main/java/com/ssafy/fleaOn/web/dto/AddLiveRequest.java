@@ -1,5 +1,6 @@
 package com.ssafy.fleaOn.web.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ssafy.fleaOn.web.domain.Live;
 import com.ssafy.fleaOn.web.domain.User;
 import lombok.AllArgsConstructor;
@@ -28,7 +29,7 @@ public class AddLiveRequest {
                 .live_date(parsedDate)
                 .thumbnail(thumbnail)
                 .trade_place(trade_place)
-                .seller(user)
+                .user(user)
                 .build();
     }
 }
