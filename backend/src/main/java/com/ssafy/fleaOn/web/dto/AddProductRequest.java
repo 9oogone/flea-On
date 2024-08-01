@@ -2,6 +2,7 @@ package com.ssafy.fleaOn.web.dto;
 
 import com.ssafy.fleaOn.web.domain.Live;
 import com.ssafy.fleaOn.web.domain.Product;
+import com.ssafy.fleaOn.web.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,10 +16,10 @@ public class AddProductRequest {
     private int first_category;
     private int second_category;
 
-    public Product toEntity(Live live, int sellerId) {
+    public Product toEntity(Live live, User seller) {
         return Product.builder()
-                .liveId(live.getLiveId())
-                .sellerId(sellerId)
+                .live(live)
+                .user(seller)
                 .name(name)
                 .price(price)
                 .first_category(first_category)

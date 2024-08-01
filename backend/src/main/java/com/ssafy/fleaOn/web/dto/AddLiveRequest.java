@@ -1,6 +1,5 @@
 package com.ssafy.fleaOn.web.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ssafy.fleaOn.web.domain.Live;
 import com.ssafy.fleaOn.web.domain.User;
 import lombok.AllArgsConstructor;
@@ -15,6 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 public class AddLiveRequest {
+    private int productId;
     private String title;
     private String live_date; // LocalDateTime 대신 String 사용
     private String thumbnail;
