@@ -29,6 +29,7 @@ public class LiveService {
     public Live saveLive(AddLiveRequest addLiveRequest, User user) {
         // Live 엔티티 생성 및 저장
         Live live = addLiveRequest.toEntity(user);
+        System.out.println("service: "+ live.getLive_date());
         live = liveRepository.save(live);
 
         // Product 엔티티 생성 및 저장

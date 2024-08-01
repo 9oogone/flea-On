@@ -28,7 +28,6 @@ public class UserService {
 
     private final LiveRepository liveRepository;
 
-    private final LiveScrapRepository liveScrapRepository;
 
 //    private final ShortsRepository shortsRepository;
 
