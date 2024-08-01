@@ -1,15 +1,11 @@
 package com.ssafy.fleaOn.web.config;
 
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.ssafy.fleaOn.web.util.LocalDateTimeDeserializer;
-import com.ssafy.fleaOn.web.util.LocalDateTimeSerializer;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
-import java.time.LocalDateTime;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
 @Configuration
 public class JacksonConfig {
@@ -22,11 +18,10 @@ public class JacksonConfig {
         return mapper;
     }
 
-//    @Bean
-//    public SimpleModule jsonMapperJavaTimeModule() {
-//        SimpleModule module = new SimpleModule();
-//        module.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer());
-//        module.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer());
-//        return module;
-//    }
+    @Bean
+    public MappingJackson2HttpMessageConverter jacksonMessageConverter(ObjectMapper objectMapper) {
+        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+        converter.setObjectMapper(objectMapper);
+        return converter;
+    }
 }
