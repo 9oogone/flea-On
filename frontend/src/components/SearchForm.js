@@ -38,7 +38,7 @@ const SearchForm = () => {
             InputProps={{
               style: {
                 borderRadius: "9999px",
-                border: "1px solid #d9d9d9",
+                // border: "1px solid #d9d9d9",
               },
             }}
           />

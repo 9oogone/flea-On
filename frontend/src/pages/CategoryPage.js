@@ -9,20 +9,12 @@ const CategoryPage = () => {
   // 임시 데이터
   const categories = [
     {
-      id: 1,
-      name: "가구",
-      subCategory: [
-        { id: 1, name: "침실가구" },
-        { id: 2, name: "거실가구" },
-      ],
+      first_category: "가구",
+      second_category: ["침실가구", "거실가구"],
     },
     {
-      id: 2,
-      name: "가전",
-      subCategory: [
-        { id: 3, name: "냉장고" },
-        { id: 4, name: "세탁기" },
-      ],
+      first_category: "가전",
+      second_category: ["냉장고", "세탁기"],
     },
   ];
 
@@ -43,18 +35,23 @@ const CategoryPage = () => {
         <Grid item xs={3}>
           {categories.map((category) => (
             <Box
-              key={category.id}
-              onClick={() => onCategoryClick(category.id)}
+              key={category.first_category}
+              onClick={() => onCategoryClick(category.first_category)}
               textAlign="center"
               sx={{
                 cursor: "pointer",
                 marginBottom: 2,
                 backgroundColor:
-                  selectedCategoryId === category.id ? "#FFCEDD" : "white",
-                color: selectedCategoryId === category.id ? "#FF0B55" : "black",
+                  selectedCategoryId === category.first_category
+                    ? "#FFCEDD"
+                    : "white",
+                color:
+                  selectedCategoryId === category.first_category
+                    ? "#FF0B55"
+                    : "black",
               }}
             >
-              <Typography variant="h6">{category.name}</Typography>
+              <Typography variant="h6">{category.first_category}</Typography>
             </Box>
           ))}
         </Grid>
@@ -63,17 +60,17 @@ const CategoryPage = () => {
           {selectedCategoryId !== null && (
             <Grid container spacing={2}>
               {categories
-                .find((category) => category.id === selectedCategoryId)
-                .subCategory.map((subcategory) => (
-                  <Grid item xs={9} sm={8} md={8} key={subcategory.id}>
+                .find(
+                  (category) => category.first_category === selectedCategoryId
+                )
+                .second_category.map((subcategory) => (
+                  <Grid item xs={9} sm={8} md={8} key={subcategory}>
                     <Box
-                      onClick={() => onSubCategoryClick(subcategory.name)}
-                      border={1}
-                      padding={2}
+                      onClick={() => onSubCategoryClick(subcategory)}
                       textAlign="center"
                       sx={{ cursor: "pointer" }}
                     >
-                      <Typography variant="h6">{subcategory.name}</Typography>
+                      <Typography variant="h6">{subcategory}</Typography>
                     </Box>
                   </Grid>
                 ))}
