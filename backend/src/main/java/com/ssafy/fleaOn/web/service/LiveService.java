@@ -7,6 +7,7 @@ import com.ssafy.fleaOn.web.dto.AddLiveRequest;
 import com.ssafy.fleaOn.web.dto.CustomOAuth2User;
 import com.ssafy.fleaOn.web.dto.UpdateLiveRequest;
 import com.ssafy.fleaOn.web.dto.UpdateProductRequest;
+import com.ssafy.fleaOn.web.dto.LiveDetailResponse;
 import com.ssafy.fleaOn.web.repository.LiveRepository;
 import com.ssafy.fleaOn.web.repository.ProductRepository;
 import com.ssafy.fleaOn.web.repository.UserRepository;
@@ -100,6 +101,12 @@ public class LiveService {
 
         // 라이브 삭제
         liveRepository.delete(live);
+    }
+
+    public LiveDetailResponse findLiveWithProducts(int liveId) {
+        Live live = findById(liveId);
+        List<Product> products = productRepository.findByLive_LiveId(liveId).orElseThrow(() -> new IllegalArgumentException("no products found for live id: " + liveId));
+        return new LiveDetailResponse(live, products);
     }
 
     private static void authorizeArticleAuthor(Live live) {
