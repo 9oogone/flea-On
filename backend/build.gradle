@@ -31,6 +31,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'io.github.cdimascio:java-dotenv:5.2.2'
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
 
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.mysql:mysql-connector-j'
@@ -58,6 +59,11 @@ node {
 	npmVersion = '10.8.1'
 	download = true
 }
+
+tasks.withType(JavaCompile) {
+	options.compilerArgs << "-parameters"
+}
+
 
 //task installNpmDependencies(type: com.github.gradle.node.npm.task.NpmTask) {
 //	workingDir = file("${projectDir}/src/main/frontend")

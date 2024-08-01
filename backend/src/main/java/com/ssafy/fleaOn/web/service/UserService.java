@@ -2,10 +2,7 @@ package com.ssafy.fleaOn.web.service;
 
 
 import com.ssafy.fleaOn.web.domain.*;
-import com.ssafy.fleaOn.web.repository.ProductRepository;
-import com.ssafy.fleaOn.web.repository.TradeRepository;
-import com.ssafy.fleaOn.web.repository.UserRegionRepository;
-import com.ssafy.fleaOn.web.repository.UserRepository;
+import com.ssafy.fleaOn.web.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,9 +25,12 @@ public class UserService {
 
     private final ProductRepository productRepository;
 
+//    private final ShortsRepository shortsRepository;
+
     public User findByEmail(String email) {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + email));
+        Optional<User> user = userRepository.findByEmail(email);
+        System.out.println("user: " + user);
+        return user.orElse(null);
     }
 
     public int getUserIdByEmail(String email) {
@@ -85,7 +85,7 @@ public class UserService {
 
         return userInfo;
     }
-    public Optional<List<Map<String, Object>>> getUserScheduleByIdAndDate(int userId, LocalDate tradeDate) {
+    public Optional<List<Map<String, Object>>> getUserScheduleListByIdAndDate(int userId, LocalDate tradeDate) {
         LocalDate endDate = tradeDate.plusDays(6);
         Optional<List<Trade>> tradesOptional = tradeRepository.findByTradeDateBetweenAndBuyerIdOrSellerId(tradeDate, endDate, userId, userId);
 
@@ -151,6 +151,8 @@ public class UserService {
     public Optional<List<Map<String, Object>>> getUserReservationListByUserId(int userId) {
         Optional<List<Trade>> tradesOptional = tradeRepository.findByBuyerId(userId);
 
+        System.out.println("tradesOptional : " + tradesOptional.get());
+
         // tradesOptional이 비어 있으면 Optional.empty() 반환
         if (tradesOptional.isEmpty()) {
             return Optional.empty();
@@ -176,5 +178,13 @@ public class UserService {
 
         return Optional.of(reservationList);
     }
+//
+//    public Optional<List<Map<String, Object>>> getUserCommerceLiveListById(int userId) {
+//        Optional<List<Map<String, Object>>> userCo
+//    }
+//
+//    public Optional<List<Map<String, Object>>> getUserCommerceItemListById(int userId) {
+//        Optional<List<Shorts>> shortsList = shortsRepository.findByBuyerId(userId);
+//    }
 
 }

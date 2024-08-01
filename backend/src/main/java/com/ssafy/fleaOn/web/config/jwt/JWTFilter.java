@@ -25,25 +25,21 @@ public class JWTFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        String authorization = null;
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if ("Authorization".equals(cookie.getName())) {
-                    authorization = cookie.getValue();
-                    System.out.println("ddd" + authorization);
-                    break;
-                }
-            }
+        String authorization = request.getHeader("Authorization");
+        if (authorization != null) {
+            System.out.println("ddd" + authorization);
         }
-
-        System.out.println("sss" + authorization);
         // Authorization 헤더 검증
         if (authorization == null) {
             System.out.println("token null");
             filterChain.doFilter(request, response);
             // 조건이 해당되면 메소드 종료 (필수)
             return;
+        }
+
+        // "Bearer " 접두사 제거
+        if (authorization.startsWith("Bearer ")) {
+            authorization = authorization.substring(7);
         }
 
         // 토큰
@@ -63,11 +59,16 @@ public class JWTFilter extends OncePerRequestFilter {
         // 토큰에서 username과 role 획득
         String userIdentifier = jwtUtil.getUserIdentifier(token);
         String role = jwtUtil.getRole(token);
+        String email = jwtUtil.getEmail(token);
+        System.out.println("userIdentifier: " + userIdentifier);
+        System.out.println("role: " + role);
+        System.out.println("custom : " + email);
 
         // userEntity를 생성하여 값 set
         User user = User.builder()
                 .userIdentifier(userIdentifier)
                 .role(role)
+                .email(email)
                 .build();
         // UserDetails에 회원 정보 객체 담기
         CustomOAuth2User customOAuth2User = new CustomOAuth2User(user);
