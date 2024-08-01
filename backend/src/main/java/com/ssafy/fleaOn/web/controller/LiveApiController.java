@@ -52,7 +52,6 @@ public class LiveApiController {
     @Operation(summary = "라이브 정보 변경", description = "특정 라이브의 정보를 변경, 업데이트 합니다.")
     public ResponseEntity<?> updateLive(@PathVariable int liveID, @RequestBody UpdateLiveRequest request) {
         try {
-            LocalDateTime parsedDate = LocalDateTime.parse(request.getLive_date());
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
             String userEmail = oAuth2User.getEmail(); // 현재 인증된 사용자의 이메일 가져오기
