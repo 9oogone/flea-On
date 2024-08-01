@@ -1,7 +1,7 @@
 // src/components/UserLevel.js
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { updateSalesCount } from "../levelSlice"; // 수정된 부분
+import { updateSalesCount } from "../levelSlice";
 
 const Level = () => {
   const dispatch = useDispatch();

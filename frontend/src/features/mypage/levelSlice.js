@@ -1,29 +1,32 @@
 import { createSlice } from "@reduxjs/toolkit";
-
+import levelBaby from "../../assets/images/level_baby.svg";
+import levelSmall from "../../assets/images/level_small.svg";
+import levelMiddle from "../../assets/images/level_middle.svg";
+import levelBig from "../../assets/images/level_big.svg";
 const levels = [
   {
     name: "아기손",
     minSales: 0,
     maxSales: 1,
-    icon: "../../assets/images/level_baby.svg",
+    icon: levelBaby,
   },
   {
     name: "작은손",
     minSales: 1,
     maxSales: 6,
-    icon: "../../assets/images/level_small.svg",
+    icon: levelSmall,
   },
   {
     name: "중간손",
     minSales: 6,
     maxSales: 26,
-    icon: "../../assets/images/level_middle.svg",
+    icon: levelMiddle,
   },
   {
     name: "큰손",
     minSales: 26,
     maxSales: "MAX",
-    icon: "../../assets/images/level_big.svg",
+    icon: levelBig,
   },
 ];
 
@@ -33,6 +36,8 @@ const levelSlice = createSlice({
     salesCount: 0,
     level: levels[0].name,
     nextLevel: levels[1].name,
+    levelIcon: levels[0].icon,
+    nextLevelIcon: levels[1].icon,
     salesGoal: levels[0].maxSales - levels[0].minSales,
     currentLevelSales: 0,
   },
