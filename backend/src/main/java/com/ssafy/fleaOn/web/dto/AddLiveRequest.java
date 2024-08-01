@@ -9,12 +9,12 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@NoArgsConstructor // 기본 생성자 추가
-@AllArgsConstructor // 모든 필드 값을 파라미터로 받는 생성자 추가
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 public class AddLiveRequest {
     private String title;
-    private LocalDateTime live_date;
+    private String live_date; // LocalDateTime 대신 String 사용
     private String thumbnail;
     private String trade_place;
     private List<AddProductRequest> product;
@@ -22,10 +22,10 @@ public class AddLiveRequest {
     public Live toEntity(User user) {
         return Live.builder()
                 .title(title)
-                .live_date(live_date)
+                .live_date(LocalDateTime.parse(live_date))
                 .thumbnail(thumbnail)
                 .trade_place(trade_place)
-                .user(user)  // User 객체를 Live 객체에 설정합니다.
+                .user(user)
                 .build();
     }
 }

@@ -6,50 +6,71 @@ import com.ssafy.fleaOn.web.dto.AddLiveRequest;
 import com.ssafy.fleaOn.web.dto.UpdateLiveRequest;
 import com.ssafy.fleaOn.web.service.LiveService;
 import com.ssafy.fleaOn.web.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.time.LocalDateTime;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/fleaOn/live")
+@Tag(name = "Live API", description = "Live 관련 API")
 public class LiveApiController {
 
     private final LiveService liveService;
     private final UserService userService;
 
-    @PostMapping
-    public ResponseEntity<Live> createLive(@RequestBody AddLiveRequest request, Principal principal) {
-        String userEmail = principal.getName(); // 현재 인증된 사용자의 이메일 가져오기
-        System.out.println("!!!!Email: "+userEmail);
-        User user = userService.findByEmail(userEmail); // 이메일로 userId 가져오기
-        Live savedLive = liveService.saveLive(request, user);
-        // 요청한 자원이 성공적으로 생성되었으며 저장된 Live 정보를 응답 객체에 담아 전송
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedLive);
+    @PostMapping("/")
+    @Operation(summary = "라이브 생성", description = "라이브의 정보를 저장하여 새로운 라이브를 생성합니다.")
+    public ResponseEntity<?> createLive(@RequestBody AddLiveRequest request, Principal principal) {
+        try {
+            LocalDateTime parsedDate = LocalDateTime.parse(request.getLive_date());
+            String userEmail = principal.getName(); // 현재 인증된 사용자의 이메일 가져오기
+            User user = userService.findByEmail(userEmail); // 이메일로 userId 가져오기
+            Live savedLive = liveService.saveLive(request, user);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedLive);
+        } catch (Exception ex) {
+            return new ResponseEntity<>("날짜 형식이 잘못되었습니다: " + ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PutMapping("/{liveID}")
-    public ResponseEntity<Live> updateLive(@PathVariable int liveID, @RequestBody UpdateLiveRequest request) {
-        User user = userService.findByEmail(request.getUserEmail()); // 이메일로 사용자 정보를 가져옴
-        Live updatedLive = liveService.updateLive(liveID, request, user); // 서비스를 통해 Live 정보를 업데이트
-        return ResponseEntity.ok(updatedLive); // 업데이트된 Live 정보 반환
+    @Operation(summary = "라이브 정보 변경", description = "특정 라이브의 정보를 변경, 업데이트 합니다.")
+    public ResponseEntity<?> updateLive(@PathVariable int liveID, @RequestBody UpdateLiveRequest request) {
+        try {
+            LocalDateTime parsedDate = LocalDateTime.parse(request.getLive_date());
+            User user = userService.findByEmail(request.getUserEmail()); // 이메일로 사용자 정보를 가져옴
+            Live updatedLive = liveService.updateLive(liveID, request, user); // 서비스를 통해 Live 정보를 업데이트
+            return ResponseEntity.ok(updatedLive); // 업데이트된 Live 정보 반환
+        } catch (Exception ex) {
+            return new ResponseEntity<>("날짜 형식이 잘못되었습니다: " + ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @DeleteMapping("/{id}/")
-    public ResponseEntity<Void> deleteLive(@PathVariable int id) {
-        liveService.delete(id);
-
-        return ResponseEntity.ok()
-                .build();
+    @Operation(summary = "라이브 삭제", description = "특정 라이브를 취소, 삭제합니다.")
+    public ResponseEntity<?> deleteLive(@PathVariable int id) {
+        try {
+            liveService.delete(id);
+            return ResponseEntity.ok().build();
+        } catch (Exception ex) {
+            return new ResponseEntity<>("삭제할 라이브를 찾을 수 없습니다: " + ex.getMessage(), HttpStatus.NOT_FOUND);
+        }
     }
 
-    @GetMapping("/${liveID}/detail")
-    public ResponseEntity<Live> findLive(@PathVariable int liveID) {
-        Live live = liveService.findById(liveID);
-        return ResponseEntity.ok().body(live); // 일단은 live 통으로 보내주는데 프론트측에서 원하는 정보에 따라 liveReponse 생성
+    @GetMapping("/{liveID}/detail")
+    @Operation(summary = "라이브 상세 조회", description = "특정 라이브의 상세 정보를 조회합니다.")
+    public ResponseEntity<?> findLive(@PathVariable int liveID) {
+        try {
+            Live live = liveService.findById(liveID);
+            return ResponseEntity.ok().body(live);
+        } catch (Exception ex) {
+            return new ResponseEntity<>("조회할 라이브를 찾을 수 없습니다: " + ex.getMessage(), HttpStatus.NOT_FOUND);
+        }
     }
 }
-

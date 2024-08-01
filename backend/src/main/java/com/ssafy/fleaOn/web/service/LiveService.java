@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,32 +42,26 @@ public class LiveService {
         return live;
     }
 
-    public Live findById(int id){
-        return liveRepository.findById(id).orElseThrow(()->new IllegalArgumentException("not found: "+id));
+    public Live findById(int id) {
+        return liveRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("not found: " + id));
     }
 
-    @Transactional // 트랜잭션 메서드, 매칭한 메서드를 하나의 트랜잭션으로 묶는 역할
-    // 엔티티의 필드값이 바뀌면 중간에 에러가 발생해도 제대로 된 값 수정 보장
+    @Transactional
     public Live updateLive(int id, UpdateLiveRequest request, User user) {
         Live live = liveRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("not found : " + id));
         authorizeArticleAuthor(live);
-        live.update(request.getTitle(), request.getLive_date(), request.getThumbnail(), request.getTrade_place());
-
-//        return live;
+        live.update(request.getTitle(), LocalDateTime.parse(request.getLive_date()), request.getThumbnail(), request.getTrade_place());
         return liveRepository.save(live);
     }
-
 
     public void delete(int id) {
         Live live = liveRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("not found : " + id));
-
         authorizeArticleAuthor(live);
         liveRepository.delete(live);
     }
 
-    // 게시글을 작성한 유저인지 확인
     private static void authorizeArticleAuthor(Live live) {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         if (!live.getUser().getEmail().equals(userName)) {

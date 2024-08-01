@@ -27,7 +27,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
         String authorization = request.getHeader("Authorization");
         if (authorization != null) {
-            System.out.println("ddd" + authorization);
+            System.out.println("ddd " + authorization);
         }
         // Authorization 헤더 검증
         if (authorization == null) {
