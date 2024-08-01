@@ -24,45 +24,55 @@ public class JWTFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-
         String authorization = request.getHeader("Authorization");
         if (authorization != null) {
-            System.out.println("ddd" + authorization);
+            System.out.println("Authorization: " + authorization);
         }
+
         // Authorization 헤더 검증
-        if (authorization == null) {
-            System.out.println("token null");
+        if (authorization == null || !authorization.startsWith("Bearer ")) {
+            System.out.println("Token is null or doesn't start with Bearer");
             filterChain.doFilter(request, response);
-            // 조건이 해당되면 메소드 종료 (필수)
             return;
         }
 
         // "Bearer " 접두사 제거
-        if (authorization.startsWith("Bearer ")) {
-            authorization = authorization.substring(7);
-        }
+        String token = authorization.substring(7).trim();
+        System.out.println("jwtToken: " + token);
 
-        // 토큰
-        String token = authorization;
+        try {
+            if (jwtUtil.isExpired(token)) {
+                System.out.println("Token expired");
 
-        if (jwtUtil.isExpired(token)) {
-            System.out.println("token expired");
+                // 만료된 토큰을 갱신하여 새로운 토큰 생성
+                String newToken = jwtUtil.refreshToken(token);
+                response.addCookie(createCookie("Authorization", newToken));
+                // 새로운 토큰으로 인증 세션 업데이트
+                updateAuthentication(newToken);
+                filterChain.doFilter(request, response);
+                return;
+            }
 
-            String newToken = JWTUtil.refreshToken(token);
+            // 토큰에서 username과 role 획득
+            updateAuthentication(token);
 
-            response.addCookie(createCookie("Authorization", newToken));
-            filterChain.doFilter(request, response);
-            // 조건이 해당되면 메소드 종료 (필수)
+        } catch (Exception e) {
+            // JWT 파싱 오류 처리
+            e.printStackTrace();
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
 
-        // 토큰에서 username과 role 획득
+        filterChain.doFilter(request, response);
+    }
+
+    private void updateAuthentication(String token) {
         String userIdentifier = jwtUtil.getUserIdentifier(token);
         String role = jwtUtil.getRole(token);
         String email = jwtUtil.getEmail(token);
         System.out.println("userIdentifier: " + userIdentifier);
         System.out.println("role: " + role);
-        System.out.println("custom : " + email);
+        System.out.println("email: " + email);
 
         // userEntity를 생성하여 값 set
         User user = User.builder()
@@ -70,17 +80,15 @@ public class JWTFilter extends OncePerRequestFilter {
                 .role(role)
                 .email(email)
                 .build();
+
         // UserDetails에 회원 정보 객체 담기
         CustomOAuth2User customOAuth2User = new CustomOAuth2User(user);
 
         // 스프링 시큐리티 인증 토큰 생성
         Authentication authToken = new UsernamePasswordAuthenticationToken(customOAuth2User, null, customOAuth2User.getAuthorities());
+
         // 세션에 사용자 등록
         SecurityContextHolder.getContext().setAuthentication(authToken);
-
-        filterChain.doFilter(request, response);
-
-        String requestUri = request.getRequestURI();
     }
 
     private Cookie createCookie(String name, String value) {

@@ -25,6 +25,8 @@ public class UserService {
 
     private final ProductRepository productRepository;
 
+    private final LiveRepository liveRepository;
+
 //    private final ShortsRepository shortsRepository;
 
     public User findByEmail(String email) {
@@ -178,11 +180,31 @@ public class UserService {
 
         return Optional.of(reservationList);
     }
-//
-//    public Optional<List<Map<String, Object>>> getUserCommerceLiveListById(int userId) {
-//        Optional<List<Map<String, Object>>> userCo
-//    }
-//
+
+    public Optional<List<Map<String, Object>>> getUserCommerceLiveListById(int userId) {
+        Optional<List<Live>> commerceLiveListOptional = liveRepository.findBySellerId(userId);
+        if (commerceLiveListOptional.isEmpty()) {
+            return Optional.empty();
+        }
+        List<Live> commerceLiveList = commerceLiveListOptional.get();
+        List<Map<String, Object>> userCommerceLiveList = new ArrayList<>();
+
+        for (Live live : commerceLiveList) {
+            Map<String, Object> commerceLiveResult = new HashMap<>();
+            Optional<Live> commerceLiveOptional = liveRepository.findById(live.getId());
+
+            // productOptional이 비어 있지 않으면 값을 가져와서 처리
+            commerceLiveOptional.ifPresent(commerceLive -> {
+                commerceLiveResult.put("title", commerceLive.getTitle());
+                commerceLiveResult.put("trade_place", commerceLive.getTrade_place());
+                commerceLiveResult.put("is_live", commerceLive.getIs_live());
+                commerceLiveResult.put("live_date", commerceLive.getLive_date());
+            });
+            userCommerceLiveList.add(commerceLiveResult);
+        }
+        return Optional.of(userCommerceLiveList);
+    }
+
 //    public Optional<List<Map<String, Object>>> getUserCommerceItemListById(int userId) {
 //        Optional<List<Shorts>> shortsList = shortsRepository.findByBuyerId(userId);
 //    }
