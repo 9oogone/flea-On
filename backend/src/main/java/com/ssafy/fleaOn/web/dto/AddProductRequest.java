@@ -17,7 +17,7 @@ public class AddProductRequest {
 
     public Product toEntity(Live live, int sellerId) {
         return Product.builder()
-                .live_id(live.getId())
+                .live_id(live.getLiveId())
                 .seller_id(sellerId)
                 .name(name)
                 .price(price)

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
+
 import com.ssafy.fleaOn.web.domain.User;
 
 @Service
@@ -26,6 +27,8 @@ public class UserService {
     private final ProductRepository productRepository;
 
     private final LiveRepository liveRepository;
+
+    private final LiveScrapRepository liveScrapRepository;
 
 //    private final ShortsRepository shortsRepository;
 
@@ -68,7 +71,7 @@ public class UserService {
         userInfo.put("profile_picture", user.getProfilePicture());
 
         // UserRegion 리스트 처리
-        Optional<List<UserRegion>> userRegionListOptional = userRegionRepository.findByUserId(user.getUserId());
+        Optional<List<UserRegion>> userRegionListOptional = userRegionRepository.findByUser_UserId(user.getUserId());
         userRegionListOptional.ifPresent(userRegionList -> {
             List<String> regionList = userRegionList.stream()
                     .map(UserRegion::getRegionCode)
@@ -87,6 +90,7 @@ public class UserService {
 
         return userInfo;
     }
+
     public Optional<List<Map<String, Object>>> getUserScheduleListByIdAndDate(int userId, LocalDate tradeDate) {
         LocalDate endDate = tradeDate.plusDays(6);
         Optional<List<Trade>> tradesOptional = tradeRepository.findByTradeDateBetweenAndBuyerIdOrSellerId(tradeDate, endDate, userId, userId);
@@ -190,21 +194,50 @@ public class UserService {
         List<Map<String, Object>> userCommerceLiveList = new ArrayList<>();
 
         for (Live live : commerceLiveList) {
-            Map<String, Object> commerceLiveResult = new HashMap<>();
-            Optional<Live> commerceLiveOptional = liveRepository.findById(live.getId());
+            Optional<Live> commerceLiveOptional = liveRepository.findById(live.getLiveId());
 
-            // productOptional이 비어 있지 않으면 값을 가져와서 처리
+            // Optional이 비어 있지 않으면 값을 가져와서 처리
             commerceLiveOptional.ifPresent(commerceLive -> {
+                Map<String, Object> commerceLiveResult = new HashMap<>();
                 commerceLiveResult.put("title", commerceLive.getTitle());
                 commerceLiveResult.put("trade_place", commerceLive.getTrade_place());
                 commerceLiveResult.put("is_live", commerceLive.getIs_live());
                 commerceLiveResult.put("live_date", commerceLive.getLive_date());
+                userCommerceLiveList.add(commerceLiveResult);
             });
-            userCommerceLiveList.add(commerceLiveResult);
         }
+
         return Optional.of(userCommerceLiveList);
     }
-//
+
+
+    public Optional<List<Map<String, Object>>> getUserScrapLiveById(int userId) {
+        Optional<List<Live>> scrapLiveListOptional = liveScrapRepository.findByUser_UserId(userId);
+        if (scrapLiveListOptional.isEmpty()) {
+            return Optional.empty();
+        }
+        List<Live> scrapLiveList = scrapLiveListOptional.get();
+        List<Map<String, Object>> userScrapLiveList = new ArrayList<>();
+
+        for (Live live : scrapLiveList) {
+            Map<String, Object> scrapLiveResult = new HashMap<>();
+            Optional<Live> scrapLiveOptional = liveRepository.findById(live.getLiveId());
+
+            // Optional이 비어 있지 않으면 값을 가져와서 처리
+            scrapLiveOptional.ifPresent(scrapLive -> {
+                scrapLiveResult.put("title", scrapLive.getTitle());
+                scrapLiveResult.put("seller_id", scrapLive.getSellerId());
+                scrapLiveResult.put("live_date", scrapLive.getLive_date());
+                scrapLiveResult.put("is_live", scrapLive.getIs_live());
+                scrapLiveResult.put("thumbnail", scrapLive.getThumbnail());
+                scrapLiveResult.put("trade_place", scrapLive.getTrade_place());
+            });
+
+            userScrapLiveList.add(scrapLiveResult);
+        }
+        return Optional.of(userScrapLiveList);
+    }
+
 //    public Optional<List<Map<String, Object>>> getUserCommerceItemListById(int userId) {
 //        Optional<List<Shorts>> shortsListOptional = shortsRepository.findByBuyerId(userId);
 //    }

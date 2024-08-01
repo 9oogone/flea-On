@@ -8,5 +8,5 @@ import java.util.Optional;
 
 public interface UserRegionRepository extends JpaRepository<UserRegion, Integer> {
 
-    Optional<List<UserRegion>> findByUserId(int userId);
+    Optional<List<UserRegion>> findByUser_UserId(int userId);
 }

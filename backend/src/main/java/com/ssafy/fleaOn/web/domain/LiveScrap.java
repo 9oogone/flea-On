@@ -10,23 +10,21 @@ import lombok.*;
 public class LiveScrap {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "scrap_id")
     private int scrapId;
 
-    @Column(name = "live_id")
-    private int liveId;
+    @ManyToOne
+    @JoinColumn(name = "live_id", nullable = false)
+    private Live live;
 
-    @Column(name = "user_id")
-    private int userId;
-
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private User user;
 
     @Builder
-    public LiveScrap(int scrapId, int liveId, int userId) {
-        this.scrapId = scrapId;
-        this.liveId = liveId;
-        this.userId = userId;
+    public LiveScrap(int liveId, User user) {
+        this.live = live;
+        this.user = user;
     }
 }
