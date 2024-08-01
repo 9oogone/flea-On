@@ -84,7 +84,7 @@ public class SecurityConfig {
         //경로별 인가 작업
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/").permitAll()
+                        .requestMatchers("/", "/swagger-ui/**","/swagger-ui.html", "/v3/api-docs/**").permitAll()
                         .requestMatchers("my").hasRole("USER")
                         .anyRequest().authenticated());
 
@@ -96,6 +96,7 @@ public class SecurityConfig {
         //JWTFilter 추가
         http
                 .addFilterAfter(new JWTFilter(jwtUtil), OAuth2LoginAuthenticationFilter.class);
+
 
         return http.build();
     }

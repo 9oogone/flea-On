@@ -30,15 +30,19 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         //OAuth2User
         CustomOAuth2User customUserDetails = (CustomOAuth2User) authentication.getPrincipal();
-
+        System.out.println(customUserDetails);
         String userIdentifier = customUserDetails.getUserIdentifier();
+        String email = customUserDetails.getEmail();
+
+        System.out.println("OAuth : " + userIdentifier);
+        System.out.println("OAuth : " + email);
 
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
         GrantedAuthority auth = iterator.next();
         String role = auth.getAuthority();
 
-        String token = jwtUtil.createJwt(userIdentifier, role, 60*60*60*60L);
+        String token = jwtUtil.createJwt(userIdentifier, role, email, 60*60*60*60L);
 
         response.addCookie(createCookie("Authorization", token));
         response.sendRedirect("http://localhost:3000/check?access_token=" + token);

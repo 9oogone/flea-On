@@ -1,36 +1,60 @@
 package com.ssafy.fleaOn.web.config.jwt;
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-import java.nio.charset.StandardCharsets;
-import java.util.Date;
 
 @Component
 public class JWTUtil {
 
     private static SecretKey secretKey;
+    private final String secret;
 
     public JWTUtil(@Value("${spring.jwt.secret}") String secret) {
+        this.secret = secret;
+    }
 
-        secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
+    @PostConstruct
+    public void init() {
+        secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), SignatureAlgorithm.HS256.getJcaName());
     }
 
     public String getUserIdentifier(String token) {
-
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("userIdentifier", String.class);
+        return Jwts.parser()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("userIdentifier", String.class);
     }
 
     public static String getEmail(String token) {
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("email", String.class);
+        String email = Jwts.parser()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("email", String.class);
+        System.out.println("Email from Token: " + email); // 토큰에서 추출한 이메일 확인
+        return email;
     }
-    public String getRole(String token) {
 
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("role", String.class);
+
+
+    public String getRole(String token) {
+        return Jwts.parser()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("role", String.class);
     }
 
     public Boolean isExpired(String token) {
@@ -43,20 +67,20 @@ public class JWTUtil {
                     .getExpiration();
             return expiration.before(new Date());
         } catch (Exception e) {
-            // 만료된 경우 예외를 던질 수 있음
-            return true;
+            return true; // 만료된 경우 예외를 던질 수 있음
         }
     }
 
+    public static String createJwt(String userIdentifier, String role, String email, Long expiredMs) {
 
-    public static String createJwt(String userIdentifier, String role, Long expiredMs) {
-
+        System.out.println();
         return Jwts.builder()
                 .claim("userIdentifier", userIdentifier)
                 .claim("role", role)
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + expiredMs))
-                .signWith(secretKey)
+                .claim("email", email)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + expiredMs))
+                .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
     }
 
@@ -69,7 +93,8 @@ public class JWTUtil {
 
         String userIdentifier = claims.get("userIdentifier", String.class);
         String role = claims.get("role", String.class);
+        String email = claims.get("email", String.class);
 
-        return createJwt(userIdentifier, role, 3600000L); // 1시간 연장
+        return createJwt(userIdentifier, role, email, 3600000L); // 1시간 연장
     }
 }
