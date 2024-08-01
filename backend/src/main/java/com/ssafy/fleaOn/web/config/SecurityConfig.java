@@ -2,7 +2,7 @@ package com.ssafy.fleaOn.web.config;
 
 import com.ssafy.fleaOn.web.config.jwt.JWTFilter;
 import com.ssafy.fleaOn.web.config.jwt.JWTUtil;
-import com.ssafy.fleaOn.web.config.oauth2.CustomSuccessHandler;
+import com.ssafy.fleaOn.web.config.handler.CustomSuccessHandler;
 import com.ssafy.fleaOn.web.service.CustomOAuth2UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
@@ -84,7 +84,7 @@ public class SecurityConfig {
         //경로별 인가 작업
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/", "/swagger-ui/**","/swagger-ui.html", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/", "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
                         .requestMatchers("my").hasRole("USER")
                         .anyRequest().authenticated());
 
