@@ -1,10 +1,12 @@
 package com.ssafy.fleaOn.web.config.jwt;
+
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.annotation.PostConstruct;
@@ -46,8 +48,6 @@ public class JWTUtil {
         return email;
     }
 
-
-
     public String getRole(String token) {
         return Jwts.parser()
                 .setSigningKey(secretKey)
@@ -66,14 +66,12 @@ public class JWTUtil {
                     .getBody()
                     .getExpiration();
             return expiration.before(new Date());
-        } catch (Exception e) {
+        } catch (ExpiredJwtException e) {
             return true; // 만료된 경우 예외를 던질 수 있음
         }
     }
 
     public static String createJwt(String userIdentifier, String role, String email, Long expiredMs) {
-
-        System.out.println();
         return Jwts.builder()
                 .claim("userIdentifier", userIdentifier)
                 .claim("role", role)
@@ -85,11 +83,16 @@ public class JWTUtil {
     }
 
     public static String refreshToken(String token) {
-        Claims claims = Jwts.parser()
-                .setSigningKey(secretKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        Claims claims;
+        try {
+            claims = Jwts.parser()
+                    .setSigningKey(secretKey)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (ExpiredJwtException e) {
+            claims = e.getClaims();
+        }
 
         String userIdentifier = claims.get("userIdentifier", String.class);
         String role = claims.get("role", String.class);

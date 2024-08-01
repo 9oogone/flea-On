@@ -33,8 +33,11 @@ public class Live {
     @Column(name = "is_live", nullable = false)
     private Boolean is_live;
 
+    @Column(name = "seller_id", nullable = false)
+    private int sellerId;
+
     @ManyToOne
-    @JoinColumn(name = "seller_id", referencedColumnName = "user_id")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @Builder
