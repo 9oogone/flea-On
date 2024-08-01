@@ -47,4 +47,11 @@ public class Live {
         this.user = user;
         this.is_live = false;
     }
+
+    public void update(String title, LocalDateTime live_date, String thumbnail, String trade_place) {
+        this.title = title;
+        this.live_date = live_date;
+        this.thumbnail = thumbnail;
+        this.trade_place = trade_place;
+    }
 }
