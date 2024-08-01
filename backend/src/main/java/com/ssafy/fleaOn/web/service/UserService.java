@@ -240,6 +240,32 @@ public class UserService {
         }
         return Optional.of(userScrapLiveList);
     }
+//    public Optional<List<Map<String, Object>>> getUserScrapLiveById(int userId) {
+//        Optional<List<LiveScrap>> scrapLiveListOptional = liveScrapRepository.findByUser_UserId(userId);
+//        if (scrapLiveListOptional.isEmpty()) {
+//            return Optional.empty();
+//        }
+//        List<LiveScrap> scrapLiveList = scrapLiveListOptional.get();
+//        List<Map<String, Object>> userScrapLiveList = new ArrayList<>();
+//
+//        for (Live live : scrapLiveList) {
+//            Map<String, Object> scrapLiveResult = new HashMap<>();
+//            Optional<Live> scrapLiveOptional = liveRepository.findById(live.getLiveId());
+//
+//            // Optional이 비어 있지 않으면 값을 가져와서 처리
+//            scrapLiveOptional.ifPresent(scrapLive -> {
+//                scrapLiveResult.put("title", scrapLive.getTitle());
+//                scrapLiveResult.put("seller_id", scrapLive.getSeller().getUserId());
+//                scrapLiveResult.put("live_date", scrapLive.getLive_date());
+//                scrapLiveResult.put("is_live", scrapLive.getIs_live());
+//                scrapLiveResult.put("thumbnail", scrapLive.getThumbnail());
+//                scrapLiveResult.put("trade_place", scrapLive.getTrade_place());
+//            });
+//
+//            userScrapLiveList.add(scrapLiveResult);
+//        }
+//        return Optional.of(userScrapLiveList);
+//    }
 
     public Optional<List<Map<String, Object>>> getUserScrapShortsById(int userId) {
         Optional<List<ShortsScrap>> scrapShortsOptional = shortsScrapRepository.findByUser_userId(userId);

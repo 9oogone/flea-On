@@ -4,9 +4,11 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
+@Table(name = "live_scrap")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "live_scrap")
+@AllArgsConstructor
+@Builder
 public class LiveScrap {
 
     @Id
@@ -15,16 +17,10 @@ public class LiveScrap {
     private int scrapId;
 
     @ManyToOne
-    @JoinColumn(name = "live_id", nullable = false)
+    @JoinColumn(name = "live_id", insertable = false, updatable = false)
     private Live live;
 
     @ManyToOne
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private User user;
-
-    @Builder
-    public LiveScrap(int liveId, User user) {
-        this.live = live;
-        this.user = user;
-    }
 }

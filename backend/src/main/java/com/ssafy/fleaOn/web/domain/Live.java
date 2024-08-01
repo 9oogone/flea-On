@@ -1,5 +1,9 @@
 package com.ssafy.fleaOn.web.domain;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.ssafy.fleaOn.web.util.LocalDateTimeDeserializer;
+import com.ssafy.fleaOn.web.util.LocalDateTimeSerializer;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -22,6 +26,8 @@ public class Live {
     private String title;
 
     @Column(name = "live_date", nullable = false)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime live_date;
 
     @Column(name = "thumbnail")
