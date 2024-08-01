@@ -141,6 +141,7 @@ public class UserApiController {
     @GetMapping("/{email}/commerceLive")
     public ResponseEntity<?> getUserCommerceLive(@PathVariable("email") String email) {
         User user = userService.findByEmail(email);
+        System.out.println(user);
         Optional<List<Map<String, Object>>> userCommerceLiveList = userService.getUserCommerceLiveListById(user.getUserId());
         if (userCommerceLiveList.isPresent()) {
             return ResponseEntity.status(HttpStatus.OK).body(userCommerceLiveList.get());
@@ -158,7 +159,18 @@ public class UserApiController {
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
-}
+
+
+    @GetMapping("/{email}/scrapShorts")
+    public ResponseEntity<?> getUserScrapShorts(@PathVariable("email") String email) {
+        User user = userService.findByEmail(email);
+
+        Optional<List<Map<String, Object>>> userScrapShortsList = userService.getUserScrapShortsById(user.getUserId());
+        if (userScrapShortsList.isPresent()) {
+            return ResponseEntity.status(HttpStatus.OK).body(userScrapShortsList.get());
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
 
 //    @GetMapping("/{email}/{liveId}/commerceItem")
 //    public ResponseEntity<?> getUserCommerceItem(@PathVariable String email) {
@@ -170,5 +182,5 @@ public class UserApiController {
 //        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 //    }
 
-
+}
 

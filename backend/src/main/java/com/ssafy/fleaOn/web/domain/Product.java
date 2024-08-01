@@ -16,7 +16,7 @@ public class Product {
     @Id // id 필드를 기본키로 지정
     @GeneratedValue(strategy = GenerationType.IDENTITY) // 기본키를 자동으로 1씩 증가
     @Column(name = "product_id", updatable = false)
-    private int product_id;
+    private int productId;
 
     @Column(name="live_id", nullable = false)
     private int live_id;

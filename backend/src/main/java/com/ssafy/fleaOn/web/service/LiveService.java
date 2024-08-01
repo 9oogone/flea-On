@@ -29,6 +29,7 @@ public class LiveService {
     public Live saveLive(AddLiveRequest addLiveRequest, User user) {
         // Live 엔티티 생성 및 저장
         Live live = addLiveRequest.toEntity(user);
+        System.out.println("service: "+ live.getLive_date());
         live = liveRepository.save(live);
 
         // Product 엔티티 생성 및 저장
@@ -64,7 +65,7 @@ public class LiveService {
 
     private static void authorizeArticleAuthor(Live live) {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        if (!live.getUser().getEmail().equals(userName)) {
+        if (!live.getSeller().getEmail().equals(userName)) {
             throw new IllegalArgumentException("not authorized");
         }
     }
