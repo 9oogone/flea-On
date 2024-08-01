@@ -38,6 +38,7 @@ public class OpenviduController {
     private Map<String, Session> mapSessions = new ConcurrentHashMap<>();
     // Collection to pair session names and tokens (the inner Map pairs tokens and
     // role associated)
+    //hbnhb
     private Map<String, Map<String, OpenViduRole>> mapSessionNamesTokens = new ConcurrentHashMap<>();
     // Collection to pair session names and recording objects
     private Map<String, Boolean> sessionRecordings = new ConcurrentHashMap<>();
