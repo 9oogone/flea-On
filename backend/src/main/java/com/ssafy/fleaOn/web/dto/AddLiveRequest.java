@@ -29,7 +29,7 @@ public class AddLiveRequest {
                 .live_date(parsedDate)
                 .thumbnail(thumbnail)
                 .trade_place(trade_place)
-                .user(user)
+                .seller(user)
                 .build();
     }
 }
