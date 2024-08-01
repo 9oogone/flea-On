@@ -16,7 +16,8 @@ import java.security.Principal;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/fleaOn/live")
-public class LiveApiController {
+public class
+LiveApiController {
 
     private final LiveService liveService;
     private final UserService userService;
