@@ -6,11 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;
 
-public interface LiveRepository extends JpaRepository<Live, Integer> {
+public interface LiveScrapRepository extends JpaRepository<Live, Integer> {
 
-    Optional<List<Live>> findBySellerId(int sellerID);
-
-    Optional<Live> findById(int liveId);
-
-
+    Optional<List<Live>> findByUser_UserId(int userId);
 }

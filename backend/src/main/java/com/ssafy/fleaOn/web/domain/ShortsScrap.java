@@ -16,9 +16,13 @@ public class ShortsScrap {
     @Column(name = "scrap_id")
     private int scrapId;
 
-    @Column(name = "shorts_id")
-    private int shortsId;
 
-    @Column(name = "user_id")
-    private int userId;
+    @ManyToOne
+    @JoinColumn(name = "shorts_id", insertable = false, updatable = false)
+    private Shorts shorts;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id",  insertable = false, updatable = false)
+    private User user;
+
 }

@@ -16,7 +16,7 @@ public class Live {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "live_id", updatable = false)
-    private int id;
+    private int liveId;
 
     @Column(name = "title", nullable = false)
     private String title;
@@ -37,15 +37,16 @@ public class Live {
     private int sellerId;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private User user;
 
     @Builder
-    public Live(String title, LocalDateTime live_date, String thumbnail, String trade_place, User user) {
+    public Live(String title, LocalDateTime live_date, String thumbnail, String trade_place, int sellerId, User user) {
         this.title = title;
         this.live_date = live_date;
         this.thumbnail = thumbnail;
         this.trade_place = trade_place;
+        this.sellerId = sellerId;
         this.user = user;
         this.is_live = false;
     }

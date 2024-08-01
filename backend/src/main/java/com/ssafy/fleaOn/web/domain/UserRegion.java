@@ -16,16 +16,11 @@ public class UserRegion {
     @Column(name = "region_id", nullable = false)
     private int regionId;
 
-    @Column(name = "user_id", nullable = false)
-    private int userId;
-
     @Column(name = "region_code", nullable = false)
     private String regionCode;
 
     @ManyToOne
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private User user;
-
-
 
 }
