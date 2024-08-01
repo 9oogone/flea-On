@@ -1,10 +1,10 @@
 import React from "react";
-import { useSelector } from "react-redux";
+// import { useSelector } from "react-redux";
 import "../../../styles/Profile.css";
 
 // 임시 사용자 정보
 const mockUserInfo = {
-  profileImage: "../../../assets/images/profile_defualt.svg.svg",
+  profileImage: "../../../assets/images/profile_default.svg",
   nickname: "이것저것팝니다",
   email: "hong@example.com",
   phoneNumber: "010-1234-5902",
