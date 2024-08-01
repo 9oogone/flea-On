@@ -11,5 +11,5 @@ public interface OAuth2Response {
     //사용자 실명 (설정한 이름)
     String getName();
 
-    String getProfileImg();
+    String getProfilePicture();
 }

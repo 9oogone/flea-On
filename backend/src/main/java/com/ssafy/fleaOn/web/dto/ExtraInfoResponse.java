@@ -8,6 +8,6 @@ import lombok.Setter;
 @Setter
 public class ExtraInfoResponse {
 
-    private String phoneNumber;
+    private String phone;
     private String preferredRegion;
 }

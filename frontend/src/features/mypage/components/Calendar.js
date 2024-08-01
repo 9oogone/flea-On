@@ -5,7 +5,7 @@ import "../../../styles/Calendar.css";
 const Calendar = () => {
   const [currentWeek, setCurrentWeek] = useState(new Date());
 
-  const startDate = startOfWeek(currentWeek, { weekStartsOn: 1 }); // Start week from Monday
+  const startDate = startOfWeek(currentWeek, { weekStartsOn: 0 }); // Start week from Sunday
 
   const handlePreviousWeek = () => {
     setCurrentWeek(subWeeks(currentWeek, 1));
@@ -34,8 +34,11 @@ const Calendar = () => {
 
   return (
     <div className="Diary">
+      가
       <div className="diary-container">
+        나
         <div className="diary-week-control-container">
+          다
           <svg
             onClick={handlePreviousWeek}
             xmlns="http://www.w3.org/2000/svg"
