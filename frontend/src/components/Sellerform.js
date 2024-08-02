@@ -55,7 +55,7 @@ const SellerformSelect = ({ onClose }) => {
           <div className={styles.input}>
             <label className={styles.label}></label>
           </div>
-          <div style={{ display: 'flex' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}> {/* 부모 컨테이너 */}
             <div style={{ flex: 1 }}>
               <TextField
                 id="outlined-basic"
@@ -65,7 +65,7 @@ const SellerformSelect = ({ onClose }) => {
                 fullWidth
                 sx={{ marginBottom: '10px', marginTop: '10px' }}
               />
-              <div className='livestarttime'>
+              <div className='livestarttime' style={{ marginBottom: '10px' }}>
                 <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="ko">
                   <DemoContainer components={['DesktopDateTimePicker']}>
                     <DesktopDateTimePicker
@@ -94,8 +94,29 @@ const SellerformSelect = ({ onClose }) => {
                   </DemoContainer>
                 </LocalizationProvider>
               </div>
+              <div className={styles.sellerTime}> {/* 거래 가능 시간 */}
+                <div className={styles.div1}>거래 가능 시간</div>
+                <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="ko">
+                  <div className={styles.dateParent}>
+                    <DatePicker
+                      label="시작 날짜"
+                      value={startDate}
+                      onChange={(newValue) => setStartDate(newValue)}
+                      renderInput={(params) => <TextField {...params} />}
+                      inputFormat="YYYY년 MM월 DD일"
+                    />
+                    <DatePicker
+                      label="종료 날짜"
+                      value={endDate}
+                      onChange={(newValue) => setEndDate(newValue)}
+                      renderInput={(params) => <TextField {...params} />}
+                      inputFormat="YYYY년 MM월 DD일"
+                    />
+                  </div>
+                </LocalizationProvider>
+              </div>
             </div>
-            <div className={styles.thumbnailContainer} style={{ marginLeft: '10px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div className={styles.thumbnailContainer} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <input
                 type="file"
                 accept="image/*"
@@ -115,7 +136,7 @@ const SellerformSelect = ({ onClose }) => {
                 ) : (
                   <div style={{ width: '100px', height: '100px', backgroundColor: '#f0f0f0',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '8px' }}>
-                    <AddToPhotosIcon  sx={{color:"gray"}}/>
+                    <AddToPhotosIcon sx={{ color: "gray" }} />
                   </div>
                 )}
               </label>
@@ -128,28 +149,6 @@ const SellerformSelect = ({ onClose }) => {
                 </IconButton>
               )}
             </div>
-          </div>
-          <div className={styles.sellerTime}>
-            <div className={styles.div1}>거래 가능 시간</div>
-            <div></div>
-            <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="ko">
-              <div className={styles.dateParent}>
-                <DatePicker
-                  label="시작 날짜"
-                  value={startDate}
-                  onChange={(newValue) => setStartDate(newValue)}
-                  renderInput={(params) => <TextField {...params} />}
-                  inputFormat="YYYY년 MM월 DD일"
-                />
-                <DatePicker
-                  label="종료 날짜"
-                  value={endDate}
-                  onChange={(newValue) => setEndDate(newValue)}
-                  renderInput={(params) => <TextField {...params} />}
-                  inputFormat="YYYY년 MM월 DD일"
-                />
-              </div>
-            </LocalizationProvider>
           </div>
           <div className={styles.button}>
             <button type="submit" className={styles.button1}>등록하기</button>

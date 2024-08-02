@@ -29,7 +29,6 @@
   border: 1px solid #ccc;
 }
 
-
 .button {
   display: flex;
   justify-content: center;
@@ -67,7 +66,7 @@
 }
 
 .div1 {
-  margin-bottom: 20px;
+  margin-bottom: 10px; /* Adjusted margin-bottom */
 }
 
 @media (min-width: 768px) {
@@ -79,9 +78,6 @@
   .thumbnailPreview {
     max-width: 300px;
   }
-
-
-
 
   .button1 {
     padding: 15px 30px;
@@ -98,13 +94,10 @@
     max-width: 400px;
   }
 
-
   .button1 {
     padding: 20px 40px;
   }
 }
-
-
 
 /* 추가 스타일 */
 @media (max-width: 600px) {
@@ -192,4 +185,8 @@
   right: 10px;
   font-size: 24px;
   cursor: pointer;
+}
+
+.sellerTime {
+  margin-top: 10px; /* Optional spacing between sections */
 }
