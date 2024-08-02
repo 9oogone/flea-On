@@ -96,8 +96,7 @@ public class SecurityConfig {
         //JWTFilter 추가
         http
                 .addFilterAfter(new JWTFilter(jwtUtil), OAuth2LoginAuthenticationFilter.class);
-        http
-                .requiresChannel(channel -> channel.anyRequest().requiresSecure());
+
 
         return http.build();
     }
