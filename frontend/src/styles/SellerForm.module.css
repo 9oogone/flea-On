@@ -22,17 +22,17 @@
 }
 
 .thumbnailPreview {
-  width: 80px; /* 크기 조정 */
-  max-width: 150px; /* 크기 조정 */
-  height: 80px; /* 크기 조정 */
+  width: 80px; 
+  max-width: 150px; 
+  height: 80px; 
   border-radius: 4px;
   border: 1px solid #ccc;
   object-fit: cover;
 }
 
 .noThumbnail {
-  width: 80px; /* 크기 조정 */
-  height: 80px; /* 크기 조정 */
+  width: 80px;
+  height: 80px; 
   background-color: #f0f0f0;
   display: flex;
   align-items: center;
@@ -162,7 +162,7 @@
   }
 }
 
-/* 아이폰 SE와 갤럭시 S8+ 대응을 위한 추가 스타일 */
+/* 아이폰 SE */
 @media (max-width: 375px) {
   .modalContent {
     width: 100%;
@@ -191,7 +191,7 @@
   }
 }
 
-/* 갤럭시 S8+ 대응을 위한 추가 스타일 */
+/* 갤럭시 S8+ */
 @media (max-width: 360px) {
   .modalContent {
     width: 100%;
@@ -216,14 +216,14 @@
   }
 
   .thumbnailPreview {
-    width: 60px; /* 썸네일 크기 더 줄임 */
-    max-width: 120px; /* 썸네일 크기 더 줄임 */
-    height: 60px; /* 썸네일 크기 더 줄임 */
+    width: 60px; 
+    max-width: 120px; 
+    height: 60px; 
   }
 
   .noThumbnail {
-    width: 60px; /* 썸네일 크기 더 줄임 */
-    height: 60px; /* 썸네일 크기 더 줄임 */
+    width: 60px;
+    height: 60px; 
   }
 
   .button1 {
@@ -253,7 +253,7 @@
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   position: relative;
   z-index: 3001;
-  height: 100%; /* 높이를 조정하지 않음 */
+  height: 100%; 
   overflow-y: auto;
 }
 
