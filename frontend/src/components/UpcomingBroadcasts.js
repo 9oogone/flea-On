@@ -1,7 +1,18 @@
-import React from "react";
-import { Box, Typography, Container } from "@mui/material";
+import React, { useState } from "react";
+import { Box, Typography, Container, Button } from "@mui/material";
+import UpcomingModal from "./UpcomingModal"; // 모달 컴포넌트 임포트
 
 const UpcomingBroadcasts = ({ items }) => {
+  const [open, setOpen] = useState(false);
+  const [modalLiveDate, setModalLiveDate] = useState("");
+
+  const handleOpen = (liveDate) => {
+    setModalLiveDate(liveDate);
+    setOpen(true);
+  };
+
+  const handleClose = () => setOpen(false);
+
   return (
     <Container sx={{ margin: "8px" }}>
       <Typography variant="h5" gutterBottom>
@@ -16,10 +27,16 @@ const UpcomingBroadcasts = ({ items }) => {
         }}
       >
         {items.map((item) => (
-          <Box
+          <Button
+            key={item.id}
+            onClick={() => handleOpen(item.live_date)}
             sx={{
-              width: 144,
-              height: 64,
+              padding: 0,
+              margin: 0,
+              minWidth: 0,
+              textTransform: "none",
+              width: 160,
+              height: 80,
               background:
                 "linear-gradient(100deg, rgba(255, 87, 87, 0.18) 50%, rgba(255, 11, 85, 0.18) 100%)",
               borderRadius: 2,
@@ -67,9 +84,14 @@ const UpcomingBroadcasts = ({ items }) => {
             >
               {item.price}원
             </Typography>
-          </Box>
+          </Button>
         ))}
       </Box>
+      <UpcomingModal
+        open={open}
+        handleClose={handleClose}
+        liveDate={modalLiveDate}
+      />
     </Container>
   );
 };
