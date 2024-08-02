@@ -1,20 +1,11 @@
 /* SellerForm.module.css */
-
-/* 기존 스타일 유지 */
-
-.headerParent {
-  width: 90%;
-  max-width: 1200px; /* 최대 너비 설정 */
-  background-color: rgba(12, 224, 104, 0.795);
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+.sellerformcontainer {
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow-y: auto; /* Allows vertical scrolling */
-  gap: 20px;
-  margin: auto; /* 중앙 정렬 */
+  padding: 20px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .thumbnailContainer {
@@ -38,14 +29,6 @@
   border: 1px solid #ccc;
 }
 
-.inputField {
-  width: 100%;
-  padding: 8px;
-  margin-top: 4px;
-  margin-bottom: 20px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-}
 
 .button {
   display: flex;
@@ -98,8 +81,17 @@
   }
 
   .inputField {
-    padding: 12px;
+    width: 100%;
+    padding: 16px;
+    margin-top: 30px !important;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    padding: 16px;
+    width: 358.950px;
+    height: 56;
   }
+
 
   .button1 {
     padding: 15px 30px;
@@ -116,14 +108,13 @@
     max-width: 400px;
   }
 
-  .inputField {
-    padding: 16px;
-  }
 
   .button1 {
     padding: 20px 40px;
   }
 }
+
+
 
 /* 추가 스타일 */
 @media (max-width: 600px) {
@@ -179,3 +170,33 @@
   }
 }
 
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000; /* bottomappbar보다 높은 z-index 설정 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modalContent {
+  background-color: white; /* 배경색을 흰색으로 변경 */
+  padding: 20px;
+  border-radius: 8px;
+  width: 90%; /* 최대 너비 */
+  max-width: 500px; /* 고정된 최대 너비 */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.closeButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 24px;
+  cursor: pointer;
+}

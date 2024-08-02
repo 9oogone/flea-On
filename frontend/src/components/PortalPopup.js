@@ -2,7 +2,6 @@ import React, { useMemo, useCallback, useState, useRef, useEffect } from "react"
 import { createPortal } from "react-dom";
 import styles from '../styles/PortalPopup.module.css';
 
-
 const PortalPopup = ({
   children,
   overlayColor,
@@ -20,45 +19,34 @@ const PortalPopup = ({
     opacity: 0,
   });
 
-  const popupStyle = useMemo(() => {
-    const style = {};
-    style.zIndex = zIndex;
+  const popupClass = useMemo(() => {
+    switch (placement) {
+      case "Top left":
+        return styles.topLeft;
+      case "Top center":
+        return styles.topCenter;
+      case "Top right":
+        return styles.topRight;
+      case "Bottom left":
+        return styles.bottomLeft;
+      case "Bottom center":
+        return styles.bottomCenter;
+      case "Bottom right":
+        return styles.bottomRight;
+      case "Centered":
+      default:
+        return styles.centered;
+    }
+  }, [placement]);
 
-    if (overlayColor) {
-      style.backgroundColor = overlayColor;
-    }
-    if (!relativeLayerRef?.current) {
-      switch (placement) {
-        case "Centered":
-          style.alignItems = "center";
-          style.justifyContent = "center";
-          break;
-        case "Top left":
-          style.alignItems = "flex-start";
-          break;
-        case "Top center":
-          style.alignItems = "center";
-          break;
-        case "Top right":
-          style.alignItems = "flex-end";
-          break;
-        case "Bottom left":
-          style.alignItems = "flex-start";
-          style.justifyContent = "flex-end";
-          break;
-        case "Bottom center":
-          style.alignItems = "center";
-          style.justifyContent = "flex-end";
-          break;
-        case "Bottom right":
-          style.alignItems = "flex-end";
-          style.justifyContent = "flex-end";
-          break;
-      }
-    }
-    style.opacity = 1;
+  const popupStyle = useMemo(() => {
+    const style = {
+      zIndex,
+      backgroundColor: overlayColor || "transparent",
+      opacity: 1
+    };
     return style;
-  }, [placement, overlayColor, zIndex, relativeLayerRef?.current]);
+  }, [overlayColor, zIndex]);
 
   const setPosition = useCallback(() => {
     const relativeItem = relativeLayerRef?.current?.getBoundingClientRect();
@@ -85,6 +73,11 @@ const PortalPopup = ({
           style.top = relativeY + relativeH + bottom;
           style.left = relativeX + relativeW - containerW - right;
           break;
+        default:
+          style.top = "50%";
+          style.left = "50%";
+          style.transform = "translate(-50%, -50%)";
+          break;
       }
       setRelativeStyle(style);
     } else {
@@ -92,7 +85,7 @@ const PortalPopup = ({
       style.maxHeight = "90%";
       setRelativeStyle(style);
     }
-  }, [left, right, top, bottom, placement, relativeLayerRef?.current, relContainerRef?.current]);
+  }, [left, right, top, bottom, placement, relativeLayerRef]);
 
   useEffect(() => {
     setPosition();
@@ -117,7 +110,7 @@ const PortalPopup = ({
   return (
     <Portal>
       <div
-        className={styles.portalPopupOverlay}
+        className={`${styles.portalPopupOverlay} ${popupClass}`}
         style={popupStyle}
         onClick={onOverlayClick}>
         <div ref={relContainerRef} style={relativeStyle}>
