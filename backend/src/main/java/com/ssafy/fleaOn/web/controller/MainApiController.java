@@ -1,10 +1,12 @@
 package com.ssafy.fleaOn.web.controller;
 
-import com.ssafy.fleaOn.web.domain.Category;
-import com.ssafy.fleaOn.web.domain.Live;
-import com.ssafy.fleaOn.web.domain.Shorts;
+import com.ssafy.fleaOn.web.config.jwt.JWTFilter;
+import com.ssafy.fleaOn.web.config.jwt.JWTUtil;
+import com.ssafy.fleaOn.web.domain.*;
 import com.ssafy.fleaOn.web.dto.MainShortsResponse;
+import com.ssafy.fleaOn.web.repository.UserRepository;
 import com.ssafy.fleaOn.web.service.MainService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -23,9 +25,10 @@ import java.util.Optional;
 public class MainApiController {
 
     private final MainService mainService;
+    private final UserRepository userRepository;
 
     @GetMapping("/mainLive")
-    public ResponseEntity<?> getMainLive(@RequestParam("liveDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)LocalDateTime liveDate) {
+    public ResponseEntity<?> getMainLive(@RequestParam("liveDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime liveDate) {
         try {
             // 서비스에서 데이터를 가져옵니다.
             Slice<Live> liveSlice = mainService.getMainLiveListByLiveDate(liveDate);
@@ -54,11 +57,11 @@ public class MainApiController {
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No short data found");
             }
             return ResponseEntity.status(HttpStatus.OK).body(shortsSlice);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while fetching short data: " + e.getMessage());
         }
     }
+
     @GetMapping("/mainCategory")
     public ResponseEntity<?> getMainCategory() {
         try {
@@ -87,4 +90,29 @@ public class MainApiController {
         }
     }
 
+    @GetMapping("/searchResult")
+    public ResponseEntity<?> getSearchResult(@RequestParam(value = "name", required = false) String name, HttpServletRequest request) {
+        String authorizationToken = request.getHeader("Authorization");
+        System.out.println(authorizationToken);
+        if(authorizationToken.isEmpty() || !authorizationToken.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+        }
+        else {
+            String jwtToken = authorizationToken.substring(7).trim();
+            String email = JWTUtil.getEmail(jwtToken);
+            Optional<User> user = userRepository.findByEmail(email);
+            if(user.isPresent()) {
+                try {
+                    Slice<Map<String, Object>> searchResultSlice = mainService.getSearchResultByName(name, user.get().getUserId());
+                    if (searchResultSlice.isEmpty()) {
+                        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No result data found");
+                    }
+                    return ResponseEntity.status(HttpStatus.OK).body(searchResultSlice);
+                } catch (Exception e) {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while fetching search result data: " + e.getMessage());
+                }
+            }
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+        }
+    }
 }

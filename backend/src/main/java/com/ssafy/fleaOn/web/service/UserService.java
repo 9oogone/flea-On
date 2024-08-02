@@ -143,7 +143,7 @@ public class UserService {
             productOptional.ifPresent(product -> {
                 purchaseResult.put("name", product.getName());
                 purchaseResult.put("price", product.getPrice());
-                purchaseResult.put("live_id", trade.getLiveId());
+                purchaseResult.put("live_id", trade.getLive().getLiveId());
             });
 
             purchaseResult.put("product_id", trade.getProductId());
@@ -230,7 +230,7 @@ public class UserService {
                 scrapLiveResult.put("seller_id", scrapLive.getSeller().getUserId());
                 scrapLiveResult.put("live_date", scrapLive.getLiveDate());
                 scrapLiveResult.put("is_live", scrapLive.getIsLive());
-                scrapLiveResult.put("thumbnail", scrapLive.getThumbnail());
+                scrapLiveResult.put("live_thumbnail", scrapLive.getLiveThumbnail());
                 scrapLiveResult.put("trade_place", scrapLive.getTradePlace());
                 scrapLiveResult.put("live_id", scrapLive.getLiveId());
             });
@@ -255,7 +255,7 @@ public class UserService {
                 shortsResult.put(("product_id"), scrapShorts.getProduct().getProductId());
                 shortsResult.put(("shorts_id"), scrapShorts.getShortsId());
                 shortsResult.put(("upload_date"), scrapShorts.getUploadDate());
-                shortsResult.put(("thumbnail"), scrapShorts.getThumbnail());
+                shortsResult.put(("shorts_thumbnail"), scrapShorts.getShortsThumbnail());
                 shortsResult.put("video_address", scrapShorts.getVideoAddress());
             });
             userScrapShortList.add(shortsResult);

@@ -17,17 +17,17 @@ public class UpdateProductRequest {
     private int price;
 
     @JsonProperty("first_category")
-    private int firstCategory;
+    private int firstCategoryId;
 
     @JsonProperty("second_category")
-    private int secondCategory;
+    private int secondCategoryId;
 
     public Product toEntity(Live live, User user) {
         return Product.builder()
                 .name(name)
                 .price(price)
-                .firstCategory(firstCategory)
-                .secondCategory(secondCategory)
+                .firstCategoryId(firstCategoryId)
+                .secondCategoryId(secondCategoryId)
                 .live(live)
                 .user(user)
                 .build();

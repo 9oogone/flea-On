@@ -9,6 +9,7 @@ import lombok.*;
 
 import java.sql.Time;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @Table(name = "shorts")
@@ -23,8 +24,11 @@ public class Shorts {
     @Column(name = "shorts_id")
     private int shortsId;
 
+    @OneToMany(mappedBy = "shorts", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<ShortsScrap> shortsScrapSet;
+
     @Column(name = "thumbnail")
-    private String thumbnail;
+    private String shortsThumbnail;
 
     @Column(name = "length")
     private Time length;
@@ -37,7 +41,7 @@ public class Shorts {
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime uploadDate;
 
-    @ManyToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", insertable = false, updatable = false)
     private Product product;
 }

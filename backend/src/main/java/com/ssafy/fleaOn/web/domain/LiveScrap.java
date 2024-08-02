@@ -16,11 +16,11 @@ public class LiveScrap {
     @Column(name = "scrap_id")
     private int scrapId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "live_id", insertable = false, updatable = false)
     private Live live;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private User user;
 }

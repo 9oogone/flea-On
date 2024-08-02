@@ -1,9 +1,6 @@
 package com.ssafy.fleaOn.web.service;
 
-import com.ssafy.fleaOn.web.domain.Category;
-import com.ssafy.fleaOn.web.domain.Live;
-import com.ssafy.fleaOn.web.domain.Product;
-import com.ssafy.fleaOn.web.domain.Shorts;
+import com.ssafy.fleaOn.web.domain.*;
 import com.ssafy.fleaOn.web.dto.MainShortsResponse;
 import com.ssafy.fleaOn.web.repository.CategoryRepository;
 import com.ssafy.fleaOn.web.repository.LiveRepository;
@@ -28,13 +25,15 @@ public class MainService {
 
     private final CategoryRepository categoryRepository;
 
+    private final ProductRepository productRepository;
+
     public Slice<Live> getMainLiveListByLiveDate(LocalDateTime liveDate){
-        Pageable pageable = PageRequest.of(0, 20);
+        Pageable pageable = PageRequest.of(0, 10);
         return liveRepository.findAllByOrderByIsLiveDescLiveDateAsc(pageable);
     }
 
     public Slice<MainShortsResponse> getMainShortsListByUploadDate(){
-        Pageable pageable = PageRequest.of(0, 20);
+        Pageable pageable = PageRequest.of(0, 10);
 
         // Shorts 데이터 가져오기 (Slice로)
         Slice<Shorts> shortsSlice = shortsRepository.findAllByOrderByUploadDateAsc(pageable);
@@ -50,7 +49,7 @@ public class MainService {
                     product.getName(),
                     product.getPrice(),
                     live.getTradePlace(),
-                    shorts.getThumbnail()
+                    shorts.getShortsThumbnail()
             );
         }).getContent();
 
@@ -62,5 +61,82 @@ public class MainService {
         return Optional.of(categoryRepository.findAll());
     }
 
+    public Slice<Map<String, Object>> getSearchResultByName(String name, int userId){
+        Pageable pageable = PageRequest.of(0, 10);
+
+        int findFirstCategory = -1;
+        int findSecondCategory = -1;
+
+        // findProductByName을 사용하여 Product를 찾습니다.
+        Optional<Product> findProduct = productRepository.findProductByName(name);
+        if(findProduct.isPresent()){
+            findFirstCategory = categoryRepository.findByFirstCategoryId(findProduct.get().getFirstCategoryId());
+            findSecondCategory = categoryRepository.findBySecondCategoryId(findProduct.get().getSecondCategoryId());
+        }
+
+
+        // 이름과 카테고리를 기반으로 검색
+        Slice<Product> searchResultResponseSlice = productRepository.findByNameContainingOrFirstCategoryIdOrSecondCategoryId(
+                name, findFirstCategory, findSecondCategory, pageable);
+
+        List<Map<String, Object>> resultList = new ArrayList<>();
+        // 검색 결과를 순회하며 필요한 데이터를 추출합니다.
+        for (Product product : searchResultResponseSlice) {
+            Map<String, Object> resultMap = new HashMap<>();
+            Live live = product.getLive();
+            Shorts shorts = product.getShorts();
+            Set shortsScrap = shorts.getShortsScrapSet();
+
+            // UPCOMING 정보를 담을 Map 생성
+            Map<String, Object> upcomingMap = new HashMap<>();
+            upcomingMap.put("live_id", product.getLive().getLiveId());
+            upcomingMap.put("name", product.getName());
+            upcomingMap.put("price", product.getPrice());
+            upcomingMap.put("live_date", product.getLive().getLiveDate());
+            upcomingMap.put("title", product.getLive().getTitle());
+
+            // LIVE 정보를 담을 Map 생성
+            Map<String, Object> liveMap = new HashMap<>();
+            liveMap.put("live_id", live.getLiveId());
+            liveMap.put("name", product.getName());
+            liveMap.put("price", product.getPrice());
+            liveMap.put("title", live.getTitle());
+            liveMap.put("tradePlace", live.getTradePlace());
+            liveMap.put("live_thumbnail", live.getLiveThumbnail());
+
+            // SHORTS 정보를 담을 Map 생성
+            Map<String, Object> shortsMap = new HashMap<>();
+            shortsMap.put("shorts_id", shorts.getShortsId());
+            shortsMap.put("name", product.getName());
+            shortsMap.put("price", product.getPrice());
+            shortsMap.put("trade_place", live.getTradePlace());
+            shortsMap.put("length", shorts.getLength());
+            shortsMap.put("shorts_thumbnail", shorts.getShortsThumbnail());
+
+            // scrap 데이터 확인 로직 추가
+            Set<ShortsScrap> shortsScrapSet = shorts.getShortsScrapSet();
+            boolean isScrap = false;
+
+            // shortsScrapSet을 순회하며 조건 검사
+            for (ShortsScrap scrap : shortsScrapSet) {
+                if (scrap.getUser().getUserId()==userId && scrap.getShorts().getShortsId()==shorts.getShortsId()) {
+                    isScrap = true;
+                    break;
+                }
+            }
+            shortsMap.put("is_scrap", isScrap);
+
+            // 각 Map을 포함할 최종 Map을 생성하여 List에 추가
+            resultMap.put("UPCOMING", upcomingMap);
+            resultMap.put("LIVE", liveMap);
+            resultMap.put("SHORTS", shortsMap);
+
+            resultList.add(resultMap);
+
+            // 결과를 담을 List를 초기화합니다.
+        }
+        Slice<Map<String, Object>> resultSlice = new SliceImpl<>(resultList, pageable, searchResultResponseSlice.hasNext());
+        return resultSlice;
+    }
 
 }
