@@ -18,8 +18,11 @@ import Trade from "../../../assets/images/trade.svg";
 import TradeDone from "../../../assets/images/trade_done.svg";
 import "../../../styles/Calendar.css";
 
+import { ReactComponent as TradeIcon } from "../../../assets/images/trade.svg";
+import { ReactComponent as TradeDoneIcon } from "../../../assets/images/trade_done.svg";
 const Calendar = () => {
   const [currentWeek, setCurrentWeek] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(null); // 선택된 날짜
   const startDate = startOfWeek(currentWeek, { weekStartsOn: 0 });
 
   // 오늘 날짜를 계산
@@ -44,6 +47,10 @@ const Calendar = () => {
     setCurrentWeek(addWeeks(currentWeek, 1));
   };
 
+  const handleDateClick = (date) => {
+    setSelectedDate(date);
+  };
+
   // 주간 날짜 배열 생성
   const generateWeekDates = () => {
     const dates = [];
@@ -51,6 +58,7 @@ const Calendar = () => {
       const day = addDays(startDate, i);
       dates.push({
         date: format(day, "d"),
+        fullDate: day,
         isToday: isToday(day),
       });
     }
@@ -64,19 +72,19 @@ const Calendar = () => {
           <Typography variant="h6" className="month-text">
             {format(currentWeek, "M월")}
           </Typography>
-          <Box className="transaction-box">
-            <Box className="transaction-icon">
-              <ShoppingCart />
+          <Box className="trade-summary">
+            <Box className="trade-summary-item">
+              <ShoppingCart className="trade-summary-icon" />
+              <Typography className="trade-summary-text">2</Typography>
             </Box>
-            <Typography className="transaction-text">2</Typography>
-            <Box className="transaction-icon">
-              <Sell />
+            <Box className="trade-summary-item">
+              <Sell className="trade-summary-icon" />
+              <Typography className="trade-summary-text">5</Typography>
             </Box>
-            <Typography className="transaction-text">5</Typography>
-            <Box className="transaction-icon">
-              <img src={TradeDone} alt="거래완료아이콘" />
+            <Box className="trade-summary-item">
+              <TradeDoneIcon className="trade-summary-icon" />
+              <Typography className="trade-summary-text">3</Typography>
             </Box>
-            <Typography className="transaction-text">3</Typography>
           </Box>
           <Box className="navigation-buttons">
             <IconButton onClick={handlePreviousWeek}>
@@ -90,7 +98,7 @@ const Calendar = () => {
         <Box className="calendar-weekdays">
           {["일", "월", "화", "수", "목", "금", "토"].map((day) => (
             <Box key={day} className="weekday-text">
-              <Typography>{day}</Typography>
+              <Typography className="footer-date-text">{day}</Typography>
             </Box>
           ))}
         </Box>
@@ -98,28 +106,44 @@ const Calendar = () => {
           {Object.entries(dummyTransactions).map(([date, { count }]) => (
             <Box key={date} className="trade-box">
               <img src={Trade} alt="거래아이콘" />
-              <Typography>{count}</Typography>
+              <Typography className="trade-text">{count}</Typography>
             </Box>
           ))}
         </Box>
         <Box className="calendar-footer">
-          {generateWeekDates().map(({ date, isToday }) => (
-            <Box key={date} className="footer-date-box">
+          {generateWeekDates().map(({ date, fullDate, isToday }) => {
+            const isSelected =
+              selectedDate && selectedDate.getTime() === fullDate.getTime();
+            return (
               <Box
-                className={`footer-date-icon ${
-                  isToday ? "footer-date-icon-active" : ""
-                }`}
+                key={date}
+                className="footer-date-box"
+                onClick={() => handleDateClick(fullDate)}
               >
-                <Typography
-                  className={`footer-date-text ${
-                    isToday ? "footer-date-text-active" : ""
+                <Box
+                  className={`footer-date-icon ${
+                    isToday && !isSelected
+                      ? "footer-date-icon-active-today"
+                      : isSelected
+                      ? "footer-date-icon-active-selected"
+                      : ""
                   }`}
                 >
-                  {date}
-                </Typography>
+                  <Typography
+                    className={`footer-date-text ${
+                      isToday && !isSelected
+                        ? "footer-date-text-active-today"
+                        : isSelected
+                        ? "footer-date-text-active-selected"
+                        : ""
+                    }`}
+                  >
+                    {date}
+                  </Typography>
+                </Box>
               </Box>
-            </Box>
-          ))}
+            );
+          })}
         </Box>
       </Box>
     </Box>
