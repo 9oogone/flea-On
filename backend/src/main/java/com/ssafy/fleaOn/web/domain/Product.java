@@ -31,16 +31,16 @@ public class Product {
     private int price;
 
     @Column(name="first_category", nullable = false)
-    private int first_category;
+    private int firstCategory;
 
     @Column(name="second_category", nullable = false)
-    private int second_category;
+    private int secondCategory;
 
     @Column(name="cur_buyer_front", nullable = false)
-    private int cur_buyer_front;
+    private int curBuyerFront;
 
     @Column(name="cur_buyer_rear", nullable = false)
-    private int cur_buyer_rear;
+    private int curBuyerRear;
 
     @ManyToOne
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
@@ -51,14 +51,14 @@ public class Product {
     private Live live;
 
     @Builder
-    public Product(int liveId, int sellerId, String name, int price, int first_category, int second_category) {
+    public Product(int liveId, int sellerId, String name, int price, int firstCategory, int secondCategory) {
         this.liveId = liveId;
         this.sellerId = sellerId;
         this.name = name;
         this.price = price;
-        this.first_category = first_category;
-        this.second_category = second_category;
-        this.cur_buyer_front = 0;
-        this.cur_buyer_rear = 0;
+        this.firstCategory = firstCategory;
+        this.secondCategory = secondCategory;
+        this.curBuyerFront = 0;
+        this.curBuyerRear = 0;
     }
 }

@@ -12,8 +12,8 @@ import lombok.NoArgsConstructor;
 public class AddProductRequest {
     private String name;
     private int price;
-    private int first_category;
-    private int second_category;
+    private int firstCategory;
+    private int secondCategory;
 
     public Product toEntity(Live live, int sellerId) {
         return Product.builder()
@@ -21,8 +21,8 @@ public class AddProductRequest {
                 .sellerId(sellerId)
                 .name(name)
                 .price(price)
-                .first_category(first_category)
-                .second_category(second_category)
+                .firstCategory(firstCategory)
+                .secondCategory(secondCategory)
                 .build();
     }
 }
