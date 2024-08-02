@@ -19,7 +19,6 @@ import java.util.Optional;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/fleaon")
-@CrossOrigin("*")
 public class MainApiController {
 
     private final MainService mainService;

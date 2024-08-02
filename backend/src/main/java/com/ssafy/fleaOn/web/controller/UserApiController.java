@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/fleaon/users")
-@CrossOrigin("*")
 public class UserApiController {
 
     private final UserService userService;

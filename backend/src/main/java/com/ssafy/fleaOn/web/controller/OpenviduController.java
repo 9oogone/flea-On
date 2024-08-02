@@ -25,7 +25,6 @@ import io.openvidu.java.client.Session;
 
 @RestController
 @RequestMapping("/recording-java/api")
-@CrossOrigin("*")
 public class OpenviduController {
 
     // OpenVidu object as entrypoint of the SDK
