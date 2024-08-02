@@ -13,6 +13,8 @@ import MyPage from "./pages/MyPage";
 import Category from "./pages/CategoryPage";
 import Search from "./pages/SearchPage";
 import SearchForm from "./components/SearchForm";
+import SearchShorts from "./pages/SearchShortsPage";
+import SearchLive from "./pages/SearchLivePage";
 function App() {
   // 로그인 페이지가 아닌 경우에만 하단 앱 바를 표시
   const LocationWrapper = ({ children }) => {
@@ -42,6 +44,8 @@ function App() {
           <Route path="/category" element={<Category />} />
           <Route path="/search" element={<Search />} />
           <Route path="/mypage" element={<MyPage />} />
+          <Route path="/search/shorts" element={<SearchShorts />} />
+          <Route path="/search/live" element={<SearchLive />} />
         </Routes>
       </LocationWrapper>
     </Router>

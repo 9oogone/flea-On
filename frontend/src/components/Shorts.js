@@ -13,107 +13,109 @@ const Shorts = ({ items }) => {
   };
 
   return (
-    <Grid container>
-      {items.map((item) => (
-        <Grid key={item.id} item xs={6}>
-          <Button
-            onClick={() => handleButtonClick(item.shorts_id)}
-            sx={{ padding: 0, minWidth: 0 }}
-          >
-            <Box
-              sx={{
-                width: 144,
-                height: 234,
-                backgroundImage: `url(${item.thumbnail})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                borderRadius: 2,
-                boxShadow: "0px -40px 20px rgba(0, 0, 0, 0.25) inset",
-                mb: 2,
-                p: 1,
-              }}
+    <Grid item xs={12}>
+      <Grid container>
+        {items.map((item) => (
+          <Grid key={item.id} item xs={6} sx={{ textAlign: "center" }}>
+            <Button
+              onClick={() => handleButtonClick(item.shorts_id)}
+              sx={{ padding: 0, minWidth: 0 }}
             >
               <Box
                 sx={{
-                  position: "relative",
-                  height: "85%",
-                  textAlign: "end",
-                  color: "white",
+                  width: 144,
+                  height: 234,
+                  backgroundImage: `url(${item.thumbnail})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                  borderRadius: 2,
+                  boxShadow: "0px -40px 20px rgba(0, 0, 0, 0.25) inset",
+                  mb: 2,
+                  p: 1,
                 }}
               >
-                {item.is_scrap ? <BookmarkIcon /> : <BookmarkBorderIcon />}
-              </Box>
-              <Box
-                sx={{
-                  top: 206,
-                  left: "7.50px",
-                  width: "100%",
-                  display: "flex",
-                  flexDirection: "column",
-                }}
-              >
-                <Box>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      width: "100%",
-                    }}
-                  >
-                    <Typography
+                <Box
+                  sx={{
+                    position: "relative",
+                    height: "85%",
+                    textAlign: "end",
+                    color: "white",
+                  }}
+                >
+                  {item.is_scrap ? <BookmarkIcon /> : <BookmarkBorderIcon />}
+                </Box>
+                <Box
+                  sx={{
+                    top: 206,
+                    left: "7.50px",
+                    width: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
+                >
+                  <Box>
+                    <Box
                       sx={{
-                        color: "white",
-                        fontSize: 14,
-                        fontWeight: 600,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        width: "100%",
                       }}
                     >
-                      {item.name}
-                    </Typography>
-                    <Typography
+                      <Typography
+                        sx={{
+                          color: "white",
+                          fontSize: 14,
+                          fontWeight: 600,
+                        }}
+                      >
+                        {item.name}
+                      </Typography>
+                      <Typography
+                        sx={{
+                          color: "white",
+                          fontSize: 8,
+                          fontWeight: 400,
+                        }}
+                      >
+                        <LocationOnIcon sx={{ fontSize: "8px" }} />
+                        {item.trade_place}
+                      </Typography>
+                    </Box>
+                    <Box
                       sx={{
-                        color: "white",
-                        fontSize: 8,
-                        fontWeight: 400,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        width: "100%",
                       }}
                     >
-                      <LocationOnIcon sx={{ fontSize: "8px" }} />
-                      {item.trade_place}
-                    </Typography>
-                  </Box>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      width: "100%",
-                    }}
-                  >
-                    <Typography
-                      sx={{
-                        color: "white",
-                        fontSize: 10,
-                        fontWeight: 500,
-                      }}
-                    >
-                      {item.price}원
-                    </Typography>
-                    <Typography
-                      sx={{
-                        color: "white",
-                        fontSize: 10,
-                        fontWeight: 500,
-                      }}
-                    >
-                      {item.length}
-                    </Typography>
+                      <Typography
+                        sx={{
+                          color: "white",
+                          fontSize: 10,
+                          fontWeight: 500,
+                        }}
+                      >
+                        {item.price}원
+                      </Typography>
+                      <Typography
+                        sx={{
+                          color: "white",
+                          fontSize: 10,
+                          fontWeight: 500,
+                        }}
+                      >
+                        {item.length}
+                      </Typography>
+                    </Box>
                   </Box>
                 </Box>
               </Box>
-            </Box>
-          </Button>
-        </Grid>
-      ))}
+            </Button>
+          </Grid>
+        ))}
+      </Grid>
     </Grid>
   );
 };

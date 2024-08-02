@@ -13,12 +13,13 @@ const Switch = ({ options }) => {
   };
 
   return (
-    <ButtonGroup variant="contained">
+    <ButtonGroup variant="contained" sx={{ borderRadius: "100px" }}>
       {options.map((option) => (
         <Button
           key={option.value}
           onClick={() => handleSwitch(option.value)}
           color={selectedTab === option.value ? "primary" : "google"}
+          sx={{ width: "50%", borderRadius: "100px" }}
         >
           {option.label}
         </Button>
