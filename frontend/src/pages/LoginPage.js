@@ -6,7 +6,7 @@ import GoogleIcon from "../assets/images/google_login.svg";
 import NaverIcon from "../assets/images/naver_login.svg";
 import { styled } from "@mui/system";
 const TitleSpan = styled("span")(({ theme }) => ({
-  color: theme.palette.primary.main,
+  color: theme.palette.secondary.main,
   fontSize: "2rem",
 }));
 

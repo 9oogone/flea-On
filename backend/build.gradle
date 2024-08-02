@@ -9,6 +9,12 @@ group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
 
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
 repositories {
 	mavenCentral()
 }
@@ -16,7 +22,35 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'org.springframework.boot:spring-boot-devtools'
+	implementation 'io.openvidu:openvidu-java-client:2.30.0'
+	implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
+	implementation 'io.jsonwebtoken:jjwt-impl:0.12.3'
+	implementation 'io.jsonwebtoken:jjwt-jackson:0.12.3'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'io.github.cdimascio:java-dotenv:5.2.2'
+
+	compileOnly 'org.projectlombok:lombok'
+	runtimeOnly 'com.mysql:mysql-connector-j'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.security:spring-security-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
+	testImplementation 'io.github.bonigarcia:selenium-jupiter:4.3.0'
+	testImplementation 'io.github.bonigarcia:webdrivermanager:5.3.2'
+	testImplementation 'org.junit.platform:junit-platform-runner:1.9.2'
+	testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
+	testImplementation 'ws.schild:jave-all-deps:3.0.1'
+	testImplementation 'ws.schild:jave-core:3.0.1'
+	testImplementation 'io.openvidu:openvidu-test-browsers:1.0.0'
+
+}
+configurations {
+	all {
+		exclude group: 'commons-logging', module: 'commons-logging'
+	}
 }
 
 node {
@@ -25,22 +59,22 @@ node {
 	download = true
 }
 
-task installNpmDependencies(type: com.github.gradle.node.npm.task.NpmTask) {
-	workingDir = file("${projectDir}/src/main/frontend")
-	args = ['install']
-}
-
-task buildFrontend(type: com.github.gradle.node.npm.task.NpmTask, dependsOn: installNpmDependencies) {
-	workingDir = file("${projectDir}/src/main/frontend")
-	args = ['run', 'build']
-}
-
-bootJar {
-	dependsOn buildFrontend
-	from("${projectDir}/src/main/frontend/build") {
-		into 'static'
-	}
-}
+//task installNpmDependencies(type: com.github.gradle.node.npm.task.NpmTask) {
+//	workingDir = file("${projectDir}/src/main/frontend")
+//	args = ['install']
+//}
+//
+//task buildFrontend(type: com.github.gradle.node.npm.task.NpmTask, dependsOn: installNpmDependencies) {
+//	workingDir = file("${projectDir}/src/main/frontend")
+//	args = ['run', 'build']
+//}
+//
+//bootJar {
+//	dependsOn buildFrontend
+//	from("${projectDir}/src/main/frontend/build") {
+//		into 'static'
+//	}
+//}
 
 tasks.withType(Test) {
 	useJUnitPlatform()

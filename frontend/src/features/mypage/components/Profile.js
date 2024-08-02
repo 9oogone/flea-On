@@ -1,9 +1,11 @@
 import React from "react";
-import { useSelector } from "react-redux";
+// import { useSelector } from "react-redux";
+import "../../../styles/Profile.css";
+import profileDefault from "../../../assets/images/profile_default.svg";
 
 // 임시 사용자 정보
 const mockUserInfo = {
-  profileImage: "/icons/profile_default.png",
+  profileImage: profileDefault,
   nickname: "이것저것팝니다",
   email: "hong@example.com",
   phoneNumber: "010-1234-5902",
@@ -24,12 +26,7 @@ const Profile = () => {
 
   return (
     <div className="profile">
-      <h2>프로필</h2>
-      <img
-        src={userInfo.profileImage}
-        alt={`${userInfo.nickname}'s profile`}
-        style={{ width: "100px", height: "100px", borderRadius: "50%" }}
-      />
+      <img src={userInfo.profileImage} alt={`${userInfo.nickname}'s profile`} />
       <h3>{userInfo.nickname}</h3>
       <p>{extractDong(userInfo.address)} 주민</p>
       <button>프로필 편집</button>
