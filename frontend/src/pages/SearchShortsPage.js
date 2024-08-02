@@ -2,7 +2,7 @@ import React from "react";
 import { Container, Typography, CircularProgress, Box } from "@mui/material";
 import { useSelector } from "react-redux";
 import Shorts from "../components/Shorts";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 
 const useQuery = () => {
@@ -11,6 +11,7 @@ const useQuery = () => {
 
 const SearchShorts = () => {
   const query = useQuery().get("query");
+  const navigate = useNavigate();
   //   const { loading, results, error } = useSelector((state) => state.search);
   const results = {
     upcoming: [
@@ -97,13 +98,15 @@ const SearchShorts = () => {
   //       </Container>
   //     );
   //   }
-
+  const handleIconClick = () => {
+    navigate(-1);
+  };
   return (
     <Container>
-      <Box sx={{ display: "flex", alignItems: "center" }}>
-        <ArrowBackIosIcon />
-        <Typography variant="h4">{query}</Typography>
-      </Box>
+      <ArrowBackIosIcon sx={{ cursor: "pointer" }} onClick={handleIconClick} />
+      <Typography variant="h4" gutterBottom sx={{ display: "inline-block" }}>
+        {query}
+      </Typography>
       <Shorts items={results.shorts} />
     </Container>
   );
