@@ -59,4 +59,8 @@ public class Live {
         this.thumbnail = thumbnail;
         this.trade_place = trade_place;
     }
+
+    public void onOff(){
+        this.is_live = !is_live;
+    }
 }

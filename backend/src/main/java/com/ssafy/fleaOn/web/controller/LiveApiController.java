@@ -94,4 +94,25 @@ public class LiveApiController {
             return new ResponseEntity<>("조회할 라이브를 찾을 수 없습니다: " + ex.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
+
+    @PutMapping("/{liveID}/onoff")
+    @Operation(summary = "라이브 방송 시작과 종료", description = "라이브 방송을 시작 혹은 종료합니다.")
+    public ResponseEntity<?> onoffLive(@PathVariable int liveID) {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
+            String userEmail = oAuth2User.getEmail(); // 현재 인증된 사용자의 이메일 가져오기
+
+            User user = userService.findByEmail(userEmail); // 이메일로 사용자 정보를 가져옴
+            if (user == null) {
+                return new ResponseEntity<>("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
+            }
+
+            Live onoffLive = liveService.onoffLive(liveID); // 서비스를 통해 Live 정보를 업데이트
+            return ResponseEntity.ok(onoffLive); // 업데이트된 Live 정보 반환
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new ResponseEntity<>("시작할 라이브를 찾을 수 없습니다: " + ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
 }
