@@ -2,7 +2,7 @@ import React from "react";
 import { Container, Typography, CircularProgress } from "@mui/material";
 import { useSelector } from "react-redux";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import LiveBroadcasts from "../components/LiveBroadcasts";
 
 const useQuery = () => {
@@ -11,6 +11,7 @@ const useQuery = () => {
 
 const SearchLive = () => {
   const query = useQuery().get("query");
+  const navigate = useNavigate();
   //   const { loading, results, error } = useSelector((state) => state.search);
   const results = {
     upcoming: [
@@ -90,11 +91,13 @@ const SearchLive = () => {
   //       </Container>
   //     );
   //   }
-
+  const handleIconClick = () => {
+    navigate(-1);
+  };
   return (
     <Container>
-      <Typography variant="h4" gutterBottom>
-        <ArrowBackIosIcon />
+      <ArrowBackIosIcon sx={{ cursor: "pointer" }} onClick={handleIconClick} />
+      <Typography variant="h4" gutterBottom sx={{ display: "inline-block" }}>
         {query}
       </Typography>
       <LiveBroadcasts items={results.live} />
