@@ -1,30 +1,35 @@
 package com.ssafy.fleaOn.web.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ssafy.fleaOn.web.domain.Live;
 import com.ssafy.fleaOn.web.domain.Product;
 import com.ssafy.fleaOn.web.domain.User;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddProductRequest {
+@Getter
+public class UpdateProductRequest {
     private int productId;
     private String name;
     private int price;
+
+    @JsonProperty("first_category")
     private int firstCategory;
+
+    @JsonProperty("second_category")
     private int secondCategory;
 
-    public Product toEntity(Live live, User seller) {
+    public Product toEntity(Live live, User user) {
         return Product.builder()
-                .live(live)
-                .user(seller)
                 .name(name)
                 .price(price)
-                .firstCategory(firstCategory)
-                .secondCategory(secondCategory)
+                .first_category(firstCategory)
+                .second_category(secondCategory)
+                .live(live)
+                .user(user)
                 .build();
     }
 }
