@@ -49,23 +49,25 @@ const SellerformSelect = ({ onClose }) => {
       <div className={styles.modalContent}>
         <span className={styles.closeButton} onClick={onClose}>&times;</span>
         <form onSubmit={handleSubmit} className={styles.sellerformcontainer}>
-          <div className={styles.headerParent}>
-            <div className={styles.header}>
-              <div className={styles.titleFormParent}>
-                <div className={styles.titleForm}>
                   <div className={styles.input}>
                     <label className={styles.label}></label>
-                    <input type="text" className={styles.inputField} placeholder="라이브 방송 제목" />
                   </div>
-                </div>
-                <div className='livestarttime'>
+                  <TextField
+                    id="outlined-basic"
+                    label="라이브 방송 제목"
+                    size="medium"
+                    variant="outlined"
+                    fullWidth
+                    sx={{ width: "100%", marginBottom: "10px", marginTop: "10px" }} // 스타일을 적용하여 가로 사이즈를 설정
+                  />
+                <div className='livestarttime' style={{ width: '100%' }}>
                   <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="ko">
                     <DemoContainer components={['DesktopDateTimePicker']}>
                       <DesktopDateTimePicker
                         label="라이브 방송 시간"
                         value={startDate}
                         onChange={(newValue) => setStartDate(newValue)}
-                        renderInput={(params) => <TextField {...params} />}
+                        renderInput={(params) => <TextField {...params} fullWidth sx={{ width: '100%' }} />} // 스타일을 적용하여 가로 사이즈를 설정
                         ampm={true}  // 24시간 형식
                         disablePast={true}  // 과거 날짜 선택 비활성화
                         slotProps={{ // 달력 사이즈 조절하여 시간 선택 부분이 잘리지 않도록 조정
@@ -88,6 +90,7 @@ const SellerformSelect = ({ onClose }) => {
                   </LocalizationProvider>
                 </div>
                 <div className={styles.thumbnailContainer}>
+                  <div>썸네일 설정</div>
                   <input 
                     type="file" 
                     accept="image/*" 
@@ -102,8 +105,6 @@ const SellerformSelect = ({ onClose }) => {
                     />
                   )}
                 </div>
-              </div>
-            </div>
             <div className={styles.sellerTime}>
               <div className={styles.div1}>거래 가능 시간</div>
               <div></div>
@@ -126,7 +127,6 @@ const SellerformSelect = ({ onClose }) => {
                 </div>
               </LocalizationProvider>
             </div>
-          </div>
           <div className={styles.button}>
             <button type="submit" className={styles.button1}>등록하기</button>
           </div>
