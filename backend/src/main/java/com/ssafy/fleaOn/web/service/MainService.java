@@ -1,5 +1,6 @@
 package com.ssafy.fleaOn.web.service;
 
+import com.ssafy.fleaOn.web.domain.Category;
 import com.ssafy.fleaOn.web.domain.Live;
 import com.ssafy.fleaOn.web.domain.Product;
 import com.ssafy.fleaOn.web.domain.Shorts;
@@ -57,7 +58,7 @@ public class MainService {
         return new SliceImpl<>(shortsResponsesList, pageable, shortsSlice.hasNext());
     }
 
-    public Optional<List> getMainCategoryList(){
+    public Optional<List<Category>> getMainCategoryList(){
         return Optional.of(categoryRepository.findAll());
     }
 

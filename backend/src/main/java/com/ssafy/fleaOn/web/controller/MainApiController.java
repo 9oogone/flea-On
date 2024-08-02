@@ -1,5 +1,6 @@
 package com.ssafy.fleaOn.web.controller;
 
+import com.ssafy.fleaOn.web.domain.Category;
 import com.ssafy.fleaOn.web.domain.Live;
 import com.ssafy.fleaOn.web.domain.Shorts;
 import com.ssafy.fleaOn.web.dto.MainShortsResponse;
@@ -59,17 +60,30 @@ public class MainApiController {
         }
     }
     @GetMapping("/mainCategory")
-    public ResponseEntity<?> getMaincategory() {
+    public ResponseEntity<?> getMainCategory() {
         try {
-            Optional<List> categoryList = mainService.getMainCategoryList();
-            if (categoryList.isEmpty()) {
+            // Optional을 사용하여 카테고리 리스트를 가져옴
+            Optional<List<Category>> categoryListOptional = mainService.getMainCategoryList();
+
+            // Optional 내부의 데이터 처리
+            if (categoryListOptional.isPresent()) {
+                List<Category> categoryList = categoryListOptional.get();
+
+                // 데이터가 비어 있는지 확인
+                if (categoryList.isEmpty()) {
+                    return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No category data found");
+                }
+
+                // 데이터가 존재하면 ResponseEntity에 포함하여 반환
+                return ResponseEntity.ok(categoryList);
+            } else {
+                // Optional이 비어 있을 경우 처리
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No category data found");
             }
-            return ResponseEntity.status(HttpStatus.OK).body(categoryList);
-        }
-        catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while fetching category data: " + e.getMessage());
-
+        } catch (Exception e) {
+            // 예외 처리
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An error occurred while fetching category data: " + e.getMessage());
         }
     }
 
