@@ -4,10 +4,11 @@ import com.ssafy.fleaOn.web.domain.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
+import java.util.*;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     Optional<Product> findByProductId(int productId);
+    Optional<List<Product>> findByLive_LiveId(int liveId);
 }

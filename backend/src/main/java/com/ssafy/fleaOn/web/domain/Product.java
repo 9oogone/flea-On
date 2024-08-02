@@ -18,11 +18,13 @@ public class Product {
     @Column(name = "product_id", updatable = false)
     private int productId;
 
-    @Column(name="live_id", nullable = false)
-    private int liveId;
+    @ManyToOne
+    @JoinColumn(name = "live_id")
+    private Live live;
 
-    @Column(name="seller_id", nullable = false)
-    private int sellerId;
+    @ManyToOne
+    @JoinColumn(name = "seller_id")
+    private User seller;
 
     @Column(name="name", nullable = false)
     private String name;
@@ -42,23 +44,23 @@ public class Product {
     @Column(name="cur_buyer_rear", nullable = false)
     private int curBuyerRear;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", insertable = false, updatable = false)
-    private User user;
-
-    @ManyToOne
-    @JoinColumn(name = "live_id", insertable = false, updatable = false)
-    private Live live;
 
     @Builder
-    public Product(int liveId, int sellerId, String name, int price, int firstCategory, int secondCategory) {
-        this.liveId = liveId;
-        this.sellerId = sellerId;
+    public Product(Live live, User user, String name, int price, int first_category, int second_category) {
+        this.live = live;
+        this.seller = user;
         this.name = name;
         this.price = price;
         this.firstCategory = firstCategory;
         this.secondCategory = secondCategory;
         this.curBuyerFront = 0;
         this.curBuyerRear = 0;
+    }
+
+    public void update(String name, int price, int firstCategory, int secondCategory) {
+        this.name = name;
+        this.price = price;
+        this.first_category = firstCategory;
+        this.second_category = secondCategory;
     }
 }
