@@ -1,12 +1,13 @@
 package com.ssafy.fleaOn.web.service;
 
-import com.ssafy.fleaOn.web.domain.Product;
-import com.ssafy.fleaOn.web.dto.PurchaseRequest;
-import com.ssafy.fleaOn.web.repository.ProductRepository;
-import com.ssafy.fleaOn.web.repository.ReservationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.example.project.dto.PurchaseRequest;
+import com.example.project.model.Product;
+import com.example.project.model.Reservation;
+import com.example.project.repository.ProductRepository;
+import com.example.project.repository.ReservationRepository;
 
 @Service
 public class PurchaseService {
