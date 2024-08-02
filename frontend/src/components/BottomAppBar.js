@@ -12,7 +12,7 @@ import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import "../styles/BottomAppBar.css";
 
-const TabBar = () => {
+const BottomAppBar = () => {
   const [isSellerformOpen, setSellerformOpen] = useState(false);
   const [value, setValue] = useState(0);
   const navigate = useNavigate();
@@ -41,42 +41,45 @@ const TabBar = () => {
 
   return (
     <>
-      <AppBar
-        position="fixed"
-        sx={{
-          top: "auto",
-          bottom: 0,
-          borderTop: "0.5px solid #1C1B1F",
-          boxShadow: "none",
-        }}
-      >
-        <BottomNavigation value={value} onChange={onTabClick}>
-          <BottomNavigationAction
-            icon={<HomeIcon className="homeIcon" />}
-            className="tab1"
-            onClick={goToHome}
-          />
-          <BottomNavigationAction
-            icon={<SearchIcon className="searchIcon" />}
-            className="tab2"
-            onClick={goToCategory}
-          />
-          <BottomNavigationAction
-            icon={<AddCircleIcon className="AddCircleIcon" />}
-            className="tab3"
-            onClick={openSellerform}
-          />
-          <BottomNavigationAction
-            icon={<ChatBubbleOutlineIcon className="chatIcon" />}
-            className="tab4"
-          />
-          <BottomNavigationAction
-            icon={<AccountCircleIcon className="accountIcon" />}
-            className="tab5"
-            onClick={goToMyPage}
-          />
-        </BottomNavigation>
-      </AppBar>
+      {!isSellerformOpen && (
+        <AppBar
+          position="fixed"
+          sx={{
+            top: "auto",
+            bottom: 0,
+            borderTop: "0.5px solid #1C1B1F",
+            boxShadow: "none",
+            zIndex: 1000, // z-index를 낮은 값으로 설정
+          }}
+        >
+          <BottomNavigation value={value} onChange={onTabClick}>
+            <BottomNavigationAction
+              icon={<HomeIcon className="homeIcon" />}
+              className="tab1"
+              onClick={goToHome}
+            />
+            <BottomNavigationAction
+              icon={<SearchIcon className="searchIcon" />}
+              className="tab2"
+              onClick={goToCategory}
+            />
+            <BottomNavigationAction
+              icon={<AddCircleIcon className="AddCircleIcon" />}
+              className="tab3"
+              onClick={openSellerform}
+            />
+            <BottomNavigationAction
+              icon={<ChatBubbleOutlineIcon className="chatIcon" />}
+              className="tab4"
+            />
+            <BottomNavigationAction
+              icon={<AccountCircleIcon className="accountIcon" />}
+              className="tab5"
+              onClick={goToMyPage}
+            />
+          </BottomNavigation>
+        </AppBar>
+      )}
       {isSellerformOpen && (
         <PortalPopup
           overlayColor="rgba(113, 113, 113, 0.3)"
@@ -90,4 +93,4 @@ const TabBar = () => {
   );
 };
 
-export default TabBar;
+export default BottomAppBar;
