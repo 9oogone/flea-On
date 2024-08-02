@@ -19,9 +19,6 @@ public class Shorts {
     @Column(name = "shorts_id")
     private int shortsId;
 
-    @Column(name = "product_id")
-    private int productId;
-
     @Column(name = "thumbnail")
     private String thumbnail;
 
@@ -33,4 +30,8 @@ public class Shorts {
 
     @Column(name = "upload_date")
     private LocalDateTime uploadDate;
+
+    @ManyToOne
+    @JoinColumn(name = "product_id", insertable = false, updatable = false)
+    private Product product;
 }

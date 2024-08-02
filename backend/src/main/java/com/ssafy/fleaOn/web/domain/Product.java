@@ -33,16 +33,16 @@ public class Product {
     private int price;
 
     @Column(name="first_category", nullable = false)
-    private int first_category;
+    private int firstCategory;
 
     @Column(name="second_category", nullable = false)
-    private int second_category;
+    private int secondCategory;
 
     @Column(name="cur_buyer_front", nullable = false)
-    private int cur_buyer_front;
+    private int curBuyerFront;
 
     @Column(name="cur_buyer_rear", nullable = false)
-    private int cur_buyer_rear;
+    private int curBuyerRear;
 
 
     @Builder
@@ -51,10 +51,10 @@ public class Product {
         this.seller = user;
         this.name = name;
         this.price = price;
-        this.first_category = first_category;
-        this.second_category = second_category;
-        this.cur_buyer_front = 0;
-        this.cur_buyer_rear = 0;
+        this.firstCategory = firstCategory;
+        this.secondCategory = secondCategory;
+        this.curBuyerFront = 0;
+        this.curBuyerRear = 0;
     }
 
     public void update(String name, int price, int firstCategory, int secondCategory) {

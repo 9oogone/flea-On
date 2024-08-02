@@ -14,8 +14,8 @@ public class AddProductRequest {
     private int productId;
     private String name;
     private int price;
-    private int first_category;
-    private int second_category;
+    private int firstCategory;
+    private int secondCategory;
 
     public Product toEntity(Live live, User seller) {
         return Product.builder()
@@ -23,8 +23,8 @@ public class AddProductRequest {
                 .user(seller)
                 .name(name)
                 .price(price)
-                .first_category(first_category)
-                .second_category(second_category)
+                .firstCategory(firstCategory)
+                .secondCategory(secondCategory)
                 .build();
     }
 }

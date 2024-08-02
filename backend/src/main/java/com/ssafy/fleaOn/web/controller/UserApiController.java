@@ -101,7 +101,7 @@ public class UserApiController {
     @GetMapping("/{email}/{tradeDate}/schedule")
     public ResponseEntity<?> getUserSchedule(@PathVariable("email") String email, @PathVariable("tradeDate") LocalDate tradeDate) {
         User user = userService.findByEmail(email);
-        Optional<List<Map<String, Object>>> userScheduleList = userService.getUserScheduleListByIdAndDate(user.getUserId(), tradeDate);
+        Optional<List<Map<String, Object>>> userScheduleList = userService.getUserScheduleListByUserIdAndDate(user.getUserId(), tradeDate);
 
         if (userScheduleList.isPresent()) {
             return ResponseEntity.status(HttpStatus.OK).body(userScheduleList.get());
@@ -142,7 +142,7 @@ public class UserApiController {
     public ResponseEntity<?> getUserCommerceLive(@PathVariable("email") String email) {
         User user = userService.findByEmail(email);
         System.out.println(user);
-        Optional<List<Map<String, Object>>> userCommerceLiveList = userService.getUserCommerceLiveListById(user.getUserId());
+        Optional<List<Map<String, Object>>> userCommerceLiveList = userService.getUserCommerceLiveListByUserId(user.getUserId());
         if (userCommerceLiveList.isPresent()) {
             return ResponseEntity.status(HttpStatus.OK).body(userCommerceLiveList.get());
         }
@@ -153,7 +153,7 @@ public class UserApiController {
     public ResponseEntity<?> getUserScrapLive(@PathVariable("email") String email) {
         User user = userService.findByEmail(email);
 
-        Optional<List<Map<String, Object>>> userScrapLiveList = userService.getUserScrapLiveById(user.getUserId());
+        Optional<List<Map<String, Object>>> userScrapLiveList = userService.getUserScrapLiveByUserId(user.getUserId());
         if (userScrapLiveList.isPresent()) {
             return ResponseEntity.status(HttpStatus.OK).body(userScrapLiveList.get());
         }
@@ -165,23 +165,12 @@ public class UserApiController {
     public ResponseEntity<?> getUserScrapShorts(@PathVariable("email") String email) {
         User user = userService.findByEmail(email);
 
-        Optional<List<Map<String, Object>>> userScrapShortsList = userService.getUserScrapShortsById(user.getUserId());
+        Optional<List<Map<String, Object>>> userScrapShortsList = userService.getUserScrapShortsByUserId(user.getUserId());
         if (userScrapShortsList.isPresent()) {
             return ResponseEntity.status(HttpStatus.OK).body(userScrapShortsList.get());
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
-//    @GetMapping("{email}/scrapLive")
-//    public ResponseEntity<?> getUserScrapLive(@PathVariable("email") String email) {
-//        User user = userService.findByEmail(email);
-//
-//        Optional<List<Map<String, Object>>> userScrapLiveList = userService.getUserScrapLiveById(user.getUserId());
-//        if (userScrapLiveList.isPresent()) {
-//            return ResponseEntity.status(HttpStatus.OK).body(userScrapLiveList.get());
-//        }
-//        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-//    }
-}
 
 //    @GetMapping("/{email}/{liveId}/commerceItem")
 //    public ResponseEntity<?> getUserCommerceItem(@PathVariable String email) {
@@ -194,4 +183,4 @@ public class UserApiController {
 //    }
 
 
-
+}

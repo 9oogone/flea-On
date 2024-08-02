@@ -16,19 +16,19 @@ import java.util.List;
 public class AddLiveRequest {
     private int liveId;
     private String title;
-    private String live_date; // LocalDateTime 대신 String 사용
+    private String liveDate; // LocalDateTime 대신 String 사용
     private String thumbnail;
-    private String trade_place;
+    private String tradePlace;
     private List<AddProductRequest> product;
 
     public Live toEntity(User user) {
         DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-        LocalDateTime parsedDate = LocalDateTime.parse(live_date, formatter);
+        LocalDateTime parsedDate = LocalDateTime.parse(liveDate, formatter);
         return Live.builder()
                 .title(title)
-                .live_date(parsedDate)
+                .liveDate(parsedDate)
                 .thumbnail(thumbnail)
-                .trade_place(trade_place)
+                .tradePlace(tradePlace)
                 .seller(user)
                 .build();
     }
