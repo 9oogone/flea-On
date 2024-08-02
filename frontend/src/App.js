@@ -11,6 +11,7 @@ import CheckLogin from "./features/auth/components/CheckLogin";
 import BottomAppBar from "./components/BottomAppBar";
 import MyPage from "./pages/MyPage";
 import Category from "./pages/CategoryPage";
+import Search from "./pages/SearchPage";
 import SearchForm from "./components/SearchForm";
 function App() {
   // 로그인 페이지가 아닌 경우에만 하단 앱 바를 표시
@@ -39,6 +40,7 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/check" element={<CheckLogin />} />
           <Route path="/category" element={<Category />} />
+          <Route path="/search" element={<Search />} />
           <Route path="/mypage" element={<MyPage />} />
         </Routes>
       </LocationWrapper>
