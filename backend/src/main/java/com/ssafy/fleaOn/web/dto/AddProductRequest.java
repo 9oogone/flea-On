@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AddProductRequest {
+    private int productId;
     private String name;
     private int price;
     private int first_category;
