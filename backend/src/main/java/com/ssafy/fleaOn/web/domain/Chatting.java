@@ -13,15 +13,6 @@ public class Chatting {
     @Column(name = "chatting_id")
     private int chattingId;
 
-    @Column(name = "live_id")
-    private int liveId;
-
-    @Column(name = "seller_id")
-    private int sellerId;
-
-    @Column(name = "buyer_id")
-    private int buyerId;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "live_id", insertable = false, updatable = false)
     private Live live;
@@ -35,10 +26,10 @@ public class Chatting {
     private User buyer;
 
     @Builder
-    public Chatting(int chattingId, int liveId, int sellerId, int buyerId) {
+    public Chatting(int chattingId, Live live, User seller, User buyer) {
         this.chattingId = chattingId;
-        this.liveId = liveId;
-        this.sellerId = sellerId;
-        this.buyerId = buyerId;
+        this.live = live;
+        this.seller = seller;
+        this.buyer = buyer;
     }
 }

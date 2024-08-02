@@ -13,9 +13,6 @@ public class LiveChatting {
     @Column(name = "live_chat_id")
     private int liveChatId;
 
-    @Column(name = "user_id")
-    private int userId;
-
     @Column(name = "content")
     private String content;
 
@@ -27,9 +24,9 @@ public class LiveChatting {
     private User user;
 
     @Builder
-    public LiveChatting(int liveChatId, int userId, String content, java.sql.Timestamp time) {
+    public LiveChatting(int liveChatId, User user, String content, java.sql.Timestamp time) {
         this.liveChatId = liveChatId;
-        this.userId = userId;
+        this.user = user;
         this.content = content;
         this.time = time;
     }

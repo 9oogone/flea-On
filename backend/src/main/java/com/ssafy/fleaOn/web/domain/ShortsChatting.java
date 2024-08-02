@@ -1,6 +1,10 @@
 package com.ssafy.fleaOn.web.domain;
 
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.ssafy.fleaOn.web.util.LocalDateTimeDeserializer;
+import com.ssafy.fleaOn.web.util.LocalDateTimeSerializer;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -28,6 +32,8 @@ public class ShortsChatting {
     private String content;
 
     @Column(name = "time")
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime time;
 
     @Column(name = "shorts_id")
