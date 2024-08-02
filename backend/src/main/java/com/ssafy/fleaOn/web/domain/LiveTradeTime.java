@@ -14,9 +14,6 @@ public class LiveTradeTime {
     @Column(name = "time_id")
     private int timeId;
 
-    @Column(name = "live_id")
-    private int liveId;
-
     @Column(name = "trade_start")
     private java.sql.Time tradeStart;
 
@@ -31,8 +28,8 @@ public class LiveTradeTime {
     private Live live;
 
     @Builder
-    public LiveTradeTime(int liveId, java.sql.Time tradeStart, java.sql.Time tradeEnd, java.sql.Date date) {
-        this.liveId = liveId;
+    public LiveTradeTime(Live live, java.sql.Time tradeStart, java.sql.Time tradeEnd, java.sql.Date date) {
+        this.live = live;
         this.tradeStart = tradeStart;
         this.tradeEnd = tradeEnd;
         this.date = date;

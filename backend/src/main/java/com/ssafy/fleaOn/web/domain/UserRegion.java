@@ -3,6 +3,8 @@ package com.ssafy.fleaOn.web.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
+import javax.swing.plaf.synth.Region;
+
 @AllArgsConstructor
 @Table(name = "user_region")
 @Getter
@@ -16,8 +18,9 @@ public class UserRegion {
     @Column(name = "region_id", nullable = false)
     private int regionId;
 
-    @Column(name = "region_code", nullable = false)
-    private String regionCode;
+    @ManyToOne
+    @JoinColumn(name = "region_code",insertable = false, updatable = false)
+    private RegionInfo region;
 
     @ManyToOne
     @JoinColumn(name = "user_id", insertable = false, updatable = false)

@@ -3,6 +3,8 @@ package com.ssafy.fleaOn.web.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -10,8 +12,17 @@ import lombok.*;
 public class Reservation {
 
     @Id
-    @Column(name = "product_id")
-    private int productId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "reservation_id")
+    private int reservationId;
+
+    @ManyToOne (fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    private User user;
+
+    @Column(name = "reservation_time")
+    private LocalDateTime reservationTime;
+
 
     @Column(name = "1")
     private Integer slot1;
@@ -36,8 +47,9 @@ public class Reservation {
     private Product product;
 
     @Builder
-    public Reservation(int productId, Integer slot1, Integer slot2, Integer slot3, Integer slot4, Integer slot5, Integer slot6) {
-        this.productId = productId;
+    public Reservation(User user, Product product, Integer slot1, Integer slot2, Integer slot3, Integer slot4, Integer slot5, Integer slot6) {
+        this.user = user;
+        this.product = product;
         this.slot1 = slot1;
         this.slot2 = slot2;
         this.slot3 = slot3;

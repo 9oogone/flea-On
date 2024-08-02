@@ -14,9 +14,6 @@ public class Alarm {
     @Column(name = "alarm_id")
     private int alarmId;
 
-    @Column(name = "user_id")
-    private int userId;
-
     @Column(name = "content")
     private String content;
 
@@ -31,8 +28,8 @@ public class Alarm {
     private User user;
 
     @Builder
-    public Alarm(int userId, String content, java.sql.Timestamp date, String profilePic) {
-        this.userId = userId;
+    public Alarm(User user, String content, java.sql.Timestamp date, String profilePic) {
+        this.user = user;
         this.content = content;
         this.date = date;
         this.profilePic = profilePic;

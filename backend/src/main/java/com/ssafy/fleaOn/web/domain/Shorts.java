@@ -1,5 +1,9 @@
 package com.ssafy.fleaOn.web.domain;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.ssafy.fleaOn.web.util.LocalDateTimeDeserializer;
+import com.ssafy.fleaOn.web.util.LocalDateTimeSerializer;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -29,6 +33,8 @@ public class Shorts {
     private String videoAddress;
 
     @Column(name = "upload_date")
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime uploadDate;
 
     @ManyToOne
