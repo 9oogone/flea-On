@@ -76,6 +76,40 @@ public class UserApiController {
         }
     }
 
+    @GetMapping("/info")
+    public ResponseEntity<?> getUserInfo(HttpServletRequest request) {
+        // Authorization 헤더에서 JWT 토큰 추출
+        String authorizationHeader = request.getHeader("Authorization");
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            String jwtToken = authorizationHeader.substring(7).trim();
+            System.out.println("jwtToken: " + jwtToken);
+
+            try {
+                // JWTUtil을 사용하여 토큰에서 이메일 추출
+                String email = JWTUtil.getEmail(jwtToken);
+                System.out.println("email : " + email);
+
+                // 이메일로 사용자 조회
+                User user = userService.findByEmail(email);
+                System.out.println("해당 회원 찾음 : " + user);
+
+                if (user != null) {
+                    // 사용자 정보를 ResponseEntity 본문에 포함하여 반환
+                    return ResponseEntity.status(HttpStatus.OK).body(user);
+                } else {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("회원 정보를 찾을 수 없습니다.");
+                }
+            } catch (Exception e) {
+                // JWT 파싱 오류 처리
+                e.printStackTrace();
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("잘못된 토큰입니다.");
+            }
+        } else {
+            // Authorization 헤더가 없거나 형식이 올바르지 않은 경우
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Authorization 헤더가 없거나 형식이 올바르지 않습니다.");
+        }
+    }
+
     @PutMapping("{email}/info")
     public ResponseEntity<?> updateUserInfo(@PathVariable("email") String email, @RequestBody User user) {
         User getUser = userService.findByEmail(email);

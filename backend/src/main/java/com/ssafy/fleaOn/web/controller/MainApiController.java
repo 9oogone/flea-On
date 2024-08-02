@@ -12,6 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,7 +25,7 @@ public class MainApiController {
     private final MainService mainService;
 
     @GetMapping("/mainLive")
-    public ResponseEntity<?> mainLive(@RequestParam("liveDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)LocalDateTime liveDate) {
+    public ResponseEntity<?> getMainLive(@RequestParam("liveDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)LocalDateTime liveDate) {
         try {
             // 서비스에서 데이터를 가져옵니다.
             Slice<Live> liveSlice = mainService.getMainLiveListByLiveDate(liveDate);
@@ -44,7 +47,7 @@ public class MainApiController {
     }
 
     @GetMapping("/mainShorts")
-    public ResponseEntity<?> mainShorts() {
+    public ResponseEntity<?> getMainShorts() {
         try {
             Slice<MainShortsResponse> shortsSlice = mainService.getMainShortsListByUploadDate();
             if (shortsSlice.isEmpty()) {
@@ -54,6 +57,20 @@ public class MainApiController {
         }
         catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while fetching short data: " + e.getMessage());
+        }
+    }
+    @GetMapping("/mainCategory")
+    public ResponseEntity<?> getMaincategory() {
+        try {
+            Optional<List> categoryList = mainService.getMainCategoryList();
+            if (categoryList.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No category data found");
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(categoryList);
+        }
+        catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while fetching category data: " + e.getMessage());
+
         }
     }
 

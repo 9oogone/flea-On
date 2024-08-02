@@ -4,6 +4,7 @@ import com.ssafy.fleaOn.web.domain.Live;
 import com.ssafy.fleaOn.web.domain.Product;
 import com.ssafy.fleaOn.web.domain.Shorts;
 import com.ssafy.fleaOn.web.dto.MainShortsResponse;
+import com.ssafy.fleaOn.web.repository.CategoryRepository;
 import com.ssafy.fleaOn.web.repository.LiveRepository;
 import com.ssafy.fleaOn.web.repository.ProductRepository;
 import com.ssafy.fleaOn.web.repository.ShortsRepository;
@@ -23,7 +24,8 @@ public class MainService {
     private final LiveRepository liveRepository;
 
     private final ShortsRepository shortsRepository;
-    private final ProductRepository productRepository;
+
+    private final CategoryRepository categoryRepository;
 
     public Slice<Live> getMainLiveListByLiveDate(LocalDateTime liveDate){
         Pageable pageable = PageRequest.of(0, 20);
@@ -53,6 +55,10 @@ public class MainService {
 
         // Slice 형태로 반환
         return new SliceImpl<>(shortsResponsesList, pageable, shortsSlice.hasNext());
+    }
+
+    public Optional<List> getMainCategoryList(){
+        return Optional.of(categoryRepository.findAll());
     }
 
 

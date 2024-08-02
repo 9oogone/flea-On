@@ -75,8 +75,8 @@ public class UserService {
         // UserRegion 리스트 처리
         Optional<List<UserRegion>> userRegionListOptional = userRegionRepository.findByUser_userId(user.getUserId());
         userRegionListOptional.ifPresent(userRegionList -> {
-            List<String> regionList = userRegionList.stream()
-                    .map(UserRegion::getRegionCode)
+            List<RegionInfo> regionList = userRegionList.stream()
+                    .map(UserRegion::getRegion)
                     .collect(Collectors.toList());
             userInfo.put("user_region", regionList);
         });
