@@ -115,12 +115,13 @@ public class OpenviduController {
 
             // Prepare the response with the sessionId and the token
             responseJson.addProperty("0", token);
-
+            System.out.println("responseJson=" + responseJson);
             // Return the response to the client
             return new ResponseEntity<>(responseJson, HttpStatus.OK);
 
         } catch (Exception e) {
             // If error generate an error message and return it to client
+            System.out.println(e.getMessage());
             return getErrorResponse(e);
         }
     }
