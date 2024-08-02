@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { login } from "../authSlice";
+import { performLogin } from "../actions";
 
 const CheckLogin = () => {
   const dispatch = useDispatch();
@@ -15,7 +15,7 @@ const CheckLogin = () => {
       const token = searchParam("access_token");
       if (token) {
         // 여기서 액션을 디스패치하여 URL의 토큰을 Redux 스토어에 저장
-        dispatch(login({ token, user: { name: "User" } }));
+        dispatch(performLogin({ token }));
         navigate("/"); // 메인 페이지로 리다이렉트
       } else {
         navigate("/login"); // 토큰이 없으면 로그인 페이지로 리다이렉트

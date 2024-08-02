@@ -15,6 +15,9 @@ const Switch = ({ options }) => {
     <ButtonGroup
       variant="contained"
       sx={{
+        backgroundColor: "white",
+        height: 36,
+        p: 0.3,
         borderRadius: "100px",
         overflow: "hidden",
         "& .MuiButtonGroup-grouped": {
