@@ -76,7 +76,7 @@ public class LiveService {
             if (productOptional.isPresent()) {
                 Product product = productOptional.get();
                 product.update(updateProductRequest.getName(), updateProductRequest.getPrice(),
-                        updateProductRequest.getFirstCategory(), updateProductRequest.getSecondCategory());
+                        updateProductRequest.getFirstCategoryId(), updateProductRequest.getSecondCategoryId());
                 return product;
             } else {
                 // 새로 추가된 제품 처리

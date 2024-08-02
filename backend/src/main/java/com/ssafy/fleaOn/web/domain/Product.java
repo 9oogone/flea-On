@@ -18,7 +18,7 @@ public class Product {
     @Column(name = "product_id", updatable = false)
     private int productId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seller_id", insertable = false, updatable = false)
     private User seller;
 
@@ -29,10 +29,10 @@ public class Product {
     private int price;
 
     @Column(name="first_category", nullable = false)
-    private int firstCategory;
+    private int firstCategoryId;
 
     @Column(name="second_category", nullable = false)
-    private int secondCategory;
+    private int secondCategoryId;
 
     @Column(name = "current_buyer_id", nullable = false)
     private int currentBuyerId;
@@ -46,28 +46,31 @@ public class Product {
     @Column(name="cur_buyer_rear", nullable = false)
     private int curBuyerRear;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "live_id", insertable = false, updatable = false)
     private Live live;
 
+    @OneToOne(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
+    private Shorts shorts;
+
     @Builder
-    public Product(Live live, User user, String name, int price, int firstCategory, int secondCategory, int currentBuyerId, int reservationCount) {
+    public Product(Live live, User user, String name, int price, int firstCategoryId, int secondCategoryId, int currentBuyerId, int reservationCount) {
         this.live = live;
         this.seller = user;
         this.name = name;
         this.price = price;
-        this.firstCategory = firstCategory;
-        this.secondCategory = secondCategory;
+        this.firstCategoryId = firstCategoryId;
+        this.secondCategoryId = secondCategoryId;
         this.currentBuyerId = currentBuyerId;
         this.reservationCount = reservationCount;
         this.curBuyerFront = 0;
         this.curBuyerRear = 0;
     }
 
-    public void update(String name, int price, int firstCategory, int secondCategory) {
+    public void update(String name, int price, int firstCategoryId, int secondCategoryId) {
         this.name = name;
         this.price = price;
-        this.firstCategory = firstCategory;
-        this.secondCategory = secondCategory;
+        this.firstCategoryId = firstCategoryId;
+        this.secondCategoryId = secondCategoryId;
     }
 }

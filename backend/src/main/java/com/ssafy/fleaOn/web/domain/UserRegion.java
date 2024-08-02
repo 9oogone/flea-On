@@ -18,11 +18,11 @@ public class UserRegion {
     @Column(name = "region_id", nullable = false)
     private int regionId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "region_code",insertable = false, updatable = false)
     private RegionInfo region;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private User user;
 

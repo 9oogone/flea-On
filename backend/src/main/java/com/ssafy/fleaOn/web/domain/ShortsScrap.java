@@ -16,12 +16,11 @@ public class ShortsScrap {
     @Column(name = "scrap_id")
     private int scrapId;
 
-
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shorts_id", insertable = false, updatable = false)
     private Shorts shorts;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id",  insertable = false, updatable = false)
     private User user;
 

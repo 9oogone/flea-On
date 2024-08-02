@@ -17,7 +17,7 @@ public class AddLiveRequest {
     private int liveId;
     private String title;
     private String liveDate; // LocalDateTime 대신 String 사용
-    private String thumbnail;
+    private String liveThumbnail;
     private String tradePlace;
     private List<AddProductRequest> product;
 
@@ -27,7 +27,7 @@ public class AddLiveRequest {
         return Live.builder()
                 .title(title)
                 .liveDate(parsedDate)
-                .thumbnail(thumbnail)
+                .liveThumbnail(liveThumbnail)
                 .tradePlace(tradePlace)
                 .seller(user)
                 .build();

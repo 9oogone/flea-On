@@ -31,7 +31,7 @@ public class Live {
     private LocalDateTime liveDate;
 
     @Column(name = "thumbnail")
-    private String thumbnail;
+    private String liveThumbnail;
 
     @Column(name = "trade_place", nullable = false)
     private String tradePlace;
@@ -39,24 +39,24 @@ public class Live {
     @Column(name = "is_live", nullable = false)
     private Boolean isLive;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seller_id", nullable = false)
     private User seller;
 
     @Builder
-    public Live(String title, LocalDateTime liveDate, String thumbnail, String tradePlace, User seller) {
+    public Live(String title, LocalDateTime liveDate, String liveThumbnail, String tradePlace, User seller) {
         this.title = title;
         this.liveDate = liveDate;
-        this.thumbnail = thumbnail;
+        this.liveThumbnail = liveThumbnail;
         this.tradePlace = tradePlace;
         this.seller = seller;
         this.isLive = false;
     }
 
-    public void update(String title, LocalDateTime liveDate, String thumbnail, String tradePlace) {
+    public void update(String title, LocalDateTime liveDate, String liveThumbnail, String tradePlace) {
         this.title = title;
         this.liveDate = liveDate;
-        this.thumbnail = thumbnail;
+        this.liveThumbnail = liveThumbnail;
         this.tradePlace = tradePlace;
     }
 
