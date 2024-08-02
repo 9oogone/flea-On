@@ -64,28 +64,27 @@ public class LiveService {
         live.update(request.getTitle(), parsedDate, request.getThumbnail(), request.getTrade_place());
 
         // 라이브 내의 Product 수정
-        Optional<List<Product>> existingProductsOptional = productRepository.findByLive_LiveId(liveId);
+        List<Product> existingProducts = productRepository.findByLive_LiveId(liveId)
+                .orElseThrow(() -> new IllegalArgumentException("no products found for live id: " + liveId));
 
-        if (existingProductsOptional.isPresent()) {
-            List<Product> existingProducts = existingProductsOptional.get();
+        List<Product> updatedProducts = request.getProduct().stream().map(updateProductRequest -> {
+            Optional<Product> productOptional = existingProducts.stream()
+                    .filter(p -> p.getProductId() == updateProductRequest.getProductId())
+                    .findFirst();
+            System.out.println(productOptional.isPresent());
 
-            for (UpdateProductRequest updateProductRequest : request.getProduct()) {
-                Optional<Product> productOptional = existingProducts.stream()
-                        .filter(p -> p.getProductId() == updateProductRequest.getProductId())
-                        .findFirst();
-
-                if (productOptional.isPresent()) {
-                    Product product = productOptional.get();
-                    product.update(updateProductRequest.getName(), updateProductRequest.getPrice(),
-                            updateProductRequest.getFirstCategory(), updateProductRequest.getSecondCategory());
-                } else {
-                    // 새로 추가된 제품 처리 (옵션)
-                    Product newProduct = updateProductRequest.toEntity(live, user);
-                    productRepository.save(newProduct);
-                }
+            if (productOptional.isPresent()) {
+                Product product = productOptional.get();
+                product.update(updateProductRequest.getName(), updateProductRequest.getPrice(),
+                        updateProductRequest.getFirstCategory(), updateProductRequest.getSecondCategory());
+                return product;
+            } else {
+                // 새로 추가된 제품 처리
+                return updateProductRequest.toEntity(live, user);
             }
-        }
+        }).collect(Collectors.toList());
 
+        productRepository.saveAll(updatedProducts);
         return live;
     }
 
