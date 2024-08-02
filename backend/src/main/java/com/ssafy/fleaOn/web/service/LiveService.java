@@ -108,6 +108,15 @@ public class LiveService {
         return new LiveDetailResponse(live, products);
     }
 
+    @Transactional
+    public Live onoffLive(int liveId) {
+        Live live = liveRepository.findById(liveId)
+                .orElseThrow(() -> new IllegalArgumentException("not found : " + liveId));
+        authorizeArticleAuthor(live);
+        live.onOff();
+        return live;
+    }
+
     private static void authorizeArticleAuthor(Live live) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
