@@ -26,8 +26,8 @@ public class UpdateProductRequest {
         return Product.builder()
                 .name(name)
                 .price(price)
-                .first_category(firstCategory)
-                .second_category(secondCategory)
+                .firstCategory(firstCategory)
+                .secondCategory(secondCategory)
                 .live(live)
                 .user(user)
                 .build();
