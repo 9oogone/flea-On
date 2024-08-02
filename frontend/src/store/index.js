@@ -5,6 +5,7 @@ import categoryReducer from "../features/category/categorySlice";
 import levelReducer from "../features/mypage/levelSlice";
 import contentReducer from "../features/home/contentSlice";
 
+
 const store = configureStore({
   reducer: {
     auth: authReducer,
