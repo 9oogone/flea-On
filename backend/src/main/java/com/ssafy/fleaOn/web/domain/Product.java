@@ -19,10 +19,6 @@ public class Product {
     private int productId;
 
     @ManyToOne
-    @JoinColumn(name = "live_id")
-    private Live live;
-
-    @ManyToOne
     @JoinColumn(name = "seller_id")
     private User seller;
 
@@ -44,9 +40,12 @@ public class Product {
     @Column(name="cur_buyer_rear", nullable = false)
     private int curBuyerRear;
 
+    @ManyToOne
+    @JoinColumn(name = "live_id", insertable = false, updatable = false)
+    private Live live;
 
     @Builder
-    public Product(Live live, User user, String name, int price, int first_category, int second_category) {
+    public Product(Live live, User user, String name, int price, int firstCategory, int secondCategory) {
         this.live = live;
         this.seller = user;
         this.name = name;
@@ -60,7 +59,7 @@ public class Product {
     public void update(String name, int price, int firstCategory, int secondCategory) {
         this.name = name;
         this.price = price;
-        this.first_category = firstCategory;
-        this.second_category = secondCategory;
+        this.firstCategory = firstCategory;
+        this.secondCategory = secondCategory;
     }
 }

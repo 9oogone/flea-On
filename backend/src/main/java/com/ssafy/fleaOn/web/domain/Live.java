@@ -61,6 +61,6 @@ public class Live {
     }
 
     public void onOff(){
-        this.is_live = !is_live;
+        this.isLive = !isLive;
     }
 }
