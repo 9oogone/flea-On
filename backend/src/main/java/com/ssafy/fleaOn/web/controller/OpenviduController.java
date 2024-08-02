@@ -104,12 +104,10 @@ public class OpenviduController {
         // New session
         System.out.println("New session " + sessionName);
         try {
-
             // Create a new OpenVidu Session
             Session session = this.openVidu.createSession();
             // Generate a new token with the recently created connectionProperties
             String token = session.createConnection(connectionProperties).getToken();
-
             // Store the session and the token in our collections
             this.mapSessions.put(sessionName, session);
             this.mapSessionNamesTokens.put(sessionName, new ConcurrentHashMap<>());
@@ -117,12 +115,13 @@ public class OpenviduController {
 
             // Prepare the response with the sessionId and the token
             responseJson.addProperty("0", token);
-
+            System.out.println("responseJson=" + responseJson);
             // Return the response to the client
             return new ResponseEntity<>(responseJson, HttpStatus.OK);
 
         } catch (Exception e) {
             // If error generate an error message and return it to client
+            System.out.println(e.getMessage());
             return getErrorResponse(e);
         }
     }
