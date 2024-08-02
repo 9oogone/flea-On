@@ -55,7 +55,7 @@ const SellerformSelect = ({ onClose }) => {
           <div className={styles.input}>
             <label className={styles.label}></label>
           </div>
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}> {/* 부모 컨테이너 */}
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}> 
             <div style={{ flex: 1 }}>
               <TextField
                 id="outlined-basic"
@@ -65,35 +65,35 @@ const SellerformSelect = ({ onClose }) => {
                 fullWidth
                 sx={{ marginBottom: '10px', marginTop: '10px' }}
               />
-              <div className='livestarttime' style={{ marginBottom: '10px' }}>
-                <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="ko">
-                  <DemoContainer components={['DesktopDateTimePicker']}>
-                    <DesktopDateTimePicker
-                      label="라이브 방송 시간"
-                      value={startDate}
-                      onChange={(newValue) => setStartDate(newValue)}
-                      renderInput={(params) => <TextField {...params} fullWidth />}
-                      ampm={true}
-                      disablePast={true}
-                      slotProps={{
-                        popper: {
-                          sx: {
-                            '& .MuiDateCalendar-root': {
-                              overflow: 'hidden',
-                              width: '250px',
-                              maxHeight: '336px',
-                              display: 'flex',
-                              flexDirection: 'column',
-                              margin: '0 auto',
-                              height: '336px',
-                            },
+            <div className='livestarttime' style={{ marginBottom: '10px' }}>
+              <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="ko">
+                <DemoContainer components={['DesktopDateTimePicker']}>
+                  <DesktopDateTimePicker
+                    label="라이브 방송 시간"
+                    value={startDate}
+                    onChange={(newValue) => setStartDate(newValue)}
+                    renderInput={(params) => <TextField {...params} fullWidth />}
+                    ampm={true}
+                    disablePast={true}
+                    slotProps={{
+                      popper: {
+                        sx: {
+                          '& .MuiDateCalendar-root': {
+                            overflow: 'hidden',
+                            width: '250px',
+                            maxHeight: '336px',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            margin: '0 auto',
+                            height: '336px',
                           },
                         },
-                      }}
-                    />
-                  </DemoContainer>
-                </LocalizationProvider>
-              </div>
+                      },
+                    }}
+                  />
+                </DemoContainer>
+              </LocalizationProvider>
+            </div>
               <div className={styles.sellerTime}> {/* 거래 가능 시간 */}
                 <div className={styles.div1}>거래 가능 시간</div>
                 <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="ko">
@@ -116,7 +116,7 @@ const SellerformSelect = ({ onClose }) => {
                 </LocalizationProvider>
               </div>
             </div>
-            <div className={styles.thumbnailContainer} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div className={styles.thumbnailContainer}>
               <input
                 type="file"
                 accept="image/*"
@@ -126,19 +126,18 @@ const SellerformSelect = ({ onClose }) => {
                 id="thumbnail-upload"
               />
               <label htmlFor="thumbnail-upload" style={{ cursor: 'pointer' }}>
-                {thumbnailPreview ? (
-                  <img
-                    className={styles.thumbnailPreview}
-                    src={thumbnailPreview}
-                    alt="Thumbnail Preview"
-                    style={{ width: '100px', height: '100px', objectFit: 'cover', borderRadius: '8px' }}
-                  />
-                ) : (
-                  <div style={{ width: '100px', height: '100px', backgroundColor: '#f0f0f0',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '8px' }}>
-                    <AddToPhotosIcon sx={{ color: "gray" }} />
-                  </div>
-                )}
+              {thumbnailPreview ? (
+              <img
+                className={styles.thumbnailPreview}
+                src={thumbnailPreview}
+                alt="Thumbnail Preview"
+              />
+            ) : (
+              <div className={styles.noThumbnail}>
+                <AddToPhotosIcon sx={{ color: "gray" }} />
+              </div>
+            )}
+
               </label>
               {thumbnailPreview && (
                 <IconButton onClick={() => {
