@@ -19,11 +19,7 @@ public class Product {
     private int productId;
 
     @ManyToOne
-    @JoinColumn(name = "live_id")
-    private Live live;
-
-    @ManyToOne
-    @JoinColumn(name = "seller_id")
+    @JoinColumn(name = "seller_id", insertable = false, updatable = false)
     private User seller;
 
     @Column(name="name", nullable = false)
@@ -33,34 +29,45 @@ public class Product {
     private int price;
 
     @Column(name="first_category", nullable = false)
-    private int first_category;
+    private int firstCategory;
 
     @Column(name="second_category", nullable = false)
-    private int second_category;
+    private int secondCategory;
+
+    @Column(name = "current_buyer_id", nullable = false)
+    private int currentBuyerId;
+
+    @Column(name = "reservation_count", nullable = false)
+    private int reservationCount;
 
     @Column(name="cur_buyer_front", nullable = false)
-    private int cur_buyer_front;
+    private int curBuyerFront;
 
     @Column(name="cur_buyer_rear", nullable = false)
-    private int cur_buyer_rear;
+    private int curBuyerRear;
 
+    @ManyToOne
+    @JoinColumn(name = "live_id", insertable = false, updatable = false)
+    private Live live;
 
     @Builder
-    public Product(Live live, User user, String name, int price, int first_category, int second_category) {
+    public Product(Live live, User user, String name, int price, int firstCategory, int secondCategory, int currentBuyerId, int reservationCount) {
         this.live = live;
         this.seller = user;
         this.name = name;
         this.price = price;
-        this.first_category = first_category;
-        this.second_category = second_category;
-        this.cur_buyer_front = 0;
-        this.cur_buyer_rear = 0;
+        this.firstCategory = firstCategory;
+        this.secondCategory = secondCategory;
+        this.currentBuyerId = currentBuyerId;
+        this.reservationCount = reservationCount;
+        this.curBuyerFront = 0;
+        this.curBuyerRear = 0;
     }
 
     public void update(String name, int price, int firstCategory, int secondCategory) {
         this.name = name;
         this.price = price;
-        this.first_category = firstCategory;
-        this.second_category = secondCategory;
+        this.firstCategory = firstCategory;
+        this.secondCategory = secondCategory;
     }
 }

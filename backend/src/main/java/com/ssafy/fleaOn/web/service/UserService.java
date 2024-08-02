@@ -73,16 +73,16 @@ public class UserService {
         userInfo.put("profile_picture", user.getProfilePicture());
 
         // UserRegion 리스트 처리
-        Optional<List<UserRegion>> userRegionListOptional = userRegionRepository.findByUser_UserId(user.getUserId());
+        Optional<List<UserRegion>> userRegionListOptional = userRegionRepository.findByUser_userId(user.getUserId());
         userRegionListOptional.ifPresent(userRegionList -> {
-            List<String> regionList = userRegionList.stream()
-                    .map(UserRegion::getRegionCode)
+            List<RegionInfo> regionList = userRegionList.stream()
+                    .map(UserRegion::getRegion)
                     .collect(Collectors.toList());
             userInfo.put("user_region", regionList);
         });
 
         // Trade 리스트 처리
-        Optional<List<Trade>> tradeListOptional = tradeRepository.findByUser_UserId(user.getUserId());
+        Optional<List<Trade>> tradeListOptional = tradeRepository.findByUser_userId(user.getUserId());
         tradeListOptional.ifPresent(tradeList -> {
             List<LocalDate> tradeDates = tradeList.stream()
                     .map(Trade::getTradeDate)
@@ -93,7 +93,7 @@ public class UserService {
         return userInfo;
     }
 
-    public Optional<List<Map<String, Object>>> getUserScheduleListByIdAndDate(int userId, LocalDate tradeDate) {
+    public Optional<List<Map<String, Object>>> getUserScheduleListByUserIdAndDate(int userId, LocalDate tradeDate) {
         LocalDate endDate = tradeDate.plusDays(6);
         Optional<List<Trade>> tradesOptional = tradeRepository.findByTradeDateBetweenAndBuyerIdOrSellerId(tradeDate, endDate, userId, userId);
 
@@ -187,7 +187,7 @@ public class UserService {
         return Optional.of(reservationList);
     }
 
-    public Optional<List<Map<String, Object>>> getUserCommerceLiveListById(int userId) {
+    public Optional<List<Map<String, Object>>> getUserCommerceLiveListByUserId(int userId) {
         Optional<List<Live>> commerceLiveListOptional = liveRepository.findBySeller_userId(userId);
         if (commerceLiveListOptional.isEmpty()) {
             return Optional.empty();
@@ -202,9 +202,9 @@ public class UserService {
             commerceLiveOptional.ifPresent(commerceLive -> {
                 Map<String, Object> commerceLiveResult = new HashMap<>();
                 commerceLiveResult.put("title", commerceLive.getTitle());
-                commerceLiveResult.put("trade_place", commerceLive.getTrade_place());
-                commerceLiveResult.put("is_live", commerceLive.getIs_live());
-                commerceLiveResult.put("live_date", commerceLive.getLive_date());
+                commerceLiveResult.put("trade_place", commerceLive.getTradePlace());
+                commerceLiveResult.put("is_live", commerceLive.getIsLive());
+                commerceLiveResult.put("live_date", commerceLive.getLiveDate());
                 userCommerceLiveList.add(commerceLiveResult);
             });
         }
@@ -212,8 +212,7 @@ public class UserService {
         return Optional.of(userCommerceLiveList);
     }
 
-
-    public Optional<List<Map<String, Object>>> getUserScrapLiveById(int userId) {
+    public Optional<List<Map<String, Object>>> getUserScrapLiveByUserId(int userId) {
         Optional<List<LiveScrap>> scrapLiveListOptional = liveScrapRepository.findByUser_userId(userId);
         if (scrapLiveListOptional.isEmpty()) {
             return Optional.empty();
@@ -229,10 +228,10 @@ public class UserService {
             scrapLiveOptional.ifPresent(scrapLive -> {
                 scrapLiveResult.put("title", scrapLive.getTitle());
                 scrapLiveResult.put("seller_id", scrapLive.getSeller().getUserId());
-                scrapLiveResult.put("live_date", scrapLive.getLive_date());
-                scrapLiveResult.put("is_live", scrapLive.getIs_live());
+                scrapLiveResult.put("live_date", scrapLive.getLiveDate());
+                scrapLiveResult.put("is_live", scrapLive.getIsLive());
                 scrapLiveResult.put("thumbnail", scrapLive.getThumbnail());
-                scrapLiveResult.put("trade_place", scrapLive.getTrade_place());
+                scrapLiveResult.put("trade_place", scrapLive.getTradePlace());
                 scrapLiveResult.put("live_id", scrapLive.getLiveId());
             });
 
@@ -240,34 +239,7 @@ public class UserService {
         }
         return Optional.of(userScrapLiveList);
     }
-//    public Optional<List<Map<String, Object>>> getUserScrapLiveById(int userId) {
-//        Optional<List<LiveScrap>> scrapLiveListOptional = liveScrapRepository.findByUser_UserId(userId);
-//        if (scrapLiveListOptional.isEmpty()) {
-//            return Optional.empty();
-//        }
-//        List<LiveScrap> scrapLiveList = scrapLiveListOptional.get();
-//        List<Map<String, Object>> userScrapLiveList = new ArrayList<>();
-//
-//        for (Live live : scrapLiveList) {
-//            Map<String, Object> scrapLiveResult = new HashMap<>();
-//            Optional<Live> scrapLiveOptional = liveRepository.findById(live.getLiveId());
-//
-//            // Optional이 비어 있지 않으면 값을 가져와서 처리
-//            scrapLiveOptional.ifPresent(scrapLive -> {
-//                scrapLiveResult.put("title", scrapLive.getTitle());
-//                scrapLiveResult.put("seller_id", scrapLive.getSeller().getUserId());
-//                scrapLiveResult.put("live_date", scrapLive.getLive_date());
-//                scrapLiveResult.put("is_live", scrapLive.getIs_live());
-//                scrapLiveResult.put("thumbnail", scrapLive.getThumbnail());
-//                scrapLiveResult.put("trade_place", scrapLive.getTrade_place());
-//            });
-//
-//            userScrapLiveList.add(scrapLiveResult);
-//        }
-//        return Optional.of(userScrapLiveList);
-//    }
-
-    public Optional<List<Map<String, Object>>> getUserScrapShortsById(int userId) {
+    public Optional<List<Map<String, Object>>> getUserScrapShortsByUserId(int userId) {
         Optional<List<ShortsScrap>> scrapShortsOptional = shortsScrapRepository.findByUser_userId(userId);
         if (scrapShortsOptional.isEmpty()) {
             return Optional.empty();
@@ -280,7 +252,7 @@ public class UserService {
             Optional<Shorts> scrapShortsList = shortsRepository.findByShortsId(shortsScrap.getShorts().getShortsId());
             scrapShortsList.ifPresent(scrapShorts -> {
                 shortsResult.put("length", scrapShorts.getLength());
-                shortsResult.put(("product_id"), scrapShorts.getProductId());
+                shortsResult.put(("product_id"), scrapShorts.getProduct().getProductId());
                 shortsResult.put(("shorts_id"), scrapShorts.getShortsId());
                 shortsResult.put(("upload_date"), scrapShorts.getUploadDate());
                 shortsResult.put(("thumbnail"), scrapShorts.getThumbnail());

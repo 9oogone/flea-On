@@ -28,39 +28,39 @@ public class Live {
     @Column(name = "live_date", nullable = false)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    private LocalDateTime live_date;
+    private LocalDateTime liveDate;
 
     @Column(name = "thumbnail")
     private String thumbnail;
 
     @Column(name = "trade_place", nullable = false)
-    private String trade_place;
+    private String tradePlace;
 
     @Column(name = "is_live", nullable = false)
-    private Boolean is_live;
+    private Boolean isLive;
 
     @ManyToOne
     @JoinColumn(name = "seller_id", nullable = false)
     private User seller;
 
     @Builder
-    public Live(String title, LocalDateTime live_date, String thumbnail, String trade_place, User seller) {
+    public Live(String title, LocalDateTime liveDate, String thumbnail, String tradePlace, User seller) {
         this.title = title;
-        this.live_date = live_date;
+        this.liveDate = liveDate;
         this.thumbnail = thumbnail;
-        this.trade_place = trade_place;
+        this.tradePlace = tradePlace;
         this.seller = seller;
-        this.is_live = false;
+        this.isLive = false;
     }
 
-    public void update(String title, LocalDateTime live_date, String thumbnail, String trade_place) {
+    public void update(String title, LocalDateTime liveDate, String thumbnail, String tradePlace) {
         this.title = title;
-        this.live_date = live_date;
+        this.liveDate = liveDate;
         this.thumbnail = thumbnail;
-        this.trade_place = trade_place;
+        this.tradePlace = tradePlace;
     }
 
     public void onOff(){
-        this.is_live = !is_live;
+        this.isLive = !isLive;
     }
 }
