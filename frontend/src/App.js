@@ -15,8 +15,20 @@ import Search from "./pages/SearchPage";
 import SearchForm from "./components/SearchForm";
 import SearchShorts from "./pages/SearchShortsPage";
 import SearchLive from "./pages/SearchLivePage";
+import PrivateRoute from "./components/PrivateRoute";
+
+const routes = [
+  { path: "/", element: <HomePage />, isPrivate: true },
+  { path: "/login", element: <LoginPage />, isPrivate: false },
+  { path: "/check", element: <CheckLogin />, isPrivate: false },
+  { path: "/category", element: <Category />, isPrivate: true },
+  { path: "/search", element: <Search />, isPrivate: true },
+  { path: "/mypage", element: <MyPage />, isPrivate: true },
+  { path: "/search/shorts", element: <SearchShorts />, isPrivate: true },
+  { path: "/search/live", element: <SearchLive />, isPrivate: true },
+];
+
 function App() {
-  // 로그인 페이지가 아닌 경우에만 하단 앱 바를 표시
   const LocationWrapper = ({ children }) => {
     const location = useLocation();
     const isLoginPage = location.pathname === "/login";
@@ -38,14 +50,21 @@ function App() {
     <Router>
       <LocationWrapper>
         <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/check" element={<CheckLogin />} />
-          <Route path="/category" element={<Category />} />
-          <Route path="/search" element={<Search />} />
-          <Route path="/mypage" element={<MyPage />} />
-          <Route path="/search/shorts" element={<SearchShorts />} />
-          <Route path="/search/live" element={<SearchLive />} />
+          {routes.map((route) =>
+            route.isPrivate ? (
+              <Route
+                key={route.path}
+                path={route.path}
+                element={<PrivateRoute element={route.element} />}
+              />
+            ) : (
+              <Route
+                key={route.path}
+                path={route.path}
+                element={route.element}
+              />
+            )
+          )}
         </Routes>
       </LocationWrapper>
     </Router>
