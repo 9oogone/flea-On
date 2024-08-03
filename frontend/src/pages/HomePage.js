@@ -58,6 +58,66 @@ const HomePage = () => {
         is_live: false,
         live_date: "오늘 오후 8시",
       },
+      {
+        id: 5,
+        name: "웜업탑",
+        price: 5000,
+        title: "aloyoga 기능성",
+        trade_place: "덕명동",
+        thumbnail: "https://picsum.photos/160/250",
+        live_id: 1,
+        is_scrap: true,
+        is_live: false,
+        live_date: "오늘 오후 8시",
+      },
+      {
+        id: 6,
+        name: "웜업탑",
+        price: 5000,
+        title: "aloyoga 기능성",
+        trade_place: "덕명동",
+        thumbnail: "https://picsum.photos/160/250",
+        live_id: 1,
+        is_scrap: true,
+        is_live: false,
+        live_date: "오늘 오후 8시",
+      },
+      {
+        id: 7,
+        name: "웜업탑",
+        price: 5000,
+        title: "aloyoga 기능성",
+        trade_place: "덕명동",
+        thumbnail: "https://picsum.photos/160/250",
+        live_id: 1,
+        is_scrap: true,
+        is_live: false,
+        live_date: "오늘 오후 8시",
+      },
+      {
+        id: 8,
+        name: "웜업탑",
+        price: 5000,
+        title: "aloyoga 기능성",
+        trade_place: "덕명동",
+        thumbnail: "https://picsum.photos/160/250",
+        live_id: 1,
+        is_scrap: true,
+        is_live: false,
+        live_date: "오늘 오후 8시",
+      },
+      {
+        id: 9,
+        name: "웜업탑",
+        price: 5000,
+        title: "aloyoga 기능성",
+        trade_place: "덕명동",
+        thumbnail: "https://picsum.photos/160/250",
+        live_id: 1,
+        is_scrap: true,
+        is_live: false,
+        live_date: "오늘 오후 8시",
+      },
     ],
     shorts: [
       {
@@ -89,7 +149,7 @@ const HomePage = () => {
 
   return (
     <Container>
-      <Grid container spacing={3} sx={{ mt: 1 }}>
+      <Grid container spacing={3} sx={{ marginTop: "12vh" }}>
         {selectedTab === "live" && <LiveBroadcasts items={contents.live} />}
         {selectedTab === "shorts" && <Shorts items={contents.shorts} />}
         <Box
