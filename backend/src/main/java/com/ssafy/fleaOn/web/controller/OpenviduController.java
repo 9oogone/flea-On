@@ -75,7 +75,6 @@ public class OpenviduController {
             // Session already exists
             System.out.println("Existing session " + sessionName);
             try {
-
                 // Generate a new token with the recently created connectionProperties
                 String token = this.mapSessions.get(sessionName).createConnection(connectionProperties).getToken();
 
@@ -83,7 +82,9 @@ public class OpenviduController {
                 this.mapSessionNamesTokens.get(sessionName).put(token, role);
 
                 // Prepare the response with the token
-                responseJson.addProperty("0", token);
+                JsonArray jsonArray = new JsonArray();
+                jsonArray.add(token);
+                responseJson.add("tokens", jsonArray);
 
                 // Return the response to the client
                 return new ResponseEntity<>(responseJson, HttpStatus.OK);
@@ -114,8 +115,11 @@ public class OpenviduController {
             this.mapSessionNamesTokens.get(sessionName).put(token, role);
 
             // Prepare the response with the sessionId and the token
-            responseJson.addProperty("0", token);
+            JsonArray jsonArray = new JsonArray();
+            jsonArray.add(token);
+            responseJson.add("tokens", jsonArray);
             System.out.println("responseJson=" + responseJson);
+
             // Return the response to the client
             return new ResponseEntity<>(responseJson, HttpStatus.OK);
 
