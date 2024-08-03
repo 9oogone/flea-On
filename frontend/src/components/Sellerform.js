@@ -4,22 +4,23 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/ko';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DatePicker, DesktopDateTimePicker } from '@mui/x-date-pickers';
+import { TimePicker, DatePicker, DesktopDateTimePicker } from '@mui/x-date-pickers';
 import TextField from '@mui/material/TextField';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import AddToPhotosIcon from '@mui/icons-material/AddToPhotos';
+import { DemoItem } from '@mui/x-date-pickers/internals/demo';
+import Button from '@mui/material/Button';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
-// 로케일을 한국어로 설정
 dayjs.locale('ko');
 
 const SellerformSelect = ({ onClose }) => {
   const [thumbnail, setThumbnail] = useState(null);
   const [thumbnailPreview, setThumbnailPreview] = useState(null);
-
   const [startDate, setStartDate] = useState(dayjs());
-  const [endDate, setEndDate] = useState(dayjs());
+  const [transactionTimes, setTransactionTimes] = useState([{ date: dayjs(), from: dayjs(), to: dayjs() }]);
 
   const handleThumbnailChange = (event) => {
     const file = event.target.files[0];
@@ -29,12 +30,28 @@ const SellerformSelect = ({ onClose }) => {
     }
   };
 
+  const handleAddTransactionTime = () => {
+    setTransactionTimes([...transactionTimes, { date: dayjs(), from: dayjs(), to: dayjs() }]);
+  };
+
+  const handleRemoveTransactionTime = (index) => {
+    if (transactionTimes.length > 1) {
+      setTransactionTimes(transactionTimes.filter((_, idx) => idx !== index));
+    }
+  };
+
+  const handleTransactionTimeChange = (index, field, value) => {
+    const updatedTimes = transactionTimes.map((time, idx) => (
+      idx === index ? { ...time, [field]: value } : time
+    ));
+    setTransactionTimes(updatedTimes);
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     const formData = new FormData();
     formData.append('thumbnail', thumbnail);
 
-    // 백엔드로 폼 데이터 전송
     try {
       const response = await fetch('/api/upload-thumbnail', {
         method: 'POST',
@@ -55,7 +72,7 @@ const SellerformSelect = ({ onClose }) => {
           <div className={styles.input}>
             <label className={styles.label}></label>
           </div>
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}> {/* 부모 컨테이너 */}
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
             <div style={{ flex: 1 }}>
               <TextField
                 id="outlined-basic"
@@ -94,27 +111,6 @@ const SellerformSelect = ({ onClose }) => {
                   </DemoContainer>
                 </LocalizationProvider>
               </div>
-              <div className={styles.sellerTime}> {/* 거래 가능 시간 */}
-                <div className={styles.div1}>거래 가능 시간</div>
-                <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="ko">
-                  <div className={styles.dateParent}>
-                    <DatePicker
-                      label="시작 날짜"
-                      value={startDate}
-                      onChange={(newValue) => setStartDate(newValue)}
-                      renderInput={(params) => <TextField {...params} />}
-                      inputFormat="YYYY년 MM월 DD일"
-                    />
-                    <DatePicker
-                      label="종료 날짜"
-                      value={endDate}
-                      onChange={(newValue) => setEndDate(newValue)}
-                      renderInput={(params) => <TextField {...params} />}
-                      inputFormat="YYYY년 MM월 DD일"
-                    />
-                  </div>
-                </LocalizationProvider>
-              </div>
             </div>
             <div className={styles.thumbnailContainer}>
               <input
@@ -126,18 +122,17 @@ const SellerformSelect = ({ onClose }) => {
                 id="thumbnail-upload"
               />
               <label htmlFor="thumbnail-upload" style={{ cursor: 'pointer' }}>
-              {thumbnailPreview ? (
-              <img
-                className={styles.thumbnailPreview}
-                src={thumbnailPreview}
-                alt="Thumbnail Preview"
-              />
-            ) : (
-              <div className={styles.noThumbnail}>
-                <AddToPhotosIcon sx={{ color: "gray" }} />
-              </div>
-            )}
-
+                {thumbnailPreview ? (
+                  <img
+                    className={styles.thumbnailPreview}
+                    src={thumbnailPreview}
+                    alt="Thumbnail Preview"
+                  />
+                ) : (
+                  <div className={styles.noThumbnail}>
+                    <AddToPhotosIcon sx={{ color: "gray" }} />
+                  </div>
+                )}
               </label>
               {thumbnailPreview && (
                 <IconButton onClick={() => {
@@ -148,6 +143,65 @@ const SellerformSelect = ({ onClose }) => {
                 </IconButton>
               )}
             </div>
+          </div>
+          <div className={styles.regionContainer}>
+          <div className>거래 장소</div> 
+          </div>
+          <div className={styles.sellerTimeContainer}>
+            <div className={styles.sellerTime}>
+              <div className={styles.div1}>거래 가능 시간</div>
+              <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="ko">
+                {transactionTimes.map((time, index) => (
+                  <div key={index} className={styles.dateParent} style={{ marginBottom: '20px' }}>
+                    <div>
+                      <DatePicker
+                        label="날짜"
+                        value={time.date}
+                        onChange={(newValue) => handleTransactionTimeChange(index, 'date', newValue)}
+                        renderInput={(params) => <TextField {...params} />}
+                        inputFormat="YYYY년 MM월 DD일"
+                      />
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <DemoItem>
+                        <TimePicker
+                          label="부터"
+                          value={time.from}
+                          onChange={(newValue) => handleTransactionTimeChange(index, 'from', newValue)}
+                          renderInput={(params) => <TextField {...params} />}
+                        />
+                      </DemoItem>
+                      <span style={{ margin: '0 10px' }}>~</span>
+                      <DemoItem>
+                        <TimePicker
+                          label="까지"
+                          value={time.to}
+                          onChange={(newValue) => handleTransactionTimeChange(index, 'to', newValue)}
+                          renderInput={(params) => <TextField {...params} />}
+                        />
+                      </DemoItem>
+                      {transactionTimes.length > 1 && (
+                        <IconButton
+                          onClick={() => handleRemoveTransactionTime(index)}
+                          style={{ marginLeft: '10px' }}
+                        >
+                          <CloseIcon />
+                        </IconButton>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </LocalizationProvider>
+            </div>
+          </div>
+          <div className={styles.button}>
+            <Button
+              color="primary"
+              onClick={handleAddTransactionTime}
+              startIcon={<AddCircleOutlineIcon style={{ color: 'gray', fontSize:'30' }}/>}
+              style={{ marginBottom: '10px', display: 'flex' }}
+            >
+            </Button>
           </div>
           <div className={styles.button}>
             <button type="submit" className={styles.button1}>등록하기</button>
