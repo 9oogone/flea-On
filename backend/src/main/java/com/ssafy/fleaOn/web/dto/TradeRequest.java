@@ -1,33 +1,39 @@
 package com.ssafy.fleaOn.web.dto;
 
-import com.ssafy.fleaOn.web.domain.Chatting;
-import com.ssafy.fleaOn.web.domain.Live;
-import com.ssafy.fleaOn.web.domain.Product;
-import com.ssafy.fleaOn.web.domain.Shorts;
-import jakarta.persistence.*;
+import com.ssafy.fleaOn.web.domain.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Time;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class TradeRequest {
 
+    private int productId;
+    private int liveId;
+    private int buyerId;
     private int sellerId;
     private LocalDate tradeDate;
-    private Time tradeTime;
+    private String tradeTime; // String으로 변경
     private String tradePlace;
-    private int chattingId;
-    private int buyerId;
-    private Live live;
-    private Shorts shorts;
-    private Product product;
 
-//    private Chatting chatting;
+    public Trade toEntity(Live live, Product product){
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+        LocalTime parsedTradeTime = LocalTime.parse(tradeTime, timeFormatter);
 
-
+        return Trade.builder()
+                .buyerId(buyerId)
+                .sellerId(sellerId)
+                .live(live)
+                .product(product)
+                .tradeDate(tradeDate)
+                .tradeTime(parsedTradeTime)
+                .tradePlace(tradePlace)
+                .build();
+    }
 }

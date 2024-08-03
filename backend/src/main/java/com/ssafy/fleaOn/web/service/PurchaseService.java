@@ -1,10 +1,9 @@
 package com.ssafy.fleaOn.web.service;
 
-import com.ssafy.fleaOn.web.domain.Product;
-import com.ssafy.fleaOn.web.domain.Reservation;
-import com.ssafy.fleaOn.web.domain.Trade;
-import com.ssafy.fleaOn.web.domain.User;
+import com.ssafy.fleaOn.web.domain.*;
 import com.ssafy.fleaOn.web.dto.PurchaseRequest;
+import com.ssafy.fleaOn.web.dto.TradeRequest;
+import com.ssafy.fleaOn.web.repository.LiveRepository;
 import com.ssafy.fleaOn.web.repository.ProductRepository;
 import com.ssafy.fleaOn.web.repository.ReservationRepository;
 import com.ssafy.fleaOn.web.repository.TradeRepository;
@@ -20,12 +19,14 @@ import java.util.Optional;
 public class PurchaseService {
 
     private final ProductRepository productRepository;
+    private final LiveRepository liveRepository;
     private final ReservationRepository reservationRepository;
     private final TradeRepository tradeRepository;
 
     @Autowired
-    public PurchaseService(ProductRepository productRepository, ReservationRepository reservationRepository, TradeRepository tradeRepository) {
+    public PurchaseService(ProductRepository productRepository, LiveRepository liveRepository, ReservationRepository reservationRepository, TradeRepository tradeRepository) {
         this.productRepository = productRepository;
+        this.liveRepository = liveRepository;
         this.reservationRepository = reservationRepository;
         this.tradeRepository = tradeRepository;
     }
@@ -47,7 +48,7 @@ public class PurchaseService {
             reservationRepository.save(reservation);
             product.setReservationCount(product.getReservationCount() + 1);
             productRepository.save(product);
-            return product.getReservationCount(); // 예약자 순번 반환
+            return product.getReservationCount()-1; // 예약자 순번 반환
         } else {
             return 6; // 예약 불가능
         }
@@ -70,13 +71,13 @@ public class PurchaseService {
                 productRepository.save(product);
                 return product.getCurrentBuyerId();
             }
-            return 0;
+            return 0; // 다음 예약자가 없는 경우
         }
-        return -1;
+        return -1; // 현재 구매자가 아닌 경우
     }
 
     @Transactional
-    public void processReservationRequest(PurchaseRequest request) {
+    public int processReservationRequest(PurchaseRequest request) {
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
 
@@ -88,11 +89,13 @@ public class PurchaseService {
             reservationRepository.save(reservation);
             product.setReservationCount(product.getReservationCount() + 1);
             productRepository.save(product);
+            return product.getReservationCount(); // 그 다음예약자 순번 반환
         }
+        return 6;
     }
 
     @Transactional
-    public void processCancelReservationRequest(PurchaseRequest request) {
+    public int processCancelReservationRequest(PurchaseRequest request) {
         Optional<Reservation> reservation = reservationRepository.findByProduct_ProductIdAndUser_UserId(request.getProductId(), request.getUserId());
         if (reservation.isPresent()) {
             reservationRepository.delete(reservation.get());
@@ -100,26 +103,25 @@ public class PurchaseService {
                     .orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
             product.setReservationCount(product.getReservationCount() - 1);
             productRepository.save(product);
+            return product.getReservationCount();
         }
+        return -1;
     }
 
-//    @Transactional
-//    public void processConfirmPurchaseRequest(PurchaseRequest request) {
-//        Product product = productRepository.findById(request.getProductId())
-//                .orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
-//
-//        if (request.getUserId() == product.getCurrentBuyerId()) {
-//            Trade trade = Trade.builder()
-//                    .buyerId(request.getUserId())
-//                    .product(product)
-//                    .tradeDate(LocalDate.now())
-//                    .tradeTime(LocalTime.now())
-//                    .tradePlace("Trade Place")
-//                    .build();
-//            tradeRepository.save(trade);
-//
-//            product.setCurrentBuyerId(0);
-//            productRepository.save(product);
-//        }
-//    }
+    @Transactional
+    public void processConfirmPurchaseRequest(TradeRequest request) {
+        Product product = productRepository.findById(request.getProductId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
+
+        Live live = liveRepository.findById(request.getLiveId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid live ID"));
+
+        if (request.getBuyerId() == product.getCurrentBuyerId()) {
+            Trade trade = request.toEntity(live, product);
+            //채팅id, 숏츠id 넣은다음에 아래에 저장해야하는데 어떻게 하지..
+            tradeRepository.save(trade);
+            product.setCurrentBuyerId(0); // 구매 확정 후 현재 구매자 초기화
+            productRepository.save(product);
+        }
+    }
 }
