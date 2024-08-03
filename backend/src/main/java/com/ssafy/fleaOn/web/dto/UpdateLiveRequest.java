@@ -11,8 +11,8 @@ import java.util.List;
 @Getter
 public class UpdateLiveRequest {
     private String title;
-    private String live_date; // LocalDateTime 대신 String 사용
-    private String thumbnail;
-    private String trade_place;
+    private String liveDate; // LocalDateTime 대신 String 사용
+    private String liveThumbnail;
+    private String tradePlace;
     private List<UpdateProductRequest> product;
 }
