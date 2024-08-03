@@ -29,16 +29,18 @@ export const {
   fetchCategoriesFailure,
 } = categorySlice.actions;
 
-export const fetchCategories = () => async (dispatch) => {
+export const fetchCategories = (token) => async (dispatch) => {
   dispatch(fetchCategoriesRequest());
   try {
-    const response = await axios.get("http://localhost:5000/api/categories");
-    const transformedData = response.data.results.map((item, index) => ({
-      id: index,
-      name: item.title,
-      param: item.category[0],
-    }));
-    dispatch(fetchCategoriesSuccess(transformedData));
+    const response = await axios.get(
+      "http://i11b202.p.ssafy.io/fleaon/mainCategory",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    dispatch(fetchCategoriesSuccess(response.data));
   } catch (error) {
     dispatch(fetchCategoriesFailure(error.message));
   }
