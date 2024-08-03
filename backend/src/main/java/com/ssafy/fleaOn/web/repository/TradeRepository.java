@@ -11,7 +11,7 @@ import java.util.Optional;
 @Repository
 public interface TradeRepository extends JpaRepository<Trade, Integer> {
 
-     Optional<List<Trade>> findByUser_userId(int userId);
+     Optional<List<Trade>> findBySellerId(int userId);
 
      Optional<List<Trade>> findByTradeDateBetweenAndBuyerIdOrSellerId(LocalDate startDate, LocalDate endDate, int buyerId, int sellerId);
 

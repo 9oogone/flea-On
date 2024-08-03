@@ -22,9 +22,6 @@ public class Trade {
     @Column(name = "seller_id")
     private int sellerId;
 
-    @Column(name = "product_id")
-    private int productId;
-
     @Column(name = "trade_date")
     private LocalDate tradeDate;
 
@@ -45,15 +42,19 @@ public class Trade {
     private Live live;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", insertable = false, updatable = false)
-    private User user;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shorts_id", insertable = false, updatable = false)
     private Shorts shorts;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "chatting_id", insertable = false, updatable = false)
+    private Chatting chatting;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", insertable = false, updatable = false)
     private Product product;
 
+    // getProductId 메서드 추가
+    public int getProductId() {
+        return product != null ? product.getProductId() : 0;
+    }
 }
