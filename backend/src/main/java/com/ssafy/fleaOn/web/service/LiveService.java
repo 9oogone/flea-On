@@ -6,7 +6,6 @@ import com.ssafy.fleaOn.web.domain.User;
 import com.ssafy.fleaOn.web.dto.AddLiveRequest;
 import com.ssafy.fleaOn.web.dto.CustomOAuth2User;
 import com.ssafy.fleaOn.web.dto.UpdateLiveRequest;
-import com.ssafy.fleaOn.web.dto.UpdateProductRequest;
 import com.ssafy.fleaOn.web.dto.LiveDetailResponse;
 import com.ssafy.fleaOn.web.repository.LiveRepository;
 import com.ssafy.fleaOn.web.repository.ProductRepository;
@@ -60,31 +59,19 @@ public class LiveService {
                 .orElseThrow(() -> new IllegalArgumentException("not found : " + liveId));
         authorizeArticleAuthor(live);
         DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-        LocalDateTime parsedDate = LocalDateTime.parse(request.getLive_date(), formatter);
-        live.update(request.getTitle(), parsedDate, request.getThumbnail(), request.getTrade_place());
+        LocalDateTime parsedDate = LocalDateTime.parse(request.getLiveDate(), formatter);
+        live.update(request.getTitle(), parsedDate, request.getLiveThumbnail(), request.getTradePlace());
 
         // 라이브 내의 Product 수정
-        List<Product> existingProducts = productRepository.findByLive_LiveId(liveId)
-                .orElseThrow(() -> new IllegalArgumentException("no products found for live id: " + liveId));
+        List<Product> deleteProducts = productRepository.findByLive_LiveId(liveId).orElseThrow(() -> new IllegalArgumentException("no products found for live id: " + liveId));
+        productRepository.deleteAll(deleteProducts);
+        // Product 엔티티 생성 및 저장
+        Live finalLive = live;
+        List<Product> products = request.getProduct().stream()
+                .map(addAddProductRequest -> addAddProductRequest.toEntity(finalLive, user))
+                .collect(Collectors.toList());
 
-        List<Product> updatedProducts = request.getProduct().stream().map(updateProductRequest -> {
-            Optional<Product> productOptional = existingProducts.stream()
-                    .filter(p -> p.getProductId() == updateProductRequest.getProductId())
-                    .findFirst();
-            System.out.println(productOptional.isPresent());
-
-            if (productOptional.isPresent()) {
-                Product product = productOptional.get();
-                product.update(updateProductRequest.getName(), updateProductRequest.getPrice(),
-                        updateProductRequest.getFirstCategoryId(), updateProductRequest.getSecondCategoryId());
-                return product;
-            } else {
-                // 새로 추가된 제품 처리
-                return updateProductRequest.toEntity(live, user);
-            }
-        }).collect(Collectors.toList());
-
-        productRepository.saveAll(updatedProducts);
+        productRepository.saveAll(products);
         return live;
     }
 
@@ -107,6 +94,7 @@ public class LiveService {
         List<Product> products = productRepository.findByLive_LiveId(liveId).orElseThrow(() -> new IllegalArgumentException("no products found for live id: " + liveId));
         return new LiveDetailResponse(live, products);
     }
+
 
     @Transactional
     public Live onoffLive(int liveId) {

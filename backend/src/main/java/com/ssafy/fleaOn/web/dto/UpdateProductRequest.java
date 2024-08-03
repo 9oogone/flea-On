@@ -15,11 +15,7 @@ public class UpdateProductRequest {
     private int productId;
     private String name;
     private int price;
-
-    @JsonProperty("first_category")
     private int firstCategoryId;
-
-    @JsonProperty("second_category")
     private int secondCategoryId;
 
     public Product toEntity(Live live, User user) {

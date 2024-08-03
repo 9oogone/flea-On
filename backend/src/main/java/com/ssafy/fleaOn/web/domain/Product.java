@@ -19,7 +19,7 @@ public class Product {
     private int productId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "seller_id", insertable = false, updatable = false)
+    @JoinColumn(name = "seller_id", nullable = false)
     private User seller;
 
     @Column(name="name", nullable = false)
@@ -40,31 +40,23 @@ public class Product {
     @Column(name = "reservation_count", nullable = false)
     private int reservationCount;
 
-    @Column(name="cur_buyer_front", nullable = false)
-    private int curBuyerFront;
-
-    @Column(name="cur_buyer_rear", nullable = false)
-    private int curBuyerRear;
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "live_id", insertable = false, updatable = false)
+    @JoinColumn(name = "live_id", nullable = false)
     private Live live;
 
     @OneToOne(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
     private Shorts shorts;
 
     @Builder
-    public Product(Live live, User user, String name, int price, int firstCategoryId, int secondCategoryId, int currentBuyerId, int reservationCount) {
+    public Product(Live live, User user, String name, int price, int firstCategoryId, int secondCategoryId) {
         this.live = live;
         this.seller = user;
         this.name = name;
         this.price = price;
         this.firstCategoryId = firstCategoryId;
         this.secondCategoryId = secondCategoryId;
-        this.currentBuyerId = currentBuyerId;
-        this.reservationCount = reservationCount;
-        this.curBuyerFront = 0;
-        this.curBuyerRear = 0;
+        this.currentBuyerId = 0;
+        this.reservationCount = 0;
     }
 
     public void update(String name, int price, int firstCategoryId, int secondCategoryId) {
