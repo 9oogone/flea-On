@@ -149,7 +149,7 @@ const HomePage = () => {
 
   return (
     <Container>
-      <Grid container spacing={3} sx={{ mt: 1 }}>
+      <Grid container spacing={3} sx={{ marginTop: "12vh" }}>
         {selectedTab === "live" && <LiveBroadcasts items={contents.live} />}
         {selectedTab === "shorts" && <Shorts items={contents.shorts} />}
         <Box

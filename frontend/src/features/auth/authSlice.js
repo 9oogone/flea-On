@@ -25,7 +25,7 @@ const saveState = (state) => {
 
 const initialState = loadState() || {
   isAuthenticated: false,
-  user: null,
+  user: { phone: null, nickname: null, user_region: null },
   token: null,
 };
 
@@ -48,8 +48,21 @@ const authSlice = createSlice({
       state.user = action.payload.user || null;
       saveState(state);
     },
+    setPhone(state, action) {
+      state.user.phone = action.payload;
+      saveState(state);
+    },
+    setNickname(state, action) {
+      state.user.nickname = action.payload;
+      saveState(state);
+    },
+    setUserRegion(state, action) {
+      state.user.user_region = action.payload;
+      saveState(state);
+    },
   },
 });
 
-export const { login, logout, setUser } = authSlice.actions;
+export const { login, logout, setUser, setPhone, setNickname, setUserRegion } =
+  authSlice.actions;
 export default authSlice.reducer;

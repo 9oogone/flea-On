@@ -1,3 +1,4 @@
+// src/features/auth/actions.js
 import { login, logout, setUser } from "./authSlice";
 import Cookies from "js-cookie";
 
@@ -8,7 +9,7 @@ export const performLogout = () => (dispatch) => {
 
 export const fetchUserInfo = () => async (dispatch, getState) => {
   const { token } = getState().auth;
-  console.log(token);
+
   if (!token) {
     console.error("No token found, cannot fetch user info");
     return;

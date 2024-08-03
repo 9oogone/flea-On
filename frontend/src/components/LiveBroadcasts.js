@@ -31,8 +31,8 @@ const LiveBroadcasts = ({ items }) => {
             >
               <Box
                 sx={{
-                  width: 144,
-                  height: 234,
+                  width: "16vh",
+                  height: "28vh",
                   backgroundImage: `url(${item.thumbnail})`,
                   backgroundSize: "cover",
                   backgroundPosition: "center",
