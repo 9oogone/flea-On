@@ -38,6 +38,9 @@ const BottomAppBar = () => {
   const goToHome = useCallback(() => {
     navigate("/");
   }, [navigate]);
+  const goToChat = useCallback(() => {
+    navigate("/chat");
+  }, [navigate]);
 
   return (
     <>
@@ -71,6 +74,7 @@ const BottomAppBar = () => {
             <BottomNavigationAction
               icon={<ChatBubbleOutlineIcon className="chatIcon" />}
               className="tab4"
+              onClick={goToChat}
             />
             <BottomNavigationAction
               icon={<AccountCircleIcon className="accountIcon" />}
