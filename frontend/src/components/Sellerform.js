@@ -12,7 +12,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import AddToPhotosIcon from '@mui/icons-material/AddToPhotos';
 import { DemoItem } from '@mui/x-date-pickers/internals/demo';
 import Button from '@mui/material/Button';
-import AddIcon from '@mui/icons-material/Add';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 dayjs.locale('ko');
 
@@ -32,6 +32,12 @@ const SellerformSelect = ({ onClose }) => {
 
   const handleAddTransactionTime = () => {
     setTransactionTimes([...transactionTimes, { date: dayjs(), from: dayjs(), to: dayjs() }]);
+  };
+
+  const handleRemoveTransactionTime = (index) => {
+    if (transactionTimes.length > 1) {
+      setTransactionTimes(transactionTimes.filter((_, idx) => idx !== index));
+    }
   };
 
   const handleTransactionTimeChange = (index, field, value) => {
@@ -76,54 +82,33 @@ const SellerformSelect = ({ onClose }) => {
                 fullWidth
                 sx={{ marginBottom: '10px', marginTop: '10px' }}
               />
-            <div className='livestarttime' style={{ marginBottom: '10px' }}>
-              <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="ko">
-                <DemoContainer components={['DesktopDateTimePicker']}>
-                  <DesktopDateTimePicker
-                    label="라이브 방송 시간"
-                    value={startDate}
-                    onChange={(newValue) => setStartDate(newValue)}
-                    renderInput={(params) => <TextField {...params} fullWidth />}
-                    ampm={true}
-                    disablePast={true}
-                    slotProps={{
-                      popper: {
-                        sx: {
-                          '& .MuiDateCalendar-root': {
-                            overflow: 'hidden',
-                            width: '250px',
-                            maxHeight: '336px',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            margin: '0 auto',
-                            height: '336px',
-                          },
-                        },
-                      },
-                    }}
-                  />
-                </DemoContainer>
-              </LocalizationProvider>
-            </div>
-              <div className={styles.sellerTime}> {/* 거래 가능 시간 */}
-                <div className={styles.div1}>거래 가능 시간</div>
+              <div className='livestarttime' style={{ marginBottom: '10px' }}>
                 <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="ko">
-                  <div className={styles.dateParent}>
-                    <DatePicker
-                      label="시작 날짜"
+                  <DemoContainer components={['DesktopDateTimePicker']}>
+                    <DesktopDateTimePicker
+                      label="라이브 방송 시간"
                       value={startDate}
                       onChange={(newValue) => setStartDate(newValue)}
-                      renderInput={(params) => <TextField {...params} />}
-                      inputFormat="YYYY년 MM월 DD일"
+                      renderInput={(params) => <TextField {...params} fullWidth />}
+                      ampm={true}
+                      disablePast={true}
+                      slotProps={{
+                        popper: {
+                          sx: {
+                            '& .MuiDateCalendar-root': {
+                              overflow: 'hidden',
+                              width: '250px',
+                              maxHeight: '336px',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              margin: '0 auto',
+                              height: '336px',
+                            },
+                          },
+                        },
+                      }}
                     />
-                    <DatePicker
-                      label="종료 날짜"
-                      value={endDate}
-                      onChange={(newValue) => setEndDate(newValue)}
-                      renderInput={(params) => <TextField {...params} />}
-                      inputFormat="YYYY년 MM월 DD일"
-                    />
-                  </div>
+                  </DemoContainer>
                 </LocalizationProvider>
               </div>
             </div>
@@ -192,6 +177,14 @@ const SellerformSelect = ({ onClose }) => {
                           renderInput={(params) => <TextField {...params} />}
                         />
                       </DemoItem>
+                      {transactionTimes.length > 1 && (
+                        <IconButton
+                          onClick={() => handleRemoveTransactionTime(index)}
+                          style={{ marginLeft: '10px' }}
+                        >
+                          <CloseIcon />
+                        </IconButton>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -200,13 +193,11 @@ const SellerformSelect = ({ onClose }) => {
           </div>
           <div className={styles.button}>
             <Button
-              variant="contained"
               color="primary"
               onClick={handleAddTransactionTime}
-              startIcon={<AddIcon />}
-              style={{ marginBottom: '10px' }}
+              startIcon={<AddCircleOutlineIcon style={{ color: 'gray', fontSize:'30' }}/>}
+              style={{ marginBottom: '10px', display: 'flex' }}
             >
-              거래 가능 시간 추가
             </Button>
           </div>
           <div className={styles.button}>
