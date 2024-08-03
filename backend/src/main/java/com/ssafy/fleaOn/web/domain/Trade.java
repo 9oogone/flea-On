@@ -3,8 +3,8 @@ package com.ssafy.fleaOn.web.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.sql.Time;
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 @AllArgsConstructor
 @Table(name = "trade")
@@ -26,7 +26,7 @@ public class Trade {
     private LocalDate tradeDate;
 
     @Column(name = "trade_time")
-    private Time tradeTime;
+    private LocalTime tradeTime; // LocalTime으로 변경
 
     @Column(name = "trade_place")
     private String tradePlace;
@@ -52,6 +52,17 @@ public class Trade {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", insertable = false, updatable = false)
     private Product product;
+
+    @Builder
+    public Trade(int sellerId, int buyerId, LocalDate tradeDate, LocalTime tradeTime, String tradePlace, Live live, Product product) {
+        this.sellerId = sellerId;
+        this.buyerId = buyerId;
+        this.tradeDate = tradeDate;
+        this.tradeTime = tradeTime;
+        this.tradePlace = tradePlace;
+        this.live = live;
+        this.product = product;
+    }
 
     // getProductId 메서드 추가
     public int getProductId() {
