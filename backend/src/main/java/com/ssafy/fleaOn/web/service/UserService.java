@@ -82,7 +82,7 @@ public class UserService {
         });
 
         // Trade 리스트 처리
-        Optional<List<Trade>> tradeListOptional = tradeRepository.findByUser_userId(user.getUserId());
+        Optional<List<Trade>> tradeListOptional = tradeRepository.findBySellerId(user.getUserId());
         tradeListOptional.ifPresent(tradeList -> {
             List<LocalDate> tradeDates = tradeList.stream()
                     .map(Trade::getTradeDate)
