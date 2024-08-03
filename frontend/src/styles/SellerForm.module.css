@@ -22,17 +22,17 @@
 }
 
 .thumbnailPreview {
-  width: 80px; /* 크기 조정 */
-  max-width: 150px; /* 크기 조정 */
-  height: 80px; /* 크기 조정 */
+  width: 70px; /* 크기 조정 */
+  max-width: 140px; /* 크기 조정 */
+  height: 70px; /* 크기 조정 */
   border-radius: 4px;
   border: 1px solid #ccc;
   object-fit: cover;
 }
 
 .noThumbnail {
-  width: 80px; /* 크기 조정 */
-  height: 80px; /* 크기 조정 */
+  width: 70px; /* 크기 조정 */
+  height: 70px; /* 크기 조정 */
   background-color: #f0f0f0;
   display: flex;
   align-items: center;
@@ -165,53 +165,53 @@
 /* 아이폰 SE와 갤럭시 S8+ 대응을 위한 추가 스타일 */
 @media (max-width: 375px) {
   .modalContent {
-    width: 100%;
-    max-width: 100%;
-    padding-left: 20px;
-    padding-right: 20px;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
     box-sizing: border-box;
   }
 
   .MuiPaper-root {
-    width: 100vw;
-    max-width: 100vw;
-    padding-left: 20px;
-    padding-right: 20px;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
     box-sizing: border-box;
   }
 
   .sellerformcontainer {
-    padding-left: 20px;
-    padding-right: 20px;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
     box-sizing: border-box;
   }
 
   .button1 {
-    padding: 8px 16px;
+    padding: 8px 16px !important;
   }
 }
 
 /* 갤럭시 S8+ 대응을 위한 추가 스타일 */
 @media (max-width: 360px) {
   .modalContent {
-    width: 100%;
-    max-width: 100%;
-    padding-left: 20px;
-    padding-right: 20px;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-left: 20px !important; /* 좌우 여백 추가 */
+    padding-right: 20px !important; /* 좌우 여백 추가 */
     box-sizing: border-box;
   }
 
   .MuiPaper-root {
-    width: 100vw;
-    max-width: 100vw;
-    padding-left: 20px;
-    padding-right: 20px;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    padding-left: 20px !important; /* 좌우 여백 추가 */
+    padding-right: 20px !important; /* 좌우 여백 추가 */
     box-sizing: border-box;
   }
 
   .sellerformcontainer {
-    padding-left: 20px;
-    padding-right: 20px;
+    padding-left: 20px !important; /* 좌우 여백 추가 */
+    padding-right: 20px !important; /* 좌우 여백 추가 */
     box-sizing: border-box;
   }
 
@@ -227,7 +227,7 @@
   }
 
   .button1 {
-    padding: 6px 12px;
+    padding: 6px 12px !important;
   }
 }
 
