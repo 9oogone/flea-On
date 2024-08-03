@@ -22,17 +22,17 @@
 }
 
 .thumbnailPreview {
-  width: 80px; 
-  max-width: 150px; 
-  height: 80px; 
+  width: 70px;
+  max-width: 140px;
+  height: 70px;
   border-radius: 4px;
   border: 1px solid #ccc;
   object-fit: cover;
 }
 
 .noThumbnail {
-  width: 80px;
-  height: 80px; 
+  width: 70px;
+  height: 70px;
   background-color: #f0f0f0;
   display: flex;
   align-items: center;
@@ -109,7 +109,6 @@
   }
 }
 
-/* 추가 스타일 */
 @media (max-width: 600px) {
   .MuiPickersToolbar-timeContainer {
     flex-direction: column;
@@ -162,72 +161,70 @@
   }
 }
 
-/* 아이폰 SE */
 @media (max-width: 375px) {
   .modalContent {
-    width: 100%;
-    max-width: 100%;
-    padding-left: 20px;
-    padding-right: 20px;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
     box-sizing: border-box;
   }
 
   .MuiPaper-root {
-    width: 100vw;
-    max-width: 100vw;
-    padding-left: 20px;
-    padding-right: 20px;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
     box-sizing: border-box;
   }
 
   .sellerformcontainer {
-    padding-left: 20px;
-    padding-right: 20px;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
     box-sizing: border-box;
   }
 
   .button1 {
-    padding: 8px 16px;
+    padding: 8px 16px !important;
   }
 }
 
-/* 갤럭시 S8+ */
 @media (max-width: 360px) {
   .modalContent {
-    width: 100%;
-    max-width: 100%;
-    padding-left: 20px;
-    padding-right: 20px;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
     box-sizing: border-box;
   }
 
   .MuiPaper-root {
-    width: 100vw;
-    max-width: 100vw;
-    padding-left: 20px;
-    padding-right: 20px;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
     box-sizing: border-box;
   }
 
   .sellerformcontainer {
-    padding-left: 20px;
-    padding-right: 20px;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
     box-sizing: border-box;
   }
 
   .thumbnailPreview {
-    width: 60px; 
-    max-width: 120px; 
-    height: 60px; 
+    width: 60px;
+    max-width: 120px;
+    height: 60px;
   }
 
   .noThumbnail {
     width: 60px;
-    height: 60px; 
+    height: 60px;
   }
 
   .button1 {
-    padding: 6px 12px;
+    padding: 6px 12px !important;
   }
 }
 
@@ -253,7 +250,7 @@
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   position: relative;
   z-index: 3001;
-  height: 100%; 
+  height: 100%;
   overflow-y: auto;
 }
 
@@ -265,6 +262,33 @@
   cursor: pointer;
 }
 
-.sellerTime {
+.sellerTimeContainer {
+  display: flex;
+  width: 350px;
   margin-top: 10px;
+}
+
+.sellerTime {
+  flex: 1;
+}
+
+.button {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.button1 {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 100%;
+  max-width: 300px;
+}
+
+.button1:hover {
+  background-color: #0056b3;
 }
