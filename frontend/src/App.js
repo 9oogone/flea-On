@@ -12,6 +12,7 @@ import Initial from "./pages/InitialPage";
 import BottomAppBar from "./components/BottomAppBar";
 import MyPage from "./pages/MyPage";
 import Category from "./pages/CategoryPage";
+import Chat from "./pages/ChatPage";
 import Search from "./pages/SearchPage";
 import SearchForm from "./components/SearchForm";
 import SearchShorts from "./pages/SearchShortsPage";
@@ -25,6 +26,7 @@ const routes = [
   { path: "/initial", element: <Initial />, isPrivate: true },
   { path: "/category", element: <Category />, isPrivate: true },
   { path: "/search", element: <Search />, isPrivate: true },
+  { path: "/chat", element: <Chat />, isPrivate: true },
   { path: "/mypage", element: <MyPage />, isPrivate: true },
   { path: "/search/shorts", element: <SearchShorts />, isPrivate: true },
   { path: "/search/live", element: <SearchLive />, isPrivate: true },
