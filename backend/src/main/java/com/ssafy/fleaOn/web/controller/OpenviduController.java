@@ -4,14 +4,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 
 import io.openvidu.java.client.ConnectionProperties;
 import io.openvidu.java.client.ConnectionType;
@@ -34,7 +34,6 @@ public class OpenviduController {
     private Map<String, Session> mapSessions = new ConcurrentHashMap<>();
     // Collection to pair session names and tokens (the inner Map pairs tokens and
     // role associated)
-    //hbnhb
     private Map<String, Map<String, OpenViduRole>> mapSessionNamesTokens = new ConcurrentHashMap<>();
     // Collection to pair session names and recording objects
     private Map<String, Boolean> sessionRecordings = new ConcurrentHashMap<>();
@@ -50,12 +49,10 @@ public class OpenviduController {
         this.openVidu = new OpenVidu(OPENVIDU_URL, SECRET);
     }
 
-    /*******************/
-    /*** Session API ***/
-    /*******************/
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @RequestMapping(value = "/get-token", method = RequestMethod.POST)
-    public ResponseEntity<JsonObject> getToken(@RequestBody Map<String, Object> sessionNameParam) {
+    public ResponseEntity<JsonNode> getToken(@RequestBody Map<String, Object> sessionNameParam) {
 
         System.out.println("Getting sessionId and token | {sessionName}=" + sessionNameParam);
 
@@ -69,7 +66,7 @@ public class OpenviduController {
         ConnectionProperties connectionProperties = new ConnectionProperties.Builder().type(ConnectionType.WEBRTC)
                 .role(role).data("user_data").build();
 
-        JsonObject responseJson = new JsonObject();
+        ObjectNode responseJson = objectMapper.createObjectNode();
 
         if (this.mapSessions.get(sessionName) != null) {
             // Session already exists
@@ -83,7 +80,7 @@ public class OpenviduController {
                 this.mapSessionNamesTokens.get(sessionName).put(token, role);
 
                 // Prepare the response with the token
-                responseJson.addProperty("0", token);
+                responseJson.put("0", token);
 
                 // Return the response to the client
                 return new ResponseEntity<>(responseJson, HttpStatus.OK);
@@ -114,8 +111,9 @@ public class OpenviduController {
             this.mapSessionNamesTokens.get(sessionName).put(token, role);
 
             // Prepare the response with the sessionId and the token
-            responseJson.addProperty("0", token);
+            responseJson.put("0", token);
             System.out.println("responseJson=" + responseJson);
+
             // Return the response to the client
             return new ResponseEntity<>(responseJson, HttpStatus.OK);
 
@@ -127,7 +125,7 @@ public class OpenviduController {
     }
 
     @RequestMapping(value = "/remove-user", method = RequestMethod.POST)
-    public ResponseEntity<JsonObject> removeUser(@RequestBody Map<String, Object> sessionNameToken) throws Exception {
+    public ResponseEntity<JsonNode> removeUser(@RequestBody Map<String, Object> sessionNameToken) throws Exception {
 
         System.out.println("Removing user | {sessionName, token}=" + sessionNameToken);
 
@@ -160,7 +158,7 @@ public class OpenviduController {
     }
 
     @RequestMapping(value = "/close-session", method = RequestMethod.DELETE)
-    public ResponseEntity<JsonObject> closeSession(@RequestBody Map<String, Object> sessionName) throws Exception {
+    public ResponseEntity<JsonNode> closeSession(@RequestBody Map<String, Object> sessionName) throws Exception {
 
         System.out.println("Closing session | {sessionName}=" + sessionName);
 
@@ -183,7 +181,7 @@ public class OpenviduController {
     }
 
     @RequestMapping(value = "/fetch-info", method = RequestMethod.POST)
-    public ResponseEntity<JsonObject> fetchInfo(@RequestBody Map<String, Object> sessionName) {
+    public ResponseEntity<JsonNode> fetchInfo(@RequestBody Map<String, Object> sessionName) {
         try {
             System.out.println("Fetching session info | {sessionName}=" + sessionName);
 
@@ -208,12 +206,12 @@ public class OpenviduController {
     }
 
     @RequestMapping(value = "/fetch-all", method = RequestMethod.GET)
-    public ResponseEntity<?> fetchAll() {
+    public ResponseEntity<JsonNode> fetchAll() {
         try {
             System.out.println("Fetching all session info");
             boolean changed = this.openVidu.fetch();
             System.out.println("Any change: " + changed);
-            JsonArray jsonArray = new JsonArray();
+            ArrayNode jsonArray = objectMapper.createArrayNode();
             for (Session s : this.openVidu.getActiveSessions()) {
                 jsonArray.add(this.sessionToJson(s));
             }
@@ -225,7 +223,7 @@ public class OpenviduController {
     }
 
     @RequestMapping(value = "/force-disconnect", method = RequestMethod.DELETE)
-    public ResponseEntity<JsonObject> forceDisconnect(@RequestBody Map<String, Object> params) {
+    public ResponseEntity<JsonNode> forceDisconnect(@RequestBody Map<String, Object> params) {
         try {
             // Retrieve the param from BODY
             String session = (String) params.get("sessionName");
@@ -247,7 +245,7 @@ public class OpenviduController {
     }
 
     @RequestMapping(value = "/force-unpublish", method = RequestMethod.DELETE)
-    public ResponseEntity<JsonObject> forceUnpublish(@RequestBody Map<String, Object> params) {
+    public ResponseEntity<JsonNode> forceUnpublish(@RequestBody Map<String, Object> params) {
         try {
             // Retrieve the param from BODY
             String session = (String) params.get("sessionName");
@@ -267,10 +265,6 @@ public class OpenviduController {
             return getErrorResponse(e);
         }
     }
-
-    /*******************/
-    /** Recording API **/
-    /*******************/
 
     @RequestMapping(value = "/recording/start", method = RequestMethod.POST)
     public ResponseEntity<?> startRecording(@RequestBody Map<String, Object> params) {
@@ -350,49 +344,46 @@ public class OpenviduController {
         }
     }
 
-    private ResponseEntity<JsonObject> getErrorResponse(Exception e) {
-        JsonObject json = new JsonObject();
-        json.addProperty("cause", e.getCause().toString());
-        json.addProperty("error", e.getMessage());
-        json.addProperty("exception", e.getClass().getCanonicalName());
-        return new ResponseEntity<>(json, HttpStatus.INTERNAL_SERVER_ERROR);
+    private ResponseEntity<JsonNode> getErrorResponse(Exception e) {
+        ObjectNode errorJson = objectMapper.createObjectNode();
+        errorJson.put("cause", e.getCause() != null ? e.getCause().toString() : "null");
+        errorJson.put("error", e.getMessage());
+        errorJson.put("exception", e.getClass().getCanonicalName());
+        return new ResponseEntity<>(errorJson, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    protected JsonObject sessionToJson(Session session) {
-        Gson gson = new Gson();
-        JsonObject json = new JsonObject();
-        json.addProperty("sessionId", session.getSessionId());
-        json.addProperty("customSessionId", session.getProperties().customSessionId());
-        json.addProperty("recording", session.isBeingRecorded());
-        json.addProperty("mediaMode", session.getProperties().mediaMode().name());
-        json.addProperty("recordingMode", session.getProperties().recordingMode().name());
-        json.add("defaultRecordingProperties",
-                gson.toJsonTree(session.getProperties().defaultRecordingProperties()).getAsJsonObject());
-        JsonObject connections = new JsonObject();
-        connections.addProperty("numberOfElements", session.getConnections().size());
-        JsonArray jsonArrayConnections = new JsonArray();
+    protected JsonNode sessionToJson(Session session) {
+        ObjectNode json = objectMapper.createObjectNode();
+        json.put("sessionId", session.getSessionId());
+        json.put("customSessionId", session.getProperties().customSessionId());
+        json.put("recording", session.isBeingRecorded());
+        json.put("mediaMode", session.getProperties().mediaMode().name());
+        json.put("recordingMode", session.getProperties().recordingMode().name());
+        ObjectNode defaultRecordingProperties = objectMapper.convertValue(session.getProperties().defaultRecordingProperties(), ObjectNode.class);
+        json.set("defaultRecordingProperties", defaultRecordingProperties);
+
+        ObjectNode connections = objectMapper.createObjectNode();
+        connections.put("numberOfElements", session.getConnections().size());
+        ArrayNode jsonArrayConnections = objectMapper.createArrayNode();
         session.getConnections().forEach(con -> {
-            JsonObject c = new JsonObject();
-            c.addProperty("connectionId", con.getConnectionId());
-            c.addProperty("role", con.getRole().name());
-            c.addProperty("token", con.getToken());
-            c.addProperty("clientData", con.getClientData());
-            c.addProperty("serverData", con.getServerData());
-            JsonArray pubs = new JsonArray();
+            ObjectNode c = objectMapper.createObjectNode();
+            c.put("connectionId", con.getConnectionId());
+            c.put("role", con.getRole().name());
+            c.put("token", con.getToken());
+            c.put("clientData", con.getClientData());
+            c.put("serverData", con.getServerData());
+            ArrayNode pubs = objectMapper.createArrayNode();
             con.getPublishers().forEach(p -> {
-                pubs.add(gson.toJsonTree(p).getAsJsonObject());
+                pubs.add(objectMapper.convertValue(p, ObjectNode.class));
             });
-            JsonArray subs = new JsonArray();
-            con.getSubscribers().forEach(s -> {
-                subs.add(s);
-            });
-            c.add("publishers", pubs);
-            c.add("subscribers", subs);
+            ArrayNode subs = objectMapper.createArrayNode();
+            con.getSubscribers().forEach(subs::add);
+            c.set("publishers", pubs);
+            c.set("subscribers", subs);
             jsonArrayConnections.add(c);
         });
-        connections.add("content", jsonArrayConnections);
-        json.add("connections", connections);
+        connections.set("content", jsonArrayConnections);
+        json.set("connections", connections);
         return json;
     }
-
 }
