@@ -271,7 +271,8 @@
   cursor: pointer;
 }
 
-.sellerTimeContainer {
+.sellerTimeContainer,
+.regionContainer {
   display: flex;
   width: 350px;
   margin-top: 10px;

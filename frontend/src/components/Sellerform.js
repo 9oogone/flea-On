@@ -144,6 +144,9 @@ const SellerformSelect = ({ onClose }) => {
               )}
             </div>
           </div>
+          <div className={styles.regionContainer}>
+          <div className>거래 장소</div> 
+          </div>
           <div className={styles.sellerTimeContainer}>
             <div className={styles.sellerTime}>
               <div className={styles.div1}>거래 가능 시간</div>
