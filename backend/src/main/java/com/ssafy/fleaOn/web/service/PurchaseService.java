@@ -10,13 +10,15 @@ import com.ssafy.fleaOn.web.repository.TradeRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.Optional;
 
 @Service
 public class PurchaseService {
+
+    private static final Logger logger = LoggerFactory.getLogger(PurchaseService.class);
 
     private final ProductRepository productRepository;
     private final LiveRepository liveRepository;
@@ -33,6 +35,7 @@ public class PurchaseService {
 
     @Transactional
     public int processPurchaseRequest(PurchaseRequest request) {
+        logger.info("Processing purchase request for productId: {} and userId: {}", request.getProductId(), request.getUserId());
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
 
@@ -48,7 +51,7 @@ public class PurchaseService {
             reservationRepository.save(reservation);
             product.setReservationCount(product.getReservationCount() + 1);
             productRepository.save(product);
-            return product.getReservationCount()-1; // 예약자 순번 반환
+            return product.getReservationCount() - 1; // 예약자 순번 반환
         } else {
             return 6; // 예약 불가능
         }
@@ -56,6 +59,7 @@ public class PurchaseService {
 
     @Transactional
     public int processCancelPurchaseRequest(PurchaseRequest request) {
+        logger.info("Processing cancel purchase request for productId: {} and userId: {}", request.getProductId(), request.getUserId());
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
 
@@ -78,6 +82,7 @@ public class PurchaseService {
 
     @Transactional
     public int processReservationRequest(PurchaseRequest request) {
+        logger.info("Processing reservation request for productId: {} and userId: {}", request.getProductId(), request.getUserId());
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
 
@@ -89,13 +94,14 @@ public class PurchaseService {
             reservationRepository.save(reservation);
             product.setReservationCount(product.getReservationCount() + 1);
             productRepository.save(product);
-            return product.getReservationCount(); // 그 다음예약자 순번 반환
+            return product.getReservationCount(); // 그 다음 예약자 순번 반환
         }
         return 6;
     }
 
     @Transactional
     public int processCancelReservationRequest(PurchaseRequest request) {
+        logger.info("Processing cancel reservation request for productId: {} and userId: {}", request.getProductId(), request.getUserId());
         Optional<Reservation> reservation = reservationRepository.findByProduct_ProductIdAndUser_UserId(request.getProductId(), request.getUserId());
         if (reservation.isPresent()) {
             reservationRepository.delete(reservation.get());
@@ -110,6 +116,7 @@ public class PurchaseService {
 
     @Transactional
     public void processConfirmPurchaseRequest(TradeRequest request) {
+        logger.info("Processing confirm purchase request for productId: {} and buyerId: {}", request.getProductId(), request.getBuyerId());
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
 
@@ -118,7 +125,6 @@ public class PurchaseService {
 
         if (request.getBuyerId() == product.getCurrentBuyerId()) {
             Trade trade = request.toEntity(live, product);
-            //채팅id, 숏츠id 넣은다음에 아래에 저장해야하는데 어떻게 하지..
             tradeRepository.save(trade);
             product.setCurrentBuyerId(0); // 구매 확정 후 현재 구매자 초기화
             productRepository.save(product);
