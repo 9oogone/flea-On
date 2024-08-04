@@ -2,6 +2,7 @@ import React from "react";
 import Profile from "../features/mypage/components/Profile";
 import Level from "../features/mypage/components/Level";
 import Calendar from "../features/mypage/components/Calendar";
+import FleaOn from "../features/mypage/components/FleaOn";
 import { Box } from "@mui/material";
 const MyPage = () => {
   return (
@@ -9,6 +10,7 @@ const MyPage = () => {
       <Profile />
       <Level />
       <Calendar />
+      <FleaOn />
     </Box>
   );
 };
