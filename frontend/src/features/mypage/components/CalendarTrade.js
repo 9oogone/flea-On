@@ -58,12 +58,12 @@ const CalendarTrade = ({ userId, selectedDate, trades }) => {
         >
           <Box
             sx={{
-              height: 31,
               borderBottom: "1px solid rgba(0, 0, 0, 0.10)",
               display: "flex",
               alignItems: "center",
               gap: 1,
               px: 1,
+              pb: 1,
             }}
           >
             <LocationOnOutlined />
@@ -96,7 +96,6 @@ const CalendarTrade = ({ userId, selectedDate, trades }) => {
                 key={index}
                 sx={{
                   alignSelf: "stretch",
-                  height: 34,
                   px: 1,
                   display: "flex",
                   alignItems: "flex-start",
@@ -139,7 +138,6 @@ const CalendarTrade = ({ userId, selectedDate, trades }) => {
                         fontSize: 14,
                         fontFamily: "Noto Sans",
                         fontWeight: "400",
-                        lineHeight: "19.60px",
                       }}
                     >
                       {trade.place}
@@ -150,7 +148,6 @@ const CalendarTrade = ({ userId, selectedDate, trades }) => {
                         fontSize: 10,
                         fontFamily: "Noto Sans",
                         fontWeight: "400",
-                        lineHeight: "14px",
                       }}
                     >
                       {trade.product} · {formatPrice(trade.price)}
@@ -163,7 +160,6 @@ const CalendarTrade = ({ userId, selectedDate, trades }) => {
                       fontSize: 14,
                       fontFamily: "Noto Sans",
                       fontWeight: "400",
-                      lineHeight: "19.60px",
                     }}
                   >
                     {formatTime(trade.time)}
