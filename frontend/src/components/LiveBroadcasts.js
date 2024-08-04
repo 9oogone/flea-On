@@ -6,20 +6,26 @@ import UpcomingHeader from "./UpcomingHeader";
 import LiveFooter from "./LiveFooter";
 import UpcomingFooter from "./UpcomingFooter";
 import UpcomingModal from "./UpcomingModal";
+
 const LiveBroadcasts = ({ items }) => {
   const navigate = useNavigate(); // navigate 함수 생성
   const [open, setOpen] = useState(false);
   const [modalLiveDate, setModalLiveDate] = useState("");
+  const [modalProducts, setModalProducts] = useState([]);
 
   const handleButtonClick = (item) => {
     if (item.is_live) {
       navigate(`/live/${item.live_id}`);
     } else {
+      console.log(item.products);
       setModalLiveDate(item.live_date);
+      setModalProducts(item.products || []); // products가 없으면 빈 배열로 설정
       setOpen(true);
     }
   };
+
   const handleClose = () => setOpen(false);
+
   return (
     <Grid item xs={12}>
       <Grid container>
@@ -72,14 +78,15 @@ const LiveBroadcasts = ({ items }) => {
                 )}
               </Box>
             </Button>
+            <UpcomingModal
+              open={open}
+              handleClose={handleClose}
+              liveDate={modalLiveDate}
+              products={modalProducts} // 상태에서 설정된 products 사용
+            />
           </Grid>
         ))}
       </Grid>
-      <UpcomingModal
-        open={open}
-        handleClose={handleClose}
-        liveDate={modalLiveDate}
-      />
     </Grid>
   );
 };
