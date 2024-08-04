@@ -3,6 +3,8 @@ package com.ssafy.fleaOn.web.consumer;
 import com.ssafy.fleaOn.web.dto.PurchaseRequest;
 import com.ssafy.fleaOn.web.dto.TradeRequest;
 import com.ssafy.fleaOn.web.service.PurchaseService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -11,20 +13,24 @@ import org.springframework.stereotype.Service;
 @Service
 public class RedisQueueConsumer {
 
+    private static final Logger logger = LoggerFactory.getLogger(RedisQueueConsumer.class);
+
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
 
     @Autowired
     private PurchaseService purchaseService;
 
-    // 주기적으로 구매 요청을 처리하는 메서드
     @Scheduled(fixedDelay = 1000)
     public void handlePurchaseRequest() {
-        // 큐에서 메시지를 꺼내 처리
         PurchaseRequest request = (PurchaseRequest) redisTemplate.opsForList().leftPop("purchaseQueue");
         if (request != null) {
+            logger.info("Received PurchaseRequest: {}", request); // 디버깅 로그
             int result = purchaseService.processPurchaseRequest(request);
+            logger.info("Processed PurchaseRequest with result: {}", result); // 디버깅 로그
             redisTemplate.opsForValue().set("purchaseResult:" + request.getUserId() + ":" + request.getProductId(), result);
+        } else {
+            logger.info("No PurchaseRequest found in queue"); // 큐가 비어있는 경우
         }
     }
 

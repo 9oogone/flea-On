@@ -33,8 +33,20 @@ public class PurchaseController {
         try {
             // 구매 요청을 큐에 추가
             redisQueueProducer.sendPurchaseRequest(request);
-            // 결과를 Redis에서 조회
-            Integer result = (Integer) redisTemplate.opsForValue().get("purchaseResult:" + request.getUserId() + ":" + request.getProductId());
+
+            // 결과를 일정 시간 동안 폴링하여 조회
+            int maxRetries = 10;  // 최대 10번 시도
+            int retryInterval = 1000; // 1초 간격으로 시도
+
+            Integer result = null;
+            for (int i = 0; i < maxRetries; i++) {
+                result = (Integer) redisTemplate.opsForValue().get("purchaseResult:" + request.getUserId() + ":" + request.getProductId());
+                if (result != null) {
+                    break; // 결과를 성공적으로 가져온 경우
+                }
+                Thread.sleep(retryInterval); // 대기
+            }
+
             if (result == null) {
                 return ResponseEntity.ok(-1); // 아직 결과가 없는 경우
             }
@@ -51,8 +63,20 @@ public class PurchaseController {
         try {
             // 구매 취소 요청을 큐에 추가
             redisQueueProducer.sendCancelPurchaseRequest(request);
-            // 결과를 Redis에서 조회
-            Integer result = (Integer) redisTemplate.opsForValue().get("cancelPurchaseResult:" + request.getUserId() + ":" + request.getProductId());
+
+            // 결과를 일정 시간 동안 폴링하여 조회
+            int maxRetries = 10;  // 최대 10번 시도
+            int retryInterval = 1000; // 1초 간격으로 시도
+
+            Integer result = null;
+            for (int i = 0; i < maxRetries; i++) {
+                result = (Integer) redisTemplate.opsForValue().get("cancelPurchaseResult:" + request.getUserId() + ":" + request.getProductId());
+                if (result != null) {
+                    break; // 결과를 성공적으로 가져온 경우
+                }
+                Thread.sleep(retryInterval); // 대기
+            }
+
             if (result == null) {
                 return ResponseEntity.ok(-1); // 아직 결과가 없는 경우
             }
@@ -69,8 +93,20 @@ public class PurchaseController {
         try {
             // 예약 요청을 큐에 추가
             redisQueueProducer.sendReservationRequest(request);
-            // 결과를 Redis에서 조회
-            Integer result = (Integer) redisTemplate.opsForValue().get("reservationResult:" + request.getUserId() + ":" + request.getProductId());
+
+            // 결과를 일정 시간 동안 폴링하여 조회
+            int maxRetries = 10;  // 최대 10번 시도
+            int retryInterval = 1000; // 1초 간격으로 시도
+
+            Integer result = null;
+            for (int i = 0; i < maxRetries; i++) {
+                result = (Integer) redisTemplate.opsForValue().get("reservationResult:" + request.getUserId() + ":" + request.getProductId());
+                if (result != null) {
+                    break; // 결과를 성공적으로 가져온 경우
+                }
+                Thread.sleep(retryInterval); // 대기
+            }
+
             if (result == null) {
                 return ResponseEntity.ok(-1); // 아직 결과가 없는 경우
             }
@@ -87,8 +123,20 @@ public class PurchaseController {
         try {
             // 예약 취소 요청을 큐에 추가
             redisQueueProducer.sendCancelReservationRequest(request);
-            // 결과를 Redis에서 조회
-            Integer result = (Integer) redisTemplate.opsForValue().get("cancelReservationResult:" + request.getUserId() + ":" + request.getProductId());
+
+            // 결과를 일정 시간 동안 폴링하여 조회
+            int maxRetries = 10;  // 최대 10번 시도
+            int retryInterval = 1000; // 1초 간격으로 시도
+
+            Integer result = null;
+            for (int i = 0; i < maxRetries; i++) {
+                result = (Integer) redisTemplate.opsForValue().get("cancelReservationResult:" + request.getUserId() + ":" + request.getProductId());
+                if (result != null) {
+                    break; // 결과를 성공적으로 가져온 경우
+                }
+                Thread.sleep(retryInterval); // 대기
+            }
+
             if (result == null) {
                 return ResponseEntity.ok(-1); // 아직 결과가 없는 경우
             }
@@ -105,10 +153,28 @@ public class PurchaseController {
         try {
             // 구매 확정 요청을 큐에 추가
             redisQueueProducer.sendConfirmRequest(request);
-            return ResponseEntity.ok().build(); // 구매 확정 완료 응답
+
+            // 결과를 일정 시간 동안 폴링하여 조회
+            int maxRetries = 10;  // 최대 10번 시도
+            int retryInterval = 1000; // 1초 간격으로 시도
+
+            String result = null;
+            for (int i = 0; i < maxRetries; i++) {
+                result = (String) redisTemplate.opsForValue().get("confirmResult:" + request.getBuyerId() + ":" + request.getProductId());
+                if (result != null) {
+                    break; // 결과를 성공적으로 가져온 경우
+                }
+                Thread.sleep(retryInterval); // 대기
+            }
+
+            // TODO:not confirm뜸 -> chatting id 문제
+            if (result == null) {
+                return ResponseEntity.ok("not confirmed"); // 아직 결과가 없는 경우
+            }
+            return ResponseEntity.ok(result);
         } catch (Exception e) {
             logger.error("Error processing confirm request", e);
-            return handleException(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error processing confirm request");
         }
     }
 
