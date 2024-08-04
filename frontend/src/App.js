@@ -18,6 +18,7 @@ import SearchForm from "./components/SearchForm";
 import SearchShorts from "./pages/SearchShortsPage";
 import SearchLive from "./pages/SearchLivePage";
 import PrivateRoute from "./components/PrivateRoute";
+import AddressSearch from "./pages/AddressSearch"; // Import AddressSearch component
 
 const routes = [
   { path: "/", element: <HomePage />, isPrivate: true },
@@ -30,6 +31,7 @@ const routes = [
   { path: "/mypage", element: <MyPage />, isPrivate: true },
   { path: "/search/shorts", element: <SearchShorts />, isPrivate: true },
   { path: "/search/live", element: <SearchLive />, isPrivate: true },
+  { path: "/address-search", element: <AddressSearch />, isPrivate: false }, // Add AddressSearch route
 ];
 
 function App() {
