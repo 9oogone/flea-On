@@ -1,34 +1,40 @@
 import React from "react";
-import { Box, Typography, Modal, List, ListItem, ListItemText,Button } from "@mui/material";
-
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-  p: 4,
-};
+import { Box, Typography, Modal, List, ListItem, ListItemText, Button } from "@mui/material";
+import styles from '../styles/UpcomingModal.module.css';
 
 const UpcomingModal = ({ open, handleClose, liveDate, products }) => {
   return (
-    <Modal open={open} onClose={handleClose}>
-      <Box sx={style}>
-        <Typography variant="h6" component="h2">
-          {liveDate}
-        </Typography>
-        <List>
-          {products.map((product, index) => (
-            <ListItem key={index}>
-              <ListItemText primary={product.name} secondary={product.price} />
-            </ListItem>
-          ))}
-        </List>
-        <Button onClick={handleClose}>Close</Button>
-      </Box>
+    <Modal
+      open={open}
+      onClose={handleClose}
+      BackdropProps={{
+        style: {
+          backgroundColor: "transparent",
+        },
+      }}
+    >
+      <div className={styles.modalOverlay}>
+        <Box className={styles.modalContent}>
+          <div className={styles.modalHeader}>
+            <Typography variant="h6" component="h2">
+              {liveDate}
+            </Typography>
+            <span className={styles.closeButton} onClick={handleClose}>&times;</span>
+          </div>
+          <div className={styles.modalBody}>
+            <List className={styles.productList}>
+              {products.map((product, index) => (
+                <ListItem key={index} className={styles.productItem}>
+                  <ListItemText primary={product.name} secondary={product.price} />
+                </ListItem>
+              ))}
+            </List>
+          </div>
+          <div className={styles.button}>
+            <Button onClick={handleClose}>Close</Button>
+          </div>
+        </Box>
+      </div>
     </Modal>
   );
 };
