@@ -79,6 +79,13 @@
   margin-bottom: 10px;
 }
 
+.divider {
+  width: 100%;
+  margin: 1% 0;
+  border-bottom: 0.1px solid rgba(34, 34, 34, 1);
+}
+
+
 @media (min-width: 768px) {
   .headerParent {
     padding: 40px;
@@ -123,10 +130,6 @@
   }
 
   .MuiPickersClock {
-    width: 100% !important;
-  }
-
-  .MuiClockPicker-root {
     width: 100% !important;
   }
 
@@ -272,7 +275,8 @@
 }
 
 .sellerTimeContainer,
-.regionContainer {
+.regionContainer,
+.strokecontainer {
   display: flex;
   width: 350px;
   margin-top: 10px;
@@ -301,4 +305,29 @@
 
 .button1:hover {
   background-color: #0056b3;
+}
+
+.itemsList {
+  margin-bottom: 10px;
+}
+
+.itemRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  gap: 5px; 
+}
+
+.itemName {
+  flex: 1;
+}
+
+.itemPrice {
+  width: 150px;
+}
+
+.addButton {
+  display: flex;
+  justify-content: center;
+  width: 100%;
 }
