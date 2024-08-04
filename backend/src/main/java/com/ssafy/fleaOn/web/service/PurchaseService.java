@@ -39,6 +39,19 @@ public class PurchaseService {
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
 
+        // Check if the user is already the buyer
+        if (product.getCurrentBuyerId() == request.getUserId()) {
+            logger.warn("User {} is already the buyer for product {}", request.getUserId(), request.getProductId());
+            return -2; // Already the buyer
+        }
+
+        // Check if the user is already in the reservation list
+        Optional<Reservation> existingReservation = reservationRepository.findByProduct_ProductIdAndUser_UserId(request.getProductId(), request.getUserId());
+        if (existingReservation.isPresent()) {
+            logger.warn("User {} is already reserved for product {}", request.getUserId(), request.getProductId());
+            return -3; // Already reserved
+        }
+
         if (product.getCurrentBuyerId() == 0) {
             product.setCurrentBuyerId(request.getUserId());
             productRepository.save(product);
@@ -51,7 +64,7 @@ public class PurchaseService {
             reservationRepository.save(reservation);
             product.setReservationCount(product.getReservationCount() + 1);
             productRepository.save(product);
-            return product.getReservationCount() - 1; // 예약자 순번 반환
+            return product.getReservationCount(); // 예약자 순번 반환
         } else {
             return 6; // 예약 불가능
         }
@@ -86,6 +99,19 @@ public class PurchaseService {
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
 
+        // Check if the user is already the buyer
+        if (product.getCurrentBuyerId() == request.getUserId()) {
+            logger.warn("User {} is already the buyer for product {}", request.getUserId(), request.getProductId());
+            return -2; // Already the buyer
+        }
+
+        // Check if the user is already in the reservation list
+        Optional<Reservation> existingReservation = reservationRepository.findByProduct_ProductIdAndUser_UserId(request.getProductId(), request.getUserId());
+        if (existingReservation.isPresent()) {
+            logger.warn("User {} is already reserved for product {}", request.getUserId(), request.getProductId());
+            return -3; // Already reserved
+        }
+
         if (product.getReservationCount() < 5) {
             Reservation reservation = Reservation.builder()
                     .product(product)
@@ -96,7 +122,7 @@ public class PurchaseService {
             productRepository.save(product);
             return product.getReservationCount(); // 그 다음 예약자 순번 반환
         }
-        return 6;
+        return 6; // 예약 불가능
     }
 
     @Transactional
@@ -111,7 +137,7 @@ public class PurchaseService {
             productRepository.save(product);
             return product.getReservationCount();
         }
-        return -1;
+        return -1; // 예약이 없는 경우
     }
 
     @Transactional
