@@ -9,6 +9,7 @@ import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import CheckLogin from "./features/auth/components/CheckLogin";
 import Initial from "./pages/InitialPage";
+import WelcomePage from "./pages/WelcomePage";
 import BottomAppBar from "./components/BottomAppBar";
 import MyPage from "./pages/MyPage";
 import Category from "./pages/CategoryPage";
@@ -25,6 +26,7 @@ const routes = [
   { path: "/login", element: <LoginPage />, isPrivate: false },
   { path: "/check", element: <CheckLogin />, isPrivate: false },
   { path: "/initial", element: <Initial />, isPrivate: true },
+  { path: "/welcome", element: <WelcomePage />, isPrivate: true },
   { path: "/category", element: <Category />, isPrivate: true },
   { path: "/search", element: <Search />, isPrivate: true },
   { path: "/chat", element: <Chat />, isPrivate: true },
@@ -38,7 +40,10 @@ function App() {
   const LocationWrapper = ({ children }) => {
     const location = useLocation();
     const isLoginPage =
-      location.pathname === "/login" || location.pathname === "/initial";
+      location.pathname === "/login" ||
+      location.pathname === "/initial" ||
+      location.pathname === "/welcome" ||
+      location.pathname === "/address-search";
     const isSearchPage =
       location.pathname === "/" ||
       location.pathname === "/category" ||
