@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
-import { ShoppingCart, Sell, LocationOnOutlined } from "@mui/icons-material";
+import { ShoppingCart, Sell, PlaceOutlined } from "@mui/icons-material";
 import { parse, format } from "date-fns";
 const CalendarTrade = ({ userId, selectedDate, trades }) => {
   const formatTime = (time) => {
@@ -66,7 +66,7 @@ const CalendarTrade = ({ userId, selectedDate, trades }) => {
               pb: 1,
             }}
           >
-            <LocationOnOutlined />
+            <PlaceOutlined />
             <Typography
               sx={{
                 color: "rgba(0, 0, 0, 0.90)",
