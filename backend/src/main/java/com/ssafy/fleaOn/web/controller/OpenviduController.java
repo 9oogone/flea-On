@@ -81,7 +81,7 @@ public class OpenviduController {
 
                 // Prepare the response with the token
                 responseJson.put("0", token);
-                responseJson.put("1",true);
+                responseJson.put("1",false);
 
                 // Return the response to the client
                 return new ResponseEntity<>(responseJson, HttpStatus.OK);
@@ -113,7 +113,7 @@ public class OpenviduController {
 
             // Prepare the response with the sessionId and the token
             responseJson.put("0", token);
-            responseJson.put("1",false);
+            responseJson.put("1",true);
             System.out.println("responseJson=" + responseJson);
 
             // Return the response to the client
