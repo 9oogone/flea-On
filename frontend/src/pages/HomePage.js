@@ -32,7 +32,7 @@ const HomePage = () => {
         live_id: 2,
         is_scrap: true,
         is_live: true,
-        live_date: "오늘 오후 8시",
+        live_date: "오늘 오후 8시",products:[{name:"라면",price:3000}]
       },
       {
         id: 4,
@@ -44,7 +44,7 @@ const HomePage = () => {
         live_id: 2,
         is_scrap: true,
         is_live: true,
-        live_date: "오늘 오후 8시",
+        live_date: "오늘 오후 8시",products:[{name:"라면",price:3000}]
       },
       {
         id: 1,
@@ -57,6 +57,7 @@ const HomePage = () => {
         is_scrap: true,
         is_live: false,
         live_date: "오늘 오후 8시",
+        products:[{name:"라면",price:3000}]
       },
       {
         id: 5,
@@ -68,7 +69,7 @@ const HomePage = () => {
         live_id: 1,
         is_scrap: true,
         is_live: false,
-        live_date: "오늘 오후 8시",
+        live_date: "오늘 오후 8시",products:[{name:"라면",price:3000}]
       },
       {
         id: 6,
@@ -80,7 +81,7 @@ const HomePage = () => {
         live_id: 1,
         is_scrap: true,
         is_live: false,
-        live_date: "오늘 오후 8시",
+        live_date: "오늘 오후 8시",products:[{name:"라면",price:3000}]
       },
       {
         id: 7,
@@ -92,7 +93,7 @@ const HomePage = () => {
         live_id: 1,
         is_scrap: true,
         is_live: false,
-        live_date: "오늘 오후 8시",
+        live_date: "오늘 오후 8시",products:[{name:"라면",price:3000}]
       },
       {
         id: 8,
@@ -104,7 +105,7 @@ const HomePage = () => {
         live_id: 1,
         is_scrap: true,
         is_live: false,
-        live_date: "오늘 오후 8시",
+        live_date: "오늘 오후 8시",products:[{name:"라면",price:3000}]
       },
       {
         id: 9,
@@ -116,7 +117,7 @@ const HomePage = () => {
         live_id: 1,
         is_scrap: true,
         is_live: false,
-        live_date: "오늘 오후 8시",
+        live_date: "오늘 오후 8시",products:[{name:"라면",price:3000}]
       },
     ],
     shorts: [
