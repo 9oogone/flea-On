@@ -10,7 +10,6 @@ const UpcomingHeader = ({ liveDate, isScrap }) => (
         position: "absolute",
         background: "white",
         borderRadius: 16,
-        zIndex: "1",
       }}
     >
       <Typography
