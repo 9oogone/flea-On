@@ -1,37 +1,61 @@
 import React from "react";
-import { Box, Typography, Modal, Button } from "@mui/material";
+import { Box, Typography, Modal, List, ListItem, Button } from "@mui/material";
+import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
+import BookmarkIcon from "@mui/icons-material/Bookmark";
+import styles from '../styles/UpcomingModal.module.css';
 
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-  p: 4,
+const UpcomingModal = ({ open, handleClose, liveDate, products, title, thumbnail, author, tradePlace, isScrap }) => {
+  return (
+    <Modal
+      open={open}
+      onClose={handleClose}
+      BackdropProps={{
+        style: {
+          backgroundColor: "transparent",
+        },
+      }}
+    >
+      <div className={styles.modalOverlay}>
+        <Box className={styles.modalContent}>
+          <div className={styles.modalHeader}>
+            <img src={thumbnail} alt="thumbnail" className={styles.thumbnailImage} />
+            <div className={styles.textContainer}>
+            <Typography variant="h6" component="h2" className={styles.title}>
+              <span className={styles.titleText}>{title}</span>
+              {isScrap ? <BookmarkIcon className={styles.bookmarkIcon} /> : <BookmarkBorderIcon className={styles.bookmarkIcon} />}
+            </Typography>
+              <Typography variant="body2" component="p" className={styles.author}>
+                {author}
+              </Typography>
+              <Typography variant="body2" component="p" className={styles.liveDate}>
+                방송 시간 {liveDate}
+              </Typography>
+            </div>
+            <span className={styles.closeButton} onClick={handleClose}>&times;</span>
+          </div>
+          <div className={styles.modalHeader2}>
+            <div className={styles.textContainer}>
+                <Typography variant="body2" component="p" className={styles.tradePlace}>
+                    <div className={styles.tradeplacetext}>거래 장소</div>
+                    <div>{tradePlace}</div>
+                </Typography>
+            </div>
+          </div>
+          <div className={styles.modalBody}>
+            <div className={styles.listtitle}>판매 상품 목록</div>
+            <List className={styles.productList}>
+              {products.map((product, index) => (
+                <ListItem key={index} className={styles.productItem}>
+                  <div className={styles.productName}>{product.name}</div>
+                  <div className={styles.productPrice}>{`${product.price}원`}</div>
+                </ListItem>
+              ))}
+            </List>
+          </div>
+        </Box>
+      </div>
+    </Modal>
+  );
 };
-
-const UpcomingModal = ({ open, handleClose, liveDate }) => (
-  <Modal
-    open={open}
-    onClose={handleClose}
-    aria-labelledby="modal-modal-title"
-    aria-describedby="modal-modal-description"
-  >
-    <Box sx={style}>
-      <Typography id="modal-modal-title" variant="h6" component="h2">
-        예정된 방송
-      </Typography>
-      <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-        방송 날짜: {liveDate}
-      </Typography>
-      <Button onClick={handleClose} sx={{ mt: 2 }}>
-        닫기
-      </Button>
-    </Box>
-  </Modal>
-);
 
 export default UpcomingModal;

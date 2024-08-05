@@ -25,7 +25,15 @@ const SearchForm = () => {
   };
 
   return (
-    <Container>
+    <Container
+      sx={{
+        position: "fixed",
+        zIndex: 3,
+        backgroundColor: "white",
+        height: "12vh",
+        top: 0,
+      }}
+    >
       <form onSubmit={handleSubmit}>
         <Grid container alignItems="center" spacing={1} sx={{ mt: 2 }}>
           <Grid item xs={10}>

@@ -1,22 +1,21 @@
-import React, { useState, useCallback } from "react";
+import React, { useEffect, useCallback, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { Box, Typography, Grid } from "@mui/material";
+import { Box, Typography, Grid, CircularProgress } from "@mui/material";
+import { fetchCategories } from "../features/category/categorySlice";
 
 const CategoryPage = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { categories, loading, error } = useSelector((state) => state.category);
+  const token = useSelector((state) => state.auth.token); // 토큰 가져오기
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
 
-  // 임시 데이터
-  const categories = [
-    {
-      first_category: "가구",
-      second_category: ["침실가구", "거실가구"],
-    },
-    {
-      first_category: "가전",
-      second_category: ["냉장고", "세탁기"],
-    },
-  ];
+  useEffect(() => {
+    if (token) {
+      dispatch(fetchCategories(token)); // 토큰을 전달하여 카테고리 가져오기
+    }
+  }, [dispatch, token]);
 
   const onCategoryClick = useCallback((categoryId) => {
     setSelectedCategoryId(categoryId);
@@ -29,51 +28,95 @@ const CategoryPage = () => {
     [navigate]
   );
 
+  if (loading) {
+    return (
+      <Box textAlign="center" mt={4}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box textAlign="center" mt={4}>
+        <Typography variant="h6" color="error">
+          {error}
+        </Typography>
+      </Box>
+    );
+  }
+
+  const groupedCategories = categories.reduce((acc, category) => {
+    const {
+      firstCategoryId,
+      firstCategoryName,
+      secondCategoryId,
+      secondCategoryName,
+    } = category;
+    if (!acc[firstCategoryId]) {
+      acc[firstCategoryId] = {
+        firstCategoryName,
+        secondCategories: [],
+      };
+    }
+    acc[firstCategoryId].secondCategories.push({
+      id: secondCategoryId,
+      name: secondCategoryName,
+    });
+    return acc;
+  }, {});
+
   return (
-    <Box padding={2}>
-      <Grid container spacing={2}>
-        <Grid item xs={3}>
-          {categories.map((category) => (
-            <Box
-              key={category.first_category}
-              onClick={() => onCategoryClick(category.first_category)}
-              textAlign="center"
-              sx={{
-                cursor: "pointer",
-                marginBottom: 2,
-                backgroundColor:
-                  selectedCategoryId === category.first_category
-                    ? "#FFCEDD"
-                    : "white",
-                color:
-                  selectedCategoryId === category.first_category
-                    ? "#FF0B55"
-                    : "black",
-              }}
-            >
-              <Typography variant="h6">{category.first_category}</Typography>
-            </Box>
-          ))}
+    <Box>
+      <Grid container sx={{ marginTop: "12vh", height: "80vh" }}>
+        <Grid item xs={6} sx={{ overflowY: "auto", height: "100%" }}>
+          {Object.entries(groupedCategories).map(
+            ([firstCategoryId, category]) => (
+              <Box
+                key={firstCategoryId}
+                onClick={() => onCategoryClick(firstCategoryId)}
+                sx={{
+                  cursor: "pointer",
+                  height: "7vh",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  backgroundColor:
+                    selectedCategoryId === firstCategoryId
+                      ? "#FFCEDD"
+                      : "white",
+                  color:
+                    selectedCategoryId === firstCategoryId
+                      ? "#FF0B55"
+                      : "black",
+                }}
+              >
+                <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                  {category.firstCategoryName}
+                </Typography>
+              </Box>
+            )
+          )}
         </Grid>
 
-        <Grid item xs={9}>
+        <Grid item xs={6} sx={{ overflowY: "auto", height: "100%" }}>
           {selectedCategoryId !== null && (
-            <Grid container spacing={2}>
-              {categories
-                .find(
-                  (category) => category.first_category === selectedCategoryId
-                )
-                .second_category.map((subcategory) => (
-                  <Grid item xs={9} sm={8} md={8} key={subcategory}>
+            <Grid container>
+              {groupedCategories[selectedCategoryId].secondCategories.map(
+                (subcategory) => (
+                  <Grid item xs={12} key={subcategory.id}>
                     <Box
-                      onClick={() => onSubCategoryClick(subcategory)}
+                      onClick={() => onSubCategoryClick(subcategory.name)}
                       textAlign="center"
-                      sx={{ cursor: "pointer" }}
+                      sx={{ cursor: "pointer", mb: 1 }}
                     >
-                      <Typography variant="h6">{subcategory}</Typography>
+                      <Typography variant="body1">
+                        {subcategory.name}
+                      </Typography>
                     </Box>
                   </Grid>
-                ))}
+                )
+              )}
             </Grid>
           )}
         </Grid>

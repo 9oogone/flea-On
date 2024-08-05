@@ -34,6 +34,7 @@ const OpenVideo = () => {
       });
 
     return () => {
+      console.log(session);
       if (session) {
         if (publisher) {
           publisher = null;
@@ -70,7 +71,7 @@ const OpenVideo = () => {
       console.log(resp);
       let token = resp[0];
       await session.connect(token, { clientData: "example" });
-      if (resp[1] == true) {
+      if (resp[1] === true) {
         setIsPublisher(true);
         publisher = OV.initPublisher(
           undefined,
@@ -79,7 +80,7 @@ const OpenVideo = () => {
             videoSource: undefined,
             publishAudio: true,
             publishVideo: true,
-            resolution: "1080x1920",
+            resolution: "405x1080",
             frameRate: 30,
             insertMode: "APPEND",
             mirror: false,
@@ -156,11 +157,20 @@ const OpenVideo = () => {
   };
 
   return (
-    <div>
-      {isPublisher == true ? (
-        <div>
+    <div style={{ padding: "-8px" }}>
+      {isPublisher === true ? (
+        <div
+          style={{
+            width: "100vw",
+            height: "100vh",
+          }}
+        >
           {/* <div ref={videoRef}></div> */}
-          <video autoPlay={true} ref={videoRef}></video>
+          <video
+            autoPlay={true}
+            ref={videoRef}
+            style={{ objectFit: "cover", width: "100%", height: "100%" }}
+          ></video>
           {/* <OpenViduVideoComponent streamManager={publisher}/> */}
           <button onClick={handleRecordStart} disabled={isRecording}>
             Start Recording

@@ -1,25 +1,38 @@
 import React, { useState } from "react";
 import { Box, Grid, Button } from "@mui/material";
-import { useNavigate } from "react-router-dom"; // 최신 버전 React Router 사용
+import { useNavigate } from "react-router-dom";
 import LiveHeader from "./LiveHeader";
 import UpcomingHeader from "./UpcomingHeader";
 import LiveFooter from "./LiveFooter";
 import UpcomingFooter from "./UpcomingFooter";
 import UpcomingModal from "./UpcomingModal";
+
 const LiveBroadcasts = ({ items }) => {
-  const navigate = useNavigate(); // navigate 함수 생성
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [modalLiveDate, setModalLiveDate] = useState("");
+  const [modalTitle, setModalTitle] = useState("");
+  const [modalProducts, setModalProducts] = useState([]);
+  const [modalThumbnail, setModalThumbnail] = useState("");
+  const [modalAuthor, setModalAuthor] = useState("");
+  const [modalTradePlace, setModalTradePlace] = useState("");
 
   const handleButtonClick = (item) => {
     if (item.is_live) {
       navigate(`/live/${item.id}`);
     } else {
       setModalLiveDate(item.live_date);
+      setModalTitle(item.title);
+      setModalProducts(item.products || []);
+      setModalThumbnail(item.thumbnail);
+      setModalAuthor(item.author);
+      setModalTradePlace(item.trade_place);
       setOpen(true);
     }
   };
+
   const handleClose = () => setOpen(false);
+
   return (
     <Grid item xs={12}>
       <Grid container>
@@ -31,8 +44,8 @@ const LiveBroadcasts = ({ items }) => {
             >
               <Box
                 sx={{
-                  width: 144,
-                  height: 234,
+                  width: "16vh",
+                  height: "28vh",
                   backgroundImage: `url(${item.thumbnail})`,
                   backgroundSize: "cover",
                   backgroundPosition: "center",
@@ -72,14 +85,19 @@ const LiveBroadcasts = ({ items }) => {
                 )}
               </Box>
             </Button>
+            <UpcomingModal
+              open={open}
+              handleClose={handleClose}
+              liveDate={modalLiveDate}
+              products={modalProducts}
+              title={modalTitle}
+              thumbnail={modalThumbnail}
+              author={modalAuthor}
+              tradePlace={modalTradePlace}
+            />
           </Grid>
         ))}
       </Grid>
-      <UpcomingModal
-        open={open}
-        handleClose={handleClose}
-        liveDate={modalLiveDate}
-      />
     </Grid>
   );
 };
