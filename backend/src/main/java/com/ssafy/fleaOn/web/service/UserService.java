@@ -301,7 +301,7 @@ public class UserService {
 
     public void updateUserRegion(int userId, Map<String, Object> newRegion, Map<String, Object> deleteRegion){
         try {
-            Optional<UserRegion> findUser = userRegionRepository.findByUser_userIdAndRegionCode(userId, (String) deleteRegion.get("region_code"));
+            Optional<UserRegion> findUser = userRegionRepository.findByUser_userIdAndRegion_RegionCode(userId, (String) deleteRegion.get("region_code"));
             Optional<User> user = userRepository.findById(userId);
             if (findUser.isPresent()) {
                 String sido = newRegion.get("sido").toString();
@@ -356,7 +356,7 @@ public class UserService {
 
     public void deleteUserShortsScrap(int userId, int shortsId){
         try {
-            Optional<ShortsScrap> findShortsScrap = shortsScrapRepository.findByUser_userIdAndShortsId(userId, shortsId);
+            Optional<ShortsScrap> findShortsScrap = shortsScrapRepository.findByUser_userIdAndShorts_shortsId(userId, shortsId);
             if (findShortsScrap.isPresent()) {
                 shortsScrapRepository.delete(findShortsScrap.get());
             }
@@ -397,7 +397,7 @@ public class UserService {
     }
     public void deleteUserLivewScrap(int userId, int liveId){
         try{
-            Optional<LiveScrap> findLiveScrap = liveScrapRepository.findByUser_userIdAndLiveId(userId, liveId);
+            Optional<LiveScrap> findLiveScrap = liveScrapRepository.findByUser_userIdAndLive_liveId(userId, liveId);
             if (findLiveScrap.isPresent()) {
                 liveScrapRepository.delete(findLiveScrap.get());
             }

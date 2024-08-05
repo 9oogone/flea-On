@@ -13,5 +13,5 @@ public interface LiveScrapRepository extends JpaRepository<LiveScrap, Integer> {
 
     Optional<List<LiveScrap>> findByUser_userId(int userId);
 
-    Optional<LiveScrap> findByUser_userIdAndLiveId(int userId, int liveId);
+    Optional<LiveScrap> findByUser_userIdAndLive_liveId(int userId, int liveId);
 }

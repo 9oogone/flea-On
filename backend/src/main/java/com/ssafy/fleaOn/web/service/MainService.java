@@ -169,11 +169,11 @@ public class MainService {
         try {
             Pageable pageable = PageRequest.of(0, 10);
 
-            Category findCategory = categoryRepository.findByFirstCategoryNameAndSecondCategory(firstCategoryName, secondCategoryName);
+            Category findCategory = categoryRepository.findByFirstCategoryNameAndSecondCategoryName(firstCategoryName, secondCategoryName);
             int findFirstCategoryId = findCategory.getFirstCategoryId();
             int findSecondCategoryId = findCategory.getSecondCategoryId();
 
-            Optional<List<Integer>> findProductIdList = productRepository.findProductIdByFirstCategoryAndSecondCategory(findFirstCategoryId, findSecondCategoryId);
+            Optional<List<Integer>> findProductIdList = productRepository.findProductIdByFirstCategoryIdAndSecondCategoryId(findFirstCategoryId, findSecondCategoryId);
 
             List<Map<String, Object>> resultList = new ArrayList<>();
 

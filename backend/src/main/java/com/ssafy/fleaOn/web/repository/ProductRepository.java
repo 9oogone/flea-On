@@ -4,7 +4,6 @@ import com.ssafy.fleaOn.web.domain.Product;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
@@ -22,7 +21,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     Slice<Product> findByNameContainingOrFirstCategoryIdOrSecondCategoryId(String name, int firstCategoryId, int secondCategoryId, Pageable pageable);
 
-    Optional<List<Integer>> findProductIdByFirstCategoryAndSecondCategory(int firstCategoryId, int secondCategoryId);
+    Optional<List<Integer>> findProductIdByFirstCategoryIdAndSecondCategoryId(int firstCategoryId, int secondCategoryId);
 
     Slice<Product> findByProductId(int productId, Pageable pageable);
 }

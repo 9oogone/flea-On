@@ -12,5 +12,5 @@ public interface UserRegionRepository extends JpaRepository<UserRegion, Integer>
 
     Optional<List<UserRegion>> findByUser_userId(int userId);
 
-    Optional<UserRegion> findByUser_userIdAndRegionCode(int userId, String regionCode);
+    Optional<UserRegion> findByUser_userIdAndRegion_RegionCode(int userId, String regionCode);
 }
