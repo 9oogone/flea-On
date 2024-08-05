@@ -14,6 +14,7 @@ import BottomAppBar from "./components/BottomAppBar";
 import MyPage from "./pages/MyPage";
 import Category from "./pages/CategoryPage";
 import Chat from "./pages/ChatPage";
+import ChatRoom from "./pages/ChatRoom";
 import Search from "./pages/SearchPage";
 import SearchForm from "./components/SearchForm";
 import SearchShorts from "./pages/SearchShortsPage";
@@ -31,7 +32,7 @@ const routes = [
   { path: "/category", element: <Category />, isPrivate: true },
   { path: "/search", element: <Search />, isPrivate: true },
   { path: "/chat", element: <Chat />, isPrivate: true },
-  { path: "/chat/:chatID", element: <Chat />, isPrivate: true },
+  { path: "/chat/:chatID", element: <ChatRoom />, isPrivate: true },
   { path: "/mypage", element: <MyPage />, isPrivate: true },
 
   { path: "/search/shorts", element: <SearchShorts />, isPrivate: true },
@@ -80,6 +81,7 @@ function App() {
               />
             )
           )}
+
           <Route path={"/live/:sessionName"} element={<OpenVideo />}></Route>
         </Routes>
       </LocationWrapper>

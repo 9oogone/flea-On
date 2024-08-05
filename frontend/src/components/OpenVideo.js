@@ -2,9 +2,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { OpenVidu } from "openvidu-browser";
 import { useDispatch } from "react-redux";
-import { setLoading, unSetLoading } from "../features/openvido/loadingSlice";
+import { setLoading, unSetLoading } from "../features/live/loadingSlice";
 import { getToken, startRecording, stopRecording } from "../api/openViduAPI";
 import { useParams } from "react-router-dom";
+import useDidMountEffect from "../utils/useDidMountEffect";
 
 const OpenVideo = () => {
   const videoRef = useRef(null);
@@ -19,7 +20,7 @@ const OpenVideo = () => {
   let publisher;
   let subscribers = [];
 
-  useEffect(() => {
+  useDidMountEffect(() => {
     dispatch(setLoading());
 
     MakeSession(videoRef, dispatch, sessionName)
@@ -68,7 +69,7 @@ const OpenVideo = () => {
       console.log(resp);
       let token = resp[0];
       await session.connect(token, { clientData: "example" });
-      if (resp[1] === true) {
+      if (resp[1] == true) {
         setIsPublisher(true);
         publisher = OV.initPublisher(
           videoRef.current,
@@ -77,7 +78,7 @@ const OpenVideo = () => {
             videoSource: undefined,
             publishAudio: true,
             publishVideo: true,
-            resolution: "1000x562",
+            resolution: "1080x1920",
             frameRate: 30,
             insertMode: "APPEND",
             mirror: false,
@@ -143,7 +144,6 @@ const OpenVideo = () => {
   };
 
   const sendMessage = () => {
-    console.log("메세지 보내기");
     if (session && newMessage.trim() !== "") {
       session.signal({
         data: newMessage,
@@ -155,7 +155,7 @@ const OpenVideo = () => {
 
   return (
     <div>
-      {isPublisher === true ? (
+      {isPublisher == true ? (
         <div>
           {/* <div ref={videoRef}></div> */}
           <video autoPlay={true} ref={videoRef}></video>
