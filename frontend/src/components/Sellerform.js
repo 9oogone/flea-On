@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import styles from '../styles/SellerForm.module.css';
 import dayjs from 'dayjs';
 import 'dayjs/locale/ko';
@@ -14,17 +15,19 @@ import { DemoItem } from '@mui/x-date-pickers/internals/demo';
 import Button from '@mui/material/Button';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import SearchIcon from '@mui/icons-material/Search';
+import { fetchCategories, createLiveBroadcast } from '../features/live/actions';
 
 dayjs.locale('ko');
 
 const SellerformSelect = ({ onClose }) => {
+  const dispatch = useDispatch();
   const [thumbnail, setThumbnail] = useState(null);
   const [thumbnailPreview, setThumbnailPreview] = useState(null);
   const [startDate, setStartDate] = useState(dayjs());
   const [transactionTimes, setTransactionTimes] = useState([{ date: dayjs(), from: dayjs(), to: dayjs() }]);
   const [address, setAddress] = useState('');
   const [detailedAddress, setDetailedAddress] = useState('');
-  const [items, setItems] = useState([{ name: '', price: '' }]);
+  const [items, setItems] = useState([{ name: '', price: '', firstCategoryId: 0, secondCategoryId: 0 }]);
 
   const handleThumbnailChange = (event) => {
     const file = event.target.files[0];
@@ -59,10 +62,20 @@ const SellerformSelect = ({ onClose }) => {
     const newItems = [...items];
     newItems[index][field] = value;
     setItems(newItems);
+
+    if (field === 'name' && value) {
+      dispatch(fetchCategories(value)).then((action) => {
+        if (action.payload && action.payload.length > 0) {
+          newItems[index].firstCategoryId = action.payload[0].firstCategoryId;
+          newItems[index].secondCategoryId = action.payload[0].secondCategoryId;
+          setItems(newItems);
+        }
+      });
+    }
   };
 
   const handleAddItem = () => {
-    setItems([...items, { name: '', price: '' }]);
+    setItems([...items, { name: '', price: '', firstCategoryId: 0, secondCategoryId: 0 }]);
   };
 
   const handleRemoveItem = (index) => {
@@ -92,12 +105,27 @@ const SellerformSelect = ({ onClose }) => {
     formData.append('thumbnail', thumbnail);
 
     try {
-      const response = await fetch('/api/upload-thumbnail', {
-        method: 'POST',
-        body: formData,
-      });
-      const result = await response.json();
-      console.log('Success:', result);
+      // const response = await fetch('/api/upload-thumbnail', { //썸네일 서버에 올리는거 백에 묻기..
+      //   method: 'POST',
+      //   body: formData,
+      // });
+      // const result = await response.json();
+
+      const liveData = {
+        title: document.getElementById('outlined-basic').value,
+        liveDate: startDate.toISOString(),
+        // liveThumbnail: result.filePath, -> 백 완성되면 하기
+        liveThumbnail:"https://picsum.photos/160/250",
+        tradePlace: `${address} ${detailedAddress}`,
+        product: items.map((item) => ({
+          name: item.name,
+          price: parseInt(item.price, 10),
+          firstCategoryId: item.firstCategoryId,
+          secondCategoryId: item.secondCategoryId,
+        })),
+      };
+
+      dispatch(createLiveBroadcast(liveData));
     } catch (error) {
       console.error('Error:', error);
     }
@@ -287,37 +315,37 @@ const SellerformSelect = ({ onClose }) => {
             <div className={styles.div1}>판매 목록</div>
           </div>
           <div className={styles.strokecontainer}>
-          <div className={styles.itemsList}>
-            {items.map((item, index) => (
-              <div key={index} className={styles.itemRow}>
-                <TextField
-                  label="상품 이름"
-                  value={item.name}
-                  onChange={(e) => handleInputChange(index, 'name', e.target.value)}
-                  variant="outlined"
-                  size="small"
-                  className={styles.itemName}
-                />
-                <br/>
-                <TextField
-                  label="가격"
-                  value={item.price}
-                  onChange={(e) => handleInputChange(index, 'price', e.target.value)}
-                  variant="outlined"
-                  size="small"
-                  className={styles.itemPrice}
-                />
-                {items.length > 1 && (
-                  <IconButton
-                    onClick={() => handleRemoveItem(index)}
-                    style={{ marginLeft: '10px' }}
-                  >
-                    <CloseIcon />
-                  </IconButton>
-                )}
-              </div>
-            ))}
-          </div>
+            <div className={styles.itemsList}>
+              {items.map((item, index) => (
+                <div key={index} className={styles.itemRow}>
+                  <TextField
+                    label="상품 이름"
+                    value={item.name}
+                    onChange={(e) => handleInputChange(index, 'name', e.target.value)}
+                    variant="outlined"
+                    size="small"
+                    className={styles.itemName}
+                  />
+                  <br/>
+                  <TextField
+                    label="가격"
+                    value={item.price}
+                    onChange={(e) => handleInputChange(index, 'price', e.target.value)}
+                    variant="outlined"
+                    size="small"
+                    className={styles.itemPrice}
+                  />
+                  {items.length > 1 && (
+                    <IconButton
+                      onClick={() => handleRemoveItem(index)}
+                      style={{ marginLeft: '10px' }}
+                    >
+                      <CloseIcon />
+                    </IconButton>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
           <div className={styles.button}>
             <IconButton onClick={handleAddItem} className={styles.addButton}>
