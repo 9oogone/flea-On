@@ -78,7 +78,16 @@ public class LiveService {
                 .map(addAddProductRequest -> addAddProductRequest.toEntity(finalLive, user))
                 .collect(Collectors.toList());
 
+        // 라이브 내의 live trade time 수정
+        List<LiveTradeTime> deleteLiveTradeTimes = liveTradeTimeRepository.findByLive_LiveId(liveId).orElseThrow(() -> new IllegalArgumentException("no teade times found for live id: " + liveId));
+        liveTradeTimeRepository.deleteAll(deleteLiveTradeTimes);
+        // LiveTradeTime 엔티티 생성 및 저장
+        List<LiveTradeTime> liveTradeTimes = request.getLiveTradeTime().stream()
+                .map(addLiveTradeRequest -> addLiveTradeRequest.toEntity(finalLive))
+                .toList();
+
         productRepository.saveAll(products);
+        liveTradeTimeRepository.saveAll(liveTradeTimes);
         return live;
     }
 
@@ -92,6 +101,10 @@ public class LiveService {
         List<Product> products = productRepository.findByLive_LiveId(id).orElseThrow(() -> new IllegalArgumentException("no products found for live id: " + id));
         productRepository.deleteAll(products);
 
+        // 라이브와 연관된 모든 시간대 삭제
+        List<LiveTradeTime> liveTradeTimes = liveTradeTimeRepository.findByLive_LiveId(id).orElseThrow(() -> new IllegalArgumentException("no teade times found for live id: " + id));
+        liveTradeTimeRepository.deleteAll(liveTradeTimes);
+
         // 라이브 삭제
         liveRepository.delete(live);
     }
@@ -99,17 +112,20 @@ public class LiveService {
     public LiveDetailResponse findLiveWithProducts(int liveId) {
         Live live = findById(liveId);
         List<Product> products = productRepository.findByLive_LiveId(liveId).orElseThrow(() -> new IllegalArgumentException("no products found for live id: " + liveId));
-        return new LiveDetailResponse(live, products);
+        List<LiveTradeTime> liveTradeTimes = liveTradeTimeRepository.findByLive_LiveId(liveId).orElseThrow(() -> new IllegalArgumentException("no teade times found for live id: " + liveId));
+        return new LiveDetailResponse(live, products, liveTradeTimes);
     }
 
 
     @Transactional
-    public Live onoffLive(int liveId) {
+    public LiveDetailResponse onoffLive(int liveId) {
         Live live = liveRepository.findById(liveId)
                 .orElseThrow(() -> new IllegalArgumentException("not found : " + liveId));
         authorizeArticleAuthor(live);
         live.onOff();
-        return live;
+        List<Product> products = productRepository.findByLive_LiveId(liveId).orElseThrow(() -> new IllegalArgumentException("no products found for live id: " + liveId));
+        List<LiveTradeTime> liveTradeTimes = liveTradeTimeRepository.findByLive_LiveId(liveId).orElseThrow(() -> new IllegalArgumentException("no teade times found for live id: " + liveId));
+        return new LiveDetailResponse(live, products, liveTradeTimes);
     }
 
     private static void authorizeArticleAuthor(Live live) {

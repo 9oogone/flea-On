@@ -15,4 +15,5 @@ public class UpdateLiveRequest {
     private String liveThumbnail;
     private String tradePlace;
     private List<UpdateProductRequest> product;
+    private List<UpdateLiveTradeRequest> liveTradeTime;
 }
