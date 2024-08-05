@@ -4,6 +4,7 @@ import com.ssafy.fleaOn.web.dto.PurchaseRequest;
 import com.ssafy.fleaOn.web.dto.TradeRequest;
 import com.ssafy.fleaOn.web.producer.RedisQueueProducer;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/fleaon/purchase")
+@Tag(name = "Purchase API", description = "구매,예약 관련 API")
 public class PurchaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(PurchaseController.class);
