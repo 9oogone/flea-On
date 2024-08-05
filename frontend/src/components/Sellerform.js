@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from '../styles/SellerForm.module.css';
 import dayjs from 'dayjs';
 import 'dayjs/locale/ko';
@@ -13,6 +13,7 @@ import AddToPhotosIcon from '@mui/icons-material/AddToPhotos';
 import { DemoItem } from '@mui/x-date-pickers/internals/demo';
 import Button from '@mui/material/Button';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import SearchIcon from '@mui/icons-material/Search';
 
 dayjs.locale('ko');
 
@@ -21,6 +22,9 @@ const SellerformSelect = ({ onClose }) => {
   const [thumbnailPreview, setThumbnailPreview] = useState(null);
   const [startDate, setStartDate] = useState(dayjs());
   const [transactionTimes, setTransactionTimes] = useState([{ date: dayjs(), from: dayjs(), to: dayjs() }]);
+  const [address, setAddress] = useState('');
+  const [detailedAddress, setDetailedAddress] = useState('');
+  const [items, setItems] = useState([{ name: '', price: '' }]);
 
   const handleThumbnailChange = (event) => {
     const file = event.target.files[0];
@@ -46,6 +50,41 @@ const SellerformSelect = ({ onClose }) => {
     ));
     setTransactionTimes(updatedTimes);
   };
+
+  const handleOpenAddressSearch = () => {
+    window.open('/address-search', 'popup', 'width=600,height=400,scrollbars=yes,resizable=yes');
+  };
+
+  const handleInputChange = (index, field, value) => {
+    const newItems = [...items];
+    newItems[index][field] = value;
+    setItems(newItems);
+  };
+
+  const handleAddItem = () => {
+    setItems([...items, { name: '', price: '' }]);
+  };
+
+  const handleRemoveItem = (index) => {
+    if (items.length > 1) {
+      setItems(items.filter((_, idx) => idx !== index));
+    }
+  };
+
+  useEffect(() => {
+    const handleMessage = (event) => {
+      if (event.origin !== window.location.origin) {
+        return;
+      }
+      if (event.data.address) {
+        setAddress(event.data.address);
+      }
+    };
+    window.addEventListener('message', handleMessage);
+    return () => {
+      window.removeEventListener('message', handleMessage);
+    };
+  }, []);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -145,7 +184,45 @@ const SellerformSelect = ({ onClose }) => {
             </div>
           </div>
           <div className={styles.regionContainer}>
-          <div className>거래 장소</div> 
+            <div className={styles.sellerTime}>
+              <div className={styles.div1}>거래 장소</div>
+              <Button
+                variant="outlined"
+                onClick={handleOpenAddressSearch}
+                fullWidth
+                startIcon={<SearchIcon />}
+                sx={{
+                  color: 'black',
+                  borderColor: 'D9D9D9',
+                  borderWidth: '0.5px',
+                  backgroundColor: 'white',
+                  height: '56px',
+                }}
+              >
+                주소 찾기
+              </Button>
+              {address && (
+                <>
+                  <TextField
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    placeholder="주소"
+                    fullWidth
+                    margin="normal"
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                  />
+                  <TextField
+                    value={detailedAddress}
+                    onChange={(e) => setDetailedAddress(e.target.value)}
+                    placeholder="상세 주소"
+                    fullWidth
+                    margin="normal"
+                  />
+                </>
+              )}
+            </div>
           </div>
           <div className={styles.sellerTimeContainer}>
             <div className={styles.sellerTime}>
@@ -198,10 +275,54 @@ const SellerformSelect = ({ onClose }) => {
             <Button
               color="primary"
               onClick={handleAddTransactionTime}
-              startIcon={<AddCircleOutlineIcon style={{ color: 'gray', fontSize:'30' }}/>}
+              startIcon={<AddCircleOutlineIcon style={{ color: 'gray', fontSize: '30' }} />}
               style={{ marginBottom: '10px', display: 'flex' }}
             >
             </Button>
+          </div>
+          <div className={styles.strokecontainer}>
+            <div className={styles.divider}></div>
+          </div>
+          <div className={styles.strokecontainer}>
+            <div className={styles.div1}>판매 목록</div>
+          </div>
+          <div className={styles.strokecontainer}>
+          <div className={styles.itemsList}>
+            {items.map((item, index) => (
+              <div key={index} className={styles.itemRow}>
+                <TextField
+                  label="상품 이름"
+                  value={item.name}
+                  onChange={(e) => handleInputChange(index, 'name', e.target.value)}
+                  variant="outlined"
+                  size="small"
+                  className={styles.itemName}
+                />
+                <br/>
+                <TextField
+                  label="가격"
+                  value={item.price}
+                  onChange={(e) => handleInputChange(index, 'price', e.target.value)}
+                  variant="outlined"
+                  size="small"
+                  className={styles.itemPrice}
+                />
+                {items.length > 1 && (
+                  <IconButton
+                    onClick={() => handleRemoveItem(index)}
+                    style={{ marginLeft: '10px' }}
+                  >
+                    <CloseIcon />
+                  </IconButton>
+                )}
+              </div>
+            ))}
+          </div>
+          </div>
+          <div className={styles.button}>
+            <IconButton onClick={handleAddItem} className={styles.addButton}>
+              <AddCircleOutlineIcon style={{ color: 'gray', fontSize: '30' }}/>
+            </IconButton>
           </div>
           <div className={styles.button}>
             <button type="submit" className={styles.button1}>등록하기</button>

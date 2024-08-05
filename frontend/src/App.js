@@ -9,6 +9,7 @@ import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import CheckLogin from "./features/auth/components/CheckLogin";
 import Initial from "./pages/InitialPage";
+import WelcomePage from "./pages/WelcomePage";
 import BottomAppBar from "./components/BottomAppBar";
 import MyPage from "./pages/MyPage";
 import Category from "./pages/CategoryPage";
@@ -19,11 +20,14 @@ import SearchShorts from "./pages/SearchShortsPage";
 import SearchLive from "./pages/SearchLivePage";
 import PrivateRoute from "./components/PrivateRoute";
 import OpenVideo from "./pages/LivePage";
+import AddressSearch from "./pages/AddressSearch"; // Import AddressSearch component
+
 const routes = [
   { path: "/", element: <HomePage />, isPrivate: true },
   { path: "/login", element: <LoginPage />, isPrivate: false },
   { path: "/check", element: <CheckLogin />, isPrivate: false },
   { path: "/initial", element: <Initial />, isPrivate: true },
+  { path: "/welcome", element: <WelcomePage />, isPrivate: true },
   { path: "/category", element: <Category />, isPrivate: true },
   { path: "/search", element: <Search />, isPrivate: true },
   { path: "/chat", element: <Chat />, isPrivate: true },
@@ -32,13 +36,17 @@ const routes = [
   { path: "/live/:sessionName", element: <OpenVideo />, isPrivate: true },
   { path: "/search/shorts", element: <SearchShorts />, isPrivate: true },
   { path: "/search/live", element: <SearchLive />, isPrivate: true },
+  { path: "/address-search", element: <AddressSearch />, isPrivate: false }, // Add AddressSearch route
 ];
 
 function App() {
   const LocationWrapper = ({ children }) => {
     const location = useLocation();
     const isLoginPage =
-      location.pathname === "/login" || location.pathname === "/initial";
+      location.pathname === "/login" ||
+      location.pathname === "/initial" ||
+      location.pathname === "/welcome" ||
+      location.pathname === "/address-search";
     const isSearchPage =
       location.pathname === "/" ||
       location.pathname === "/category" ||
