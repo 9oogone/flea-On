@@ -1,20 +1,20 @@
 // src/components/OpenVideo.js
 import React, { useEffect, useRef, useState } from "react";
 import { OpenVidu } from "openvidu-browser";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setLoading, unSetLoading } from "../features/live/loadingSlice";
 import { getToken, startRecording, stopRecording } from "../api/openViduAPI";
 import { useParams } from "react-router-dom";
 import useDidMountEffect from "../utils/useDidMountEffect";
+import { setSession, clearSession } from "../features/live/sessionSlice";
 
 const OpenVideo = () => {
   const videoRef = useRef(null);
   const [isRecording, setIsRecording] = useState(false);
-  const [session, setSession] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [isPublisher, setIsPublisher] = useState(false);
-
+  const session = useSelector((state) => state.session);
   const dispatch = useDispatch();
   const { sessionName } = useParams();
   let publisher;
@@ -26,7 +26,7 @@ const OpenVideo = () => {
     MakeSession(videoRef, dispatch, sessionName)
       .then((session) => {
         console.log("MakeSession 성공");
-        setSession(session);
+        dispatch(setSession(session));
       })
       .catch((error) => {
         console.error("MakeSession 오류:", error);
@@ -34,11 +34,13 @@ const OpenVideo = () => {
       });
 
     return () => {
+      console.log(session);
       if (session) {
         if (publisher) {
           publisher = null;
         }
         session.disconnect();
+        dispatch(clearSession());
       }
     };
   }, [sessionName]);
@@ -69,21 +71,22 @@ const OpenVideo = () => {
       console.log(resp);
       let token = resp[0];
       await session.connect(token, { clientData: "example" });
-      if (resp[1] == true) {
+      if (resp[1] === true) {
         setIsPublisher(true);
         publisher = OV.initPublisher(
-          videoRef.current,
+          undefined,
           {
             audioSource: undefined,
             videoSource: undefined,
             publishAudio: true,
             publishVideo: true,
-            resolution: "1080x1920",
+            resolution: "405x1080",
             frameRate: 30,
             insertMode: "APPEND",
             mirror: false,
           },
           () => {
+            publisher.addVideoElement(videoRef.current);
             session.publish(publisher);
             dispatch(unSetLoading());
           },
@@ -154,11 +157,20 @@ const OpenVideo = () => {
   };
 
   return (
-    <div>
-      {isPublisher == true ? (
-        <div>
+    <div style={{ padding: "-8px" }}>
+      {isPublisher === true ? (
+        <div
+          style={{
+            width: "100vw",
+            height: "100vh",
+          }}
+        >
           {/* <div ref={videoRef}></div> */}
-          <video autoPlay={true} ref={videoRef}></video>
+          <video
+            autoPlay={true}
+            ref={videoRef}
+            style={{ objectFit: "cover", width: "100%", height: "100%" }}
+          ></video>
           {/* <OpenViduVideoComponent streamManager={publisher}/> */}
           <button onClick={handleRecordStart} disabled={isRecording}>
             Start Recording
