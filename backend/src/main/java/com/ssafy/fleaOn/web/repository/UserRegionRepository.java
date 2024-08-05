@@ -11,4 +11,6 @@ import java.util.Optional;
 public interface UserRegionRepository extends JpaRepository<UserRegion, Integer> {
 
     Optional<List<UserRegion>> findByUser_userId(int userId);
+
+    Optional<UserRegion> findByUser_userIdAndRegionCode(int userId, String regionCode);
 }

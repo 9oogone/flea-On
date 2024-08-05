@@ -34,6 +34,8 @@ public class UserService {
 
     private final ShortsRepository shortsRepository;
 
+    private final RegionInfoRepository regionInfoRepository;
+
     public User findByEmail(String email) {
         Optional<User> user = userRepository.findByEmail(email);
         System.out.println("user: " + user);
@@ -263,6 +265,151 @@ public class UserService {
         return Optional.of(userScrapShortList);
     }
 
+    public void addUserExtraInfo(Map<String, Object> extraInfo, String email) {
+        Optional<User> findUser = userRepository.findByEmail(email);
+        if (findUser.isPresent()) {
+            User user = User.builder()
+                    .nickname(extraInfo.get("nickname").toString())
+                    .phone(extraInfo.get("phone").toString())
+                    .build();
+            userRepository.save(user);
+        }
+    }
+
+    public void addUserRegion(int userId, Map<String, Object> region) {
+        Optional<User> user = userRepository.findById(userId);
+        if (user.isPresent()) {
+            String sido = region.get("sido").toString();
+            String gugun = region.get("gugun").toString();
+            String eupmyeon = region.get("eupmyeon") != null ? region.get("eupmyeon").toString() : null;
+            String li = region.get("li") != null ? region.get("li").toString() : null;
+
+            Optional<RegionInfo> findRegionInfo = regionInfoRepository.findBySidoAndGugunAndEupmyeonAndLi(sido, gugun, eupmyeon, li);
+            if (findRegionInfo.isPresent()) {
+                RegionInfo regionInfo = findRegionInfo.get();
+
+                // UserRegion 객체 생성 시 User와 RegionInfo 객체를 직접 할당
+                UserRegion addUserRegion = UserRegion.builder()
+                        .user(user.get())
+                        .region(regionInfo)
+                        .build();
+
+                userRegionRepository.save(addUserRegion);
+            }
+        }
+    }
+
+    public void updateUserRegion(int userId, Map<String, Object> newRegion, Map<String, Object> deleteRegion){
+        try {
+            Optional<UserRegion> findUser = userRegionRepository.findByUser_userIdAndRegionCode(userId, (String) deleteRegion.get("region_code"));
+            Optional<User> user = userRepository.findById(userId);
+            if (findUser.isPresent()) {
+                String sido = newRegion.get("sido").toString();
+                String gugun = newRegion.get("gugun").toString();
+                String eupmyeon = newRegion.get("eupmyeon") != null ? newRegion.get("eupmyeon").toString() : null;
+                String li = newRegion.get("li") != null ? newRegion.get("li").toString() : null;
+
+                Optional<RegionInfo> findRegionInfo = regionInfoRepository.findBySidoAndGugunAndEupmyeonAndLi(sido, gugun, eupmyeon, li);
+                if (findRegionInfo.isPresent()) {
+                    RegionInfo regionInfo = findRegionInfo.get();
+
+                    UserRegion updateUserRegion = UserRegion.builder()
+                            .user(user.get())
+                            .region(regionInfo)
+                            .build();
+
+                    userRegionRepository.save(updateUserRegion);
+                }
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    public void addUserShortsScrap(int userId, int shortsId){
+        try {
+            Optional<User> findUser = userRepository.findById(userId);
+            if (findUser.isPresent()) {
+                Optional<Shorts> findShorts = shortsRepository.findById(shortsId);
+                if (findShorts.isPresent()) {
+                    ShortsScrap shortsScrap = ShortsScrap.builder()
+                            .shorts(findShorts.get())
+                            .user(findUser.get())
+                            .build();
+                    shortsScrapRepository.save(shortsScrap);
+                }
+                else {
+                    throw new IllegalArgumentException ("Cannot find shorts");
+                }
+            }
+            else {
+                throw new IllegalArgumentException ("Cannot find user");
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    public void deleteUserShortsScrap(int userId, int shortsId){
+        try {
+            Optional<ShortsScrap> findShortsScrap = shortsScrapRepository.findByUser_userIdAndShortsId(userId, shortsId);
+            if (findShortsScrap.isPresent()) {
+                shortsScrapRepository.delete(findShortsScrap.get());
+            }
+            else {
+                throw new IllegalArgumentException ("Cannot find shorts scrap");
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    public void addUserLiveScrap(int userId, int liveId){
+        try {
+            Optional<User> findUser = userRepository.findById(userId);
+            if (findUser.isPresent()) {
+                Optional<Live> findLive = liveRepository.findById(liveId);
+                if (findLive.isPresent()) {
+                    LiveScrap liveScrap = LiveScrap.builder()
+                            .user(findUser.get())
+                            .live(findLive.get())
+                            .build();
+                    liveScrapRepository.save(liveScrap);
+                }
+                else {
+                    throw new IllegalArgumentException ("Cannot find live");
+                }
+            }
+            else {
+                throw new IllegalArgumentException ("Cannot find user");
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            throw e;
+        }
+    }
+    public void deleteUserLivewScrap(int userId, int liveId){
+        try{
+            Optional<LiveScrap> findLiveScrap = liveScrapRepository.findByUser_userIdAndLiveId(userId, liveId);
+            if (findLiveScrap.isPresent()) {
+                liveScrapRepository.delete(findLiveScrap.get());
+            }
+            else {
+                throw new IllegalArgumentException ("Cannot find live scrap");
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            throw e;
+        }
+    }
 //    public Optional<List<Map<String, Object>>> getUserCommerceItemListById(int userId) {
 //        Optional<List<Shorts>> shortsListOptional = shortsRepository.findByBuyerId(userId);
 //    }

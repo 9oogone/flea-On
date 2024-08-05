@@ -19,7 +19,7 @@ public class UserRegion {
     private int regionId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "region_code",insertable = false, updatable = false)
+    @JoinColumn(name = "region_code")
     private RegionInfo region;
 
     @ManyToOne(fetch = FetchType.LAZY)

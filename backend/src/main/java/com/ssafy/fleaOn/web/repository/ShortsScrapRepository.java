@@ -11,4 +11,6 @@ import java.util.Optional;
 public interface ShortsScrapRepository extends JpaRepository<ShortsScrap, Integer> {
 
     Optional<List<ShortsScrap>> findByUser_userId(int userId);
+
+    Optional<ShortsScrap> findByUser_userIdAndShortsId(int userId, int shortsId);
 }
