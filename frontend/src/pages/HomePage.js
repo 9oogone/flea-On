@@ -17,7 +17,7 @@ const HomePage = () => {
         title: "aloyoga 기능성",
         trade_place: "덕명동",
         thumbnail: "https://picsum.photos/160/250",
-        live_id: 2,
+        live_id: 1,
         is_scrap: true,
         is_live: true,
         live_date: "오늘 오후 8시",
@@ -41,7 +41,7 @@ const HomePage = () => {
         title: "aloyoga 기능성",
         trade_place: "덕명동",
         thumbnail: "https://picsum.photos/160/250",
-        live_id: 2,
+        live_id: 3,
         is_scrap: true,
         is_live: true,
         live_date: "오늘 오후 8시",products:[{name:"라면",price:3000}]

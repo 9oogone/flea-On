@@ -19,6 +19,7 @@ import SearchForm from "./components/SearchForm";
 import SearchShorts from "./pages/SearchShortsPage";
 import SearchLive from "./pages/SearchLivePage";
 import PrivateRoute from "./components/PrivateRoute";
+import OpenVideo from "./pages/LivePage";
 import AddressSearch from "./pages/AddressSearch"; // Import AddressSearch component
 
 const routes = [
@@ -30,7 +31,9 @@ const routes = [
   { path: "/category", element: <Category />, isPrivate: true },
   { path: "/search", element: <Search />, isPrivate: true },
   { path: "/chat", element: <Chat />, isPrivate: true },
+  { path: "/chat/:chatID", element: <Chat />, isPrivate: true },
   { path: "/mypage", element: <MyPage />, isPrivate: true },
+  { path: "/live/:sessionName", element: <OpenVideo />, isPrivate: true },
   { path: "/search/shorts", element: <SearchShorts />, isPrivate: true },
   { path: "/search/live", element: <SearchLive />, isPrivate: true },
   { path: "/address-search", element: <AddressSearch />, isPrivate: false }, // Add AddressSearch route
