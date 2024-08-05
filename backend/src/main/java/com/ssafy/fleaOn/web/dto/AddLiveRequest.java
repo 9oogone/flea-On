@@ -20,6 +20,7 @@ public class AddLiveRequest {
     private String liveThumbnail;
     private String tradePlace;
     private List<AddProductRequest> product;
+    private List<AddLiveTradeRequest> liveTradeTime;
 
     public Live toEntity(User user) {
         DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;

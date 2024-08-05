@@ -109,7 +109,7 @@ public class LiveApiController {
                 return new ResponseEntity<>("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
             }
 
-            Live onoffLive = liveService.onoffLive(liveID); // 서비스를 통해 Live 정보를 업데이트
+            LiveDetailResponse onoffLive = liveService.onoffLive(liveID); // 서비스를 통해 Live 정보를 업데이트
             return ResponseEntity.ok(onoffLive); // 업데이트된 Live 정보 반환
         } catch (Exception ex) {
             ex.printStackTrace();

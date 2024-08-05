@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Getter
 public class UpdateProductRequest {
-    private int productId;
     private String name;
     private int price;
     private int firstCategoryId;

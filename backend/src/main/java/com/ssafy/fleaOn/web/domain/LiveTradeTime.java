@@ -3,6 +3,10 @@ package com.ssafy.fleaOn.web.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -15,20 +19,20 @@ public class LiveTradeTime {
     private int timeId;
 
     @Column(name = "trade_start")
-    private java.sql.Time tradeStart;
+    private LocalTime tradeStart;
 
     @Column(name = "trade_end")
-    private java.sql.Time tradeEnd;
+    private LocalTime tradeEnd;
 
     @Column(name = "date")
-    private java.sql.Date date;
+    private LocalDate date;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "live_id", insertable = false, updatable = false)
+    @JoinColumn(name = "live_id", nullable = false)
     private Live live;
 
     @Builder
-    public LiveTradeTime(Live live, java.sql.Time tradeStart, java.sql.Time tradeEnd, java.sql.Date date) {
+    public LiveTradeTime(Live live, LocalTime tradeStart, LocalTime tradeEnd, LocalDate date) {
         this.live = live;
         this.tradeStart = tradeStart;
         this.tradeEnd = tradeEnd;

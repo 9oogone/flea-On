@@ -9,6 +9,7 @@ import lombok.*;
 
 import java.sql.Time;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Set;
 
 @Entity
@@ -31,7 +32,7 @@ public class Shorts {
     private String shortsThumbnail;
 
     @Column(name = "length")
-    private Time length;
+    private LocalTime length;
 
     @Column(name = "video_address")
     private String videoAddress;
@@ -44,4 +45,13 @@ public class Shorts {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", insertable = false, updatable = false)
     private Product product;
+
+    @Builder
+    public Shorts(String shortsThumbnail, LocalTime length, String videoAddress, LocalDateTime uploadDate, Product product) {
+        this.shortsThumbnail = shortsThumbnail;
+        this.length = length;
+        this.videoAddress = videoAddress;
+        this.uploadDate = uploadDate;
+        this.product = product;
+    }
 }
