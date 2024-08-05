@@ -13,7 +13,7 @@ const LiveBroadcasts = ({ items }) => {
 
   const handleButtonClick = (item) => {
     if (item.is_live) {
-      navigate(`/live/${item.live_id}`);
+      navigate(`/live/${item.id}`);
     } else {
       setModalLiveDate(item.live_date);
       setOpen(true);
