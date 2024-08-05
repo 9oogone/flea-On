@@ -45,12 +45,17 @@ public class Shorts {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User seller;
+
     @Builder
-    public Shorts(String shortsThumbnail, LocalTime length, String videoAddress, LocalDateTime uploadDate, Product product) {
+    public Shorts(String shortsThumbnail, LocalTime length, String videoAddress, LocalDateTime uploadDate, Product product, User user) {
         this.shortsThumbnail = shortsThumbnail;
         this.length = length;
         this.videoAddress = videoAddress;
         this.uploadDate = uploadDate;
         this.product = product;
+        this.seller = user;
     }
 }

@@ -108,7 +108,7 @@ public class UserService {
 
         for (Trade trade : trades) {
             Map<String, Object> tradeResult = new HashMap<>();
-            Optional<Product> productOptional = productRepository.findByProductId(trade.getProductId());
+            Optional<Product> productOptional = productRepository.findByProductId(trade.getProduct().getProductId());
 
             productOptional.ifPresent(product -> {
                 tradeResult.put("product_name", product.getName());
@@ -139,7 +139,7 @@ public class UserService {
 
         for (Trade trade : trades) {
             Map<String, Object> purchaseResult = new HashMap<>();
-            Optional<Product> productOptional = productRepository.findByProductId(trade.getProductId());
+            Optional<Product> productOptional = productRepository.findByProductId(trade.getProduct().getProductId());
 
             // productOptional이 비어 있지 않으면 값을 가져와서 처리
             productOptional.ifPresent(product -> {
@@ -148,7 +148,7 @@ public class UserService {
                 purchaseResult.put("live_id", trade.getLive().getLiveId());
             });
 
-            purchaseResult.put("product_id", trade.getProductId());
+            purchaseResult.put("product_id", trade.getProduct().getProductId());
             purchaseResult.put("trade_place", trade.getTradePlace());
             purchaseResult.put("trade_time", trade.getTradeTime());
             purchaseList.add(purchaseResult);
@@ -173,7 +173,7 @@ public class UserService {
 
         for (Trade trade : trades) {
             Map<String, Object> reservationResult = new HashMap<>();
-            Optional<Product> productOptional = productRepository.findByProductId(trade.getProductId());
+            Optional<Product> productOptional = productRepository.findByProductId(trade.getProduct().getProductId());
 
             // productOptional이 비어 있지 않으면 값을 가져와서 처리
             productOptional.ifPresent(product -> {

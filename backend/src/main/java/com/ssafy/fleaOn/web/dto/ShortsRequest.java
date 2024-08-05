@@ -2,6 +2,7 @@ package com.ssafy.fleaOn.web.dto;
 
 import com.ssafy.fleaOn.web.domain.Product;
 import com.ssafy.fleaOn.web.domain.Shorts;
+import com.ssafy.fleaOn.web.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,7 +22,7 @@ public class ShortsRequest {
     private String uploadDate;
     private int productId;
 
-    public Shorts toEntity(Product product){
+    public Shorts toEntity(Product product, User seller){
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
         LocalTime parsedShortsLength = LocalTime.parse(length, timeFormatter);
         DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
@@ -33,6 +34,7 @@ public class ShortsRequest {
                 .uploadDate(parsedUploadDate)
                 .videoAddress(videoAddress)
                 .product(product)
+                .seller(seller)
                 .build();
     }
 }
