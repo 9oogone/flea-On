@@ -173,38 +173,40 @@ public class MainService {
             int findFirstCategoryId = findCategory.getFirstCategoryId();
             int findSecondCategoryId = findCategory.getSecondCategoryId();
 
-            Optional<List<Integer>> findProductIdList = productRepository.findProductIdByFirstCategoryIdAndSecondCategoryId(findFirstCategoryId, findSecondCategoryId);
+            Optional<List<Product>> findProductList = productRepository.findProductIdsByFirstCategoryIdAndSecondCategoryId(findFirstCategoryId, findSecondCategoryId);
 
             List<Map<String, Object>> resultList = new ArrayList<>();
 
-            if (findProductIdList.isPresent()) {
-                for (Integer productId : findProductIdList.get()) {
+            if (findProductList.isPresent()) {
+                List<Product> productList = findProductList.get();
+                for (Product findProduct : productList) {
+                    int productId = findProduct.getProductId();
                     Slice<Product> findProductResponseSlice = productRepository.findByProductId(productId, pageable);
 
-                    for (Product findProduct : findProductResponseSlice) {
+                    for (Product findFinalProduct : findProductResponseSlice) {
                         Map<String, Object> resultMap = new HashMap<>();
-                        Live live = findProduct.getLive();
-                        Shorts shorts = findProduct.getShorts();
+                        Live live = findFinalProduct.getLive();
+                        Shorts shorts = findFinalProduct.getShorts();
 
                         Map<String, Object> upcomingMap = new HashMap<>();
                         upcomingMap.put("live_id", live.getLiveId());
-                        upcomingMap.put("name", findProduct.getName());
-                        upcomingMap.put("price", findProduct.getPrice());
+                        upcomingMap.put("name", findFinalProduct.getName());
+                        upcomingMap.put("price", findFinalProduct.getPrice());
                         upcomingMap.put("live_date", live.getLiveDate());
                         upcomingMap.put("title", live.getTitle());
 
                         Map<String, Object> liveMap = new HashMap<>();
                         liveMap.put("live_id", live.getLiveId());
-                        liveMap.put("name", findProduct.getName());
-                        liveMap.put("price", findProduct.getPrice());
+                        liveMap.put("name", findFinalProduct.getName());
+                        liveMap.put("price", findFinalProduct.getPrice());
                         liveMap.put("title", live.getTitle());
                         liveMap.put("tradePlace", live.getTradePlace());
                         liveMap.put("live_thumbnail", live.getLiveThumbnail());
 
                         Map<String, Object> shortsMap = new HashMap<>();
                         shortsMap.put("shorts_id", shorts.getShortsId());
-                        shortsMap.put("name", findProduct.getName());
-                        shortsMap.put("price", findProduct.getPrice());
+                        shortsMap.put("name", findFinalProduct.getName());
+                        shortsMap.put("price", findFinalProduct.getPrice());
                         shortsMap.put("trade_place", live.getTradePlace());
                         shortsMap.put("length", shorts.getLength());
                         shortsMap.put("shorts_thumbnail", shorts.getShortsThumbnail());
