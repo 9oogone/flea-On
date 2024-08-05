@@ -1,6 +1,7 @@
 package com.ssafy.fleaOn.web.service;
 
 import com.ssafy.fleaOn.web.domain.Live;
+import com.ssafy.fleaOn.web.domain.LiveTradeTime;
 import com.ssafy.fleaOn.web.domain.Product;
 import com.ssafy.fleaOn.web.domain.User;
 import com.ssafy.fleaOn.web.dto.AddLiveRequest;
@@ -8,6 +9,7 @@ import com.ssafy.fleaOn.web.dto.CustomOAuth2User;
 import com.ssafy.fleaOn.web.dto.UpdateLiveRequest;
 import com.ssafy.fleaOn.web.dto.LiveDetailResponse;
 import com.ssafy.fleaOn.web.repository.LiveRepository;
+import com.ssafy.fleaOn.web.repository.LiveTradeTimeRepository;
 import com.ssafy.fleaOn.web.repository.ProductRepository;
 import com.ssafy.fleaOn.web.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,7 @@ import java.util.stream.Collectors;
 public class LiveService {
 
     private final LiveRepository liveRepository;
+    private final LiveTradeTimeRepository liveTradeTimeRepository;
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
 
@@ -34,7 +37,6 @@ public class LiveService {
     public Live saveLive(AddLiveRequest addLiveRequest, User user) {
         // Live 엔티티 생성 및 저장
         Live live = addLiveRequest.toEntity(user);
-        System.out.println("service: " + live.getLiveDate()); // 로그 추가
         live = liveRepository.save(live);
 
         // Product 엔티티 생성 및 저장
@@ -43,7 +45,12 @@ public class LiveService {
                 .map(addAddProductRequest -> addAddProductRequest.toEntity(finalLive, user))
                 .collect(Collectors.toList());
 
+        List<LiveTradeTime> liveTradeTimes = addLiveRequest.getLiveTradeTime().stream()
+                .map(addLiveTradeRequest -> addLiveTradeRequest.toEntity(finalLive))
+                .collect(Collectors.toList());
+
         productRepository.saveAll(products);
+        liveTradeTimeRepository.saveAll(liveTradeTimes);
 
         return live;
     }
