@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Typography, Modal, Button } from "@mui/material";
+import { Box, Typography, Modal, List, ListItem, ListItemText,Button } from "@mui/material";
 
 const style = {
   position: "absolute",
@@ -13,25 +13,24 @@ const style = {
   p: 4,
 };
 
-const UpcomingModal = ({ open, handleClose, liveDate }) => (
-  <Modal
-    open={open}
-    onClose={handleClose}
-    aria-labelledby="modal-modal-title"
-    aria-describedby="modal-modal-description"
-  >
-    <Box sx={style}>
-      <Typography id="modal-modal-title" variant="h6" component="h2">
-        예정된 방송
-      </Typography>
-      <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-        방송 날짜: {liveDate}
-      </Typography>
-      <Button onClick={handleClose} sx={{ mt: 2 }}>
-        닫기
-      </Button>
-    </Box>
-  </Modal>
-);
+const UpcomingModal = ({ open, handleClose, liveDate, products }) => {
+  return (
+    <Modal open={open} onClose={handleClose}>
+      <Box sx={style}>
+        <Typography variant="h6" component="h2">
+          {liveDate}
+        </Typography>
+        <List>
+          {products.map((product, index) => (
+            <ListItem key={index}>
+              <ListItemText primary={product.name} secondary={product.price} />
+            </ListItem>
+          ))}
+        </List>
+        <Button onClick={handleClose}>Close</Button>
+      </Box>
+    </Modal>
+  );
+};
 
 export default UpcomingModal;
