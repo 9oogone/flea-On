@@ -1,33 +1,12 @@
+// src/components/OpenVideo.js
 import React, { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
-import baseAxios from "../utils/httpCommons";
 import { OpenVidu } from "openvidu-browser";
 import { useDispatch } from "react-redux";
 import { setLoading, unSetLoading } from "../features/openvido/loadingSlice";
-
-const baseURL = baseAxios();
+import { getToken, startRecording, stopRecording } from "../api/openViduAPI";
+import { useParams } from "react-router-dom";
 
 const OpenVideo = () => {
-  async function getToken(param) {
-    try {
-      const res = await baseURL.post("/recording-java/api/get-token", param);
-      console.log(res);
-      return res.data;
-    } catch (error) {
-      console.error("Error fetching token:", error);
-      throw error;
-    }
-  }
-  function startRecording(param) {
-    return baseURL.post("/recording-java/api/recording/start", param);
-  }
-  function stopRecording(param) {
-    return baseURL.post("/recording-java/api/recording/stop", param);
-  }
-
-  function removeUser(param) {
-    return baseURL.post("/recording-java/api/remove-user", param);
-  }
   const videoRef = useRef(null);
   const [isRecording, setIsRecording] = useState(false);
   const [session, setSession] = useState(null);
@@ -164,6 +143,7 @@ const OpenVideo = () => {
   };
 
   const sendMessage = () => {
+    console.log("메세지 보내기");
     if (session && newMessage.trim() !== "") {
       session.signal({
         data: newMessage,
@@ -177,7 +157,8 @@ const OpenVideo = () => {
     <div>
       {isPublisher === true ? (
         <div>
-          <div ref={videoRef}></div>
+          {/* <div ref={videoRef}></div> */}
+          <video autoPlay={true} ref={videoRef}></video>
           {/* <OpenViduVideoComponent streamManager={publisher}/> */}
           <button onClick={handleRecordStart} disabled={isRecording}>
             Start Recording
