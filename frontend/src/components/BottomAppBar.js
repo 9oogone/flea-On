@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Sellerform from "../components/Sellerform";
 import PortalPopup from "../components/PortalPopup";
 import AppBar from "@mui/material/AppBar";
@@ -16,6 +16,7 @@ const BottomAppBar = () => {
   const [isSellerformOpen, setSellerformOpen] = useState(false);
   const [value, setValue] = useState(0);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const openSellerform = useCallback(() => {
     setSellerformOpen(true);
@@ -42,9 +43,12 @@ const BottomAppBar = () => {
     navigate("/chat");
   }, [navigate]);
 
+  // 채팅 경로인지 확인
+  const isChatRoom = location.pathname.startsWith("/chat");
+
   return (
     <>
-      {!isSellerformOpen && (
+      {!isSellerformOpen && !isChatRoom && (
         <AppBar
           position="fixed"
           sx={{
