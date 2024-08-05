@@ -18,7 +18,7 @@ import SearchForm from "./components/SearchForm";
 import SearchShorts from "./pages/SearchShortsPage";
 import SearchLive from "./pages/SearchLivePage";
 import PrivateRoute from "./components/PrivateRoute";
-
+import OpenVideo from "./pages/LivePage";
 const routes = [
   { path: "/", element: <HomePage />, isPrivate: true },
   { path: "/login", element: <LoginPage />, isPrivate: false },
@@ -27,7 +27,9 @@ const routes = [
   { path: "/category", element: <Category />, isPrivate: true },
   { path: "/search", element: <Search />, isPrivate: true },
   { path: "/chat", element: <Chat />, isPrivate: true },
+  { path: "/chat/:chatID", element: <Chat />, isPrivate: true },
   { path: "/mypage", element: <MyPage />, isPrivate: true },
+  { path: "/live/:sessionName", element: <OpenVideo />, isPrivate: true },
   { path: "/search/shorts", element: <SearchShorts />, isPrivate: true },
   { path: "/search/live", element: <SearchLive />, isPrivate: true },
 ];
