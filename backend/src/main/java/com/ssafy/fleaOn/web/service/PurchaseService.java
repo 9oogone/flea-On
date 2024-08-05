@@ -3,12 +3,10 @@ package com.ssafy.fleaOn.web.service;
 import com.ssafy.fleaOn.web.domain.*;
 import com.ssafy.fleaOn.web.dto.PurchaseRequest;
 import com.ssafy.fleaOn.web.dto.TradeRequest;
-import com.ssafy.fleaOn.web.repository.LiveRepository;
-import com.ssafy.fleaOn.web.repository.ProductRepository;
-import com.ssafy.fleaOn.web.repository.ReservationRepository;
-import com.ssafy.fleaOn.web.repository.TradeRepository;
+import com.ssafy.fleaOn.web.repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,13 +22,23 @@ public class PurchaseService {
     private final LiveRepository liveRepository;
     private final ReservationRepository reservationRepository;
     private final TradeRepository tradeRepository;
+    private final ChattingRepository chattingRepository;
+    private final RedisTemplate<String, Object> redisTemplate;
+    private final UserRepository userRepository;
+    private final ShortsRepository shortsRepository;
 
     @Autowired
-    public PurchaseService(ProductRepository productRepository, LiveRepository liveRepository, ReservationRepository reservationRepository, TradeRepository tradeRepository) {
+    public PurchaseService(ProductRepository productRepository, LiveRepository liveRepository,
+                           ReservationRepository reservationRepository, TradeRepository tradeRepository,
+                           ChattingRepository chattingRepository, RedisTemplate<String, Object> redisTemplate, UserRepository userRepository, ShortsRepository shortsRepository) {
         this.productRepository = productRepository;
         this.liveRepository = liveRepository;
         this.reservationRepository = reservationRepository;
         this.tradeRepository = tradeRepository;
+        this.chattingRepository = chattingRepository;
+        this.redisTemplate = redisTemplate;
+        this.userRepository = userRepository;
+        this.shortsRepository = shortsRepository;
     }
 
     @Transactional
@@ -149,11 +157,35 @@ public class PurchaseService {
         Live live = liveRepository.findById(request.getLiveId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid live ID"));
 
+        Shorts shorts = shortsRepository.findByProduct_ProductId(request.getProductId()).orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
+
+        // Find or create chatting
+        Optional<Chatting> optionalChatting = chattingRepository.findByBuyer_UserIdAndLive_LiveId(request.getBuyerId(), request.getLiveId());
+        Chatting chatting;
+        if (optionalChatting.isPresent()) {
+            chatting = optionalChatting.get();
+        } else {
+            User buyer = userRepository.findById(request.getBuyerId()).orElseThrow(() -> new IllegalArgumentException("Invalid buyer ID"));
+            User seller = userRepository.findById(request.getSellerId()).orElseThrow(() -> new IllegalArgumentException("Invalid seller ID"));
+            chatting = Chatting.builder()
+                    .live(live)
+                    .buyer(buyer)
+                    .seller(seller)
+                    .build();
+            chatting = chattingRepository.save(chatting);
+        }
+
+        System.out.println(chatting);
         if (request.getBuyerId() == product.getCurrentBuyerId()) {
-            Trade trade = request.toEntity(live, product);
+            Trade trade = request.toEntity(live, product, chatting, shorts);
             tradeRepository.save(trade);
-            product.setCurrentBuyerId(0); // 구매 확정 후 현재 구매자 초기화
             productRepository.save(product);
+            // 구매 확정 결과를 Redis에 설정
+            redisTemplate.opsForValue().set("confirmResult:" + request.getBuyerId() + ":" + request.getProductId(), "confirmed");
+        } else {
+            // 구매자와 현재 구매자가 일치하지 않는 경우 결과를 Redis에 설정
+            redisTemplate.opsForValue().set("confirmResult:" + request.getBuyerId() + ":" + request.getProductId(), "not confirmed");
         }
     }
+
 }

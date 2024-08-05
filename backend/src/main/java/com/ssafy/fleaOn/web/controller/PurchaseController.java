@@ -169,8 +169,8 @@ public class PurchaseController {
                 Thread.sleep(retryInterval); // 대기
             }
 
-            // TODO:not confirm뜸 -> chatting id 문제
             if (result == null) {
+                logger.info("null here!!");
                 return ResponseEntity.ok("not confirmed"); // 아직 결과가 없는 경우
             }
             return ResponseEntity.ok(result);
@@ -179,6 +179,7 @@ public class PurchaseController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error processing confirm request");
         }
     }
+
 
     private ResponseEntity<String> handleException(Exception ex) {
         return new ResponseEntity<>("서버 오류: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);

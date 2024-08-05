@@ -15,4 +15,6 @@ public interface ShortsRepository extends JpaRepository<Shorts, Integer> {
     Optional<Shorts> findByShortsId(int shortsId);
 
     Slice<Shorts> findAllByOrderByUploadDateAsc(Pageable pageable);
+
+    Optional<Shorts> findByProduct_ProductId(int productId);
 }

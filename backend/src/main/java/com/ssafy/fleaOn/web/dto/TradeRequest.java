@@ -22,7 +22,7 @@ public class TradeRequest {
     private String tradeTime; // String으로 변경
     private String tradePlace;
 
-    public Trade toEntity(Live live, Product product){
+    public Trade toEntity(Live live, Product product, Chatting chatting, Shorts shorts){
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
         LocalTime parsedTradeTime = LocalTime.parse(tradeTime, timeFormatter);
 
@@ -34,6 +34,8 @@ public class TradeRequest {
                 .tradeDate(tradeDate)
                 .tradeTime(parsedTradeTime)
                 .tradePlace(tradePlace)
+                .chatting(chatting)
+                .shorts(shorts)
                 .build();
     }
 }
