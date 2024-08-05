@@ -7,7 +7,6 @@ import com.ssafy.fleaOn.web.util.LocalDateTimeSerializer;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.sql.Time;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Set;
@@ -43,7 +42,7 @@ public class Shorts {
     private LocalDateTime uploadDate;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", insertable = false, updatable = false)
+    @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
     @Builder
