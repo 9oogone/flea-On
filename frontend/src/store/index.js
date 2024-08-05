@@ -4,7 +4,8 @@ import authReducer from "../features/auth/authSlice";
 import categoryReducer from "../features/category/categorySlice";
 import levelReducer from "../features/mypage/levelSlice";
 import contentReducer from "../features/home/contentSlice";
-import loadingReducer from "../features/openvido/loadingSlice";
+import loadingReducer from "../features/live/loadingSlice";
+import sessionReducer from "../features/live/sessionSlice";
 import "../styles/global.css";
 
 const store = configureStore({
@@ -14,6 +15,7 @@ const store = configureStore({
     level: levelReducer,
     content: contentReducer,
     loading: loadingReducer,
+    session: sessionReducer,
   },
 });
 
