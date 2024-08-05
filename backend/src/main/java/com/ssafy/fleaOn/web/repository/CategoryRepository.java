@@ -16,4 +16,5 @@ public interface CategoryRepository extends JpaRepository<Category, Integer> {
     List<Category> findByFirstCategoryName(String firstCategoryName);
 
     Category findByFirstCategoryNameAndSecondCategoryName(String firstCategoryName, String secondCategoryName);
+
 }
