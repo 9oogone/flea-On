@@ -46,7 +46,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String token = jwtUtil.createJwt(userIdentifier, role, email, 60*60*60*60L);
 
         response.addCookie(createCookie("Authorization", token));
-        response.sendRedirect("https://i11b202.p.ssafy.io/check?access_token=" + token);
+        response.sendRedirect("http://localhost:3000/check?access_token=" + token);
 
     }
 
