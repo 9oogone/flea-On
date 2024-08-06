@@ -16,4 +16,6 @@ public interface ChattingRepository extends JpaRepository<Chatting, Integer> {
     List<Chatting> findChattingByBuyerOrSellerWithView(@Param("userId") int userId);
 
     Optional<Chatting> findByBuyer_UserIdAndLive_LiveId(int buyerId, int liveId);
+
+    Optional<Chatting> findByChattingId(int chatId);
 }

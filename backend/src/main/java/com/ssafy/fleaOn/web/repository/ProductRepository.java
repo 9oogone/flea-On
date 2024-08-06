@@ -24,4 +24,6 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     Optional<List<Product>> findProductIdsByFirstCategoryIdAndSecondCategoryId(int firstCategoryId, int secondCategoryId);
 
     Slice<Product> findByProductId(int productId, Pageable pageable);
+
+    Optional<Product> findByLive_LiveIdAndCurrentBuyerId(int liveId, int buyerId);
 }
