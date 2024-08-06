@@ -1,24 +1,31 @@
-import React, { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState, createElement } from 'react';
 import { useParams } from 'react-router-dom';
-import { Box, TextField, Button, List, ListItem } from '@mui/material';
 import styles from '../styles/ChatRoom.module.css';
+import ChatInput from '../components/ChatInput';
+import tailSent from '../assets/images/tail-sent.svg';
+import tailReceived from '../assets/images/tail-received.svg';
 
 const ChatRoom = () => {
   const { chatID } = useParams();
-  const [messages, setMessages] = React.useState([]);
-  const [message, setMessage] = React.useState('');
+  const [messages, setMessages] = useState([]);
+  const [message, setMessage] = useState('');
   const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    // 더미 데이터 추가
+    const dummyMessages = [
+      { text: 'Hello, how are you?Hello, how are you?Hello, how are you?Hello, how are you?Hello, how are you?Hello, how are you?', isSent: false },
+      { text: 'I am good, thanks! How about you?', isSent: true },
+      { text: 'I am doing great!', isSent: false },
+      { text: 'That is good to hear.', isSent: true },
+    ];
+    setMessages(dummyMessages);
+  }, []);
 
   const handleSendMessage = () => {
     if (message.trim() !== '') {
-      setMessages([...messages, message]);
+      setMessages([...messages, { text: message, isSent: true }]);
       setMessage('');
-    }
-  };
-
-  const handleKeyPress = (event) => {
-    if (event.key === 'Enter') {
-      handleSendMessage();
     }
   };
 
@@ -26,35 +33,27 @@ const ChatRoom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  return React.createElement(
-    Box,
-    { className: styles.chatRoom },
-    React.createElement('h1', null, `Chat Room ${chatID}`),
-    React.createElement(
-      List,
-      { className: styles.messageList },
-      ...messages.map((msg, index) =>
-        React.createElement(ListItem, { key: index }, msg)
+  return createElement('div', { className: styles.chatRoom },
+    createElement('h1', null, `Chat Room ${chatID}`),
+    createElement('ul', { className: styles.messageList },
+      messages.map((msg, index) => 
+        createElement('div', {
+          key: index,
+          className: msg.isSent ? styles.sentMessageContainer : styles.receivedMessageContainer
+        },
+          createElement('div', { className: msg.isSent ? styles.defaultbaloon : styles.receivedbaloon },
+            createElement('div', { className: styles.msg }, msg.text),
+            createElement('img', { className: styles.tailIcon, alt: '', src: msg.isSent ? tailSent : tailReceived })
+          )
+        )
       ),
-      React.createElement('div', { ref: messagesEndRef })
+      createElement('div', { ref: messagesEndRef })
     ),
-    React.createElement(
-      Box,
-      { className: styles.inputContainer, display: 'flex' },
-      React.createElement(TextField, {
-        className: styles.textField,
-        value: message,
-        onChange: (e) => setMessage(e.target.value),
-        onKeyPress: handleKeyPress,
-        variant: 'outlined',
-        fullWidth: true
-      }),
-      React.createElement(
-        Button,
-        { className: styles.sendButton, onClick: handleSendMessage, variant: 'contained' },
-        'Send'
-      )
-    )
+    createElement(ChatInput, {
+      message,
+      setMessage,
+      handleSendMessage
+    })
   );
 };
 
