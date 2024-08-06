@@ -3,6 +3,8 @@ package com.ssafy.fleaOn.web.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -27,13 +29,17 @@ public class Chatting {
     private User buyer;
 
     @Column(name = "view")
-    private boolean view;
+    private Boolean view;
+
+    @Column(name = "create_time")
+    private LocalDateTime createTime;
 
     @Builder
-    public Chatting(Live live, User seller, User buyer, boolean view) {
+    public Chatting(Live live, User seller, User buyer, Boolean view, LocalDateTime createTime) {
         this.live = live;
         this.seller = seller;
         this.buyer = buyer;
         this.view = view;
+        this.createTime = createTime;
     }
 }
