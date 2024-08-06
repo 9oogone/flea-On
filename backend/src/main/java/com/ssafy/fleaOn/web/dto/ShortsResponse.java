@@ -10,13 +10,13 @@ import java.time.LocalTime;
 
 @Getter
 public class ShortsResponse {
-    private int shortsId;
-    private String shortsThumbnail;
-    private LocalTime length;
-    private String videoAddress;
-    private LocalDateTime uploadDate;
-    private ProductResponse product;
-    private UserResponse user;
+    private final int shortsId;
+    private final String shortsThumbnail;
+    private final LocalTime length;
+    private final String videoAddress;
+    private final LocalDateTime uploadDate;
+    private final ProductResponse product;
+    private final UserResponse user;
 
     public ShortsResponse(Shorts shorts) {
         this.shortsId = shorts.getShortsId();
