@@ -4,6 +4,7 @@ import com.ssafy.fleaOn.web.config.jwt.JWTUtil;
 import com.ssafy.fleaOn.web.domain.Shorts;
 import com.ssafy.fleaOn.web.domain.User;
 import com.ssafy.fleaOn.web.dto.ShortsRequest;
+import com.ssafy.fleaOn.web.dto.ShortsResponse;
 import com.ssafy.fleaOn.web.service.ShortsService;
 import com.ssafy.fleaOn.web.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -44,9 +45,9 @@ public class ShortsController {
 
     @GetMapping("/play/{shortsId}")
     @Operation(summary = "숏츠 정보 반환", description = "저장된 숏츠 정보를 반환합니다.")
-    public ResponseEntity<Shorts> playShorts(@PathVariable int shortsId) {
+    public ResponseEntity<ShortsResponse> playShorts(@PathVariable int shortsId) {
         return shortsService.getShorts(shortsId)
-                .map(shorts -> new ResponseEntity<>(shorts, HttpStatus.OK))
+                .map(shorts -> new ResponseEntity<>(new ShortsResponse(shorts), HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 

@@ -113,7 +113,8 @@ public class LiveService {
         Live live = findById(liveId);
         List<Product> products = productRepository.findByLive_LiveId(liveId).orElseThrow(() -> new IllegalArgumentException("no products found for live id: " + liveId));
         List<LiveTradeTime> liveTradeTimes = liveTradeTimeRepository.findByLive_LiveId(liveId).orElseThrow(() -> new IllegalArgumentException("no teade times found for live id: " + liveId));
-        return new LiveDetailResponse(live, products, liveTradeTimes);
+        User user = userRepository.findById(live.getSeller().getUserId()).orElseThrow(() -> new IllegalArgumentException("no sellers found for live id: " + liveId));
+        return new LiveDetailResponse(live, products, liveTradeTimes,user);
     }
 
 
@@ -125,7 +126,8 @@ public class LiveService {
         live.onOff();
         List<Product> products = productRepository.findByLive_LiveId(liveId).orElseThrow(() -> new IllegalArgumentException("no products found for live id: " + liveId));
         List<LiveTradeTime> liveTradeTimes = liveTradeTimeRepository.findByLive_LiveId(liveId).orElseThrow(() -> new IllegalArgumentException("no teade times found for live id: " + liveId));
-        return new LiveDetailResponse(live, products, liveTradeTimes);
+        User user = userRepository.findById(live.getSeller().getUserId()).orElseThrow(() -> new IllegalArgumentException("no sellers found for live id: " + liveId));
+        return new LiveDetailResponse(live, products, liveTradeTimes,user);
     }
 
     private static void authorizeArticleAuthor(Live live) {

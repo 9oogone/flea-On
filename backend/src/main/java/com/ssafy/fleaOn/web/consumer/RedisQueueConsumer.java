@@ -70,6 +70,7 @@ public class RedisQueueConsumer {
         TradeRequest request = (TradeRequest) redisTemplate.opsForList().leftPop("confirmQueue");
         if (request != null) {
             purchaseService.processConfirmPurchaseRequest(request);
+            logger.info("sned it!!");
             redisTemplate.opsForValue().set("confirmResult:" + request.getBuyerId() + ":" + request.getProductId(), "confirmed");
         }
     }

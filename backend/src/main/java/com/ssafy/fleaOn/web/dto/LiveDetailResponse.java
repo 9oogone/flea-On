@@ -3,6 +3,7 @@ package com.ssafy.fleaOn.web.dto;
 import com.ssafy.fleaOn.web.domain.Live;
 import com.ssafy.fleaOn.web.domain.LiveTradeTime;
 import com.ssafy.fleaOn.web.domain.Product;
+import com.ssafy.fleaOn.web.domain.User;
 import lombok.Getter;
 
 import java.time.LocalDate;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 @Getter
 public class LiveDetailResponse {
     private final int liveId;
+    private final User user;
     private final String title;
     private final String liveDate;
     private final String liveThumbnail;
@@ -23,13 +25,14 @@ public class LiveDetailResponse {
     private final List<LiveTradeResponse> liveTradeTimes;
 
 
-    public LiveDetailResponse(Live live, List<Product> products, List<LiveTradeTime> liveTradeTimes) {
+    public LiveDetailResponse(Live live, List<Product> products, List<LiveTradeTime> liveTradeTimes, User user) {
         this.liveId = live.getLiveId();
         this.title = live.getTitle();
         this.liveDate = live.getLiveDate().toString();
         this.liveThumbnail = live.getLiveThumbnail();
         this.tradePlace = live.getTradePlace();
         this.isLive = live.getIsLive();
+        this.user = user;
         this.products = products.stream().map(ProductResponse::new).collect(Collectors.toList());
         this.liveTradeTimes = liveTradeTimes.stream().map(LiveTradeResponse::new).collect(Collectors.toList());
     }

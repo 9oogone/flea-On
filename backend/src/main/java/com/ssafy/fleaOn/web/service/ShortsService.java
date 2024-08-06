@@ -1,8 +1,14 @@
 package com.ssafy.fleaOn.web.service;
 
 import com.ssafy.fleaOn.web.domain.*;
+import com.ssafy.fleaOn.web.domain.Product;
+import com.ssafy.fleaOn.web.domain.Shorts;
+import com.ssafy.fleaOn.web.domain.User;
 import com.ssafy.fleaOn.web.dto.ShortsRequest;
 import com.ssafy.fleaOn.web.repository.*;
+import com.ssafy.fleaOn.web.repository.ProductRepository;
+import com.ssafy.fleaOn.web.repository.ShortsRepository;
+import com.ssafy.fleaOn.web.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,7 +38,8 @@ public class ShortsService {
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
 
-        Shorts shorts = request.toEntity(product);
+        User seller = userRepository.findById(product.getSeller().getUserId()).orElseThrow(() -> new IllegalArgumentException("Invalid seller"));
+        Shorts shorts = request.toEntity(product, seller);
         return shortsRepository.save(shorts);
     }
 

@@ -12,6 +12,7 @@ import java.time.LocalTime;
 @Getter
 @Entity
 @Builder
+@Setter
 public class Trade {
 
     @Id
@@ -26,35 +27,32 @@ public class Trade {
     private LocalDate tradeDate;
 
     @Column(name = "trade_time")
-    private LocalTime tradeTime; // LocalTime으로 변경
+    private LocalTime tradeTime;
 
     @Column(name = "trade_place")
     private String tradePlace;
-
-    @Column(name = "chatting_id")
-    private int chattingId;
 
     @Column(name = "buyer_id")
     private int buyerId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "live_id", insertable = false, updatable = false)
+    @JoinColumn(name = "live_id")
     private Live live;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "shorts_id", insertable = false, updatable = false)
-    private Shorts shorts;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "chatting_id", insertable = false, updatable = false)
+    @JoinColumn(name = "chatting_id")
     private Chatting chatting;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", insertable = false, updatable = false)
+    @JoinColumn(name = "product_id")
     private Product product;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "shorts_id")
+    private Shorts shorts;
+
     @Builder
-    public Trade(int sellerId, int buyerId, LocalDate tradeDate, LocalTime tradeTime, String tradePlace, Live live, Product product) {
+    public Trade(int sellerId, int buyerId, LocalDate tradeDate, LocalTime tradeTime, String tradePlace, Live live, Product product, Chatting chatting, Shorts shorts) {
         this.sellerId = sellerId;
         this.buyerId = buyerId;
         this.tradeDate = tradeDate;
@@ -62,10 +60,7 @@ public class Trade {
         this.tradePlace = tradePlace;
         this.live = live;
         this.product = product;
-    }
-
-    // getProductId 메서드 추가
-    public int getProductId() {
-        return product != null ? product.getProductId() : 0;
+        this.chatting = chatting;
+        this.shorts = shorts;
     }
 }
