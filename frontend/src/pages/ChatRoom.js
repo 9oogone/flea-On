@@ -4,6 +4,7 @@ import styles from '../styles/ChatRoom.module.css';
 import ChatInput from '../components/ChatInput';
 import tailSent from '../assets/images/tail-sent.svg';
 import tailReceived from '../assets/images/tail-received.svg';
+import ProfileHeader from '../components/ProfileHeader'; // ProfileHeader 컴포넌트 임포트
 
 // 사용자 정의 함수로 모바일 환경 감지
 const isMobile = () => /Mobi|Android/i.test(navigator.userAgent);
@@ -67,7 +68,7 @@ const ChatRoom = () => {
   };
 
   return createElement('div', { className: styles.chatRoom },
-    createElement('h1', null, `Chat Room ${chatID}`),
+    createElement(ProfileHeader), // ProfileHeader 컴포넌트 추가
     createElement('ul', { className: styles.messageList },
       messages.map((msg, index) => 
         createElement('div', {
