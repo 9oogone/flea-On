@@ -26,10 +26,14 @@ public class Chatting {
     @JoinColumn(name = "buyer_id")
     private User buyer;
 
+    @Column(name = "view")
+    private boolean view;
+
     @Builder
-    public Chatting(Live live, User seller, User buyer) {
+    public Chatting(Live live, User seller, User buyer, boolean view) {
         this.live = live;
         this.seller = seller;
         this.buyer = buyer;
+        this.view = view;
     }
 }
