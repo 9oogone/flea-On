@@ -69,11 +69,9 @@ public class MainService {
 
         // findProductByName을 사용하여 Product를 찾습니다.
         Optional<Product> findProduct = productRepository.findProductByName(name);
-        if (findProduct.isPresent()) {
-            findFirstCategory = categoryRepository.findByFirstCategoryId(findProduct.get().getFirstCategoryId());
-            findSecondCategory = categoryRepository.findBySecondCategoryId(findProduct.get().getSecondCategoryId());
-        }
 
+        findFirstCategory = categoryRepository.findByFirstCategoryId(findProduct.get().getFirstCategoryId());
+        findSecondCategory = categoryRepository.findBySecondCategoryId(findProduct.get().getSecondCategoryId());
 
         // 이름과 카테고리를 기반으로 검색
         Slice<Product> searchResultResponseSlice = productRepository.findByNameContainingOrFirstCategoryIdOrSecondCategoryId(
