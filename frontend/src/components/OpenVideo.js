@@ -7,7 +7,7 @@ import { useParams } from "react-router-dom";
 import { Button, Box, Typography } from "@mui/material";
 import Slider from "react-slick";
 import baseAxios from "../utils/httpCommons";
-import { createBrowserHistory } from "history";
+// import { createBrowserHistory } from "history";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import useDidMountEffect from "../utils/useDidMountEffect";
@@ -29,7 +29,7 @@ const OpenVideo = () => {
   let publisher;
   let subscribers = [];
 
-  const history = createBrowserHistory();
+  // const history = createBrowserHistory();
   const OV = useRef(new OpenVidu());
   const session = useRef();
   const handlePopState = (event) => {
