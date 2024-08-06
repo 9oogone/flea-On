@@ -5,6 +5,9 @@ import { formatDistance, parseISO } from "date-fns";
 import { ko } from "date-fns/locale";
 
 const formatPrice = (price) => {
+  if (price === 0) {
+    return "♥무료나눔♥";
+  }
   if (price < 10000) {
     return `${price}원`;
   }
@@ -84,6 +87,16 @@ const Waits = ({ items }) => {
                   >
                     {item.name}
                   </Typography>
+                  <Box
+                    sx={{
+                      width: 60,
+                      height: 24,
+                      borderRadius: 2,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      display: "flex",
+                    }}
+                  ></Box>
                 </Box>
                 <Typography
                   sx={{

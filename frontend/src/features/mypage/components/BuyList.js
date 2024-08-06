@@ -1,13 +1,17 @@
 import React from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import Switch from "../../../components/Switch";
 import Buys from "./Buys.js";
 import Waits from "./BuyWaits.js";
 import { Container, Box, Typography } from "@mui/material";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
+import { switchTab } from "../buylistSlice.js";
 
 const BuyList = () => {
-  const selectedTab = useSelector((state) => state.content.selectedTab);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const selectedTab = useSelector((state) => state.buy.selectedTab);
   const contents = {
     buys: [
       {
@@ -69,26 +73,40 @@ const BuyList = () => {
     { value: "buys", label: "구매" },
     { value: "waits", label: "줄서기" },
   ];
+
+  const handleBackButtonClick = () => {
+    // 이전 페이지로 이동
+    navigate("/mypage");
+    // 상태 초기화
+    dispatch(switchTab("buys"));
+  };
   return (
     <Container sx={{ py: 8 }}>
       <Box
         sx={{
           display: "flex",
           alignItems: "center",
-          position: "relative",
+          justifyContent: "center",
           width: "100%",
           pb: 5,
+          position: "relative",
         }}
       >
-        <ArrowBackIosNewIcon sx={{ position: "absolute", left: "16px" }} />
+        <Box
+          onClick={handleBackButtonClick}
+          sx={{
+            cursor: "pointer",
+            position: "absolute",
+            left: 0,
+          }}
+        >
+          <ArrowBackIosNewIcon />
+        </Box>
         <Typography
           sx={{
-            margin: "0 auto",
-            position: "absolute",
-            left: "50%",
-            transform: "translateX(-50%)",
             fontSize: "24px",
             fontWeight: "600",
+            textAlign: "center",
           }}
         >
           구매내역
@@ -105,7 +123,7 @@ const BuyList = () => {
             transform: "translateX(-50%)",
           }}
         >
-          <Switch options={switchOptions} />
+          <Switch options={switchOptions} type="buy" />
         </Box>
       </Box>
     </Container>
