@@ -52,7 +52,8 @@ function App() {
       location.pathname === "/login" ||
       location.pathname === "/initial" ||
       location.pathname === "/welcome" ||
-      location.pathname === "/address-search";
+      location.pathname === "/address-search" ||
+      location.pathname.startsWith("/live/");
     const isSearchPage =
       location.pathname === "/" ||
       location.pathname === "/category" ||

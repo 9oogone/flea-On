@@ -1,3 +1,14 @@
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(100px);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 .modalOverlay {
   position: fixed;
   top: 0;
@@ -21,6 +32,7 @@
   position: relative;
   height: 80%;
   overflow-y: auto;
+  animation: fadeIn 0.35s ease;
 }
 
 .closeButton {
@@ -63,7 +75,9 @@
   font-weight: bold;
 }
 
-.author, .liveDate, .tradePlace {
+.author,
+.liveDate,
+.tradePlace {
   margin: 2px 0;
 }
 
@@ -84,7 +98,8 @@
   padding: 10px 0;
 }
 
-.productName, .productPrice {
+.productName,
+.productPrice {
   flex: 1;
   font-size: 16px;
   text-align: center;
@@ -109,11 +124,11 @@
 }
 
 .bookmarkIcon {
-  color: #FF0B55; /* 원하는 색상으로 설정 */
+  color: #ff0b55; /* 원하는 색상으로 설정 */
   margin-left: 8px; /* 아이콘과 타이틀 텍스트 사이에 간격을 둠 */
   font-size: x-large;
 }
 
-.titleText{
+.titleText {
   display: inline-block; /* 인라인 블록 요소로 설정 */
 }
