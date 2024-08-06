@@ -85,7 +85,7 @@ const Calendar = () => {
           alignItems: "flex-start",
         }}
       >
-        <Box
+        {/* <Box
           sx={{
             alignSelf: "stretch",
             paddingBottom: 1,
@@ -109,7 +109,7 @@ const Calendar = () => {
           >
             7월
           </Typography>
-        </Box>
+        </Box> */}
         <Box
           sx={{
             alignSelf: "stretch",

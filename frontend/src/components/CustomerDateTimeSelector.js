@@ -161,7 +161,7 @@ const CustomerDateTimeSelector = ({
                       selectedTime === slot.time ? "#FF0B55" : "default",
                     color: selectedTime === slot.time ? "#FF0B55" : "default",
                     backgroundColor:
-                      selectedTime === slot.time ? "#FF0B55" : "transparent",
+                      selectedTime === slot.time ? "#FF0B55" : "white",
                   }}
                 >
                   {slot.time}
