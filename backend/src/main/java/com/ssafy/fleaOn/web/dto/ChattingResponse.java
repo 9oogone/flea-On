@@ -1,5 +1,6 @@
 package com.ssafy.fleaOn.web.dto;
 
+import com.ssafy.fleaOn.web.domain.Chatting;
 import com.ssafy.fleaOn.web.domain.ChattingList;
 import lombok.Getter;
 
@@ -14,8 +15,8 @@ public class ChattingResponse {
     private final LocalDateTime recentMessageTime;
     private final boolean view;
 
-    public ChattingResponse(int chattingId, String nickname, String profilePicture, ChattingList chattingList, boolean view) {
-        this.chattingId = chattingId;
+    public ChattingResponse(Chatting chatting, String nickname, String profilePicture, ChattingList chattingList, boolean view) {
+        this.chattingId = chatting.getChattingId();
         this.userNickName = nickname;
         this.profile = profilePicture;
         if (chattingList != null) {
@@ -23,7 +24,7 @@ public class ChattingResponse {
             this.recentMessageTime = chattingList.getChatTime();
         } else {
             this.recentMessage = "";
-            this.recentMessageTime = null;
+            this.recentMessageTime = chatting.getCreateTime();
         }
         this.view = view;
     }
