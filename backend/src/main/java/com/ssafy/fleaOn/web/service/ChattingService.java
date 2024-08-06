@@ -2,17 +2,19 @@ package com.ssafy.fleaOn.web.service;
 
 import com.ssafy.fleaOn.web.domain.Chatting;
 import com.ssafy.fleaOn.web.domain.ChattingList;
+import com.ssafy.fleaOn.web.domain.Product;
+import com.ssafy.fleaOn.web.domain.Trade;
 import com.ssafy.fleaOn.web.dto.ChattingResponse;
 import com.ssafy.fleaOn.web.dto.MessageResponse;
 import com.ssafy.fleaOn.web.repository.ChattingListRepository;
 import com.ssafy.fleaOn.web.repository.ChattingRepository;
+import com.ssafy.fleaOn.web.repository.ProductRepository;
+import com.ssafy.fleaOn.web.repository.TradeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +22,8 @@ public class ChattingService {
 
     private final ChattingRepository chattingRepository;
     private final ChattingListRepository chattingListRepository;
+    private final ProductRepository productRepository;
+    private final TradeRepository tradeRepository;
 
     public List<ChattingResponse> getChattingByUserId(int userId) {
         List<Chatting> chatList = chattingRepository.findByBuyer_UserIdOrSeller_UserId(userId, userId);
@@ -64,6 +68,24 @@ public class ChattingService {
                 .chatTime(LocalDateTime.now())
                 .build();
         return chattingListRepository.save(message);
+    }
+
+    public Map<String, Object> getChattingDetailsByChatId(int chatId, int userId) {
+        Optional<Chatting> chattingOptional = chattingRepository.findByChattingId(chatId);
+        Map<String, Object> chattingDetails = new HashMap<>();
+        if (chattingOptional.isPresent()) {
+            Optional<Product> findProduct = productRepository.findByLive_LiveIdAndCurrentBuyerId(chattingOptional.get().getLive().getLiveId(), userId);
+            System.out.println(findProduct.get());
+            Optional<Trade> findTrade= tradeRepository.findByProduct_productId(findProduct.get().getProductId());
+            Chatting chatting = chattingOptional.get();
+            chattingDetails.put("chatId", chatId);
+            chattingDetails.put("live_id", chatting.getLive().getLiveId());
+            chattingDetails.put("trade_place", chatting.getLive().getTradePlace());
+            chattingDetails.put("price", findProduct.get().getPrice());
+            chattingDetails.put("trade_date",findTrade.get().getTradeDate());
+            chattingDetails.put("trade_time", findTrade.get().getTradeTime());
+        }
+        return chattingDetails;
     }
 
 }
