@@ -1,8 +1,8 @@
 // features/contentSlice.js
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  selectedTab: 'live',
+  selectedTab: "live",
   contents: {
     live: [
       {
@@ -54,7 +54,7 @@ const initialState = {
 };
 
 const contentSlice = createSlice({
-  name: 'content',
+  name: "content",
   initialState,
   reducers: {
     switchTab: (state, action) => {

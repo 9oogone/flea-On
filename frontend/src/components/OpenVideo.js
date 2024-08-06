@@ -1,17 +1,18 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { OpenVidu } from "openvidu-browser";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoading, unSetLoading } from "../features/live/loadingSlice";
 import { getToken, startRecording, stopRecording } from "../api/openViduAPI";
 import { useParams } from "react-router-dom";
-import { Button, Box, Typography } from "@mui/material";
+import { Button, Box, Typography, Modal } from "@mui/material";
 import Slider from "react-slick";
 import baseAxios from "../utils/httpCommons";
-import { createBrowserHistory } from "history";
+// import { createBrowserHistory } from "history";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import useDidMountEffect from "../utils/useDidMountEffect";
-
+import SelectTradeTime from "../components/SelectTradeTime"; // SelectTradeTime 컴포넌트를 불러옵니다.
+import { useSpeechRecognition } from "react-speech-kit";
 const OpenVideo = () => {
   const videoRef = useRef(null);
   const [isRecording, setIsRecording] = useState(false);
@@ -19,19 +20,31 @@ const OpenVideo = () => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [isPublisher, setIsPublisher] = useState(false);
-  //   const [session, setSession] = useState(null);
   const [currentProduct, setCurrentProduct] = useState(null);
   const [productList, setProductList] = useState([]);
   const [currentProductIndex, setCurrentProductIndex] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태를 추가합니다.
+  const [selectedProductId, setSelectedProductId] = useState(null); // 선택한 제품 ID 상태를 추가합니다.
   const dispatch = useDispatch();
   const { sessionName } = useParams();
+  const [currentVideoDevice, setCurrentVideoDevice] = useState(null);
+  const [mainStreamManager, setMainStreamManager] = useState(undefined);
+  const [sttValue, setSttValue] = useState("");
+  const [publisher, setPublisher] = useState(undefined);
 
-  let publisher;
   let subscribers = [];
 
-  const history = createBrowserHistory();
   const OV = useRef(new OpenVidu());
   const session = useRef();
+
+  const { listen, listening, stop } = useSpeechRecognition({
+    onResult: (result) => {
+      setSttValue(result);
+    },
+    onEnd: () => {
+      listen({ continuous: true });
+    },
+  });
   const handlePopState = (event) => {
     console.log("test");
     if (session.current) {
@@ -41,6 +54,39 @@ const OpenVideo = () => {
       publisher = null;
     }
   };
+  const switchCamera = useCallback(async () => {
+    try {
+      const devices = await OV.current.getDevices();
+      const videoDevices = devices.filter(
+        (device) => device.kind === "videoinput"
+      );
+
+      if (videoDevices && videoDevices.length > 1) {
+        const newVideoDevice = videoDevices.filter(
+          (device) => device.deviceId !== currentVideoDevice.deviceId
+        );
+
+        if (newVideoDevice.length > 0) {
+          const newPublisher = OV.current.initPublisher(undefined, {
+            videoSource: newVideoDevice[0].deviceId,
+            publishAudio: true,
+            publishVideo: true,
+            mirror: true,
+          });
+
+          if (session) {
+            await session.unpublish(mainStreamManager);
+            await session.publish(newPublisher);
+            setCurrentVideoDevice(newVideoDevice[0]);
+            setMainStreamManager(newPublisher);
+            setPublisher(newPublisher);
+          }
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }, [currentVideoDevice, session, mainStreamManager]);
 
   useDidMountEffect(() => {
     window.addEventListener("popstate", handlePopState);
@@ -58,49 +104,7 @@ const OpenVideo = () => {
           dispatch(unSetLoading());
         });
     }
-    // return () => {
-    //   console.log("test");
-    //   if (session.current) {
-    //     session.current.disconnect();
-    //   }
-    //   if (publisher) {
-    //     publisher = null;
-    //   }
-    // };
   }, [sessionName]);
-  //   const [locationKeys, setLocationKeys] = useState([]);
-
-  //   useEffect(() => {
-  //     return history.listen((location) => {
-  //       if (history.action === "PUSH") {
-  //         setLocationKeys([location.key]);
-  //       }
-
-  //       if (history.action === "POP") {
-  //         if (locationKeys[1] === location.key) {
-  //           setLocationKeys(([_, ...keys]) => keys);
-
-  //           console.log("test");
-  //           if (session.current) {
-  //             session.current.disconnect();
-  //           }
-  //           if (publisher) {
-  //             publisher = null;
-  //           }
-  //         } else {
-  //           setLocationKeys((keys) => [location.key, ...keys]);
-
-  //           console.log("test");
-  //           if (session.current) {
-  //             session.current.disconnect();
-  //           }
-  //           if (publisher) {
-  //             publisher = null;
-  //           }
-  //         }
-  //       }
-  //     });
-  //   }, [locationKeys, history]);
 
   const MakeSession = async (videoRef, dispatch, sessionName) => {
     const session = OV.current.initSession();
@@ -156,14 +160,14 @@ const OpenVideo = () => {
 
   const fetchProductList = async (sessionName) => {
     try {
-      //   const response = await baseAxios().get(
-      //     `https://i11b202.p.ssafy.io/fleaOn/live/${sessionName}/detail`
-      //   );
-      //   const { products } = response.data;
+      // const response = await baseAxios().get(
+      //   `https://i11b202.p.ssafy.io/fleaOn/live/${sessionName}/detail`
+      // );
+      // const { products } = response.data;
       const products = [
-        { name: "라면", price: 3000 },
-        { name: "군것질", price: 2000 },
-        { name: "쿠쿠다스", price: 4000 },
+        { id: 1, name: "라면", price: 3000 },
+        { id: 2, name: "군것질", price: 2000 },
+        { id: 3, name: "쿠쿠다스", price: 4000 },
       ];
       setProductList(products);
       setCurrentProduct(products[0]); // 첫 번째 상품 설정
@@ -184,6 +188,7 @@ const OpenVideo = () => {
         .then(() => {
           setIsRecording(true);
           dispatch(unSetLoading());
+          listen({ continuous: true });
           setTimeout(() => {
             setIsBuyButtonEnabled(true);
           }, 5000);
@@ -199,6 +204,7 @@ const OpenVideo = () => {
 
   const handleRecordStop = () => {
     if (session.current) {
+      stop();
       dispatch(setLoading());
       stopRecording({
         recording: session.current.sessionId,
@@ -230,8 +236,8 @@ const OpenVideo = () => {
   };
 
   const handleBuy = (productId) => {
-    console.log("구매 처리 중...", productId);
-    // 구매 처리를 위한 로직 추가
+    setSelectedProductId(productId);
+    setIsModalOpen(true); // 모달을 엽니다.
   };
 
   const sendMessage = () => {
@@ -250,8 +256,8 @@ const OpenVideo = () => {
   };
 
   const sliderSettings = {
-    dots: true,
-    infinite: true,
+    dots: false,
+    infinite: false, // 무한 루프를 끕니다.
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
@@ -325,7 +331,7 @@ const OpenVideo = () => {
             variant="contained"
             color="secondary"
             disabled={!isBuyButtonEnabled}
-            onClick={handleBuy}
+            onClick={() => handleBuy(currentProduct.id)} // 구매 버튼 클릭 시 handleBuy 호출
             sx={{ width: "36vw" }}
           >
             {isRecording ? "구매하기" : "상품 준비중"}
@@ -345,6 +351,16 @@ const OpenVideo = () => {
         )}
 
         <Slider {...sliderSettings}>
+          <Box>
+            <input
+              className="btn btn-large btn-success"
+              type="button"
+              id="buttonSwitchCamera"
+              onClick={switchCamera}
+              value="Switch Camera"
+            />
+            <div>{sttValue} </div>
+          </Box>
           {isPublisher ? (
             <Box sx={{ padding: 2 }}>
               <Typography variant="h6">
@@ -388,7 +404,7 @@ const OpenVideo = () => {
                     <Button
                       variant="contained"
                       color="primary"
-                      onClick={() => handleBuy(product.id)}
+                      onClick={() => handleBuy(product.id)} // 지나간 상품에 대해서도 구매 버튼 클릭 시 handleBuy 호출
                       sx={{ width: "36vw" }}
                     >
                       구매하기
@@ -399,6 +415,33 @@ const OpenVideo = () => {
           )}
         </Slider>
       </Box>
+
+      {/* MUI Modal 컴포넌트 */}
+      <Modal
+        open={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        aria-labelledby="modal-title"
+        aria-describedby="modal-description"
+      >
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 400,
+            bgcolor: "background.paper",
+            border: "2px solid #000",
+            boxShadow: 24,
+            p: 4,
+          }}
+        >
+          <SelectTradeTime
+            productId={selectedProductId}
+            onClose={() => setIsModalOpen(false)}
+          />
+        </Box>
+      </Modal>
     </div>
   );
 };
