@@ -3,6 +3,7 @@ package com.ssafy.fleaOn.web.service;
 
 import com.ssafy.fleaOn.web.domain.*;
 import com.ssafy.fleaOn.web.repository.*;
+import com.ssafy.fleaOn.web.util.DateUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,8 @@ public class UserService {
     private final ShortsRepository shortsRepository;
 
     private final RegionInfoRepository regionInfoRepository;
+
+    private final ReservationRepository reservationRepository;
 
     public User findByEmail(String email) {
         Optional<User> user = userRepository.findByEmail(email);
@@ -76,28 +79,31 @@ public class UserService {
 
         // UserRegion 리스트 처리
         Optional<List<UserRegion>> userRegionListOptional = userRegionRepository.findByUser_userId(user.getUserId());
-        userRegionListOptional.ifPresent(userRegionList -> {
-            List<RegionInfo> regionList = userRegionList.stream()
-                    .map(UserRegion::getRegion)
-                    .collect(Collectors.toList());
-            userInfo.put("user_region", regionList);
-        });
-
+        if (userRegionListOptional.isPresent()) {
+            List<UserRegion> userRegionList = userRegionListOptional.get();
+            for (UserRegion userRegion : userRegionList) {
+                userInfo.put("region_code", userRegion.getRegion().getRegionCode());
+            }
+        }
         // Trade 리스트 처리
-        Optional<List<Trade>> tradeListOptional = tradeRepository.findBySellerId(user.getUserId());
-        tradeListOptional.ifPresent(tradeList -> {
-            List<LocalDate> tradeDates = tradeList.stream()
-                    .map(Trade::getTradeDate)
-                    .collect(Collectors.toList());
-            userInfo.put("trade", tradeDates);
-        });
-
+        Optional<List<Trade>> tradeListOptional = tradeRepository.findBySellerIdOrBuyerId(user.getUserId(), user.getUserId());
+        if (tradeListOptional.isPresent()) {
+            List<Trade> tradeList = tradeListOptional.get();
+            for (Trade trade : tradeList) {
+                userInfo.put("buyer_id", trade.getBuyerId());
+                userInfo.put("seller_id", trade.getSellerId());
+                userInfo.put("trade_place", trade.getTradePlace());
+                userInfo.put("trade_date", trade.getTradeDate());
+                userInfo.put("trade_time", trade.getTradeTime());
+            }
+        }
         return userInfo;
     }
 
     public Optional<List<Map<String, Object>>> getUserScheduleListByUserIdAndDate(int userId, LocalDate tradeDate) {
-        LocalDate endDate = tradeDate.plusDays(6);
-        Optional<List<Trade>> tradesOptional = tradeRepository.findByTradeDateBetweenAndBuyerIdOrSellerId(tradeDate, endDate, userId, userId);
+        LocalDate startOfWeek = DateUtil.getStartOfWeek(tradeDate);
+        LocalDate endOfWeek = DateUtil.getEndOfWeek(tradeDate);
+        Optional<List<Trade>> tradesOptional = tradeRepository.findByTradeDateBetweenAndBuyerIdOrSellerId(startOfWeek, endOfWeek, userId, userId);
 
         if (tradesOptional.isEmpty()) {
             return Optional.empty();
@@ -159,21 +165,18 @@ public class UserService {
 
 
     public Optional<List<Map<String, Object>>> getUserReservationListByUserId(int userId) {
-        Optional<List<Trade>> tradesOptional = tradeRepository.findByBuyerId(userId);
-
-        System.out.println("tradesOptional : " + tradesOptional.get());
+        Optional<List<Reservation>> reservationOptional = reservationRepository.findByUser_userId(userId);
 
         // tradesOptional이 비어 있으면 Optional.empty() 반환
-        if (tradesOptional.isEmpty()) {
+        if (reservationOptional.isEmpty()) {
             return Optional.empty();
         }
-
-        List<Trade> trades = tradesOptional.get();
+        List<Reservation> findReservationList = reservationOptional.get();
         List<Map<String, Object>> reservationList = new ArrayList<>();
 
-        for (Trade trade : trades) {
+        for (Reservation reservation : findReservationList) {
             Map<String, Object> reservationResult = new HashMap<>();
-            Optional<Product> productOptional = productRepository.findByProductId(trade.getProduct().getProductId());
+            Optional<Product> productOptional = productRepository.findByProductId(reservation.getProduct().getProductId());
 
             // productOptional이 비어 있지 않으면 값을 가져와서 처리
             productOptional.ifPresent(product -> {
@@ -181,8 +184,13 @@ public class UserService {
                 reservationResult.put("price", product.getPrice());
             });
 
-            reservationResult.put("trade_place", trade.getTradePlace());
-            reservationResult.put("trade_time", trade.getTradeTime());
+            Optional<Trade> tradeOptional = tradeRepository.findByProduct_productId(reservation.getProduct().getProductId());
+            if (tradeOptional.isPresent()) {
+                reservationResult.put("trade_place", tradeOptional.get().getTradePlace());
+                reservationResult.put("trade_time", tradeOptional.get().getTradeTime());
+                reservationResult.put("trade_date", tradeOptional.get().getTradeDate());
+                reservationResult.put("live_id", tradeOptional.get().getLive().getLiveId());
+            }
             reservationList.add(reservationResult);
         }
 
@@ -241,6 +249,7 @@ public class UserService {
         }
         return Optional.of(userScrapLiveList);
     }
+
     public Optional<List<Map<String, Object>>> getUserScrapShortsByUserId(int userId) {
         Optional<List<ShortsScrap>> scrapShortsOptional = shortsScrapRepository.findByUser_userId(userId);
         if (scrapShortsOptional.isEmpty()) {
@@ -299,7 +308,7 @@ public class UserService {
         }
     }
 
-    public void updateUserRegion(int userId, Map<String, Object> newRegion, Map<String, Object> deleteRegion){
+    public void updateUserRegion(int userId, Map<String, Object> newRegion, Map<String, Object> deleteRegion) {
         try {
             Optional<UserRegion> findUser = userRegionRepository.findByUser_userIdAndRegion_RegionCode(userId, (String) deleteRegion.get("region_code"));
             Optional<User> user = userRepository.findById(userId);
@@ -321,56 +330,13 @@ public class UserService {
                     userRegionRepository.save(updateUserRegion);
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw e;
         }
     }
 
-    public void addUserShortsScrap(int userId, int shortsId){
-        try {
-            Optional<User> findUser = userRepository.findById(userId);
-            if (findUser.isPresent()) {
-                Optional<Shorts> findShorts = shortsRepository.findById(shortsId);
-                if (findShorts.isPresent()) {
-                    ShortsScrap shortsScrap = ShortsScrap.builder()
-                            .shorts(findShorts.get())
-                            .user(findUser.get())
-                            .build();
-                    shortsScrapRepository.save(shortsScrap);
-                }
-                else {
-                    throw new IllegalArgumentException ("Cannot find shorts");
-                }
-            }
-            else {
-                throw new IllegalArgumentException ("Cannot find user");
-            }
-        }
-        catch (Exception e){
-            e.printStackTrace();
-            throw e;
-        }
-    }
-
-    public void deleteUserShortsScrap(int userId, int shortsId){
-        try {
-            Optional<ShortsScrap> findShortsScrap = shortsScrapRepository.findByUser_userIdAndShorts_shortsId(userId, shortsId);
-            if (findShortsScrap.isPresent()) {
-                shortsScrapRepository.delete(findShortsScrap.get());
-            }
-            else {
-                throw new IllegalArgumentException ("Cannot find shorts scrap");
-            }
-        }
-        catch (Exception e){
-            e.printStackTrace();
-            throw e;
-        }
-    }
-
-    public void addUserLiveScrap(int userId, int liveId){
+    public void addUserLiveScrap(int userId, int liveId) {
         try {
             Optional<User> findUser = userRepository.findById(userId);
             if (findUser.isPresent()) {
@@ -381,37 +347,83 @@ public class UserService {
                             .live(findLive.get())
                             .build();
                     liveScrapRepository.save(liveScrap);
+                } else {
+                    throw new IllegalArgumentException("Cannot find live");
                 }
-                else {
-                    throw new IllegalArgumentException ("Cannot find live");
-                }
+            } else {
+                throw new IllegalArgumentException("Cannot find user");
             }
-            else {
-                throw new IllegalArgumentException ("Cannot find user");
-            }
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             throw e;
         }
     }
-    public void deleteUserLivewScrap(int userId, int liveId){
-        try{
+
+    public void deleteUserLivewScrap(int userId, int liveId) {
+        try {
             Optional<LiveScrap> findLiveScrap = liveScrapRepository.findByUser_userIdAndLive_liveId(userId, liveId);
             if (findLiveScrap.isPresent()) {
                 liveScrapRepository.delete(findLiveScrap.get());
+            } else {
+                throw new IllegalArgumentException("Cannot find live scrap");
             }
-            else {
-                throw new IllegalArgumentException ("Cannot find live scrap");
-            }
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             throw e;
         }
     }
-//    public Optional<List<Map<String, Object>>> getUserCommerceItemListById(int userId) {
-//        Optional<List<Shorts>> shortsListOptional = shortsRepository.findByBuyerId(userId);
-//    }
 
+    public Live getUserCommerLiveDetails(int userId, int liveId) {
+        try {
+            Optional<Live> findLive = liveRepository.findByLiveIdAndSeller_userId(liveId, userId);
+            // Optional이 비어 있을 경우 예외를 던짐
+            return findLive.orElseThrow(() -> new RuntimeException("Live not found for userId: " + userId + ", liveId: " + liveId));
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    public List<Map<String, Object>> getUserShortsListByUserId(int userId) {
+        Optional<List<Shorts>> shortsOptional = shortsRepository.findByUser_userId(userId);
+        List<Map<String, Object>> shrotsList = new ArrayList<>();
+        if (shortsOptional.isPresent()) {
+            for (Shorts shorts : shortsOptional.get()) {
+                Map<String, Object> shortsMap = new HashMap<>();
+
+                shortsMap.put("short_id", shorts.getShortsId());
+                shortsMap.put("name", shorts.getProduct().getName());
+                shortsMap.put("price", shorts.getProduct().getPrice());
+                shortsMap.put("trade_place", shorts.getProduct().getLive().getTradePlace());
+                shortsMap.put("length", shorts.getLength());
+                shortsMap.put("video_address", shorts.getVideoAddress());
+                shortsMap.put("user_id", shorts.getUser().getUserId());
+                shrotsList.add(shortsMap);
+            }
+
+        }
+        else {
+            throw new IllegalArgumentException("Cannot find short list");
+        }
+        return shrotsList;
+    }
+
+    public Optional<List<Map<String, Object>>> getUserInfoByLiveId(int liveId){
+        Optional<List<LiveScrap>> findLiveScrapList = liveScrapRepository.findByLive_liveId(liveId);
+        List<Map<String , Object>> userInfoList = new ArrayList<>();
+        if (findLiveScrapList.isPresent()) {
+            for (LiveScrap liveScrap : findLiveScrapList.get()) {
+                Map<String, Object> userMap = new HashMap<>();
+                userMap.put("user_id", liveScrap.getUser().getUserId());
+                userMap.put("user_nickname", liveScrap.getUser().getNickname());
+                userMap.put("profile_picture", liveScrap.getUser().getProfilePicture());
+                userMap.put("level", liveScrap.getUser().getLevel());
+                userInfoList.add(userMap);
+            }
+            return Optional.of(userInfoList);
+        }
+        else {
+            throw new IllegalArgumentException("Cannot find live scrap");
+        }
+    }
 }

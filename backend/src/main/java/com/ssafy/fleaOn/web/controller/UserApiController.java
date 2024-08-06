@@ -1,6 +1,7 @@
 package com.ssafy.fleaOn.web.controller;
 
 import com.ssafy.fleaOn.web.config.jwt.JWTUtil;
+import com.ssafy.fleaOn.web.domain.Live;
 import com.ssafy.fleaOn.web.domain.User;
 import com.ssafy.fleaOn.web.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,7 +17,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -174,13 +174,8 @@ public class UserApiController {
         Optional<List<Map<String, Object>>> userReservationList = userService.getUserReservationListByUserId(user.getUserId());
 
         if (userReservationList.isPresent()) {
-            System.out.println("userReservationList : " + userReservationList.get());
-            Optional<List<Map<String, Object>>> userPurchaseList = userService.getUserPurchaseListByUserId(user.getUserId());
-            if (userPurchaseList.isPresent()) {
-                System.out.println("userPurchaseList : " + userPurchaseList.get());
-                return ResponseEntity.status(HttpStatus.OK).body(userPurchaseList.get());
+                return ResponseEntity.status(HttpStatus.OK).body(userReservationList.get());
             }
-        }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
@@ -194,6 +189,23 @@ public class UserApiController {
             return ResponseEntity.status(HttpStatus.OK).body(userCommerceLiveList.get());
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+    @Operation(summary = "판매 내역 - 라이브 상세", description = "회원이 판매 예정인 라이브 상세 내용을 볼 때 사용합니다. ")
+    @GetMapping("/{email}/commerceLive/{liveId}/info")
+    public ResponseEntity<?> getCommerceLiveInfo(@PathVariable("email") String email, @PathVariable("liveId") int liveId) {
+        try {
+            User user = userService.findByEmail(email);
+            if(user != null){
+                Live liveDetails = userService.getUserCommerLiveDetails(user.getUserId(), liveId);
+                return ResponseEntity.status(HttpStatus.OK).body(liveDetails);
+            }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     @Operation(summary = "스크랩한 라이브 목록 조회", description = "회원이 스크랩한 라이브 목록을 조회할 때 사용합니다. ")
@@ -232,16 +244,6 @@ public class UserApiController {
         }
 
     }
-
-//    @GetMapping("/{email}/{liveId}/commerceItem")
-//    public ResponseEntity<?> getUserCommerceItem(@PathVariable String email) {
-//        User user = userService.findByEmail(email);
-//        Optional<List<Map<String, Object>>> userCommerceItemList = userService.getUserCommerceItemListById(user.getUserId());
-//        if (userCommerceItemList.isPresent()) {
-//            return ResponseEntity.status(HttpStatus.OK).body(userCommerceItemList.get());
-//        }
-//        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-//    }
 
     @Operation(summary = "추가 정보 입력", description = "회원가입 후 추가 정보를 입력할 때 사용합니다. ")
     @PostMapping("/extraInfo")
@@ -325,58 +327,6 @@ public class UserApiController {
         }
     }
 
-    @Operation(summary = "스크랩한 쇼츠 추가", description = "회원이 쇼츠를 스크랩할 때 사용합니다. ")
-    @PostMapping("/shortsScrap")
-    public ResponseEntity<?> addUserShortsScrap(HttpServletRequest request, @RequestBody int shortsId) {
-        try {
-            String authorizationHeader = request.getHeader("Authorization");
-            if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-                String jwtToken = authorizationHeader.substring(7).trim();
-                String email = JWTUtil.getEmail(jwtToken);
-                User user = userService.findByEmail(email);
-                if (user != null) {
-                    userService.addUserShortsScrap(user.getUserId(), shortsId);
-                    return ResponseEntity.status(HttpStatus.OK).body(user);
-                }
-                else {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-                }
-            }
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Authorization 헤더가 없거나 형식이 올바르지 않습니다. ");
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
-    }
-
-    @Operation(summary = "스크랩한 쇼츠 삭제", description = "회원이 스크랩한 쇼츠를 삭제할 때 사용합니다. ")
-    @DeleteMapping("/shortsScrap")
-    public ResponseEntity<?> deleteUserShortsScrap(HttpServletRequest request, @RequestBody int shortsId) {
-        try{
-            String authorizationHeader = request.getHeader("Authorization");
-            if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-                String jwtToken = authorizationHeader.substring(7).trim();
-                String email = JWTUtil.getEmail(jwtToken);
-                User user = userService.findByEmail(email);
-                if (user != null) {
-                    userService.deleteUserShortsScrap(user.getUserId(), shortsId);
-                    return ResponseEntity.status(HttpStatus.OK).body(user);
-                }
-                else {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-                }
-            }
-            else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Authorization 헤더가 없거나 형식이 올바르지 않습니다. ");
-            }
-        }
-        catch (Exception e){
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
-    }
-
     @Operation(summary = "스크랩한 라이브 추가", description = "회원이 라이브를 스크랩할 때 사용합니다. ")
     @PostMapping("/liveScrap")
     public ResponseEntity<?> addUserLiveScrap(HttpServletRequest request, @RequestBody int liveId) {
@@ -430,5 +380,42 @@ public class UserApiController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
 
+    }
+
+    @Operation(summary = "판매 내역 - 쇼츠 목록", description = "회원이 판매 중인 쇼츠 목록을 조회할 때 사용합니다. ")
+    @GetMapping("/{email}/short")
+    public ResponseEntity<?> getUserCommerceItem(@PathVariable("email") String email) {
+        try {
+            User user = userService.findByEmail(email);
+            if (user != null) {
+                List<Map<String, Object>> userShortsList = userService.getUserShortsListByUserId(user.getUserId());
+                return ResponseEntity.status(HttpStatus.OK).body(userShortsList);
+            }
+            else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @Operation(summary = "라이브 스크랩한 사용자들 목록 조회", description = "live_id별로 스크랩한 모든 사람들 목록을 조회할 때 사용합니다. ")
+    @GetMapping("{liveId}/userInfo")
+    public ResponseEntity<?> getLiveScrapUserInfo(@PathVariable("liveId") int liveId) {
+        try {
+            Optional<List<Map<String, Object>>> liveScrapUserInfo = userService.getUserInfoByLiveId(liveId);
+            if (liveScrapUserInfo.isPresent()) {
+                return ResponseEntity.status(HttpStatus.OK).body(liveScrapUserInfo.get());
+            }
+            else{
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 }
