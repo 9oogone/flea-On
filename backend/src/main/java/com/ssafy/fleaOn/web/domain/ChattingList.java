@@ -3,7 +3,6 @@ package com.ssafy.fleaOn.web.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @Entity
@@ -30,11 +29,15 @@ public class ChattingList {
     @Column(name = "chat_time")
     private LocalDateTime chatTime;
 
+    @Column(name = "is_bot")
+    private boolean isBot;
+
     @Builder
-    public ChattingList(Chatting chatting, int writerId, String chatContent, LocalDateTime chatTime) {
+    public ChattingList(Chatting chatting, int writerId, String chatContent, LocalDateTime chatTime, boolean isBot) {
         this.chatting = chatting;
         this.writerId = writerId;
         this.chatContent = chatContent;
         this.chatTime = chatTime;
+        this.isBot = isBot;
     }
 }
