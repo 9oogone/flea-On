@@ -46,6 +46,10 @@ public class Shorts {
     @JoinColumn(name = "product_id", insertable = false, updatable = false)
     private Product product;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    private User user;
+
     @Builder
     public Shorts(String shortsThumbnail, LocalTime length, String videoAddress, LocalDateTime uploadDate, Product product) {
         this.shortsThumbnail = shortsThumbnail;

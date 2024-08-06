@@ -19,4 +19,6 @@ public interface LiveRepository extends JpaRepository<Live, Integer> {
     Optional<Live> findByLiveId(int liveId);
 
     Slice<Live> findAllByOrderByIsLiveDescLiveDateAsc(Pageable pageable);
+
+    Optional<Live> findByLiveIdAndSeller_userId(int liveId, int userId);
 }
