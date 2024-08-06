@@ -3,6 +3,7 @@ package com.ssafy.fleaOn.web.service;
 
 import com.ssafy.fleaOn.web.domain.*;
 import com.ssafy.fleaOn.web.repository.*;
+import com.ssafy.fleaOn.web.util.DateUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
