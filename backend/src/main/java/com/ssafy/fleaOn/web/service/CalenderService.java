@@ -15,14 +15,14 @@ public class CalenderService {
 
     private final TradeRepository tradeRepository;
 
-    public Optional<List<Trade>> getUserDayTradeList(LocalDate tradeDate, int userId) {
+    public List<Trade> getUserDayTradeList(LocalDate tradeDate, int userId) {
         Optional<List<Trade>> findTradeList = tradeRepository.findAllByTradeDateAndBuyerIdOrSellerId(tradeDate, userId, userId);
-        return findTradeList;
+        return findTradeList.get();
     }
 
-    public Optional<Trade> getUserDayTrade(LocalDate tradeDate, int userId) {
+    public Trade getUserDayTrade(LocalDate tradeDate, int userId) {
         Optional<Trade> findTrade = tradeRepository.findByTradeDateAndBuyerIdOrSellerId(tradeDate, userId, userId);
-        return findTrade;
+        return findTrade.get();
     }
 
 }
