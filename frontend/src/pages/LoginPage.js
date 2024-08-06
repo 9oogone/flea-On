@@ -12,7 +12,7 @@ const TitleSpan = styled("span")(({ theme }) => ({
 
 const LoginPage = () => {
   const handleLogin = (provider) => {
-    window.location.href = `https://i11b202.p.ssafy.io/api/oauth2/authorization/${provider}`;
+    window.location.href = `https://i11b202.p.ssafy.io/oauth2/authorization/${provider}`;
   };
 
   return (
