@@ -5,6 +5,7 @@ import com.ssafy.fleaOn.web.domain.*;
 import com.ssafy.fleaOn.web.dto.MainShortsResponse;
 import com.ssafy.fleaOn.web.repository.UserRepository;
 import com.ssafy.fleaOn.web.service.MainService;
+import com.ssafy.fleaOn.web.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,6 +28,7 @@ public class MainApiController {
 
     private final MainService mainService;
     private final UserRepository userRepository;
+    private final UserService userService;
 
     @Operation(summary = "실시간 방송 목록 조회", description = "라이브 방송 목록을 조회할 때 사용합니다. ")
     @GetMapping("/mainLive")
@@ -76,10 +78,10 @@ public class MainApiController {
         else {
             String jwtToken = authorizationToken.substring(7).trim();
             String email = JWTUtil.getEmail(jwtToken);
-            Optional<User> user = userRepository.findByEmail(email);
-            if(user.isPresent()) {
+            User user = userService.findByEmail(email);
+            if(user != null) {
                 try {
-                    Slice<Map<String, Object>> searchResultSlice = mainService.getSearchResultByName(name, user.get().getUserId());
+                    Slice<Map<String, Object>> searchResultSlice = mainService.getSearchResultByName(name, user.getUserId());
                     if (searchResultSlice.isEmpty()) {
                         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No result data found");
                     }

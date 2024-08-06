@@ -46,9 +46,9 @@ public class CalenderApiController {
                 if (user == null) {
                     return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
                 }
-                Optional<List<Trade>> findDayList = calenderService.getUserDayTradeList(day, user.getUserId());
+                List<Trade> findDayList = calenderService.getUserDayTradeList(day, user.getUserId());
 
-                if (findDayList.isEmpty()) {
+                if (findDayList == null) {
                     return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No trades found for the specified day");
                 }
 
@@ -73,8 +73,8 @@ public class CalenderApiController {
                 if (user == null) {
                     return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
                 }
-                Optional<Trade> findDayTrade = calenderService.getUserDayTrade(day, user.getUserId());
-                if (findDayTrade.isEmpty()) {
+              Trade findDayTrade = calenderService.getUserDayTrade(day, user.getUserId());
+                if (findDayTrade == null) {
                     return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No trades found for the specified day");
                 }
                 return ResponseEntity.status(HttpStatus.OK).body(findDayTrade);
