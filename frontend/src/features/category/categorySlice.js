@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
+import baseAxios from "../../utils/httpCommons"; 
 
 const categorySlice = createSlice({
   name: "category",
@@ -29,17 +29,10 @@ export const {
   fetchCategoriesFailure,
 } = categorySlice.actions;
 
-export const fetchCategories = (token) => async (dispatch) => {
+export const fetchCategories = () => async (dispatch) => {
   dispatch(fetchCategoriesRequest());
   try {
-    const response = await axios.get(
-      "http://i11b202.p.ssafy.io/fleaon/mainCategory",
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const response = await baseAxios().get("/fleaon/mainCategory");
     dispatch(fetchCategoriesSuccess(response.data));
   } catch (error) {
     dispatch(fetchCategoriesFailure(error.message));
