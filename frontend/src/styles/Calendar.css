@@ -1,0 +1,146 @@
+.calendar-container {
+  padding: 10px 15px;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0px 0px 12px rgba(13, 39, 105, 0.1);
+  border: 2px solid rgba(243, 242, 241, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.calendar-header {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.calendar-header-top {
+  width: 100%;
+  padding-bottom: 5px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.trade-summary {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.month-text {
+  padding-left: 10px;
+  font-size: 20px !important;
+  font-weight: bold !important;
+}
+
+.trade-summary-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.trade-summary-icon {
+  font-size: medium !important;
+  width: 16px;
+  height: 16px;
+  padding-right: 3px;
+}
+
+.trade-summary-text {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+}
+
+.navigation-buttons {
+  display: flex;
+  align-items: center;
+}
+
+.calendar-weekdays {
+  width: 100%;
+  padding-top: 2px;
+  display: flex;
+  justify-content: space-around;
+}
+
+.calendar-trade {
+  width: 100%;
+  padding: 5px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.trade-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.trade-box img {
+  width: 26px;
+  height: 26px;
+}
+
+.trade-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 12px !important;
+  font-weight: bold;
+}
+.trade-done-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 12px !important;
+  font-weight: bold;
+  color: white;
+}
+
+.calendar-footer {
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.footer-date-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.footer-date-icon {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.footer-date-icon-active-today {
+  background: #ffb6cc;
+  border-radius: 50%;
+}
+
+.footer-date-icon-active-selected {
+  background: #ff0b55;
+  border-radius: 50%;
+}
+
+.footer-date-text {
+  font-size: 10px !important;
+  color: rgba(0, 0, 0, 0.88);
+}
+
+.footer-date-text-active-selected {
+  color: white;
+}

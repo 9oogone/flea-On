@@ -1,0 +1,27 @@
+/* styles/ChatRoom.module.css */
+.chatRoom {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+  
+  .messageList {
+    flex: 1;
+    overflow-y: auto;
+  }
+  
+  .inputContainer {
+    display: flex;
+    padding: 10px;
+    border-top: 1px solid #ddd;
+  }
+  
+  .textField {
+    flex: 1;
+    margin-right: 10px;
+  }
+  
+  .sendButton {
+    flex-shrink: 0;
+  }
+  

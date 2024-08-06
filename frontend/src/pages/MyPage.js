@@ -1,12 +1,17 @@
 import React from "react";
 import Profile from "../features/mypage/components/Profile";
-
+import Level from "../features/mypage/components/Level";
+import Calendar from "../features/mypage/components/Calendar";
+import FleaOn from "../features/mypage/components/FleaOn";
+import { Box } from "@mui/material";
 const MyPage = () => {
   return (
-    <div>
-      <h1>마이페이지</h1>
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mb: 5 }}>
       <Profile />
-    </div>
+      <Level />
+      <Calendar />
+      <FleaOn />
+    </Box>
   );
 };
 
