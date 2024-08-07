@@ -28,7 +28,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Tag(name = "Chatting API", description = "채팅 관련 API")
 @Slf4j
-public class ChattingController {
+public class ChattingApiController {
 
     private final ChattingService chattingService;
     private final UserService userService;
@@ -99,30 +99,6 @@ public class ChattingController {
         } catch (Exception ex) {
             ex.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @Operation(summary = "챗봇 거래 상세", description = "챗봇 거래 상세 내용을 조회할 때 사용합니다. ")
-    @GetMapping("/{chatId}/detail")
-    public ResponseEntity<?> getChattingDetail(HttpServletRequest request, @PathVariable("chatId") int chatId) {
-        try {
-            String authorizationHeader = request.getHeader("Authorization");
-            if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-                String jwtToken = authorizationHeader.substring(7);
-                String userEmail = JWTUtil.getEmail(jwtToken);
-                User user = userService.findByEmail(userEmail);
-                if (user == null) {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자를 찾을 수 없습니다. ");
-                }
-                Map<String, Object> chattingDetails = chattingService.getChattingDetailsByChatId(chatId, user.getUserId());
-                log.info(chattingDetails.toString());
-                return ResponseEntity.status(HttpStatus.OK).body(chattingDetails);
-            }
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
-        catch (Exception e){
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 }

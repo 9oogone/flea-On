@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 
 public interface CategoryRepository extends JpaRepository<Category, Integer> {
+    void deleteById(int id);
 
     int findByFirstCategoryId(int firstCategoryId);
 

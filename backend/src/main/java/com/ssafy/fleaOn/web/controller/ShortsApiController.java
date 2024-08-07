@@ -20,13 +20,13 @@ import java.util.Map;
 @RestController
 @RequestMapping("/fleaon/shorts")
 @Tag(name = "Shorts API", description = "Shorts 관련 API")
-public class ShortsController {
+public class ShortsApiController {
 
     private final ShortsService shortsService;
     private final UserService userService;
 
     @Autowired
-    public ShortsController(ShortsService shortsService, UserService userService) {
+    public ShortsApiController(ShortsService shortsService, UserService userService) {
         this.shortsService = shortsService;
         this.userService = userService;
     }

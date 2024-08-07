@@ -10,4 +10,6 @@ import java.util.Optional;
 @Repository
 public interface ChattingListRepository extends JpaRepository<ChattingList, Integer> {
     Optional<List<ChattingList>> findByChatting_ChattingId(int chattingId);
+
+    void deleteByChatting_ChattingId(int chattingId);
 }

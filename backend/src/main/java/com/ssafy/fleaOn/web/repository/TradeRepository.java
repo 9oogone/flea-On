@@ -22,4 +22,8 @@ public interface TradeRepository extends JpaRepository<Trade, Integer> {
      Optional<List<Trade>> findAllByTradeDateAndBuyerIdOrSellerId(LocalDate tradeDate, int buyerId, int sellerId);
 
      Optional<Trade> findByTradeDateAndBuyerIdOrSellerId(LocalDate tradeDate, int buyerId, int sellerId);
+
+     Optional<List<Trade>> findByChatting_ChattingId(int chattingId);
+
+     void deleteByProduct_ProductId(int productId);
 }
