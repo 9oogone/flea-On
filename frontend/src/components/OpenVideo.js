@@ -35,7 +35,7 @@ const OpenVideo = () => {
   const [sttValue, setSttValue] = useState("");
   const [publisher, setPublisher] = useState(undefined);
 
-//   let subscribers = [];
+  let subscribers = [];
 
   const OV = useRef();
   const session = useRef();
@@ -56,31 +56,32 @@ const OpenVideo = () => {
     if (sessionName) {
       dispatch(setLoading());
 
-//       MakeSession(videoRef, dispatch, sessionName)
-//         .then((ss) => {
-//           console.log("MakeSession 성공");
-//           session.current = ss;
-//           fetchProductList(sessionName);
-//         })
-//         .catch((error) => {
-//           console.error("MakeSession 오류:", error);
-//           dispatch(unSetLoading());
-//         });
-//     }
-//   }, [sessionName]);
+      MakeSession(videoRef, dispatch, sessionName)
+        .then((ss) => {
+          console.log("MakeSession 성공");
+          session.current = ss;
+          fetchProductList(sessionName);
+        })
+        .catch((error) => {
+          console.error("MakeSession 오류:", error);
+          dispatch(unSetLoading());
+        });
+    }
+  }, [sessionName]);
 
-//   const MakeSession = async (videoRef, dispatch, sessionName) => {
-//     const session = OV.current.initSession();
+  const MakeSession = async (videoRef, dispatch, sessionName) => {
+    const session = OV.current.initSession();
 
-//     session.on("streamCreated", (event) => {
-//       var subscriber = session.subscribe(event.stream, undefined);
-//       subscribers.push(subscriber);
-//       subscriber.addVideoElement(videoRef.current);
-//     });
+    session.on("streamCreated", (event) => {
+      var subscriber = session.subscribe(event.stream, undefined);
+      subscribers.push(subscriber);
+      subscriber.addVideoElement(videoRef.current);
+    });
 
     session.on("signal:chat", (event) => {
       const data = JSON.parse(event.data);
       const type = data.type;
+      console.log("data : ", data);
       if (type === 1) {
         const message = data.message;
         const from = data.from;
@@ -94,10 +95,10 @@ const OpenVideo = () => {
       }
     });
 
-//     try {
-//       const resp = await getToken({ sessionName: sessionName });
-//       let token = resp[0];
-//       await session.connect(token, { clientData: "example" });
+    try {
+      const resp = await getToken({ sessionName: sessionName });
+      let token = resp[0];
+      await session.connect(token, { clientData: "example" });
 
       if (resp[1] === true) {
         setIsPublisher(true);
@@ -252,24 +253,25 @@ const OpenVideo = () => {
     }
   };
 
-//   const handlePrepareProduct = (index) => {
-//     const newProductList = [...productList];
-//     const [selectedProduct] = newProductList.splice(index, 1);
-//     newProductList.splice(currentProductIndex + 1, 0, selectedProduct);
-//     setProductList(newProductList);
-//   };
+  const handlePrepareProduct = (index) => {
+    const newProductList = [...productList];
+    const [selectedProduct] = newProductList.splice(index, 1);
+    newProductList.splice(currentProductIndex + 1, 0, selectedProduct);
+    setProductList(newProductList);
+  };
 
-//   const handleBuy = (productId) => {
-//     setSelectedProductId(productId);
-//     setIsModalOpen(true); // 모달을 엽니다.
-//   };
+  const handleBuy = (productId) => {
+    setSelectedProductId(productId);
+    setIsModalOpen(true); // 모달을 엽니다.
+  };
 
   const sendMessage = () => {
     if (session.current && newMessage.trim() !== "") {
       const messageData = {
+        type: 1,
         message: newMessage,
         from: user.nickname,
-        profile: user.profile_picture,
+        profile: user.profilePicture,
       };
 
       session.current.signal({
@@ -280,10 +282,10 @@ const OpenVideo = () => {
     }
   };
 
-//   const endBroadcast = () => {
-//     console.log("방송 종료");
-//     // 방송 종료를 위한 로직 추가
-//   };
+  const endBroadcast = () => {
+    console.log("방송 종료");
+    // 방송 종료를 위한 로직 추가
+  };
 
   const sliderSettings = {
     dots: false,
@@ -369,7 +371,7 @@ const OpenVideo = () => {
                       padding: 1,
                     }}
                   >
-                    <strong>{msg.from}</strong>: {msg.message}
+                    {msg.from}: {msg.message}
                   </Box>
                 </Box>
               ))}
@@ -524,4 +526,4 @@ const OpenVideo = () => {
   );
 };
 
-// export default OpenVideo;
+export default OpenVideo;
