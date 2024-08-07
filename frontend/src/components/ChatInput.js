@@ -5,9 +5,11 @@ import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
 import { IconButton } from '@mui/material';
 import ChatNav from '../components/ChatNav';
 import CancelTrade from '../components/CancelTrade';
+import ChangeTime from '../components/ChangeTime'; // ChangeTime 컴포넌트 임포트
 
 const ChatInput = ({ message, setMessage, handleSendMessage, setFocus, isChatNavOpen, setIsChatNavOpen }) => {
   const [isCancelTradeOpen, setIsCancelTradeOpen] = useState(false);
+  const [isChangeTimeOpen, setIsChangeTimeOpen] = useState(false); // ChangeTime 모달 상태 변수
   const inputRef = useRef(null);
 
   useEffect(() => {
@@ -33,11 +35,17 @@ const ChatInput = ({ message, setMessage, handleSendMessage, setFocus, isChatNav
     setIsCancelTradeOpen(true);
   };
 
+  const handleChangeTimeClick = () => {
+    setIsChatNavOpen(false);
+    setIsChangeTimeOpen(true);
+  };
+
   return (
     <div className={`${inputStyles.chatInputContainer} ${isChatNavOpen ? inputStyles.blurBackground : ''}`}>
       <div className={inputStyles.plusIcon} onClick={handlePlusIconClick}>+</div>
-      {isChatNavOpen && <ChatNav onClose={() => setIsChatNavOpen(false)} onCancelTrade={handleCancelTradeClick} />}
+      {isChatNavOpen && <ChatNav onClose={() => setIsChatNavOpen(false)} onCancelTrade={handleCancelTradeClick} onChangeTime={handleChangeTimeClick} />}
       <CancelTrade isOpen={isCancelTradeOpen} onClose={() => setIsCancelTradeOpen(false)} />
+      <ChangeTime open={isChangeTimeOpen} handleClose={() => setIsChangeTimeOpen(false)} />
       <div className={inputStyles.inputWrapper}>
         <input
           className={inputStyles.inputField}
