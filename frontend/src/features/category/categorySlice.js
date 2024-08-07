@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import baseAxios from "../../utils/httpCommons"; 
+import baseAxios from "../../utils/httpCommons";
 
 const categorySlice = createSlice({
   name: "category",
@@ -32,7 +32,7 @@ export const {
 export const fetchCategories = () => async (dispatch) => {
   dispatch(fetchCategoriesRequest());
   try {
-    const response = await baseAxios().get("/fleaon/mainCategory");
+    const response = await baseAxios().get("/fleaon/category/");
     dispatch(fetchCategoriesSuccess(response.data));
   } catch (error) {
     dispatch(fetchCategoriesFailure(error.message));
