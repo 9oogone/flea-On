@@ -21,7 +21,7 @@ import SearchShorts from "./pages/SearchShortsPage";
 import SearchLive from "./pages/SearchLivePage";
 import PrivateRoute from "./components/PrivateRoute";
 import OpenVideo from "./components/OpenVideo";
-import AddressSearch from "./pages/AddressSearch"; // Import AddressSearch component
+import AddressSearch from "./pages/AddressSearch";
 import BuyList from "./features/mypage/components/BuyList";
 import SellList from "./features/mypage/components/SellList";
 import WatchList from "./features/mypage/components/WatchList";
@@ -40,7 +40,7 @@ const routes = [
   { path: "/mypage/buy-list", element: <BuyList />, isPrivate: true },
   { path: "/mypage/sell-list", element: <SellList />, isPrivate: true },
   { path: "/mypage/watch-list", element: <WatchList />, isPrivate: true },
-
+  { path: "/address-search", element: <AddressSearch />, isPrivate: true },
   { path: "/search/shorts", element: <SearchShorts />, isPrivate: true },
   { path: "/search/live", element: <SearchLive />, isPrivate: true },
 ];
