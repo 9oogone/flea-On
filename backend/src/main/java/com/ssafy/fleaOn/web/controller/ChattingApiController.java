@@ -66,15 +66,8 @@ public class ChattingApiController {
             if (user == null) {
                 return new ResponseEntity<>("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
             }
-            Chatting chatting = chattingService.getChatByChattingId(chattingId);
-            List<MessageResponse> messages = chattingService.getMessagesByChattingId(chattingId);
-            User otherUser;
-            if (chatting.getSeller().equals(user)) {
-                otherUser = userService.findByEmail(chatting.getBuyer().getEmail());
-            } else {
-                otherUser = userService.findByEmail(chatting.getSeller().getEmail());
-            }
-            ChattingMessageResponse chattingMessageResponse = new ChattingMessageResponse(otherUser, messages);
+
+            ChattingMessageResponse chattingMessageResponse = chattingService.getChatMessage(chattingId, user);
             return ResponseEntity.ok(chattingMessageResponse);
         } catch (Exception ex) {
             ex.printStackTrace();

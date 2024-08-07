@@ -14,10 +14,14 @@ import java.sql.Timestamp;
 import java.util.List;
 @Getter
 public class ChattingMessageResponse {
+    private final int liveId;
+    private final boolean isBuyer;
     private final User user;
     private final List<MessageResponse> messageResponses;
 
-    public ChattingMessageResponse(User user, List<MessageResponse> messageResponses) {
+    public ChattingMessageResponse(int liveId, boolean isBuyer, User user, List<MessageResponse> messageResponses) {
+        this.liveId = liveId;
+        this.isBuyer = isBuyer;
         this.user = user;
         this.messageResponses = messageResponses;
     }
