@@ -26,7 +26,17 @@ const saveState = (state) => {
 
 const initialState = loadState() || {
   isAuthenticated: false,
-  user: { phone: null, nickname: null, user_region: null },
+  user: {
+    userId: null,
+    email: null,
+    userIdentifier: null,
+    profilePicture: null,
+    name: null,
+    nickname: null,
+    role: null,
+    phone: null,
+    level: null,
+  },
   token: null,
 };
 
@@ -37,7 +47,7 @@ export const updateUserInfo = createAsyncThunk(
     const token = state.auth.token;
 
     const response = await axios.put(
-      `/fleaon/users/${email}/info`,
+      `https://i11b202.p.ssafy.io/fleaon/users/${email}/info`,
       data,
       {
         headers: {
@@ -48,7 +58,6 @@ export const updateUserInfo = createAsyncThunk(
     return response.data;
   }
 );
-
 
 const authSlice = createSlice({
   name: "auth",
@@ -81,6 +90,12 @@ const authSlice = createSlice({
       state.user.user_region = action.payload;
       saveState(state);
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(updateUserInfo.fulfilled, (state, action) => {
+      state.user = { ...state.user, ...action.payload };
+      saveState(state);
+    });
   },
 });
 

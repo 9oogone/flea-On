@@ -57,6 +57,11 @@ const ChatPage = () => {
 
   return (
     <Container>
+      <Box my={4}>
+        <Typography variant="h4" align="left" marginLeft="10px" fontWeight="bold">
+          채팅
+        </Typography>
+      </Box>
       <List>
         {chats.map((chat) => (
           <ListItem
