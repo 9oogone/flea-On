@@ -2,10 +2,7 @@ package com.ssafy.fleaOn.web.controller;
 
 import com.ssafy.fleaOn.web.config.jwt.JWTUtil;
 import com.ssafy.fleaOn.web.domain.User;
-import com.ssafy.fleaOn.web.dto.ChatbotDetailResponse;
-import com.ssafy.fleaOn.web.dto.CustomOAuth2User;
-import com.ssafy.fleaOn.web.dto.PurchaseCancleResponse;
-import com.ssafy.fleaOn.web.dto.PurchaseRequest;
+import com.ssafy.fleaOn.web.dto.*;
 import com.ssafy.fleaOn.web.service.ChatBotService;
 import com.ssafy.fleaOn.web.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -51,9 +48,43 @@ public class ChatBotApiController {
         }
     }
 
-//    @DeleteMapping("/{chatId}/cancelAll")
-//    @Operation(summary = "챗봇 거래 파기", description = "챗봇 거래 취소 시 모든 거래를 파기하고 채팅방을 나갑니다.")
-//    public ResponseEntity<?> cancelAll(@AuthenticationPrincipal CustomOAuth2User principal) {
-//
-//    }
+    @Operation(summary = "챗봇 판매자와 대화", description = "챗봇 판매자와의 대화를 선택할 때 사용합니다.")
+    @PutMapping("/{chatId}/convo")
+    public ResponseEntity<?> startWithSeller(@AuthenticationPrincipal CustomOAuth2User principal, @PathVariable("chatId") int chatId) {
+        try {
+            String userEmail = principal.getEmail(); // 현재 인증된 사용자의 이메일 가져오기
+
+            User user = userService.findByEmail(userEmail); // 이메일로 userId 가져오기
+            if (user == null) {
+                return new ResponseEntity<>("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
+            }
+
+            int sellerId = chatBotService.startWithSellerChat(chatId);
+            return ResponseEntity.status(HttpStatus.OK).body(sellerId);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @Operation(summary = "챗봇 시간 변경 수락", description = "판매자가 시간 변경을 수락할 시 거래 정보가 바뀝니다.")
+    @PutMapping("/changeTime")
+    public ResponseEntity<?> changeTradeTime(@AuthenticationPrincipal CustomOAuth2User principal, @RequestBody ChangeTimeRequest changeTimeRequest) {
+        try {
+            String userEmail = principal.getEmail(); // 현재 인증된 사용자의 이메일 가져오기
+
+            User user = userService.findByEmail(userEmail); // 이메일로 userId 가져오기
+            if (user == null) {
+                return new ResponseEntity<>("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
+            }
+
+            chatBotService.updateTradeTime(changeTimeRequest);
+            return ResponseEntity.ok().build();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
 }
