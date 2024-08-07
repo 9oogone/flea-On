@@ -484,7 +484,7 @@ const OpenVideo = () => {
                 sx={{ width: "36vw" }}
               >
                 {isRecording ? "구매하기" : "상품 준비중"}
-              </Button>
+              </Button> /////////////////////////////////////////////얘다 달력 연결할 애임///////
             )}
             {currentProduct && (
               <Box sx={{ marginTop: 2 }}>
