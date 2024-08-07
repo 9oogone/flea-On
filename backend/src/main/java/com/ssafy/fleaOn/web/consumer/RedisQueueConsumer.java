@@ -13,6 +13,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class RedisQueueConsumer {
 
@@ -78,4 +80,21 @@ public class RedisQueueConsumer {
             redisTemplate.opsForValue().set("confirmResult:" + request.getBuyerId() + ":" + request.getProductId(), "confirmed");
         }
     }
+
+    // 주기적으로 거래 파기 요청을 처리하는 메서드
+    @Scheduled(fixedDelay = 1000)
+    public void handleBreakTradeRequest() {
+        int[] chatAndUserId = (int[]) redisTemplate.opsForList().leftPop("breakTradeQueue");
+        if (chatAndUserId != null && chatAndUserId.length == 2) {
+            int chatId = chatAndUserId[0];
+            int userId = chatAndUserId[1];
+            logger.info("Received BreakTradeRequest for chatId: {} and userId: {}", chatId, userId); // 디버깅 로그
+            List<PurchaseCancleResponse> result = purchaseService.breakTrade(chatId, userId);
+            logger.info("Processed BreakTradeRequest with result: {}", result); // 디버깅 로그
+            redisTemplate.opsForValue().set("breakTradeResult:" + chatId + ":" + userId, result);
+        } else {
+            logger.info("No BreakTradeRequest found in queue"); // 큐가 비어있는 경우
+        }
+    }
+
 }
