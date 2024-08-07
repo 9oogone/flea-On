@@ -35,13 +35,16 @@ public class ChattingService {
         List<ChattingResponse> responses = new ArrayList<>();
 
         for (Chatting chat : chatList) {
-            List<ChattingList> messages = chattingListRepository.findByChatting_ChattingId(chat.getChattingId()).orElseThrow(() -> new RuntimeException("Chatting not found"));
+            List<ChattingList> messages = chattingListRepository.findByChatting_ChattingId(chat.getChattingId())
+                    .orElseThrow(() -> new RuntimeException("Chatting not found"));
             ChattingList recentMessage = messages.isEmpty() ? null : messages.get(messages.size() - 1);
             User otherUser;
-            if (chat.getSeller().getUserId()==userId) {
-                otherUser = userRepository.findByEmail(chat.getBuyer().getEmail()).orElseThrow(() -> new IllegalArgumentException("no user found for id: " + userId));
+            if (chat.getSeller().getUserId() == userId) {
+                otherUser = userRepository.findByEmail(chat.getBuyer().getEmail())
+                        .orElseThrow(() -> new IllegalArgumentException("no user found for id: " + chat.getBuyer().getUserId()));
             } else {
-                otherUser = userRepository.findByEmail(chat.getSeller().getEmail()).orElseThrow(() -> new IllegalArgumentException("no user found for id: " + userId));
+                otherUser = userRepository.findByEmail(chat.getSeller().getEmail())
+                        .orElseThrow(() -> new IllegalArgumentException("no user found for id: " + chat.getSeller().getUserId()));
             }
             responses.add(new ChattingResponse(
                     chat,
@@ -58,43 +61,35 @@ public class ChattingService {
     }
 
     public ChattingMessageResponse getChatMessage(int chattingId, User user) {
-        Chatting chatting = chattingRepository.findById(chattingId).orElseThrow(() -> new RuntimeException("Chatting not found"));
-        Optional<List<ChattingList>> chattingLists = chattingListRepository.findByChatting_ChattingId(chattingId);
+        Chatting chatting = chattingRepository.findById(chattingId)
+                .orElseThrow(() -> new RuntimeException("Chatting not found"));
+        List<ChattingList> chattingLists = chattingListRepository.findByChatting_ChattingId(chattingId)
+                .orElseThrow(() -> new RuntimeException("No chatting messages found"));
+
         List<MessageResponse> messages = new ArrayList<>();
-        if (chattingLists.isPresent()) {
-            for (ChattingList chattingList : chattingLists.get()) {
-                messages.add(new MessageResponse(chattingList));
-            }
+        for (ChattingList chattingList : chattingLists) {
+            messages.add(new MessageResponse(chattingList));
         }
 
         User otherUser;
         if (chatting.getSeller().equals(user)) {
-            otherUser = userRepository.findByEmail(chatting.getBuyer().getEmail()).orElseThrow(() -> new RuntimeException("user not found"));
+            otherUser = userRepository.findByEmail(chatting.getBuyer().getEmail())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
         } else {
-            otherUser = userRepository.findByEmail(chatting.getSeller().getEmail()).orElseThrow(() -> new RuntimeException("user not found"));
+            otherUser = userRepository.findByEmail(chatting.getSeller().getEmail())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
         }
 
-        Trade trade = tradeRepository.findByChatting_chattingId(chatting.getChattingId()).orElseThrow(() -> new RuntimeException("trade not found")).get(0);
-        boolean isBuyer = false;
-        if (trade.getBuyerId() == user.getUserId()){
-            isBuyer = true;
-        }
+        Trade trade = tradeRepository.findByChatting_chattingId(chatting.getChattingId())
+                .orElseThrow(() -> new RuntimeException("Trade not found")).get(0);
+        boolean isBuyer = trade.getBuyerId() == user.getUserId();
+
         return new ChattingMessageResponse(trade.getLive().getLiveId(), isBuyer, otherUser, messages);
     }
 
     public Chatting getChatByChattingId(int chattingId) {
-        return chattingRepository.findById(chattingId).orElseThrow(() -> new RuntimeException("Chatting not found"));
-    }
-
-    public List<MessageResponse> getMessagesByChattingId(int chattingId) {
-        Optional<List<ChattingList>> chattingLists = chattingListRepository.findByChatting_ChattingId(chattingId);
-        List<MessageResponse> responses = new ArrayList<>();
-        if (chattingLists.isPresent()) {
-            for (ChattingList chattingList : chattingLists.get()) {
-                responses.add(new MessageResponse(chattingList));
-            }
-        }
-        return responses;
+        return chattingRepository.findById(chattingId)
+                .orElseThrow(() -> new RuntimeException("Chatting not found"));
     }
 
     public ChattingList createMessage(Chatting chatting, int writerId, String chatContent) {

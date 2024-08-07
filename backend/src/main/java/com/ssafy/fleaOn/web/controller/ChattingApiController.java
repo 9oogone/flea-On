@@ -36,6 +36,9 @@ public class ChattingApiController {
     @GetMapping("")
     @Operation(summary = "채팅방 목록", description = "사용자가 참여중인 채팅방들을 모두 불러옵니다.")
     public ResponseEntity<?> getChattingList(@AuthenticationPrincipal CustomOAuth2User principal) {
+        if (principal == null) {
+            return new ResponseEntity<>("인증된 사용자가 없습니다.", HttpStatus.UNAUTHORIZED);
+        }
         try {
             String userEmail = principal.getEmail(); // 현재 인증된 사용자의 이메일 가져오기
 
@@ -51,7 +54,7 @@ public class ChattingApiController {
                 return new ResponseEntity<>("채팅방이 없습니다.", HttpStatus.NOT_FOUND);
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            log.error("채팅목록을 불러오는 중 오류가 발생하였습니다: ", ex);
             return new ResponseEntity<>("채팅목록을 불러오는 중 오류가 발생하였습니다: " + ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -59,6 +62,9 @@ public class ChattingApiController {
     @GetMapping("/{chattingId}/messages")
     @Operation(summary = "채팅 메시지 목록", description = "특정 채팅방의 메시지들을 모두 불러옵니다.")
     public ResponseEntity<?> getMessagesByChattingId(@AuthenticationPrincipal CustomOAuth2User principal, @PathVariable int chattingId) {
+        if (principal == null) {
+            return new ResponseEntity<>("인증된 사용자가 없습니다.", HttpStatus.UNAUTHORIZED);
+        }
         try {
             String userEmail = principal.getEmail(); // 현재 인증된 사용자의 이메일 가져오기
 
@@ -70,14 +76,17 @@ public class ChattingApiController {
             ChattingMessageResponse chattingMessageResponse = chattingService.getChatMessage(chattingId, user);
             return ResponseEntity.ok(chattingMessageResponse);
         } catch (Exception ex) {
-            ex.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            log.error("채팅 메시지를 불러오는 중 오류가 발생하였습니다: ", ex);
+            return new ResponseEntity<>("채팅 메시지를 불러오는 중 오류가 발생하였습니다: " + ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
     @PostMapping("/{chattingId}/messages")
     @Operation(summary = "메시지 생성", description = "특정 채팅방에 메시지를 생성합니다.")
     public ResponseEntity<?> createMessage(@AuthenticationPrincipal CustomOAuth2User principal, @PathVariable int chattingId, @RequestParam String chatContent) {
+        if (principal == null) {
+            return new ResponseEntity<>("인증된 사용자가 없습니다.", HttpStatus.UNAUTHORIZED);
+        }
         try {
             String userEmail = principal.getEmail(); // 현재 인증된 사용자의 이메일 가져오기
 
@@ -90,8 +99,8 @@ public class ChattingApiController {
             ChattingList message = chattingService.createMessage(chatting, user.getUserId(), chatContent);
             return ResponseEntity.status(HttpStatus.CREATED).body(message);
         } catch (Exception ex) {
-            ex.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            log.error("메시지 생성 중 오류가 발생하였습니다: ", ex);
+            return new ResponseEntity<>("메시지 생성 중 오류가 발생하였습니다: " + ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 }

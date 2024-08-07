@@ -65,6 +65,6 @@ public class Live {
     }
 
     public void off(){
-        this.isLive = 3;
+        this.isLive = 2;
     }
 }
