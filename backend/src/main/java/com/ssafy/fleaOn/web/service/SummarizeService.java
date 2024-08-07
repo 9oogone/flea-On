@@ -2,7 +2,9 @@ package com.ssafy.fleaOn.web.service;
 
 import com.ssafy.fleaOn.web.domain.Shorts;
 import com.ssafy.fleaOn.web.domain.ShortsContent;
+import com.ssafy.fleaOn.web.dto.CategoryIdResponse;
 import com.ssafy.fleaOn.web.dto.SummaryResponse;
+import com.ssafy.fleaOn.web.repository.CategoryRepository;
 import com.ssafy.fleaOn.web.repository.ShortsContentRepository;
 import com.ssafy.fleaOn.web.repository.ShortsRepository;
 import lombok.RequiredArgsConstructor;
