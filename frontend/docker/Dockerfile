@@ -1,7 +1,7 @@
 FROM node:20.15.0-alpine AS build
 WORKDIR /app
 COPY package.json .
-RUN npm install
+RUN npm install --force
 COPY . .
 RUN npm run build
 
