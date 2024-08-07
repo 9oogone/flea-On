@@ -34,7 +34,7 @@ const OpenVideo = () => {
   const [mainStreamManager, setMainStreamManager] = useState(undefined);
   const [sttValue, setSttValue] = useState("");
   const [publisher, setPublisher] = useState(undefined);
-  
+
   let subscribers = [];
 
   const OV = useRef();
