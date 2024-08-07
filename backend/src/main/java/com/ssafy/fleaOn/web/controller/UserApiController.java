@@ -125,8 +125,8 @@ public class UserApiController {
         if (getUser == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } else {
-            userService.updateUserByEmail(email, extraInfoRequest);
-            return ResponseEntity.status(HttpStatus.OK).build();
+            User updateUser = userService.updateUserByEmail(email, extraInfoRequest);
+            return ResponseEntity.status(HttpStatus.OK).body(updateUser);
         }
     }
 

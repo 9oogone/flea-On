@@ -56,13 +56,13 @@ public class UserService {
         userRepository.deleteByEmail(email);
     }
 
-    public void updateUserByEmail(String email, ExtraInfoRequest extraInfoRequest) {
+    public User updateUserByEmail(String email, ExtraInfoRequest extraInfoRequest) {
         // 이메일로 사용자 검색
         Optional<User> optionalUser = userRepository.findByEmail(email);
 
         // 사용자 존재 여부 확인 및 Optional 안전 처리
         if (!optionalUser.isPresent()) {
-            throw new RuntimeException("User not found with email: " + email);
+            return null;
         }
 
         // 기존 유저 객체 가져오기
@@ -83,6 +83,7 @@ public class UserService {
 
         // 업데이트된 유저 정보 저장
         userRepository.save(updatedUser);
+        return updatedUser;
     }
 
 
