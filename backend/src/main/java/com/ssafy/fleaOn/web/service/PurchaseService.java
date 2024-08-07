@@ -106,14 +106,13 @@ public class PurchaseService {
                 next = product.getCurrentBuyerId();
             }
 
-            int cid = tradeRepository.findByProduct_productId(request.getProductId()).orElseThrow(()-> new IllegalArgumentException("Invalid product ID")).getChatting().getChattingId();
-            System.out.println("chatting id: "+cid);
+            int cid = tradeRepository.findByProduct_productId(request.getProductId()).orElseThrow(() -> new IllegalArgumentException("Invalid product ID")).getChatting().getChattingId();
+            logger.info("chatting id: {}", cid);
             // 현재 구매자가 없는 경우 거래 취소
             tradeRepository.deleteByProduct_ProductId(request.getProductId());
 
             // 해당 채팅방의 모든 거래 내역 확인
-            List<Trade> remainingTrades = tradeRepository.findByChatting_ChattingId(cid)
-                    .orElse(new ArrayList<>());
+            List<Trade> remainingTrades = tradeRepository.findByChatting_ChattingId(cid).orElse(new ArrayList<>());
 
             if (remainingTrades.isEmpty()) {
                 // 채팅 내역 삭제
@@ -131,10 +130,47 @@ public class PurchaseService {
             logger.info("User is not the current buyer, skipping chat deletion.");
         }
         logger.info("Cancel purchase result: chatExit={}, next={}, isBuyer={}", chatExit, next, isBuyer);
-        return new PurchaseCancleResponse(chatExit, next, isBuyer);
+        return new PurchaseCancleResponse(product.getProductId(), chatExit, next, isBuyer);
     }
 
 
+    // 거래 파기 메서드
+    @Transactional
+    public List<PurchaseCancleResponse> breakTrade(int chatId, int userId) {
+        Chatting chatting = chattingRepository.findById(chatId).orElseThrow(() -> new IllegalArgumentException("Invalid chat ID"));
+        int liveId = chatting.getLive().getLiveId();
+        System.out.println("라이브 아이디: "+liveId);
+        List<PurchaseCancleResponse> cancelResponses = new ArrayList<>();
+
+        // 1. 해당 라이브 ID로 모든 거래를 조회
+        List<Trade> trades = tradeRepository.findByLive_liveIdAndBuyerId(liveId, userId).orElseThrow(() -> new IllegalArgumentException("Invalid live ID or user ID"));
+        for (Trade trade : trades) {
+            Product product = trade.getProduct();
+            int currentBuyerId = product.getCurrentBuyerId();
+
+            // 2. 구매 취소를 처리
+            PurchaseRequest cancelRequest = new PurchaseRequest(product.getProductId(), currentBuyerId);
+            PurchaseCancleResponse cancelResponse = cancelPurchaseProduct(cancelRequest);
+            cancelResponses.add(cancelResponse);
+
+            // 3. 해당 제품의 예약 리스트 삭제
+            reservationRepository.deleteByProduct_ProductId(product.getProductId());
+
+            // 4. 제품의 구매자 및 예약자 초기화
+            product.setCurrentBuyerId(0);
+            product.setReservationCount(0);
+            productRepository.save(product);
+
+            System.out.println("size: "+cancelResponses.size());
+        }
+
+        // 5. 채팅방 및 채팅 메시지 삭제
+        logger.info("Deleting all chatting lists and chat rooms for live ID: {}", liveId);
+        chattingListRepository.deleteByChatting_ChattingId(liveId);
+        chattingRepository.deleteById(liveId);
+
+        return cancelResponses;
+    }
 
     @Transactional
     public int processReservationRequest(PurchaseRequest request) {
