@@ -1,14 +1,14 @@
 // src/components/PhoneInput.js
 import React, { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { setPhone } from "../authSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { setPhone, updateUserInfo } from "../authSlice";
 import { Button, TextField, Box } from "@mui/material";
 
 const PhoneInput = ({ onNext }) => {
   const [phone, setPhoneState] = useState("");
   const [isButtonEnabled, setIsButtonEnabled] = useState(false);
   const dispatch = useDispatch();
-
+  const user = useSelector((state) => state.auth.user);
   useEffect(() => {
     // 전화번호가 11자리 숫자일 때만 버튼 활성화
     const isValidPhone = /^\d{11}$/.test(phone);
@@ -18,6 +18,7 @@ const PhoneInput = ({ onNext }) => {
   const handleSubmit = () => {
     if (isButtonEnabled) {
       dispatch(setPhone(phone));
+      dispatch(updateUserInfo({ email: user.email, data: { phone } }));
       onNext();
     }
   };

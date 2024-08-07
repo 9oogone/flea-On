@@ -1,5 +1,6 @@
 // src/features/auth/authSlice.js
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
 
 // Helper functions to handle localStorage
 const loadState = () => {
@@ -28,6 +29,26 @@ const initialState = loadState() || {
   user: { phone: null, nickname: null, user_region: null },
   token: null,
 };
+
+export const updateUserInfo = createAsyncThunk(
+  "auth/updateUserInfo",
+  async ({ email, data }, { getState }) => {
+    const state = getState();
+    const token = state.auth.token;
+
+    const response = await axios.put(
+      `/fleaon/users/${email}/info`,
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  }
+);
+
 
 const authSlice = createSlice({
   name: "auth",

@@ -4,20 +4,22 @@ import { useDispatch, useSelector } from "react-redux";
 import { setLoading, unSetLoading } from "../features/live/loadingSlice";
 import { getToken, startRecording, stopRecording } from "../api/openViduAPI";
 import { useParams } from "react-router-dom";
-import { Button, Box, Typography, Modal } from "@mui/material";
+import { Button, Box, Typography, Modal, TextField } from "@mui/material";
 import Slider from "react-slick";
 import baseAxios from "../utils/httpCommons";
 import { useSpeechRecognition } from "react-speech-kit";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import useDidMountEffect from "../utils/useDidMountEffect";
-import SelectTradeTime from "../components/SelectTradeTime"; // SelectTradeTime 컴포넌트를 불러옵니다.
+import Calendar from "../components/SelectTradeTime"; // SelectTradeTime 컴포넌트를 불러옵니다.
 import FlipCameraAndroidIcon from "@mui/icons-material/FlipCameraAndroid";
+import SendIcon from "@mui/icons-material/Send";
+import CloseIcon from "@mui/icons-material/Close";
+import { Avatar } from "@mui/material";
 
 const OpenVideo = () => {
   const videoRef = useRef(null);
   const [isRecording, setIsRecording] = useState(false);
-  const [isBuyButtonEnabled, setIsBuyButtonEnabled] = useState(false);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [isPublisher, setIsPublisher] = useState(false);
@@ -35,9 +37,9 @@ const OpenVideo = () => {
 
   let subscribers = [];
 
-  const OV = useRef(new OpenVidu());
+  const OV = useRef();
   const session = useRef();
-
+  const user = useSelector((state) => state.auth.user);
   const handlePopState = (event) => {
     console.log("test");
     if (session.current) {
@@ -49,6 +51,7 @@ const OpenVideo = () => {
   };
 
   useDidMountEffect(() => {
+    OV.current = new OpenVidu();
     window.addEventListener("popstate", handlePopState);
     if (sessionName) {
       dispatch(setLoading());
@@ -76,9 +79,20 @@ const OpenVideo = () => {
     });
 
     session.on("signal:chat", (event) => {
-      const message = event.data;
-      const from = event.from.connectionId;
-      setMessages((prevMessages) => [...prevMessages, { from, message }]);
+      const data = JSON.parse(event.data);
+      const type = data.type;
+      console.log("data : ", data);
+      if (type === 1) {
+        const message = data.message;
+        const from = data.from;
+        const profile = data.profile;
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { from, message, profile },
+        ]);
+      } else if (type === 2) {
+        setIsRecording(data.isRecording);
+      }
     });
 
     try {
@@ -167,6 +181,7 @@ const OpenVideo = () => {
       //   `https://i11b202.p.ssafy.io/fleaOn/live/${sessionName}/detail`
       // );
       // const { products } = response.data;
+
       const products = [
         { id: 1, name: "라면", price: 3000 },
         { id: 2, name: "군것질", price: 2000 },
@@ -181,6 +196,16 @@ const OpenVideo = () => {
 
   const handleRecordStart = () => {
     if (session.current && currentProductIndex < productList.length) {
+      const messageData = {
+        type: 2,
+        isRecording: true,
+      };
+      setTimeout(() => {
+        session.current.signal({
+          data: JSON.stringify(messageData),
+          type: "chat",
+        });
+      }, 5000);
       dispatch(setLoading());
       startRecording({
         session: session.current.sessionId,
@@ -192,9 +217,6 @@ const OpenVideo = () => {
           setIsRecording(true);
           dispatch(unSetLoading());
           listen({ continuous: true });
-          setTimeout(() => {
-            setIsBuyButtonEnabled(true);
-          }, 5000);
         })
         .catch((error) => {
           console.error("녹화 시작 중 오류 발생:", error);
@@ -206,9 +228,7 @@ const OpenVideo = () => {
   };
 
   const handleRecordStop = () => {
-    console.log("여기는");
     if (session.current) {
-      console.log("test");
       console.log(session.current.sessionId);
       stop();
       dispatch(setLoading());
@@ -217,7 +237,6 @@ const OpenVideo = () => {
       })
         .then(() => {
           setIsRecording(false);
-          setIsBuyButtonEnabled(false);
           dispatch(unSetLoading());
           // 다음 상품 준비
           if (currentProductIndex < productList.length - 1) {
@@ -248,8 +267,15 @@ const OpenVideo = () => {
 
   const sendMessage = () => {
     if (session.current && newMessage.trim() !== "") {
+      const messageData = {
+        type: 1,
+        message: newMessage,
+        from: user.nickname,
+        profile: user.profilePicture,
+      };
+
       session.current.signal({
-        data: newMessage,
+        data: JSON.stringify(messageData),
         type: "chat",
       });
       setNewMessage("");
@@ -262,7 +288,7 @@ const OpenVideo = () => {
   };
 
   const sliderSettings = {
-    dots: true,
+    dots: false,
     infinite: false, // 무한 루프를 끕니다.
     speed: 500,
     slidesToShow: 1,
@@ -286,84 +312,132 @@ const OpenVideo = () => {
           ></video>
         </div>
       ) : (
-        <div style={{ width: "100vw", height: "100vh" }}>
+        <div style={{ padding: "-8px" }}>
           <video
             autoPlay={true}
             ref={videoRef}
-            style={{ objectFit: "cover", width: "100%", height: "100%" }}
+            style={{
+              objectFit: "cover",
+              width: "100vw",
+              height: "100vh",
+              position: "fixed",
+              zIndex: "-1",
+            }}
           ></video>
         </div>
       )}
-      <Box sx={{ display: "flex", flexDirection: "column" }}>
-        <Box>
-          {messages.map((msg, index) => (
-            <div key={index}>
-              <strong>{msg.from}</strong>: {msg.message}
-            </div>
-          ))}
-        </Box>
-        <Box>
-          <input
-            type="text"
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-          />
-          <button onClick={sendMessage}>Send</button>
-        </Box>
-        {isPublisher ? (
-          <>
-            {currentProductIndex < productList.length ? (
-              <Button
-                variant="contained"
-                color="secondary"
-                onClick={isRecording ? handleRecordStop : handleRecordStart}
-                sx={{ width: "36vw" }}
-              >
-                {isRecording ? "다음 상품 준비" : "판매시작"}
+      <Box>
+        <Slider {...sliderSettings}>
+          <Box sx={{ display: "flex", flexDirection: "column" }}>
+            <Button>
+              <CloseIcon />
+            </Button>
+            <Box
+              sx={{
+                height: 200, // 메시지 목록의 최대 높이를 설정합니다.
+                overflowY: "auto", // 세로 스크롤이 가능하게 합니다.
+                position: "relative", // 흐림 효과를 위한 상대 위치 설정
+                padding: 1, // 메시지 목록의 패딩
+                "&::before": {
+                  content: '""',
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: 20, // 흐림 효과의 높이
+                  background:
+                    "linear-gradient(to bottom, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0))", // 흐림 효과
+                },
+              }}
+            >
+              {messages.map((msg, index) => (
+                <Box
+                  key={index}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    marginBottom: 1,
+                  }}
+                >
+                  <Avatar
+                    src={msg.profile}
+                    alt={msg.from}
+                    sx={{ marginRight: 1 }}
+                  />
+                  <Box
+                    sx={{
+                      backgroundColor: "#f1f1f1",
+                      borderRadius: 2,
+                      padding: 1,
+                    }}
+                  >
+                    {msg.from}: {msg.message}
+                  </Box>
+                </Box>
+              ))}
+            </Box>
+            <Box>
+              <TextField
+                type="text"
+                color="google"
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+              />
+              <Button onClick={sendMessage}>
+                <SendIcon color="google" />
               </Button>
+            </Box>
+            {isPublisher ? (
+              <Box>
+                {currentProductIndex < productList.length ? (
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={isRecording ? handleRecordStop : handleRecordStart}
+                    sx={{ width: "36vw" }}
+                  >
+                    {isRecording ? "다음 상품 준비" : "판매시작"}
+                  </Button>
+                ) : (
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={endBroadcast}
+                    sx={{ width: "36vw" }}
+                  >
+                    방송종료
+                  </Button>
+                )}
+              </Box>
             ) : (
               <Button
                 variant="contained"
                 color="secondary"
-                onClick={endBroadcast}
+                disabled={!isRecording}
+                onClick={() => handleBuy(currentProduct.id)} // 구매 버튼 클릭 시 handleBuy 호출
                 sx={{ width: "36vw" }}
               >
-                방송종료
+                {isRecording ? "구매하기" : "상품 준비중"}
               </Button>
             )}
-          </>
-        ) : (
-          <Button
-            variant="contained"
-            color="secondary"
-            disabled={!isBuyButtonEnabled}
-            onClick={() => handleBuy(currentProduct.id)} // 구매 버튼 클릭 시 handleBuy 호출
-            sx={{ width: "36vw" }}
-          >
-            {isRecording ? "구매하기" : "상품 준비중"}
-          </Button>
-        )}
-        {currentProduct && (
-          <Box sx={{ marginTop: 2 }}>
-            <Typography variant="h6">현재 판매 중인 상품:</Typography>
-            <Typography variant="subtitle1">{currentProduct.name}</Typography>
-            <Typography variant="subtitle2">
-              {currentProduct.description}
-            </Typography>
-            <Typography variant="body1">
-              가격: {currentProduct.price}원
-            </Typography>
-          </Box>
-        )}
+            {currentProduct && (
+              <Box sx={{ marginTop: 2 }}>
+                <Typography variant="h6">현재 판매 중인 상품:</Typography>
+                <Typography variant="subtitle1">
+                  {currentProduct.name}
+                </Typography>
 
-        <Slider {...sliderSettings}>
-          <Box>
+                <Typography variant="body1">
+                  가격: {currentProduct.price}원
+                </Typography>
+              </Box>
+            )}
             <Button
               id="buttonSwitchCamera"
               onClick={switchCamera}
               value="Switch Camera"
             >
-              <FlipCameraAndroidIcon />
+              <FlipCameraAndroidIcon color="google" />
             </Button>
             <Box>{sttValue} </Box>
           </Box>
@@ -442,7 +516,7 @@ const OpenVideo = () => {
             p: 4,
           }}
         >
-          <SelectTradeTime
+          <Calendar
             productId={selectedProductId}
             onClose={() => setIsModalOpen(false)}
           />
