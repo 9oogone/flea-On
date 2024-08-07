@@ -7,12 +7,13 @@ import { useParams } from "react-router-dom";
 import { Button, Box, Typography, Modal } from "@mui/material";
 import Slider from "react-slick";
 import baseAxios from "../utils/httpCommons";
-// import { createBrowserHistory } from "history";
+import { useSpeechRecognition } from "react-speech-kit";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import useDidMountEffect from "../utils/useDidMountEffect";
 import SelectTradeTime from "../components/SelectTradeTime"; // SelectTradeTime 컴포넌트를 불러옵니다.
-import { useSpeechRecognition } from "react-speech-kit";
+import FlipCameraAndroidIcon from "@mui/icons-material/FlipCameraAndroid";
+
 const OpenVideo = () => {
   const videoRef = useRef(null);
   const [isRecording, setIsRecording] = useState(false);
@@ -34,18 +35,9 @@ const OpenVideo = () => {
 
   let subscribers = [];
 
-  const history = createBrowserHistory();
   const OV = useRef(new OpenVidu());
   const session = useRef();
 
-  const { listen, listening, stop } = useSpeechRecognition({
-    onResult: (result) => {
-      setSttValue(result);
-    },
-    onEnd: () => {
-      listen({ continuous: true });
-    },
-  });
   const handlePopState = (event) => {
     console.log("test");
     if (session.current) {
@@ -55,39 +47,6 @@ const OpenVideo = () => {
       publisher = null;
     }
   };
-  const switchCamera = useCallback(async () => {
-    try {
-      const devices = await OV.current.getDevices();
-      const videoDevices = devices.filter(
-        (device) => device.kind === "videoinput"
-      );
-
-      if (videoDevices && videoDevices.length > 1) {
-        const newVideoDevice = videoDevices.filter(
-          (device) => device.deviceId !== currentVideoDevice.deviceId
-        );
-
-        if (newVideoDevice.length > 0) {
-          const newPublisher = OV.current.initPublisher(undefined, {
-            videoSource: newVideoDevice[0].deviceId,
-            publishAudio: true,
-            publishVideo: true,
-            mirror: true,
-          });
-
-          if (session) {
-            await session.unpublish(mainStreamManager);
-            await session.publish(newPublisher);
-            setCurrentVideoDevice(newVideoDevice[0]);
-            setMainStreamManager(newPublisher);
-            setPublisher(newPublisher);
-          }
-        }
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  }, [currentVideoDevice, session, mainStreamManager]);
 
   useDidMountEffect(() => {
     window.addEventListener("popstate", handlePopState);
@@ -129,7 +88,7 @@ const OpenVideo = () => {
 
       if (resp[1] === true) {
         setIsPublisher(true);
-        publisher = OV.current.initPublisher(
+        let publisher = OV.current.initPublisher(
           undefined,
           {
             audioSource: undefined,
@@ -158,6 +117,49 @@ const OpenVideo = () => {
       dispatch(unSetLoading());
     }
   };
+
+  const { listen, listening, stop } = useSpeechRecognition({
+    onResult: (result) => {
+      setSttValue(result);
+    },
+    onEnd: () => {
+      listen({ continuous: true });
+    },
+  });
+
+  const switchCamera = useCallback(async () => {
+    try {
+      const devices = await OV.current.getDevices();
+      const videoDevices = devices.filter(
+        (device) => device.kind === "videoinput"
+      );
+
+      if (videoDevices && videoDevices.length > 1) {
+        const newVideoDevice = videoDevices.filter(
+          (device) => device.deviceId !== currentVideoDevice.deviceId
+        );
+
+        if (newVideoDevice.length > 0) {
+          const newPublisher = OV.current.initPublisher(undefined, {
+            videoSource: newVideoDevice[0].deviceId,
+            publishAudio: true,
+            publishVideo: true,
+            mirror: true,
+          });
+
+          if (session) {
+            await session.unpublish(mainStreamManager);
+            await session.publish(newPublisher);
+            setCurrentVideoDevice(newVideoDevice[0]);
+            setMainStreamManager(newPublisher);
+            setPublisher(newPublisher);
+          }
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }, [currentVideoDevice, session, mainStreamManager]);
 
   const fetchProductList = async (sessionName) => {
     try {
@@ -204,7 +206,10 @@ const OpenVideo = () => {
   };
 
   const handleRecordStop = () => {
+    console.log("여기는");
     if (session.current) {
+      console.log("test");
+      console.log(session.current.sessionId);
       stop();
       dispatch(setLoading());
       stopRecording({
@@ -257,7 +262,7 @@ const OpenVideo = () => {
   };
 
   const sliderSettings = {
-    dots: false,
+    dots: true,
     infinite: false, // 무한 루프를 끕니다.
     speed: 500,
     slidesToShow: 1,
@@ -353,14 +358,14 @@ const OpenVideo = () => {
 
         <Slider {...sliderSettings}>
           <Box>
-            <input
-              className="btn btn-large btn-success"
-              type="button"
+            <Button
               id="buttonSwitchCamera"
               onClick={switchCamera}
               value="Switch Camera"
-            />
-            <div>{sttValue} </div>
+            >
+              <FlipCameraAndroidIcon />
+            </Button>
+            <Box>{sttValue} </Box>
           </Box>
           {isPublisher ? (
             <Box sx={{ padding: 2 }}>
