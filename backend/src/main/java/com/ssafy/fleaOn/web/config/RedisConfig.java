@@ -47,10 +47,14 @@ public class RedisConfig {
 
         // Jackson2JsonRedisSerializer 설정
         Jackson2JsonRedisSerializer<Object> serializer = new Jackson2JsonRedisSerializer<>(objectMapper, Object.class);
+        // Use Jackson2JsonRedisSerializer for value serialization
+        template.setValueSerializer(serializer);
+        template.setKeySerializer(new StringRedisSerializer());
 
         // key와 value의 직렬화 방식 설정
         template.setKeySerializer(new StringRedisSerializer());
         template.setValueSerializer(serializer);
+
 
         return template;
     }

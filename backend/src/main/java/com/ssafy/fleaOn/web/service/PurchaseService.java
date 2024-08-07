@@ -1,6 +1,7 @@
 package com.ssafy.fleaOn.web.service;
 
 import com.ssafy.fleaOn.web.domain.*;
+import com.ssafy.fleaOn.web.dto.PurchaseCancleResponse;
 import com.ssafy.fleaOn.web.dto.PurchaseRequest;
 import com.ssafy.fleaOn.web.dto.TradeRequest;
 import com.ssafy.fleaOn.web.repository.*;
@@ -11,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -26,11 +29,12 @@ public class PurchaseService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final UserRepository userRepository;
     private final ShortsRepository shortsRepository;
+    private final ChattingListRepository chattingListRepository;
 
     @Autowired
     public PurchaseService(ProductRepository productRepository, LiveRepository liveRepository,
                            ReservationRepository reservationRepository, TradeRepository tradeRepository,
-                           ChattingRepository chattingRepository, RedisTemplate<String, Object> redisTemplate, UserRepository userRepository, ShortsRepository shortsRepository) {
+                           ChattingRepository chattingRepository, RedisTemplate<String, Object> redisTemplate, UserRepository userRepository, ShortsRepository shortsRepository, ChattingListRepository chattingListRepository) {
         this.productRepository = productRepository;
         this.liveRepository = liveRepository;
         this.reservationRepository = reservationRepository;
@@ -39,6 +43,7 @@ public class PurchaseService {
         this.redisTemplate = redisTemplate;
         this.userRepository = userRepository;
         this.shortsRepository = shortsRepository;
+        this.chattingListRepository = chattingListRepository;
     }
 
     @Transactional
@@ -79,12 +84,16 @@ public class PurchaseService {
     }
 
     @Transactional
-    public int processCancelPurchaseRequest(PurchaseRequest request) {
-        logger.info("Processing cancel purchase request for productId: {} and userId: {}", request.getProductId(), request.getUserId());
+    public PurchaseCancleResponse cancelPurchaseProduct(PurchaseRequest request) {
+        boolean chatExit = true;
+        int next = 0;
+        boolean isBuyer = false;
+
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
 
         if (request.getUserId() == product.getCurrentBuyerId()) {
+            isBuyer = true;
             product.setCurrentBuyerId(0);
             productRepository.save(product);
 
@@ -94,12 +103,38 @@ public class PurchaseService {
                 reservationRepository.delete(nextReservation.get());
                 product.setReservationCount(product.getReservationCount() - 1);
                 productRepository.save(product);
-                return product.getCurrentBuyerId();
+                next = product.getCurrentBuyerId();
             }
-            return 0; // 다음 예약자가 없는 경우
+
+            int cid = tradeRepository.findByProduct_productId(request.getProductId()).orElseThrow(()-> new IllegalArgumentException("Invalid product ID")).getChatting().getChattingId();
+            System.out.println("chatting id: "+cid);
+            // 현재 구매자가 없는 경우 거래 취소
+            tradeRepository.deleteByProduct_ProductId(request.getProductId());
+
+            // 해당 채팅방의 모든 거래 내역 확인
+            List<Trade> remainingTrades = tradeRepository.findByChatting_ChattingId(cid)
+                    .orElse(new ArrayList<>());
+
+            if (remainingTrades.isEmpty()) {
+                // 채팅 내역 삭제
+                logger.info("Deleting chatting list for chatting ID: {}", cid);
+                chattingListRepository.deleteByChatting_ChattingId(cid);
+
+                // 채팅방 삭제
+                logger.info("Deleting chatting room for chatting ID: {}", cid);
+                chattingRepository.deleteById(cid);
+                chatExit = false; // 모든 거래가 취소되어 채팅방 삭제됨
+            } else {
+                logger.info("Remaining trades exist, not deleting chat.");
+            }
+        } else {
+            logger.info("User is not the current buyer, skipping chat deletion.");
         }
-        return -1; // 현재 구매자가 아닌 경우
+        logger.info("Cancel purchase result: chatExit={}, next={}, isBuyer={}", chatExit, next, isBuyer);
+        return new PurchaseCancleResponse(chatExit, next, isBuyer);
     }
+
+
 
     @Transactional
     public int processReservationRequest(PurchaseRequest request) {
@@ -187,5 +222,4 @@ public class PurchaseService {
             redisTemplate.opsForValue().set("confirmResult:" + request.getBuyerId() + ":" + request.getProductId(), "not confirmed");
         }
     }
-
 }

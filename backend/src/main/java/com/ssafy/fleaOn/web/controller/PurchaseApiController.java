@@ -1,5 +1,8 @@
 package com.ssafy.fleaOn.web.controller;
 
+import com.ssafy.fleaOn.web.domain.User;
+import com.ssafy.fleaOn.web.dto.CustomOAuth2User;
+import com.ssafy.fleaOn.web.dto.PurchaseCancleResponse;
 import com.ssafy.fleaOn.web.dto.PurchaseRequest;
 import com.ssafy.fleaOn.web.dto.TradeRequest;
 import com.ssafy.fleaOn.web.producer.RedisQueueProducer;
@@ -9,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,15 +20,15 @@ import org.slf4j.LoggerFactory;
 @RestController
 @RequestMapping("/fleaon/purchase")
 @Tag(name = "Purchase API", description = "구매,예약 관련 API")
-public class PurchaseController {
+public class PurchaseApiController {
 
-    private static final Logger logger = LoggerFactory.getLogger(PurchaseController.class);
+    private static final Logger logger = LoggerFactory.getLogger(PurchaseApiController.class);
 
     private final RedisQueueProducer redisQueueProducer;
     private final RedisTemplate<String, Object> redisTemplate;
 
     @Autowired
-    public PurchaseController(RedisQueueProducer redisQueueProducer, RedisTemplate<String, Object> redisTemplate) {
+    public PurchaseApiController(RedisQueueProducer redisQueueProducer, RedisTemplate<String, Object> redisTemplate) {
         this.redisQueueProducer = redisQueueProducer;
         this.redisTemplate = redisTemplate;
     }
@@ -61,7 +65,7 @@ public class PurchaseController {
 
     @DeleteMapping("/cancel")
     @Operation(summary = "구매 취소 기능", description = "구매 취소를 합니다.")
-    public ResponseEntity<Integer> cancel(@RequestBody PurchaseRequest request) {
+    public ResponseEntity<?> cancel(@AuthenticationPrincipal CustomOAuth2User principal, @RequestBody PurchaseRequest request) {
         try {
             // 구매 취소 요청을 큐에 추가
             redisQueueProducer.sendCancelPurchaseRequest(request);
@@ -70,18 +74,21 @@ public class PurchaseController {
             int maxRetries = 10;  // 최대 10번 시도
             int retryInterval = 1000; // 1초 간격으로 시도
 
-            Integer result = null;
+            PurchaseCancleResponse result = null;
             for (int i = 0; i < maxRetries; i++) {
-                result = (Integer) redisTemplate.opsForValue().get("cancelPurchaseResult:" + request.getUserId() + ":" + request.getProductId());
-                if (result != null) {
+                Object response = redisTemplate.opsForValue().get("cancelPurchaseResult:" + request.getUserId() + ":" + request.getProductId());
+                if (response != null && response instanceof PurchaseCancleResponse) {
+                    result = (PurchaseCancleResponse) response;
                     break; // 결과를 성공적으로 가져온 경우
                 }
                 Thread.sleep(retryInterval); // 대기
             }
 
             if (result == null) {
+                logger.warn("No cancel purchase result found for userId: {} and productId: {}", request.getUserId(), request.getProductId());
                 return ResponseEntity.ok(-1); // 아직 결과가 없는 경우
             }
+
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             logger.error("Error processing cancel purchase request", e);

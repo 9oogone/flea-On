@@ -1,8 +1,11 @@
 package com.ssafy.fleaOn.web.consumer;
 
+import com.ssafy.fleaOn.web.dto.PurchaseCancleResponse;
 import com.ssafy.fleaOn.web.dto.PurchaseRequest;
 import com.ssafy.fleaOn.web.dto.TradeRequest;
+import com.ssafy.fleaOn.web.service.ChatBotService;
 import com.ssafy.fleaOn.web.service.PurchaseService;
+import com.ssafy.fleaOn.web.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +23,7 @@ public class RedisQueueConsumer {
 
     @Autowired
     private PurchaseService purchaseService;
+    private UserService userService;
 
     @Scheduled(fixedDelay = 1000)
     public void handlePurchaseRequest() {
@@ -39,7 +43,7 @@ public class RedisQueueConsumer {
     public void handleCancelPurchaseRequest() {
         PurchaseRequest request = (PurchaseRequest) redisTemplate.opsForList().leftPop("cancelPurchaseQueue");
         if (request != null) {
-            int result = purchaseService.processCancelPurchaseRequest(request);
+            PurchaseCancleResponse result = purchaseService.cancelPurchaseProduct(request);
             redisTemplate.opsForValue().set("cancelPurchaseResult:" + request.getUserId() + ":" + request.getProductId(), result);
         }
     }
