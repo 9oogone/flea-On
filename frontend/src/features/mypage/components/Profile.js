@@ -42,7 +42,7 @@ const dummyDatas = {
       date: "2024-08-11",
     },
     {
-      tradeStart: "08:00",
+      tradeStart: "01:00",
       tradeEnd: "20:00",
       date: "2024-08-12",
     },
