@@ -5,10 +5,7 @@ import com.ssafy.fleaOn.web.domain.ChattingList;
 import com.ssafy.fleaOn.web.domain.User;
 import com.ssafy.fleaOn.web.domain.Product;
 import com.ssafy.fleaOn.web.domain.Trade;
-import com.ssafy.fleaOn.web.dto.ChatbotDetailResponse;
-import com.ssafy.fleaOn.web.dto.ChatbotProductResponse;
-import com.ssafy.fleaOn.web.dto.ChattingResponse;
-import com.ssafy.fleaOn.web.dto.MessageResponse;
+import com.ssafy.fleaOn.web.dto.*;
 import com.ssafy.fleaOn.web.repository.ChattingListRepository;
 import com.ssafy.fleaOn.web.repository.ChattingRepository;
 import com.ssafy.fleaOn.web.repository.ProductRepository;
@@ -31,6 +28,7 @@ public class ChattingService {
     private final ChattingRepository chattingRepository;
     private final ChattingListRepository chattingListRepository;
     private final UserRepository userRepository;
+    private final TradeRepository tradeRepository;
 
     public List<ChattingResponse> getChattingByUserId(int userId) {
         List<Chatting> chatList = chattingRepository.findChattingByBuyerOrSellerWithView(userId);
@@ -57,6 +55,31 @@ public class ChattingService {
         responses.sort(Comparator.comparing(ChattingResponse::getRecentMessageTime).reversed());
 
         return responses;
+    }
+
+    public ChattingMessageResponse getChatMessage(int chattingId, User user) {
+        Chatting chatting = chattingRepository.findById(chattingId).orElseThrow(() -> new RuntimeException("Chatting not found"));
+        Optional<List<ChattingList>> chattingLists = chattingListRepository.findByChatting_ChattingId(chattingId);
+        List<MessageResponse> messages = new ArrayList<>();
+        if (chattingLists.isPresent()) {
+            for (ChattingList chattingList : chattingLists.get()) {
+                messages.add(new MessageResponse(chattingList));
+            }
+        }
+
+        User otherUser;
+        if (chatting.getSeller().equals(user)) {
+            otherUser = userRepository.findByEmail(chatting.getBuyer().getEmail()).orElseThrow(() -> new RuntimeException("user not found"));
+        } else {
+            otherUser = userRepository.findByEmail(chatting.getSeller().getEmail()).orElseThrow(() -> new RuntimeException("user not found"));
+        }
+
+        Trade trade = tradeRepository.findByChatting_chattingId(chatting.getChattingId()).orElseThrow(() -> new RuntimeException("trade not found")).get(0);
+        boolean isBuyer = false;
+        if (trade.getBuyerId() == user.getUserId()){
+            isBuyer = true;
+        }
+        return new ChattingMessageResponse(trade.getLive().getLiveId(), isBuyer, otherUser, messages);
     }
 
     public Chatting getChatByChattingId(int chattingId) {

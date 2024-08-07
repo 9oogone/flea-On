@@ -37,7 +37,7 @@ public class Live {
     private String tradePlace;
 
     @Column(name = "is_live", nullable = false)
-    private Boolean isLive;
+    private int isLive;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seller_id", nullable = false)
@@ -50,7 +50,7 @@ public class Live {
         this.liveThumbnail = liveThumbnail;
         this.tradePlace = tradePlace;
         this.seller = seller;
-        this.isLive = false;
+        this.isLive = 0;
     }
 
     public void update(String title, LocalDateTime liveDate, String liveThumbnail, String tradePlace) {
@@ -60,7 +60,11 @@ public class Live {
         this.tradePlace = tradePlace;
     }
 
-    public void onOff(){
-        this.isLive = !isLive;
+    public void on(){
+        this.isLive = 1;
+    }
+
+    public void off(){
+        this.isLive = 3;
     }
 }
