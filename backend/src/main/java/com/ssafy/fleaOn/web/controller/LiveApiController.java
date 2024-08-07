@@ -12,6 +12,8 @@ import com.ssafy.fleaOn.web.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -27,6 +29,8 @@ import java.time.LocalDateTime;
 @Tag(name = "Live API", description = "Live 관련 API")
 public class LiveApiController {
 
+    private static final Logger log = LoggerFactory.getLogger(PurchaseApiController.class);
+
     private final LiveService liveService;
     private final UserService userService;
 
@@ -34,20 +38,25 @@ public class LiveApiController {
     @Operation(summary = "라이브 생성", description = "라이브의 정보를 저장하여 새로운 라이브를 생성합니다.")
     public ResponseEntity<?> createLive(@AuthenticationPrincipal CustomOAuth2User principal, @RequestBody AddLiveRequest request) {
         try {
+            log.info("createLive 메서드 호출됨"); // 로그 추가
             String userEmail = principal.getEmail(); // 현재 인증된 사용자의 이메일 가져오기
+            log.info("현재 인증된 사용자 이메일: {}", userEmail); // 이메일 로그 출력
 
             User user = userService.findByEmail(userEmail); // 이메일로 userId 가져오기
             if (user == null) {
+                log.warn("사용자를 찾을 수 없음: {}", userEmail);
                 return new ResponseEntity<>("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
             }
-            
+
             Live savedLive = liveService.saveLive(request, user);
             return ResponseEntity.status(HttpStatus.CREATED).body(savedLive);
         } catch (Exception ex) {
             ex.printStackTrace();
+            log.error("라이브 생성 중 오류 발생: {}", ex.getMessage());
             return new ResponseEntity<>("라이브 생성 중 오류가 발생하였습니다: " + ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+
 
     @PutMapping("/{liveID}")
     @Operation(summary = "라이브 정보 변경", description = "특정 라이브의 정보를 변경, 업데이트 합니다.")
