@@ -2,6 +2,7 @@ package com.ssafy.fleaOn.web.service;
 
 
 import com.ssafy.fleaOn.web.domain.*;
+import com.ssafy.fleaOn.web.dto.ExtraInfoRequest;
 import com.ssafy.fleaOn.web.repository.*;
 import com.ssafy.fleaOn.web.util.DateUtil;
 import jakarta.transaction.Transactional;
@@ -55,14 +56,36 @@ public class UserService {
         userRepository.deleteByEmail(email);
     }
 
-    public void updateUserByEmail(String email, User user) {
-        User newUser = User.builder()
-                .nickname(user.getNickname())
-                .phone(user.getPhone())
-                .profilePicture(user.getProfilePicture())
+    public User updateUserByEmail(String email, ExtraInfoRequest extraInfoRequest) {
+        // 이메일로 사용자 검색
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+
+        // 사용자 존재 여부 확인 및 Optional 안전 처리
+        if (!optionalUser.isPresent()) {
+            return null;
+        }
+
+        // 기존 유저 객체 가져오기
+        User existingUser = optionalUser.get();
+
+        // 기존 객체를 기반으로 업데이트
+        User updatedUser = User.builder()
+                .userId(existingUser.getUserId()) // 기존 ID를 명시적으로 보존
+                .email(existingUser.getEmail()) // 이메일 보존
+                .name(existingUser.getName()) // 기존 이름 보존
+                .nickname(extraInfoRequest.getNickname()) // 닉네임 업데이트
+                .phone(extraInfoRequest.getPhone()) // 전화번호 업데이트
+                .profilePicture(existingUser.getProfilePicture()) // 프로필 사진 보존
+                .level(existingUser.getLevel())
+                .role(existingUser.getRole())
+                .userIdentifier(existingUser.getUserIdentifier())// 레벨 보존
                 .build();
-        userRepository.save(newUser);
+
+        // 업데이트된 유저 정보 저장
+        userRepository.save(updatedUser);
+        return updatedUser;
     }
+
 
     public Map<String, Object> getUserInfoByEmail(String email) {
         Optional<User> userOptional = userRepository.findByEmail(email);
