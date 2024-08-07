@@ -1,3 +1,3 @@
 #!/bin/bash
 pushd ../
-docker build -f docker/Dockerfile -t "qsc753969/fleaon_front:latest" .
+docker build -f Dockerfile -t "qsc753969/fleaon_front:latest" .
