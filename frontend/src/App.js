@@ -69,7 +69,7 @@ function App() {
   };
 
   return (
-    <Router>
+    <Router basename={process.env.PUBLIC_URL}>
       <LocationWrapper>
         <Routes>
           {routes.map((route) =>
