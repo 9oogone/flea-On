@@ -12,8 +12,12 @@ import lombok.*;
 public class ShortsContent {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "shorts_content_id", nullable = false)
+    private int shortsContentId;
+
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "shorts_id", insertable = false, updatable = false)
+    @JoinColumn(name = "shorts_id")  // insertable, updatable 속성 제거
     private Shorts shorts;
 
     @Column(name = "period")
