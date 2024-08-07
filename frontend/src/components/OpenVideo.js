@@ -34,7 +34,7 @@ const OpenVideo = () => {
 
   let subscribers = [];
 
-  const history = createBrowserHistory();
+  // const history = createBrowserHistory();
   const OV = useRef(new OpenVidu());
   const session = useRef();
 
