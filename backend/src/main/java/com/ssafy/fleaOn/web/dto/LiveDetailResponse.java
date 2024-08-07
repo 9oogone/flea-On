@@ -20,7 +20,7 @@ public class LiveDetailResponse {
     private final String liveDate;
     private final String liveThumbnail;
     private final String tradePlace;
-    private final boolean isLive;
+    private final int isLive;
     private final List<ProductResponse> products;
     private final List<LiveTradeResponse> liveTradeTimes;
 
