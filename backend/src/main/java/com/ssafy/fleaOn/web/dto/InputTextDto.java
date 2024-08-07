@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class InputTextDto {
 
     private String text;
+    private int shortsId;
 }

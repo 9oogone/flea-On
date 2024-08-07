@@ -15,4 +15,8 @@ public class SummaryResponse {
     private String description;
     private String period;
     private String status;
+
+
+
+
 }
