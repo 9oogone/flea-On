@@ -81,6 +81,7 @@ const OpenVideo = () => {
     session.on("signal:chat", (event) => {
       const data = JSON.parse(event.data);
       const type = data.type;
+      console.log("data : ", data);
       if (type === 1) {
         const message = data.message;
         const from = data.from;
@@ -267,9 +268,10 @@ const OpenVideo = () => {
   const sendMessage = () => {
     if (session.current && newMessage.trim() !== "") {
       const messageData = {
+        type: 1,
         message: newMessage,
         from: user.nickname,
-        profile: user.profile_picture,
+        profile: user.profilePicture,
       };
 
       session.current.signal({
@@ -369,7 +371,7 @@ const OpenVideo = () => {
                       padding: 1,
                     }}
                   >
-                    <strong>{msg.from}</strong>: {msg.message}
+                    {msg.from}: {msg.message}
                   </Box>
                 </Box>
               ))}
