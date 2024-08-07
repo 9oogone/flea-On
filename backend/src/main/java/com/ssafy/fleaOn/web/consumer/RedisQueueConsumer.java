@@ -18,7 +18,7 @@ import java.util.List;
 @Service
 public class RedisQueueConsumer {
 
-    private static final Logger logger = LoggerFactory.getLogger(RedisQueueConsumer.class);
+//    private static final Logger logger = LoggerFactory.getLogger(RedisQueueConsumer.class);
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
@@ -31,12 +31,12 @@ public class RedisQueueConsumer {
     public void handlePurchaseRequest() {
         PurchaseRequest request = (PurchaseRequest) redisTemplate.opsForList().leftPop("purchaseQueue");
         if (request != null) {
-            logger.info("Received PurchaseRequest: {}", request); // 디버깅 로그
+//            logger.info("Received PurchaseRequest: {}", request); // 디버깅 로그
             int result = purchaseService.processPurchaseRequest(request);
-            logger.info("Processed PurchaseRequest with result: {}", result); // 디버깅 로그
+//            logger.info("Processed PurchaseRequest with result: {}", result); // 디버깅 로그
             redisTemplate.opsForValue().set("purchaseResult:" + request.getUserId() + ":" + request.getProductId(), result);
         } else {
-            logger.info("No PurchaseRequest found in queue"); // 큐가 비어있는 경우
+//            logger.info("No PurchaseRequest found in queue"); // 큐가 비어있는 경우
         }
     }
 
@@ -76,7 +76,7 @@ public class RedisQueueConsumer {
         TradeRequest request = (TradeRequest) redisTemplate.opsForList().leftPop("confirmQueue");
         if (request != null) {
             purchaseService.processConfirmPurchaseRequest(request);
-            logger.info("sned it!!");
+//            logger.info("sned it!!");
             redisTemplate.opsForValue().set("confirmResult:" + request.getBuyerId() + ":" + request.getProductId(), "confirmed");
         }
     }
@@ -88,12 +88,12 @@ public class RedisQueueConsumer {
         if (chatAndUserId != null && chatAndUserId.length == 2) {
             int chatId = chatAndUserId[0];
             int userId = chatAndUserId[1];
-            logger.info("Received BreakTradeRequest for chatId: {} and userId: {}", chatId, userId); // 디버깅 로그
+//            logger.info("Received BreakTradeRequest for chatId: {} and userId: {}", chatId, userId); // 디버깅 로그
             List<PurchaseCancleResponse> result = purchaseService.breakTrade(chatId, userId);
-            logger.info("Processed BreakTradeRequest with result: {}", result); // 디버깅 로그
+//            logger.info("Processed BreakTradeRequest with result: {}", result); // 디버깅 로그
             redisTemplate.opsForValue().set("breakTradeResult:" + chatId + ":" + userId, result);
         } else {
-            logger.info("No BreakTradeRequest found in queue"); // 큐가 비어있는 경우
+//            logger.info("No BreakTradeRequest found in queue"); // 큐가 비어있는 경우
         }
     }
 
