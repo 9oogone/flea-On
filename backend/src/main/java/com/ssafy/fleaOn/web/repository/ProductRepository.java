@@ -10,6 +10,7 @@ import java.util.*;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Integer> {
+    Optional<List<Product>> findByLive_LiveIdAndProductIdNotIn(int liveId, List<Integer> productIds);
 
     Optional<Product> findByProductId(int productId);
 
