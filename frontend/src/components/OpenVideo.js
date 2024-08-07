@@ -16,7 +16,7 @@ import FlipCameraAndroidIcon from "@mui/icons-material/FlipCameraAndroid";
 import SendIcon from "@mui/icons-material/Send";
 import CloseIcon from "@mui/icons-material/Close";
 import { Avatar } from "@mui/material";
-
+import { styled } from "@mui/system";
 const OpenVideo = () => {
   const videoRef = useRef(null);
   const [isRecording, setIsRecording] = useState(false);
@@ -81,14 +81,14 @@ const OpenVideo = () => {
     session.on("signal:chat", (event) => {
       const data = JSON.parse(event.data);
       const type = data.type;
-      console.log("data : ", data);
       if (type === 1) {
         const message = data.message;
         const from = data.from;
         const profile = data.profile;
+        const userId = data.userId;
         setMessages((prevMessages) => [
           ...prevMessages,
-          { from, message, profile },
+          { from, message, profile, userId },
         ]);
       } else if (type === 2) {
         setIsRecording(data.isRecording);
@@ -269,6 +269,7 @@ const OpenVideo = () => {
     if (session.current && newMessage.trim() !== "") {
       const messageData = {
         type: 1,
+        userId: user.userId,
         message: newMessage,
         from: user.nickname,
         profile: user.profilePicture,
@@ -294,6 +295,38 @@ const OpenVideo = () => {
     slidesToShow: 1,
     slidesToScroll: 1,
   };
+  const messagesContainerRef = useRef(null);
+
+  const scrollToBottom = () => {
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop =
+        messagesContainerRef.current.scrollHeight;
+    }
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+  const InputTextField = styled(TextField)({
+    "& label": {
+      // placeholder text color
+      color: "var(--sub-text)",
+    },
+    "& label.Mui-focused": {
+      // 해당 input focus 되었을 때 placeholder text color
+      // floatng label을 사용할 때 처리 필요하다
+      color: "var(--primary)",
+    },
+    "& label.Mui-error": {
+      color: "#d32f2f",
+    },
+    "& .MuiOutlinedInput-root": {
+      color: "var(--text)",
+      "& fieldset": {
+        borderColor: "var(--sub-text)",
+      },
+    },
+  });
 
   return (
     <div style={{ padding: "-8px" }}>
@@ -333,13 +366,16 @@ const OpenVideo = () => {
               <CloseIcon />
             </Button>
             <Box
+              ref={messagesContainerRef}
               sx={{
                 height: 200, // 메시지 목록의 최대 높이를 설정합니다.
                 overflowY: "auto", // 세로 스크롤이 가능하게 합니다.
                 position: "relative", // 흐림 효과를 위한 상대 위치 설정
                 padding: 1, // 메시지 목록의 패딩
-                "&::before": {
-                  content: '""',
+              }}
+            >
+              <Box
+                sx={{
                   position: "absolute",
                   top: 0,
                   left: 0,
@@ -347,40 +383,70 @@ const OpenVideo = () => {
                   height: 20, // 흐림 효과의 높이
                   background:
                     "linear-gradient(to bottom, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0))", // 흐림 효과
-                },
-              }}
-            >
-              {messages.map((msg, index) => (
-                <Box
-                  key={index}
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    marginBottom: 1,
-                  }}
-                >
-                  <Avatar
-                    src={msg.profile}
-                    alt={msg.from}
-                    sx={{ marginRight: 1 }}
-                  />
+                  zIndex: 1,
+                }}
+              />
+              {messages.map((msg, index) =>
+                msg.userId === user.userId ? (
                   <Box
+                    key={index}
                     sx={{
-                      backgroundColor: "#f1f1f1",
-                      borderRadius: 2,
-                      padding: 1,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "flex-end",
+                      marginBottom: 1,
                     }}
                   >
-                    {msg.from}: {msg.message}
+                    <Box
+                      sx={{
+                        backgroundColor: "#f1f1f1",
+                        borderRadius: 2,
+                        padding: 1,
+                      }}
+                    >
+                      {msg.from}: {msg.message}
+                    </Box>
+                    <Avatar
+                      src={msg.profile}
+                      alt={msg.from}
+                      sx={{ marginLeft: 1 }}
+                    />
                   </Box>
-                </Box>
-              ))}
+                ) : (
+                  <Box
+                    key={index}
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "flex-start",
+                      marginBottom: 1,
+                    }}
+                  >
+                    <Avatar
+                      src={msg.profile}
+                      alt={msg.from}
+                      sx={{ marginRight: 1 }}
+                    />
+                    <Box
+                      sx={{
+                        backgroundColor: "#f1f1f1",
+                        borderRadius: 2,
+                        padding: 1,
+                        color: "white",
+                      }}
+                    >
+                      {msg.from}: {msg.message}
+                    </Box>
+                  </Box>
+                )
+              )}
             </Box>
             <Box>
               <TextField
                 type="text"
                 color="google"
                 value={newMessage}
+                sx={{ color: "white" }}
                 onChange={(e) => setNewMessage(e.target.value)}
               />
               <Button onClick={sendMessage}>
@@ -442,7 +508,7 @@ const OpenVideo = () => {
             <Box>{sttValue} </Box>
           </Box>
           {isPublisher ? (
-            <Box sx={{ padding: 2 }}>
+            <Box>
               <Typography variant="h6">
                 판매자 - 다음에 판매할 상품 목록
               </Typography>
@@ -471,7 +537,7 @@ const OpenVideo = () => {
                 ))}
             </Box>
           ) : (
-            <Box sx={{ padding: 2 }}>
+            <Box>
               <Typography variant="h6">구매자 - 지나간 상품 목록</Typography>
               {productList
                 .slice(0, currentProductIndex)
