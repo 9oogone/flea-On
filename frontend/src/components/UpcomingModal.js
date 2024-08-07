@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Typography, Modal, List, ListItem, Button } from "@mui/material";
+import { Box, Typography, Modal, List, ListItem } from "@mui/material";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import styles from '../styles/UpcomingModal.module.css';

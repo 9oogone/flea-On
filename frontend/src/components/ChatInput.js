@@ -1,11 +1,13 @@
 // ChatInput.js
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import inputStyles from '../styles/ChatInput.module.css';
 import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
 import { IconButton } from '@mui/material';
 import ChatNav from '../components/ChatNav';
+import CancelTrade from '../components/CancelTrade';
 
 const ChatInput = ({ message, setMessage, handleSendMessage, setFocus, isChatNavOpen, setIsChatNavOpen }) => {
+  const [isCancelTradeOpen, setIsCancelTradeOpen] = useState(false);
   const inputRef = useRef(null);
 
   useEffect(() => {
@@ -26,10 +28,16 @@ const ChatInput = ({ message, setMessage, handleSendMessage, setFocus, isChatNav
     setIsChatNavOpen(!isChatNavOpen);
   };
 
+  const handleCancelTradeClick = () => {
+    setIsChatNavOpen(false);
+    setIsCancelTradeOpen(true);
+  };
+
   return (
     <div className={`${inputStyles.chatInputContainer} ${isChatNavOpen ? inputStyles.blurBackground : ''}`}>
       <div className={inputStyles.plusIcon} onClick={handlePlusIconClick}>+</div>
-      {isChatNavOpen && <ChatNav onClose={() => setIsChatNavOpen(false)} />} {/* Pass onClose prop */}
+      {isChatNavOpen && <ChatNav onClose={() => setIsChatNavOpen(false)} onCancelTrade={handleCancelTradeClick} />}
+      <CancelTrade isOpen={isCancelTradeOpen} onClose={() => setIsCancelTradeOpen(false)} />
       <div className={inputStyles.inputWrapper}>
         <input
           className={inputStyles.inputField}
