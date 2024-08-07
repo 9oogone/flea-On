@@ -332,7 +332,7 @@ const OpenVideo = () => {
             color="secondary"
             disabled={!isBuyButtonEnabled}
             onClick={() => handleBuy(currentProduct.id)} // 구매 버튼 클릭 시 handleBuy 호출
-            sx={{ width: "36vw" }}
+            sx={{ width: "36vw" }} 
           >
             {isRecording ? "구매하기" : "상품 준비중"}
           </Button>
