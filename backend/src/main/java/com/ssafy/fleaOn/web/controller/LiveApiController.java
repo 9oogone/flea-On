@@ -1,6 +1,7 @@
 
 package com.ssafy.fleaOn.web.controller;
 
+import com.ssafy.fleaOn.web.config.jwt.JWTUtil;
 import com.ssafy.fleaOn.web.domain.Live;
 import com.ssafy.fleaOn.web.domain.User;
 import com.ssafy.fleaOn.web.dto.AddLiveRequest;
@@ -11,6 +12,7 @@ import com.ssafy.fleaOn.web.service.LiveService;
 import com.ssafy.fleaOn.web.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,25 +38,30 @@ public class LiveApiController {
 
     @PostMapping("/")
     @Operation(summary = "라이브 생성", description = "라이브의 정보를 저장하여 새로운 라이브를 생성합니다.")
-    public ResponseEntity<?> createLive(@AuthenticationPrincipal CustomOAuth2User principal, @RequestBody AddLiveRequest request) {
-        try {
-            log.info("createLive 메서드 호출됨"); // 로그 추가
-            String userEmail = principal.getEmail(); // 현재 인증된 사용자의 이메일 가져오기
-            log.info("현재 인증된 사용자 이메일: {}", userEmail); // 이메일 로그 출력
+    public ResponseEntity<?> createLive(HttpServletRequest request, @RequestBody AddLiveRequest addLiveRequest) {
+        String authorizationHeader = request.getHeader("Authorization");
 
-            User user = userService.findByEmail(userEmail); // 이메일로 userId 가져오기
-            if (user == null) {
-                log.warn("사용자를 찾을 수 없음: {}", userEmail);
-                return new ResponseEntity<>("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            String jwtToken = authorizationHeader.substring(7).trim(); // "Bearer " 이후의 토큰만 추출하고 공백 제거
+            System.out.println("jwtToken: " + jwtToken);
+
+            try {
+                String email = JWTUtil.getEmail(jwtToken);
+                User user = userService.findByEmail(email);
+
+                if (user != null) {
+                    Live savedLive = liveService.saveLive(addLiveRequest, user);
+                    return ResponseEntity.status(HttpStatus.CREATED).body(savedLive);
+                } else {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("라이브 생성 실패: 사용자를 찾을 수 없습니다.");
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                log.error("라이브 생성 중 오류 발생: {}", ex.getMessage());
+                return new ResponseEntity<>("라이브 생성 중 오류가 발생하였습니다: " + ex.getMessage(), HttpStatus.BAD_REQUEST);
             }
-
-            Live savedLive = liveService.saveLive(request, user);
-            return ResponseEntity.status(HttpStatus.CREATED).body(savedLive);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            log.error("라이브 생성 중 오류 발생: {}", ex.getMessage());
-            return new ResponseEntity<>("라이브 생성 중 오류가 발생하였습니다: " + ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("라이브 생성 실패: 토큰이 없습니다.");
     }
 
 
