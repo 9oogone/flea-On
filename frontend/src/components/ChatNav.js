@@ -9,7 +9,7 @@ import detailicons from '../assets/images/navicon/detailicons.svg';
 import timeicons from '../assets/images/navicon/timeicons.svg';
 // import photoicons from '../assets/images/navicon/photoicons.svg'; // 사진
 
-const ChatNav = ({ onClose }) => {
+const ChatNav = ({ onClose, onCancelTrade }) => {
 
   const onFrameContainerClick = useCallback(() => {
     // Add your code here
@@ -39,7 +39,7 @@ const ChatNav = ({ onClose }) => {
             <img className={styles.dicons} alt="" src={detailicons} />
             <div className={styles.div1}>거래 상세</div>
           </div>
-          <div className={styles.frameDiv}>
+          <div className={styles.frameDiv} onClick={onCancelTrade}> {/* Add onClick handler */}
             <img className={styles.dicons} alt="" src={cancelicons} />
             <div className={styles.div1}>거래 취소</div>
           </div>
