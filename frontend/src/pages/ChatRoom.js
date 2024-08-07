@@ -1,15 +1,14 @@
+// ChatRoom.js
 import { useRef, useEffect, useState, createElement } from 'react';
 import { useParams } from 'react-router-dom';
 import styles from '../styles/ChatRoom.module.css';
 import ChatInput from '../components/ChatInput';
 import tailSent from '../assets/images/tail-sent.svg';
 import tailReceived from '../assets/images/tail-received.svg';
-import ProfileHeader from '../components/ProfileHeader'; // ProfileHeader 컴포넌트 임포트
+import ProfileHeader from '../components/ProfileHeader';
 
-// 사용자 정의 함수로 모바일 환경 감지
 const isMobile = () => /Mobi|Android/i.test(navigator.userAgent);
 
-// 현재 시간을 hh:mm 포맷으로 반환하는 함수
 const formatTime = date => {
   const hours = date.getHours().toString().padStart(2, '0');
   const minutes = date.getMinutes().toString().padStart(2, '0');
@@ -20,11 +19,11 @@ const ChatRoom = () => {
   const { chatID } = useParams();
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState('');
+  const [isChatNavOpen, setIsChatNavOpen] = useState(false); // Add this line
   const messagesEndRef = useRef(null);
   const isFocusedRef = useRef(false);
 
   useEffect(() => {
-    // 더미 데이터 추가
     const dummyMessages = [
       { text: 'Hello, how are you?', isSent: false, time: formatTime(new Date()) },
       { text: 'I am good, thanks! How about you?', isSent: true, time: formatTime(new Date()) },
@@ -41,7 +40,7 @@ const ChatRoom = () => {
         return updatedMessages;
       });
       setMessage('');
-      isFocusedRef.current = false; // 메시지 전송 후 포커스 상태 리셋
+      isFocusedRef.current = false;
     }
   };
 
@@ -61,14 +60,13 @@ const ChatRoom = () => {
   }, []);
 
   const shouldShowTime = (currentIndex, currentMessage) => {
-    if (currentIndex === messages.length - 1) return true; // 마지막 메시지에는 항상 시간을 표시
+    if (currentIndex === messages.length - 1) return true;
     const nextMessage = messages[currentIndex + 1];
-    // 다른 타입의 메시지이거나 시간이 다른 경우 시간을 표시
     return currentMessage.isSent !== nextMessage.isSent || currentMessage.time !== nextMessage.time;
   };
 
   return createElement('div', { className: styles.chatRoom },
-    createElement(ProfileHeader), // ProfileHeader 컴포넌트 추가
+    createElement(ProfileHeader),
     createElement('ul', { className: styles.messageList },
       messages.map((msg, index) => 
         createElement('div', {
@@ -79,7 +77,7 @@ const ChatRoom = () => {
             createElement('div', { className: styles.msg }, msg.text),
             createElement('img', { className: styles.tailIcon, alt: '', src: msg.isSent ? tailSent : tailReceived })
           ),
-          shouldShowTime(index, msg) && createElement('div', { className: styles.time }, msg.time) // 조건에 따라 시간 표시
+          shouldShowTime(index, msg) && createElement('div', { className: styles.time }, msg.time)
         )
       ),
       createElement('div', { ref: messagesEndRef })
@@ -88,7 +86,9 @@ const ChatRoom = () => {
       message,
       setMessage,
       handleSendMessage,
-      setFocus: (focus) => isFocusedRef.current = focus
+      setFocus: (focus) => isFocusedRef.current = focus,
+      isChatNavOpen, // Add this line
+      setIsChatNavOpen // Add this line
     })
   );
 };
