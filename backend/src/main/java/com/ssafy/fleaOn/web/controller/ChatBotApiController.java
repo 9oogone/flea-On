@@ -51,4 +51,9 @@ public class ChatBotApiController {
         }
     }
 
+//    @DeleteMapping("/{chatId}/cancelAll")
+//    @Operation(summary = "챗봇 거래 파기", description = "챗봇 거래 취소 시 모든 거래를 파기하고 채팅방을 나갑니다.")
+//    public ResponseEntity<?> cancelAll(@AuthenticationPrincipal CustomOAuth2User principal) {
+//
+//    }
 }
