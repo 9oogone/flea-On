@@ -15,6 +15,7 @@ public class RedisQueueProducer {
     private static final String RESERVATION_QUEUE = "reservationQueue";
     private static final String CANCEL_RESERVATION_QUEUE = "cancelReservationQueue";
     private static final String CONFIRM_QUEUE = "confirmQueue";
+    private static final String BREAK_TRADE_QUEUE = "breakTradeQueue"; // 거래 파기 큐 추가
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
@@ -42,5 +43,10 @@ public class RedisQueueProducer {
     // 구매 확정 요청을 큐에 추가하는 메서드
     public void sendConfirmRequest(TradeRequest request) {
         redisTemplate.opsForList().rightPush(CONFIRM_QUEUE, request);
+    }
+
+    // 거래 파기 요청을 큐에 추가하는 메서드
+    public void sendBreakTradeRequest(int chatId, int userId) {
+        redisTemplate.opsForList().rightPush(BREAK_TRADE_QUEUE, new int[]{chatId, userId});
     }
 }

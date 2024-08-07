@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true) // 알 수 없는 필드를 무시
 public class PurchaseCancleResponse {
+    private int productId;
     private boolean chatExit;
     private int next;
     private boolean isBuyer;
