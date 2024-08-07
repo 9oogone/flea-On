@@ -1,0 +1,35 @@
+.header {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background-color: white;
+  justify-content: space-between; /* 중앙 정렬을 위해 추가 */
+}
+
+.backButton {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.profileImage {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin: 0 10px;
+}
+
+.nickname {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.headerContainer {
+  display: flex;
+  align-items: center;
+  flex-grow: 1; /* 공간을 채우도록 추가 */
+  justify-content: center; /* 중앙 정렬을 위해 추가 */
+}

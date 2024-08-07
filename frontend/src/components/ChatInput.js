@@ -1,9 +1,11 @@
+// ChatInput.js
 import React, { useRef, useEffect } from 'react';
 import inputStyles from '../styles/ChatInput.module.css';
 import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
 import { IconButton } from '@mui/material';
+import ChatNav from '../components/ChatNav';
 
-const ChatInput = ({ message, setMessage, handleSendMessage, setFocus }) => {
+const ChatInput = ({ message, setMessage, handleSendMessage, setFocus, isChatNavOpen, setIsChatNavOpen }) => {
   const inputRef = useRef(null);
 
   useEffect(() => {
@@ -20,9 +22,14 @@ const ChatInput = ({ message, setMessage, handleSendMessage, setFocus }) => {
     }
   }, [setFocus]);
 
+  const handlePlusIconClick = () => {
+    setIsChatNavOpen(!isChatNavOpen);
+  };
+
   return (
-    <div className={inputStyles.chatInputContainer}>
-      <div className={inputStyles.plusIcon}>+</div>
+    <div className={`${inputStyles.chatInputContainer} ${isChatNavOpen ? inputStyles.blurBackground : ''}`}>
+      <div className={inputStyles.plusIcon} onClick={handlePlusIconClick}>+</div>
+      {isChatNavOpen && <ChatNav onClose={() => setIsChatNavOpen(false)} />} {/* Pass onClose prop */}
       <div className={inputStyles.inputWrapper}>
         <input
           className={inputStyles.inputField}
