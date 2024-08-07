@@ -22,6 +22,9 @@ import SearchLive from "./pages/SearchLivePage";
 import PrivateRoute from "./components/PrivateRoute";
 import OpenVideo from "./components/OpenVideo";
 import AddressSearch from "./pages/AddressSearch"; // Import AddressSearch component
+import BuyList from "./features/mypage/components/BuyList";
+import SellList from "./features/mypage/components/SellList";
+import WatchList from "./features/mypage/components/WatchList";
 
 const routes = [
   { path: "/", element: <HomePage />, isPrivate: true },
@@ -34,10 +37,12 @@ const routes = [
   { path: "/chat", element: <Chat />, isPrivate: true },
   { path: "/chat/:chatID", element: <ChatRoom />, isPrivate: true },
   { path: "/mypage", element: <MyPage />, isPrivate: true },
+  { path: "/mypage/buy-list", element: <BuyList />, isPrivate: true },
+  { path: "/mypage/sell-list", element: <SellList />, isPrivate: true },
+  { path: "/mypage/watch-list", element: <WatchList />, isPrivate: true },
 
   { path: "/search/shorts", element: <SearchShorts />, isPrivate: true },
   { path: "/search/live", element: <SearchLive />, isPrivate: true },
-  { path: "/address-search", element: <AddressSearch />, isPrivate: false }, // Add AddressSearch route
 ];
 
 function App() {

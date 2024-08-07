@@ -1,15 +1,19 @@
-// HomePage.js
 import React from "react";
-import { useSelector } from "react-redux";
-import Switch from "../components/Switch";
-import LiveBroadcasts from "../components/LiveBroadcasts";
-import Shorts from "../components/Shorts";
-import { Grid, Box, Container } from "@mui/material";
-const HomePage = () => {
-  const selectedTab = useSelector((state) => state.content.selectedTab);
-  // const contents = useSelector((state) => state.content.contents);
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import Switch from "../../../components/Switch";
+import Lives from "./WatchLives.js";
+import Shorts from "./WatchShorts.js";
+import { Container, Box, Grid, Typography } from "@mui/material";
+import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
+import { switchTab } from "../watchlistSlice.js";
+
+const WatchList = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const selectedTab = useSelector((state) => state.watch.selectedTab);
   const contents = {
-    live: [
+    lives: [
       {
         id: 2,
         name: "웜업탑",
@@ -157,28 +161,66 @@ const HomePage = () => {
     ],
   };
   const switchOptions = [
-    { value: "live", label: "Live" },
-    { value: "shorts", label: "Shorts" },
+    { value: "lives", label: "LIVE" },
+    { value: "shorts", label: "SHORTS" },
   ];
 
+  const handleBackButtonClick = () => {
+    // 이전 페이지로 이동
+    navigate("/mypage");
+    // 상태 초기화
+    dispatch(switchTab("lives"));
+  };
   return (
-    <Container>
-      <Grid container spacing={3} sx={{ marginTop: "12vh" }}>
-        {selectedTab === "live" && <LiveBroadcasts items={contents.live} />}
-        {selectedTab === "shorts" && <Shorts items={contents.shorts} />}
+    <Container sx={{ py: 8 }}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          width: "100%",
+          position: "relative",
+        }}
+      >
         <Box
+          onClick={handleBackButtonClick}
           sx={{
-            position: "fixed",
-            bottom: 100,
-            left: "50%",
-            transform: "translateX(-50%)",
+            cursor: "pointer",
+            position: "absolute",
+            left: 0,
           }}
         >
-          <Switch options={switchOptions} type="content" />
+          <ArrowBackIosNewIcon />
         </Box>
-      </Grid>
+        <Typography
+          sx={{
+            fontSize: "24px",
+            fontWeight: "600",
+            textAlign: "center",
+          }}
+        >
+          관심목록
+        </Typography>
+      </Box>
+
+      <Container>
+        <Grid container spacing={3} sx={{ marginTop: "2vh" }}>
+          {selectedTab === "lives" && <Lives items={contents.lives} />}
+          {selectedTab === "shorts" && <Shorts items={contents.shorts} />}
+          <Box
+            sx={{
+              position: "fixed",
+              bottom: 100,
+              left: "50%",
+              transform: "translateX(-50%)",
+            }}
+          >
+            <Switch options={switchOptions} type="watch" />
+          </Box>
+        </Grid>
+      </Container>
     </Container>
   );
 };
 
-export default HomePage;
+export default WatchList;
