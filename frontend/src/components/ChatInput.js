@@ -1,24 +1,33 @@
 // ChatInput.js
-import React, { useRef, useEffect, useState } from 'react';
-import inputStyles from '../styles/ChatInput.module.css';
-import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
-import { IconButton } from '@mui/material';
-import ChatNav from '../components/ChatNav';
-import CancelTrade from '../components/CancelTrade';
+import React, { useRef, useEffect, useState } from "react";
+import inputStyles from "../styles/ChatInput.module.css";
+import ArrowCircleRightIcon from "@mui/icons-material/ArrowCircleRight";
+import { IconButton } from "@mui/material";
+import ChatNav from "./ChatNav";
+import CancelTrade from "./CancelTrade";
+import ChatTradeDetail from "./ChatTradeDetail";
 
-const ChatInput = ({ message, setMessage, handleSendMessage, setFocus, isChatNavOpen, setIsChatNavOpen }) => {
+const ChatInput = ({
+  message,
+  setMessage,
+  handleSendMessage,
+  setFocus,
+  isChatNavOpen,
+  setIsChatNavOpen,
+}) => {
   const [isCancelTradeOpen, setIsCancelTradeOpen] = useState(false);
+  const [isTradeDetailOpen, setIsTradeDetailOpen] = useState(false);
   const inputRef = useRef(null);
 
   useEffect(() => {
     if (inputRef.current) {
-      inputRef.current.addEventListener('focus', () => {
+      inputRef.current.addEventListener("focus", () => {
         setFocus(true);
         setTimeout(() => {
           window.scrollTo(0, document.body.scrollHeight);
         }, 300);
       });
-      inputRef.current.addEventListener('blur', () => {
+      inputRef.current.addEventListener("blur", () => {
         setFocus(false);
       });
     }
@@ -33,11 +42,35 @@ const ChatInput = ({ message, setMessage, handleSendMessage, setFocus, isChatNav
     setIsCancelTradeOpen(true);
   };
 
+  const handleTradeDetailClick = () => {
+    setIsChatNavOpen(false);
+    setIsTradeDetailOpen(true);
+  };
+
   return (
-    <div className={`${inputStyles.chatInputContainer} ${isChatNavOpen ? inputStyles.blurBackground : ''}`}>
-      <div className={inputStyles.plusIcon} onClick={handlePlusIconClick}>+</div>
-      {isChatNavOpen && <ChatNav onClose={() => setIsChatNavOpen(false)} onCancelTrade={handleCancelTradeClick} />}
-      <CancelTrade isOpen={isCancelTradeOpen} onClose={() => setIsCancelTradeOpen(false)} />
+    <div
+      className={`${inputStyles.chatInputContainer} ${
+        isChatNavOpen ? inputStyles.blurBackground : ""
+      }`}
+    >
+      <div className={inputStyles.plusIcon} onClick={handlePlusIconClick}>
+        +
+      </div>
+      {isChatNavOpen && (
+        <ChatNav
+          onClose={() => setIsChatNavOpen(false)}
+          onCancelTrade={handleCancelTradeClick}
+          onTradeDetail={handleTradeDetailClick}
+        />
+      )}
+      <CancelTrade
+        isOpen={isCancelTradeOpen}
+        onClose={() => setIsCancelTradeOpen(false)}
+      />
+      <ChatTradeDetail
+        isOpen={isTradeDetailOpen}
+        onClose={() => setIsTradeDetailOpen(false)}
+      />
       <div className={inputStyles.inputWrapper}>
         <input
           className={inputStyles.inputField}
