@@ -33,10 +33,10 @@ const OpenVideo = () => {
   const [sttValue, setSttValue] = useState("");
   const [publisher, setPublisher] = useState(undefined);
 
-//   let subscribers = [];
+  let subscribers = [];
 
-//   const OV = useRef(new OpenVidu());
-//   const session = useRef();
+  const OV = useRef(new OpenVidu());
+  const session = useRef();
 
   const handlePopState = (event) => {
     console.log("test");
@@ -48,43 +48,43 @@ const OpenVideo = () => {
     }
   };
 
-//   useDidMountEffect(() => {
-//     window.addEventListener("popstate", handlePopState);
-//     if (sessionName) {
-//       dispatch(setLoading());
+  useDidMountEffect(() => {
+    window.addEventListener("popstate", handlePopState);
+    if (sessionName) {
+      dispatch(setLoading());
 
-//       MakeSession(videoRef, dispatch, sessionName)
-//         .then((ss) => {
-//           console.log("MakeSession 성공");
-//           session.current = ss;
-//           fetchProductList(sessionName);
-//         })
-//         .catch((error) => {
-//           console.error("MakeSession 오류:", error);
-//           dispatch(unSetLoading());
-//         });
-//     }
-//   }, [sessionName]);
+      MakeSession(videoRef, dispatch, sessionName)
+        .then((ss) => {
+          console.log("MakeSession 성공");
+          session.current = ss;
+          fetchProductList(sessionName);
+        })
+        .catch((error) => {
+          console.error("MakeSession 오류:", error);
+          dispatch(unSetLoading());
+        });
+    }
+  }, [sessionName]);
 
-//   const MakeSession = async (videoRef, dispatch, sessionName) => {
-//     const session = OV.current.initSession();
+  const MakeSession = async (videoRef, dispatch, sessionName) => {
+    const session = OV.current.initSession();
 
-//     session.on("streamCreated", (event) => {
-//       var subscriber = session.subscribe(event.stream, undefined);
-//       subscribers.push(subscriber);
-//       subscriber.addVideoElement(videoRef.current);
-//     });
+    session.on("streamCreated", (event) => {
+      var subscriber = session.subscribe(event.stream, undefined);
+      subscribers.push(subscriber);
+      subscriber.addVideoElement(videoRef.current);
+    });
 
-//     session.on("signal:chat", (event) => {
-//       const message = event.data;
-//       const from = event.from.connectionId;
-//       setMessages((prevMessages) => [...prevMessages, { from, message }]);
-//     });
+    session.on("signal:chat", (event) => {
+      const message = event.data;
+      const from = event.from.connectionId;
+      setMessages((prevMessages) => [...prevMessages, { from, message }]);
+    });
 
-//     try {
-//       const resp = await getToken({ sessionName: sessionName });
-//       let token = resp[0];
-//       await session.connect(token, { clientData: "example" });
+    try {
+      const resp = await getToken({ sessionName: sessionName });
+      let token = resp[0];
+      await session.connect(token, { clientData: "example" });
 
       if (resp[1] === true) {
         setIsPublisher(true);
@@ -179,31 +179,31 @@ const OpenVideo = () => {
     }
   };
 
-//   const handleRecordStart = () => {
-//     if (session.current && currentProductIndex < productList.length) {
-//       dispatch(setLoading());
-//       startRecording({
-//         session: session.current.sessionId,
-//         outputMode: "COMPOSED",
-//         hasAudio: true,
-//         hasVideo: true,
-//       })
-//         .then(() => {
-//           setIsRecording(true);
-//           dispatch(unSetLoading());
-//           listen({ continuous: true });
-//           setTimeout(() => {
-//             setIsBuyButtonEnabled(true);
-//           }, 5000);
-//         })
-//         .catch((error) => {
-//           console.error("녹화 시작 중 오류 발생:", error);
-//           dispatch(unSetLoading());
-//         });
-//     } else {
-//       console.error("Session is not initialized or no more products.");
-//     }
-//   };
+  const handleRecordStart = () => {
+    if (session.current && currentProductIndex < productList.length) {
+      dispatch(setLoading());
+      startRecording({
+        session: session.current.sessionId,
+        outputMode: "COMPOSED",
+        hasAudio: true,
+        hasVideo: true,
+      })
+        .then(() => {
+          setIsRecording(true);
+          dispatch(unSetLoading());
+          listen({ continuous: true });
+          setTimeout(() => {
+            setIsBuyButtonEnabled(true);
+          }, 5000);
+        })
+        .catch((error) => {
+          console.error("녹화 시작 중 오류 발생:", error);
+          dispatch(unSetLoading());
+        });
+    } else {
+      console.error("Session is not initialized or no more products.");
+    }
+  };
 
   const handleRecordStop = () => {
     console.log("여기는");
@@ -234,32 +234,32 @@ const OpenVideo = () => {
     }
   };
 
-//   const handlePrepareProduct = (index) => {
-//     const newProductList = [...productList];
-//     const [selectedProduct] = newProductList.splice(index, 1);
-//     newProductList.splice(currentProductIndex + 1, 0, selectedProduct);
-//     setProductList(newProductList);
-//   };
+  const handlePrepareProduct = (index) => {
+    const newProductList = [...productList];
+    const [selectedProduct] = newProductList.splice(index, 1);
+    newProductList.splice(currentProductIndex + 1, 0, selectedProduct);
+    setProductList(newProductList);
+  };
 
-//   const handleBuy = (productId) => {
-//     setSelectedProductId(productId);
-//     setIsModalOpen(true); // 모달을 엽니다.
-//   };
+  const handleBuy = (productId) => {
+    setSelectedProductId(productId);
+    setIsModalOpen(true); // 모달을 엽니다.
+  };
 
-//   const sendMessage = () => {
-//     if (session.current && newMessage.trim() !== "") {
-//       session.current.signal({
-//         data: newMessage,
-//         type: "chat",
-//       });
-//       setNewMessage("");
-//     }
-//   };
+  const sendMessage = () => {
+    if (session.current && newMessage.trim() !== "") {
+      session.current.signal({
+        data: newMessage,
+        type: "chat",
+      });
+      setNewMessage("");
+    }
+  };
 
-//   const endBroadcast = () => {
-//     console.log("방송 종료");
-//     // 방송 종료를 위한 로직 추가
-//   };
+  const endBroadcast = () => {
+    console.log("방송 종료");
+    // 방송 종료를 위한 로직 추가
+  };
 
   const sliderSettings = {
     dots: true,
@@ -269,92 +269,92 @@ const OpenVideo = () => {
     slidesToScroll: 1,
   };
 
-//   return (
-//     <div style={{ padding: "-8px" }}>
-//       {isPublisher ? (
-//         <div>
-//           <video
-//             autoPlay={true}
-//             ref={videoRef}
-//             style={{
-//               objectFit: "cover",
-//               width: "100vw",
-//               height: "100vh",
-//               position: "fixed",
-//               zIndex: "-1",
-//             }}
-//           ></video>
-//         </div>
-//       ) : (
-//         <div style={{ width: "100vw", height: "100vh" }}>
-//           <video
-//             autoPlay={true}
-//             ref={videoRef}
-//             style={{ objectFit: "cover", width: "100%", height: "100%" }}
-//           ></video>
-//         </div>
-//       )}
-//       <Box sx={{ display: "flex", flexDirection: "column" }}>
-//         <Box>
-//           {messages.map((msg, index) => (
-//             <div key={index}>
-//               <strong>{msg.from}</strong>: {msg.message}
-//             </div>
-//           ))}
-//         </Box>
-//         <Box>
-//           <input
-//             type="text"
-//             value={newMessage}
-//             onChange={(e) => setNewMessage(e.target.value)}
-//           />
-//           <button onClick={sendMessage}>Send</button>
-//         </Box>
-//         {isPublisher ? (
-//           <>
-//             {currentProductIndex < productList.length ? (
-//               <Button
-//                 variant="contained"
-//                 color="secondary"
-//                 onClick={isRecording ? handleRecordStop : handleRecordStart}
-//                 sx={{ width: "36vw" }}
-//               >
-//                 {isRecording ? "다음 상품 준비" : "판매시작"}
-//               </Button>
-//             ) : (
-//               <Button
-//                 variant="contained"
-//                 color="secondary"
-//                 onClick={endBroadcast}
-//                 sx={{ width: "36vw" }}
-//               >
-//                 방송종료
-//               </Button>
-//             )}
-//           </>
-//         ) : (
-//           <Button
-//             variant="contained"
-//             color="secondary"
-//             disabled={!isBuyButtonEnabled}
-//             onClick={() => handleBuy(currentProduct.id)} // 구매 버튼 클릭 시 handleBuy 호출
-//             sx={{ width: "36vw" }}
-//           >
-//             {isRecording ? "구매하기" : "상품 준비중"}
-//           </Button>
-//         )}
-//         {currentProduct && (
-//           <Box sx={{ marginTop: 2 }}>
-//             <Typography variant="h6">현재 판매 중인 상품:</Typography>
-//             <Typography variant="subtitle1">{currentProduct.name}</Typography>
-//             <Typography variant="subtitle2">
-//               {currentProduct.description}
-//             </Typography>
-//             <Typography variant="body1">
-//               가격: {currentProduct.price}원
-//             </Typography>
-//           </Box>
-//         )}
+  return (
+    <div style={{ padding: "-8px" }}>
+      {isPublisher ? (
+        <div>
+          <video
+            autoPlay={true}
+            ref={videoRef}
+            style={{
+              objectFit: "cover",
+              width: "100vw",
+              height: "100vh",
+              position: "fixed",
+              zIndex: "-1",
+            }}
+          ></video>
+        </div>
+      ) : (
+        <div style={{ width: "100vw", height: "100vh" }}>
+          <video
+            autoPlay={true}
+            ref={videoRef}
+            style={{ objectFit: "cover", width: "100%", height: "100%" }}
+          ></video>
+        </div>
+      )}
+      <Box sx={{ display: "flex", flexDirection: "column" }}>
+        <Box>
+          {messages.map((msg, index) => (
+            <div key={index}>
+              <strong>{msg.from}</strong>: {msg.message}
+            </div>
+          ))}
+        </Box>
+        <Box>
+          <input
+            type="text"
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+          />
+          <button onClick={sendMessage}>Send</button>
+        </Box>
+        {isPublisher ? (
+          <>
+            {currentProductIndex < productList.length ? (
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={isRecording ? handleRecordStop : handleRecordStart}
+                sx={{ width: "36vw" }}
+              >
+                {isRecording ? "다음 상품 준비" : "판매시작"}
+              </Button>
+            ) : (
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={endBroadcast}
+                sx={{ width: "36vw" }}
+              >
+                방송종료
+              </Button>
+            )}
+          </>
+        ) : (
+          <Button
+            variant="contained"
+            color="secondary"
+            disabled={!isBuyButtonEnabled}
+            onClick={() => handleBuy(currentProduct.id)} // 구매 버튼 클릭 시 handleBuy 호출
+            sx={{ width: "36vw" }}
+          >
+            {isRecording ? "구매하기" : "상품 준비중"}
+          </Button>
+        )}
+        {currentProduct && (
+          <Box sx={{ marginTop: 2 }}>
+            <Typography variant="h6">현재 판매 중인 상품:</Typography>
+            <Typography variant="subtitle1">{currentProduct.name}</Typography>
+            <Typography variant="subtitle2">
+              {currentProduct.description}
+            </Typography>
+            <Typography variant="body1">
+              가격: {currentProduct.price}원
+            </Typography>
+          </Box>
+        )}
 
         <Slider {...sliderSettings}>
           <Box>
@@ -422,34 +422,34 @@ const OpenVideo = () => {
         </Slider>
       </Box>
 
-//       {/* MUI Modal 컴포넌트 */}
-//       <Modal
-//         open={isModalOpen}
-//         onClose={() => setIsModalOpen(false)}
-//         aria-labelledby="modal-title"
-//         aria-describedby="modal-description"
-//       >
-//         <Box
-//           sx={{
-//             position: "absolute",
-//             top: "50%",
-//             left: "50%",
-//             transform: "translate(-50%, -50%)",
-//             width: 400,
-//             bgcolor: "background.paper",
-//             border: "2px solid #000",
-//             boxShadow: 24,
-//             p: 4,
-//           }}
-//         >
-//           <SelectTradeTime
-//             productId={selectedProductId}
-//             onClose={() => setIsModalOpen(false)}
-//           />
-//         </Box>
-//       </Modal>
-//     </div>
-//   );
-// };
+      {/* MUI Modal 컴포넌트 */}
+      <Modal
+        open={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        aria-labelledby="modal-title"
+        aria-describedby="modal-description"
+      >
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 400,
+            bgcolor: "background.paper",
+            border: "2px solid #000",
+            boxShadow: 24,
+            p: 4,
+          }}
+        >
+          <SelectTradeTime
+            productId={selectedProductId}
+            onClose={() => setIsModalOpen(false)}
+          />
+        </Box>
+      </Modal>
+    </div>
+  );
+};
 
-// export default OpenVideo;
+export default OpenVideo;
