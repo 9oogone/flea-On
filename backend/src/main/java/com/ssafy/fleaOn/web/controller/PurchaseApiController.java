@@ -25,7 +25,7 @@ import java.util.List;
 @Tag(name = "Purchase API", description = "구매,예약 관련 API")
 public class PurchaseApiController {
 
-//    private static final Logger logger = LoggerFactory.getLogger(PurchaseApiController.class);
+    private static final Logger logger = LoggerFactory.getLogger(PurchaseApiController.class);
 
     private final RedisQueueProducer redisQueueProducer;
     private final RedisTemplate<String, Object> redisTemplate;
@@ -63,7 +63,7 @@ public class PurchaseApiController {
             }
             return ResponseEntity.ok(result);
         } catch (Exception e) {
-//            logger.error("Error processing purchase request", e);
+            logger.error("Error processing purchase request", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(-1);
         }
     }
@@ -90,13 +90,13 @@ public class PurchaseApiController {
             }
 
             if (result == null) {
-//                logger.warn("No cancel purchase result found for userId: {} and productId: {}", request.getUserId(), request.getProductId());
+                logger.warn("No cancel purchase result found for userId: {} and productId: {}", request.getUserId(), request.getProductId());
                 return ResponseEntity.ok(-1); // 아직 결과가 없는 경우
             }
 
             return ResponseEntity.ok(result);
         } catch (Exception e) {
-//            logger.error("Error processing cancel purchase request", e);
+            logger.error("Error processing cancel purchase request", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(-1);
         }
     }
@@ -126,7 +126,7 @@ public class PurchaseApiController {
             }
             return ResponseEntity.ok(result);
         } catch (Exception e) {
-//            logger.error("Error processing reservation request", e);
+            logger.error("Error processing reservation request", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(-1);
         }
     }
@@ -156,7 +156,7 @@ public class PurchaseApiController {
             }
             return ResponseEntity.ok(result);
         } catch (Exception e) {
-//            logger.error("Error processing cancel reservation request", e);
+            logger.error("Error processing cancel reservation request", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(-1);
         }
     }
@@ -182,12 +182,12 @@ public class PurchaseApiController {
             }
 
             if (result == null) {
-//                logger.info("null here!!");
+                logger.info("null here!!");
                 return ResponseEntity.ok("not confirmed"); // 아직 결과가 없는 경우
             }
             return ResponseEntity.ok(result);
         } catch (Exception e) {
-//            logger.error("Error processing confirm request", e);
+            logger.error("Error processing confirm request", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error processing confirm request");
         }
     }
@@ -226,7 +226,7 @@ public class PurchaseApiController {
             }
             return ResponseEntity.ok(result);
         } catch (Exception e) {
-//            logger.error("Error processing break trade request", e);
+            logger.error("Error processing break trade request", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("거래 파기 중 오류 발생");
         }
     }
