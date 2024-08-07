@@ -51,6 +51,7 @@ dependencies {
 	testImplementation 'ws.schild:jave-core:3.0.1'
 	testImplementation 'io.openvidu:openvidu-test-browsers:1.0.0'
 	implementation group: 'org.json', name: 'json', version: '20240303'
+	implementation 'org.json:json:20230618'
 
 
 }
