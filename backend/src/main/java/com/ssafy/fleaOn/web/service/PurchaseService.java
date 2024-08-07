@@ -19,7 +19,7 @@ import java.util.Optional;
 @Service
 public class PurchaseService {
 
-    private static final Logger logger = LoggerFactory.getLogger(PurchaseService.class);
+//    private static final Logger logger = LoggerFactory.getLogger(PurchaseService.class);
 
     private final ProductRepository productRepository;
     private final LiveRepository liveRepository;
@@ -48,20 +48,20 @@ public class PurchaseService {
 
     @Transactional
     public int processPurchaseRequest(PurchaseRequest request) {
-        logger.info("Processing purchase request for productId: {} and userId: {}", request.getProductId(), request.getUserId());
+//        logger.info("Processing purchase request for productId: {} and userId: {}", request.getProductId(), request.getUserId());
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
 
         // Check if the user is already the buyer
         if (product.getCurrentBuyerId() == request.getUserId()) {
-            logger.warn("User {} is already the buyer for product {}", request.getUserId(), request.getProductId());
+//            logger.warn("User {} is already the buyer for product {}", request.getUserId(), request.getProductId());
             return -2; // Already the buyer
         }
 
         // Check if the user is already in the reservation list
         Optional<Reservation> existingReservation = reservationRepository.findByProduct_ProductIdAndUser_UserId(request.getProductId(), request.getUserId());
         if (existingReservation.isPresent()) {
-            logger.warn("User {} is already reserved for product {}", request.getUserId(), request.getProductId());
+//            logger.warn("User {} is already reserved for product {}", request.getUserId(), request.getProductId());
             return -3; // Already reserved
         }
 
@@ -107,7 +107,7 @@ public class PurchaseService {
             }
 
             int cid = tradeRepository.findByProduct_productId(request.getProductId()).orElseThrow(() -> new IllegalArgumentException("Invalid product ID")).getChatting().getChattingId();
-            logger.info("chatting id: {}", cid);
+//            logger.info("chatting id: {}", cid);
             // 현재 구매자가 없는 경우 거래 취소
             tradeRepository.deleteByProduct_ProductId(request.getProductId());
 
@@ -116,20 +116,20 @@ public class PurchaseService {
 
             if (remainingTrades.isEmpty()) {
                 // 채팅 내역 삭제
-                logger.info("Deleting chatting list for chatting ID: {}", cid);
+//                logger.info("Deleting chatting list for chatting ID: {}", cid);
                 chattingListRepository.deleteByChatting_ChattingId(cid);
 
                 // 채팅방 삭제
-                logger.info("Deleting chatting room for chatting ID: {}", cid);
+//                logger.info("Deleting chatting room for chatting ID: {}", cid);
                 chattingRepository.deleteById(cid);
                 chatExit = false; // 모든 거래가 취소되어 채팅방 삭제됨
             } else {
-                logger.info("Remaining trades exist, not deleting chat.");
+//                logger.info("Remaining trades exist, not deleting chat.");
             }
         } else {
-            logger.info("User is not the current buyer, skipping chat deletion.");
+//            logger.info("User is not the current buyer, skipping chat deletion.");
         }
-        logger.info("Cancel purchase result: chatExit={}, next={}, isBuyer={}", chatExit, next, isBuyer);
+//        logger.info("Cancel purchase result: chatExit={}, next={}, isBuyer={}", chatExit, next, isBuyer);
         return new PurchaseCancleResponse(product.getProductId(), chatExit, next, isBuyer);
     }
 
@@ -165,7 +165,7 @@ public class PurchaseService {
         }
 
         // 5. 채팅방 및 채팅 메시지 삭제
-        logger.info("Deleting all chatting lists and chat rooms for live ID: {}", liveId);
+//        logger.info("Deleting all chatting lists and chat rooms for live ID: {}", liveId);
         chattingListRepository.deleteByChatting_ChattingId(liveId);
         chattingRepository.deleteById(liveId);
 
@@ -174,20 +174,20 @@ public class PurchaseService {
 
     @Transactional
     public int processReservationRequest(PurchaseRequest request) {
-        logger.info("Processing reservation request for productId: {} and userId: {}", request.getProductId(), request.getUserId());
+//        logger.info("Processing reservation request for productId: {} and userId: {}", request.getProductId(), request.getUserId());
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
 
         // Check if the user is already the buyer
         if (product.getCurrentBuyerId() == request.getUserId()) {
-            logger.warn("User {} is already the buyer for product {}", request.getUserId(), request.getProductId());
+//            logger.warn("User {} is already the buyer for product {}", request.getUserId(), request.getProductId());
             return -2; // Already the buyer
         }
 
         // Check if the user is already in the reservation list
         Optional<Reservation> existingReservation = reservationRepository.findByProduct_ProductIdAndUser_UserId(request.getProductId(), request.getUserId());
         if (existingReservation.isPresent()) {
-            logger.warn("User {} is already reserved for product {}", request.getUserId(), request.getProductId());
+//            logger.warn("User {} is already reserved for product {}", request.getUserId(), request.getProductId());
             return -3; // Already reserved
         }
 
@@ -206,7 +206,7 @@ public class PurchaseService {
 
     @Transactional
     public int processCancelReservationRequest(PurchaseRequest request) {
-        logger.info("Processing cancel reservation request for productId: {} and userId: {}", request.getProductId(), request.getUserId());
+//        logger.info("Processing cancel reservation request for productId: {} and userId: {}", request.getProductId(), request.getUserId());
         Optional<Reservation> reservation = reservationRepository.findByProduct_ProductIdAndUser_UserId(request.getProductId(), request.getUserId());
         if (reservation.isPresent()) {
             reservationRepository.delete(reservation.get());
@@ -221,7 +221,7 @@ public class PurchaseService {
 
     @Transactional
     public void processConfirmPurchaseRequest(TradeRequest request) {
-        logger.info("Processing confirm purchase request for productId: {} and buyerId: {}", request.getProductId(), request.getBuyerId());
+//        logger.info("Processing confirm purchase request for productId: {} and buyerId: {}", request.getProductId(), request.getBuyerId());
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
 

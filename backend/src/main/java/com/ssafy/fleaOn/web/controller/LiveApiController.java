@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,17 +32,15 @@ public class LiveApiController {
 
     @PostMapping("/")
     @Operation(summary = "라이브 생성", description = "라이브의 정보를 저장하여 새로운 라이브를 생성합니다.")
-    public ResponseEntity<?> createLive(@RequestBody AddLiveRequest request) {
+    public ResponseEntity<?> createLive(@AuthenticationPrincipal CustomOAuth2User principal, @RequestBody AddLiveRequest request) {
         try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
-            String userEmail = oAuth2User.getEmail(); // 현재 인증된 사용자의 이메일 가져오기
+            String userEmail = principal.getEmail(); // 현재 인증된 사용자의 이메일 가져오기
 
             User user = userService.findByEmail(userEmail); // 이메일로 userId 가져오기
             if (user == null) {
                 return new ResponseEntity<>("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
             }
-
+            
             Live savedLive = liveService.saveLive(request, user);
             return ResponseEntity.status(HttpStatus.CREATED).body(savedLive);
         } catch (Exception ex) {

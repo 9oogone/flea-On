@@ -42,4 +42,8 @@ public class Chatting {
         this.view = view;
         this.createTime = createTime;
     }
+
+    public void show(){
+        this.view = true;
+    }
 }
