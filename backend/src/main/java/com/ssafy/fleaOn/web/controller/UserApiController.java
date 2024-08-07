@@ -3,6 +3,7 @@ package com.ssafy.fleaOn.web.controller;
 import com.ssafy.fleaOn.web.config.jwt.JWTUtil;
 import com.ssafy.fleaOn.web.domain.Live;
 import com.ssafy.fleaOn.web.domain.User;
+import com.ssafy.fleaOn.web.dto.ExtraInfoRequest;
 import com.ssafy.fleaOn.web.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -119,12 +120,12 @@ public class UserApiController {
 
     @Operation(summary = "회원 정보 수정", description = "회원 정보를 수정할 때 사용합니다. ")
     @PutMapping("{email}/info")
-    public ResponseEntity<?> updateUserInfo(@PathVariable("email") String email, @RequestBody User user) {
+    public ResponseEntity<?> updateUserInfo(@PathVariable("email") String email, @RequestBody ExtraInfoRequest extraInfoRequest) {
         User getUser = userService.findByEmail(email);
         if (getUser == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } else {
-            userService.updateUserByEmail(email, user);
+            userService.updateUserByEmail(email, extraInfoRequest);
             return ResponseEntity.status(HttpStatus.OK).build();
         }
     }
