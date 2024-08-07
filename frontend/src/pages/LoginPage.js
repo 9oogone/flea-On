@@ -16,14 +16,14 @@ const LoginPage = () => {
   };
 
   return (
-    <Container maxWidth="sm" sx={{ textAlign: "left", marginTop: 8 }}>
+    <Container maxWidth="sm" sx={{ textAlign: "left", marginTop: 20 }}>
       <Typography variant="h5">
         <TitleSpan>Flea:ON</TitleSpan>에
       </Typography>
       <Typography variant="h5" gutterBottom>
         오신것을 환영해요!
       </Typography>
-      <Box mt={4}>
+      <Box mt={8}>
         <Button
           variant="contained"
           color="naver"
