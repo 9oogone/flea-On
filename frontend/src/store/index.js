@@ -8,6 +8,7 @@ import sessionReducer from "../features/live/sessionSlice";
 import buylistReducer from "../features/mypage/buylistSlice";
 import selllistReducer from "../features/mypage/selllistSlice";
 import watchlistReducer from "../features/mypage/watchlistSlice";
+import shortsReducer from "../features/shorts/shortsSlice";
 import "../styles/global.css";
 
 const store = configureStore({
@@ -21,6 +22,7 @@ const store = configureStore({
     buy: buylistReducer,
     sell: selllistReducer,
     watch: watchlistReducer,
+    shorts: shortsReducer,
   },
 });
 

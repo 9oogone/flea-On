@@ -21,28 +21,29 @@ import SearchShorts from "./pages/SearchShortsPage";
 import SearchLive from "./pages/SearchLivePage";
 import PrivateRoute from "./components/PrivateRoute";
 import OpenVideo from "./components/OpenVideo";
+import Shorts from "./pages/ShortsPage";
 import AddressSearch from "./pages/AddressSearch";
 import BuyList from "./features/mypage/components/BuyList";
 import SellList from "./features/mypage/components/SellList";
 import WatchList from "./features/mypage/components/WatchList";
 
 const routes = [
-  { path: "/", element: <HomePage />, isPrivate: true },
+  { path: "/", element: <HomePage />, isPrivate: false },
   { path: "/login", element: <LoginPage />, isPrivate: false },
   { path: "/check", element: <CheckLogin />, isPrivate: false },
-  { path: "/initial", element: <Initial />, isPrivate: true },
-  { path: "/welcome", element: <WelcomePage />, isPrivate: true },
-  { path: "/category", element: <Category />, isPrivate: true },
-  { path: "/search", element: <Search />, isPrivate: true },
-  { path: "/chat", element: <Chat />, isPrivate: true },
-  { path: "/chat/:chatID", element: <ChatRoom />, isPrivate: true },
-  { path: "/mypage", element: <MyPage />, isPrivate: true },
-  { path: "/mypage/buy-list", element: <BuyList />, isPrivate: true },
-  { path: "/mypage/sell-list", element: <SellList />, isPrivate: true },
-  { path: "/mypage/watch-list", element: <WatchList />, isPrivate: true },
-  { path: "/address-search", element: <AddressSearch />, isPrivate: true },
-  { path: "/search/shorts", element: <SearchShorts />, isPrivate: true },
-  { path: "/search/live", element: <SearchLive />, isPrivate: true },
+  { path: "/initial", element: <Initial />, isPrivate: false },
+  { path: "/welcome", element: <WelcomePage />, isPrivate: false },
+  { path: "/category", element: <Category />, isPrivate: false },
+  { path: "/search", element: <Search />, isPrivate: false },
+  { path: "/chat", element: <Chat />, isPrivate: false },
+  { path: "/chat/:chatID", element: <ChatRoom />, isPrivate: false },
+  { path: "/mypage", element: <MyPage />, isPrivate: false },
+  { path: "/mypage/buy-list", element: <BuyList />, isPrivate: false },
+  { path: "/mypage/sell-list", element: <SellList />, isPrivate: false },
+  { path: "/mypage/watch-list", element: <WatchList />, isPrivate: false },
+  { path: "/address-search", element: <AddressSearch />, isPrivate: false },
+  { path: "/search/shorts", element: <SearchShorts />, isPrivate: false },
+  { path: "/search/live", element: <SearchLive />, isPrivate: false },
 ];
 
 function App() {
@@ -53,7 +54,8 @@ function App() {
       location.pathname === "/initial" ||
       location.pathname === "/welcome" ||
       location.pathname === "/address-search" ||
-      location.pathname.startsWith("/live/");
+      location.pathname.startsWith("/live/") ||
+      location.pathname.startsWith("/shorts/");
     const isSearchPage =
       location.pathname === "/" ||
       location.pathname === "/category" ||
@@ -69,7 +71,7 @@ function App() {
   };
 
   return (
-    <Router basename={process.env.PUBLIC_URL}>
+    <Router>
       <LocationWrapper>
         <Routes>
           {routes.map((route) =>
@@ -89,6 +91,7 @@ function App() {
           )}
 
           <Route path={"/live/:sessionName"} element={<OpenVideo />}></Route>
+          <Route path={"/shorts/:shortsId"} element={<Shorts />}></Route>
         </Routes>
       </LocationWrapper>
     </Router>

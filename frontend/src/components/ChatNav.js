@@ -31,11 +31,10 @@ const ChatNav = ({ onClose, onCancelTrade, onTradeDetail, onChangeTime }) => {
       <div className={styles.backblur}>
         {" "}
         먼 차이인가용 고우니에게 물어보기
-        {/* <div className={styles.frameDiv}> */}
+      
         <div className={styles.instanceParent} ref={instanceParentRef}>
           <div className={styles.frameDiv} onClick={onChangeTime}>
             {" "}
-            {/* onChangeTime 핸들러 추가 */}
             <img className={styles.dicons} alt="" src={timeicons} />
             <div className={styles.div1}>시간 변경</div>
           </div>

@@ -40,6 +40,7 @@ const initialState = loadState() || {
   token: null,
 };
 
+// Async thunk for updating user info
 export const updateUserInfo = createAsyncThunk(
   "auth/updateUserInfo",
   async ({ email, data }, { getState }) => {
@@ -58,7 +59,6 @@ export const updateUserInfo = createAsyncThunk(
     return response.data;
   }
 );
-
 const authSlice = createSlice({
   name: "auth",
   initialState,

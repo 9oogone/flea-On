@@ -17,8 +17,10 @@ const PhoneInput = ({ onNext }) => {
 
   const handleSubmit = () => {
     if (isButtonEnabled) {
-      dispatch(setPhone(phone));
-      dispatch(updateUserInfo({ email: user.email, data: { phone } }));
+      dispatch(setPhone(toString(phone)));
+      dispatch(
+        updateUserInfo({ email: user.email, data: { phone: toString(phone) } })
+      );
       onNext();
     }
   };
