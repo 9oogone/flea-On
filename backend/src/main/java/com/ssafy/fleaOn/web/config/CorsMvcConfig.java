@@ -13,7 +13,7 @@ public class CorsMvcConfig implements WebMvcConfigurer {
                 .addMapping("/**")
                 .allowedOriginPatterns("https://i11b202.p.ssafy.io") // 명시적인 도메인
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-//                .allowedHeaders("*")
+                .allowedHeaders("*")
                 .exposedHeaders("Set-Cookie", "Authorization")
                 .allowCredentials(true)
                 .maxAge(3600);
