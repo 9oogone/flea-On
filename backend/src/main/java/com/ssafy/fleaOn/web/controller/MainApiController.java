@@ -2,7 +2,10 @@ package com.ssafy.fleaOn.web.controller;
 
 import com.ssafy.fleaOn.web.config.jwt.JWTUtil;
 import com.ssafy.fleaOn.web.domain.*;
+import com.ssafy.fleaOn.web.dto.EupmyeonNameResponse;
+import com.ssafy.fleaOn.web.dto.GugunNameResponse;
 import com.ssafy.fleaOn.web.dto.MainShortsResponse;
+import com.ssafy.fleaOn.web.dto.SidoNameResponse;
 import com.ssafy.fleaOn.web.repository.UserRepository;
 import com.ssafy.fleaOn.web.service.MainService;
 import com.ssafy.fleaOn.web.service.UserService;
@@ -17,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -27,7 +31,6 @@ import java.util.Optional;
 public class MainApiController {
 
     private final MainService mainService;
-    private final UserRepository userRepository;
     private final UserService userService;
 
     @Operation(summary = "실시간 방송 목록 조회", description = "라이브 방송 목록을 조회할 때 사용합니다. ")
@@ -91,6 +94,74 @@ public class MainApiController {
                 }
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+        }
+    }
+    @Operation(summary = "시/도 이름 검색", description = "시/도 목록을 조회할 때 사용합니다. ")
+    @GetMapping("/sidoName")
+    public ResponseEntity<?> getSidoName(HttpServletRequest request) {
+        try {
+            String authorizationToken = request.getHeader("Authorization");
+            if(authorizationToken.isEmpty() || !authorizationToken.startsWith("Bearer ")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+            }
+            String jwtToken = authorizationToken.substring(7).trim();
+            String email = JWTUtil.getEmail(jwtToken);
+            User user = userService.findByEmail(email);
+            if(user != null) {
+                List<SidoNameResponse> sidoNameResponses = mainService.getSidoNameList();
+                return ResponseEntity.status(HttpStatus.OK).body(sidoNameResponses);
+            }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당하는 사용자를 못찾았습니다. ");
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @Operation(summary = "구/군 이름 검색", description = "선택한 시/도에 따른 구/군 이름을 조회할 때 사용합니다. ")
+    @GetMapping("/{sidoName}/gugun")
+    public ResponseEntity<?> getGugunName(@PathVariable("sidoName") String sidoName, HttpServletRequest request) {
+        try {
+            String authorizationToken = request.getHeader("Authorization");
+            if(authorizationToken.isEmpty() || !authorizationToken.startsWith("Bearer ")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+            }
+            String jwtToken = authorizationToken.substring(7).trim();
+            String email = JWTUtil.getEmail(jwtToken);
+            User user = userService.findByEmail(email);
+            if(user != null) {
+                List<GugunNameResponse> gugunNameResponses = mainService.getGugunNameBySidoName(sidoName);
+                return ResponseEntity.status(HttpStatus.OK).body(gugunNameResponses);
+            }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @Operation(summary = "동/읍/면 이름 검색", description = "사용자가 선택한 시/도, 구/군에 따른 동/읍/면 이름을 조회할 때 사용합니다. ")
+    @GetMapping("/{sidoName}/{gugunName}/eupmyeon")
+    public ResponseEntity getEupmyeonName(@PathVariable("sidoName") String sidoName, @PathVariable("gugunName") String gugunName, HttpServletRequest request) {
+        try {
+            String authorizationToken = request.getHeader("Authorization");
+            if(authorizationToken.isEmpty() || !authorizationToken.startsWith("Bearer ")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+            }
+            String jwtToken = authorizationToken.substring(7).trim();
+            String email = JWTUtil.getEmail(jwtToken);
+            User user = userService.findByEmail(email);
+            if(user != null) {
+                List<EupmyeonNameResponse> eupmyeonNameResponses = mainService.getEupmyeonNameBySidoNameAndGugunName(sidoName, gugunName);
+                return ResponseEntity.status(HttpStatus.OK).body(eupmyeonNameResponses);
+            }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 }
