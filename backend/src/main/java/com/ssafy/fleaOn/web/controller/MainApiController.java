@@ -35,17 +35,20 @@ public class MainApiController {
 //    public ResponseEntity<?> getMainLive(HttpServletRequest request) {
 //        try {
 //            String authorizationToken = request.getHeader("Authorization");
-//            if(authorizationToken.isEmpty() || !authorizationToken.startsWith("Bearer ")) {
+//            if (authorizationToken.isEmpty() || !authorizationToken.startsWith("Bearer ")) {
 //                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
 //            }
 //            String token = authorizationToken.substring(7);
 //            String email = JWTUtil.getEmail(token);
 //            User user = userService.findByEmail(email);
-//            if(user == null) {
+//            if (user == null) {
 //                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당하는 사용자가 없습니다. ");
 //            }
 //            List<UserRegion> findUerRegionList = mainService.getUserRegionByUserId(user.getUserId());
 //            Slice<MainLiveResponse> mainLiveResponses = mainService.getMainLiveListByRegionCode(findUerRegionList);
+//            return ResponseEntity.status(HttpStatus.OK).body(mainLiveResponses);
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
 //        }
 //    }
 
@@ -68,14 +71,13 @@ public class MainApiController {
     public ResponseEntity<?> getSearchResult(@RequestParam(value = "name", required = false) String name, HttpServletRequest request) {
         String authorizationToken = request.getHeader("Authorization");
         System.out.println(authorizationToken);
-        if(authorizationToken.isEmpty() || !authorizationToken.startsWith("Bearer ")) {
+        if (authorizationToken.isEmpty() || !authorizationToken.startsWith("Bearer ")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
-        }
-        else {
+        } else {
             String jwtToken = authorizationToken.substring(7).trim();
             String email = JWTUtil.getEmail(jwtToken);
             User user = userService.findByEmail(email);
-            if(user != null) {
+            if (user != null) {
                 try {
                     Slice<Map<String, Object>> searchResultSlice = mainService.getSearchResultByName(name, user.getUserId());
                     if (searchResultSlice.isEmpty()) {
@@ -89,24 +91,24 @@ public class MainApiController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
         }
     }
+
     @Operation(summary = "시/도 이름 검색", description = "시/도 목록을 조회할 때 사용합니다. ")
     @GetMapping("/sidoName")
     public ResponseEntity<?> getSidoName(HttpServletRequest request) {
         try {
             String authorizationToken = request.getHeader("Authorization");
-            if(authorizationToken.isEmpty() || !authorizationToken.startsWith("Bearer ")) {
+            if (authorizationToken.isEmpty() || !authorizationToken.startsWith("Bearer ")) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
             }
             String jwtToken = authorizationToken.substring(7).trim();
             String email = JWTUtil.getEmail(jwtToken);
             User user = userService.findByEmail(email);
-            if(user != null) {
+            if (user != null) {
                 List<SidoNameResponse> sidoNameResponses = mainService.getSidoNameList();
                 return ResponseEntity.status(HttpStatus.OK).body(sidoNameResponses);
             }
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당하는 사용자를 못찾았습니다. ");
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
@@ -117,19 +119,18 @@ public class MainApiController {
     public ResponseEntity<?> getGugunName(@PathVariable("sidoName") String sidoName, HttpServletRequest request) {
         try {
             String authorizationToken = request.getHeader("Authorization");
-            if(authorizationToken.isEmpty() || !authorizationToken.startsWith("Bearer ")) {
+            if (authorizationToken.isEmpty() || !authorizationToken.startsWith("Bearer ")) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
             }
             String jwtToken = authorizationToken.substring(7).trim();
             String email = JWTUtil.getEmail(jwtToken);
             User user = userService.findByEmail(email);
-            if(user != null) {
+            if (user != null) {
                 List<GugunNameResponse> gugunNameResponses = mainService.getGugunNameBySidoName(sidoName);
                 return ResponseEntity.status(HttpStatus.OK).body(gugunNameResponses);
             }
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
@@ -140,19 +141,18 @@ public class MainApiController {
     public ResponseEntity getEupmyeonName(@PathVariable("sidoName") String sidoName, @PathVariable("gugunName") String gugunName, HttpServletRequest request) {
         try {
             String authorizationToken = request.getHeader("Authorization");
-            if(authorizationToken.isEmpty() || !authorizationToken.startsWith("Bearer ")) {
+            if (authorizationToken.isEmpty() || !authorizationToken.startsWith("Bearer ")) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
             }
             String jwtToken = authorizationToken.substring(7).trim();
             String email = JWTUtil.getEmail(jwtToken);
             User user = userService.findByEmail(email);
-            if(user != null) {
+            if (user != null) {
                 List<EupmyeonNameResponse> eupmyeonNameResponses = mainService.getEupmyeonNameAndRegionCodeBySidoNameAndGugunName(sidoName, gugunName);
                 return ResponseEntity.status(HttpStatus.OK).body(eupmyeonNameResponses);
             }
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
