@@ -1,11 +1,11 @@
 package com.ssafy.fleaOn.web.service;
 
 import com.ssafy.fleaOn.web.domain.*;
+import com.ssafy.fleaOn.web.dto.EupmyeonNameResponse;
+import com.ssafy.fleaOn.web.dto.GugunNameResponse;
 import com.ssafy.fleaOn.web.dto.MainShortsResponse;
-import com.ssafy.fleaOn.web.repository.CategoryRepository;
-import com.ssafy.fleaOn.web.repository.LiveRepository;
-import com.ssafy.fleaOn.web.repository.ProductRepository;
-import com.ssafy.fleaOn.web.repository.ShortsRepository;
+import com.ssafy.fleaOn.web.dto.SidoNameResponse;
+import com.ssafy.fleaOn.web.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
@@ -26,6 +26,8 @@ public class MainService {
     private final CategoryRepository categoryRepository;
 
     private final ProductRepository productRepository;
+
+    private final RegionInfoRepository regionInfoRepository;
 
     public Slice<Live> getMainLiveListByLiveDate(LocalDateTime liveDate) {
         Pageable pageable = PageRequest.of(0, 10);
@@ -134,5 +136,17 @@ public class MainService {
         }
         Slice<Map<String, Object>> resultSlice = new SliceImpl<>(resultList, pageable, searchResultResponseSlice.hasNext());
         return resultSlice;
+    }
+
+    public List<SidoNameResponse> getSidoNameList(){
+        return regionInfoRepository.findDistinctSido();
+    }
+
+    public List<GugunNameResponse> getGugunNameBySidoName(String sidoName){
+        return regionInfoRepository.findDistinctGugunBySido(sidoName);
+    }
+
+    public List<EupmyeonNameResponse> getEupmyeonNameBySidoNameAndGugunName(String sidoName, String gugunName){
+        return regionInfoRepository.findDistinctBySidoAndGugun(sidoName, gugunName);
     }
 }
