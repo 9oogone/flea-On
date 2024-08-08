@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Container,
   Box,
@@ -12,37 +12,21 @@ import {
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import "moment/locale/ko"; // 한국어 로케일을 사용합니다
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchChats } from '../features/chat/chatSlice';
 
 moment.locale("ko"); // 로케일 설정
 
 const ChatPage = () => {
   const navigate = useNavigate();
-  const chats = [
-    {
-      id: 1,
-      thumbnail: "https://picsum.photos/100/100",
-      isSeller: false,
-      name: ["황토독", "마리아상", "등등"],
-      last_chat: "안녕하세요",
-      last_chat_time: "2024-08-03 21:11:22",
-    },
-    {
-      id: 2,
-      thumbnail: "https://picsum.photos/101/101",
-      isSeller: true,
-      name: ["상품 A", "상품 B"],
-      last_chat: "상품 문의드립니다.",
-      last_chat_time: "2024-08-03 20:15:10",
-    },
-    {
-      id: 3,
-      thumbnail: "https://picsum.photos/102/102",
-      isSeller: false,
-      name: ["상품 C"],
-      last_chat: "오늘 거래 가능한가요?",
-      last_chat_time: "2024-08-03 18:45:00",
-    },
-  ];
+  const dispatch = useDispatch();
+  const { chats, status, error } = useSelector((state) => state.chat);
+
+  useEffect(() => {
+    if (status === 'idle') {
+      dispatch(fetchChats());
+    }
+  }, [status, dispatch]);
 
   const formatChatTitle = (names) => {
     if (names.length > 1) {
@@ -62,6 +46,8 @@ const ChatPage = () => {
           채팅
         </Typography>
       </Box>
+      {status === 'loading' && <Typography>Loading...</Typography>}
+      {status === 'failed' && <Typography>Error: {error}</Typography>}
       <List>
         {chats.map((chat) => (
           <ListItem
