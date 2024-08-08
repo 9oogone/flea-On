@@ -62,6 +62,7 @@ const ShortsPage = () => {
       <Box
         sx={{
           position: "fixed",
+          display: "flex",
           bottom: 0,
           width: "100%",
           color: "white",
@@ -83,6 +84,7 @@ const ShortsPage = () => {
               <ListItemText
                 primary={comment.username}
                 secondary={comment.text}
+                sx={{ color: "white" }}
               />
             </ListItem>
           ))}

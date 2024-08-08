@@ -8,14 +8,12 @@ const CategoryPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { categories, loading, error } = useSelector((state) => state.category);
-  const token = useSelector((state) => state.auth.token); // 토큰 가져오기
+  // const token = useSelector((state) => state.auth.token); // 토큰 가져오기
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
 
   useEffect(() => {
-    if (token) {
-      dispatch(fetchCategories(token)); // 토큰을 전달하여 카테고리 가져오기
-    }
-  }, [dispatch, token]);
+    dispatch(fetchCategories()); // 토큰을 전달하여 카테고리 가져오기
+  }, [dispatch]); // 빈 배열을 추가하여 컴포넌트 마운트 시 한 번만 실행되도록 설정
 
   const onCategoryClick = useCallback((categoryId) => {
     setSelectedCategoryId(categoryId);

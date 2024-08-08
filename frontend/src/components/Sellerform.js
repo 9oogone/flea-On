@@ -63,6 +63,7 @@ const SellerformSelect = ({ onClose }) => {
       idx === index ? { ...time, [field]: value } : time
     );
     setTransactionTimes(updatedTimes);
+    console.log(updatedTimes);
   };
 
   const handleOpenAddressSearch = () => {
@@ -80,10 +81,13 @@ const SellerformSelect = ({ onClose }) => {
 
     if (field === "name" && value) {
       dispatch(fetchCategories(value)).then((action) => {
-        if (action.payload && action.payload.length > 0) {
-          newItems[index].firstCategoryId = action.payload[0].firstCategoryId;
-          newItems[index].secondCategoryId = action.payload[0].secondCategoryId;
-          console.log("카테고리가 잘 나올까요? : ",action.payload);
+        const payload = action.payload;
+
+        // payload가 존재하고, 필요한 속성이 있는지 확인
+        if (payload && payload.firstCategoryId) {
+          console.log("카테고리가 잘 나올까요? : ", payload.firstCategoryId);
+          newItems[index].firstCategoryId = payload.firstCategoryId;
+          newItems[index].secondCategoryId = payload.secondCategoryId;
           setItems(newItems);
         }
       });
@@ -118,6 +122,22 @@ const SellerformSelect = ({ onClose }) => {
     };
   }, []);
 
+  const formatLiveTradeTimes = (updatedTimesArray) => {
+    return updatedTimesArray.map((updatedTimes) => {
+      const { date, from, to } = updatedTimes;
+
+      const formattedDate = dayjs(date.$d).format("YYYY-MM-DD");
+      const tradeStart = dayjs(from.$d).format("HH:mm:ss");
+      const tradeEnd = dayjs(to.$d).format("HH:mm:ss");
+
+      return {
+        tradeStart,
+        tradeEnd,
+        date: formattedDate,
+      };
+    });
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     const formData = new FormData();
@@ -129,10 +149,10 @@ const SellerformSelect = ({ onClose }) => {
       //   body: formData,
       // });
       // const result = await response.json();
-
+      console.log(transactionTimes);
       const liveData = {
         title: document.getElementById("outlined-basic").value,
-        liveDate: startDate.toISOString(),
+        liveDate: dayjs(startDate).format("YYYY-MM-DDTHH:mm:ss"),
         // liveThumbnail: result.filePath, -> 백 완성되면 하기
         liveThumbnail: "https://picsum.photos/160/250",
         tradePlace: `${address} ${detailedAddress}`,
@@ -142,6 +162,7 @@ const SellerformSelect = ({ onClose }) => {
           firstCategoryId: item.firstCategoryId,
           secondCategoryId: item.secondCategoryId,
         })),
+        liveTradeTime: formatLiveTradeTimes(transactionTimes),
       };
 
       dispatch(createLiveBroadcast(liveData));
