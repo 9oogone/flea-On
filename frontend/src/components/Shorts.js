@@ -1,32 +1,31 @@
-import React, { useState } from "react";
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Box, Typography, Grid, Button } from "@mui/material";
 import {
   LocationOn,
   FavoriteBorderRounded,
   FavoriteRounded,
 } from "@mui/icons-material";
+import { toggleScrap } from "../features/shorts/shortsSlice";
 import { useNavigate } from "react-router-dom"; // 최신 버전 React Router 사용
 
-const Shorts = ({ items }) => {
-  const [shortItems, setShortItems] = useState(items);
-  const navigate = useNavigate(); // navigate 함수 생성
+const Shorts = () => {
+  const dispatch = useDispatch();
+  const shorts = useSelector((state) => state.shorts.shorts);
+  const navigate = useNavigate();
 
   const handleButtonClick = (shortsId) => {
     navigate(`/shorts/${shortsId}`);
   };
 
-  const toggleFavorite = (id) => {
-    setShortItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === id ? { ...item, is_scrap: !item.is_scrap } : item
-      )
-    );
+  const handleScrapToggle = (id) => {
+    dispatch(toggleScrap({ shortsId: id }));
   };
 
   return (
     <Grid item xs={12}>
       <Grid container>
-        {shortItems.map((item) => (
+        {shorts.map((item) => (
           <Grid key={item.id} item xs={6} sx={{ textAlign: "center" }}>
             <Button
               onClick={() => handleButtonClick(item.shorts_id)}
@@ -52,16 +51,27 @@ const Shorts = ({ items }) => {
                     textAlign: "end",
                     color: "white",
                   }}
-                  onClick={(e) => {
-                    e.stopPropagation(); // 부모 요소의 클릭 이벤트가 트리거되지 않도록 방지
-                    toggleFavorite(item.id);
-                  }}
                 >
-                  {item.is_scrap ? (
-                    <FavoriteRounded sx={{ color: "#FF0B55" }} />
-                  ) : (
-                    <FavoriteBorderRounded />
-                  )}
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      top: 0,
+                      right: 0,
+                      p: 1,
+                      cursor: "pointer",
+                      zIndex: 1,
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleScrapToggle(item.id);
+                    }}
+                  >
+                    {item.is_scrap ? (
+                      <FavoriteRounded sx={{ color: "#FF0B55" }} />
+                    ) : (
+                      <FavoriteBorderRounded />
+                    )}
+                  </Box>
                 </Box>
                 <Box
                   sx={{
