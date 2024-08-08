@@ -5,11 +5,19 @@ const initialState = {
   chats: [],
   status: 'idle',
   error: null,
+  noChats: false, 
 };
 
-export const fetchChats = createAsyncThunk('chat/fetchChats', async () => {
-  const response = await baseAxios().get('/fleaon/chat');
-  return response.data;
+export const fetchChats = createAsyncThunk('chat/fetchChats', async (_, { rejectWithValue }) => {
+  try {
+    const response = await baseAxios().get('/fleaon/chat');
+    return response.data;
+  } catch (err) {
+    if (err.response && err.response.status === 404) {
+      return rejectWithValue('noChats');
+    }
+    throw err;
+  }
 });
 
 const chatSlice = createSlice({
@@ -20,14 +28,20 @@ const chatSlice = createSlice({
     builder
       .addCase(fetchChats.pending, (state) => {
         state.status = 'loading';
+        state.noChats = false; 
       })
       .addCase(fetchChats.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.chats = action.payload;
       })
       .addCase(fetchChats.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.error.message;
+        if (action.payload === 'noChats') {
+          state.status = 'succeeded';
+          state.noChats = true;
+        } else {
+          state.status = 'failed';
+          state.error = action.error.message;
+        }
       });
   },
 });
