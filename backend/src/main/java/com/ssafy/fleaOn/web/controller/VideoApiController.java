@@ -31,6 +31,7 @@ public class VideoApiController {
     @Operation(summary = "쇼츠 보기", description = "쇼츠를 볼 때 사용합니다.")
     @GetMapping("/streamVideo")
     public ResponseEntity<Resource> streamVideo(@RequestParam("filePath") String filePath) {
+        System.out.println("/opt/openvidu/recordings/"+filePath+"/"+filePath+".mp4");
         UrlResource resource;
         log.debug("Received request to stream video with path: {}", filePath);
         try {
