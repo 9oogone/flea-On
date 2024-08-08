@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -32,12 +33,14 @@ public class VideoApiController {
     @GetMapping("/streamVideo")
     public ResponseEntity<Resource> streamVideo(@RequestParam("filePath") String filePath) {
         System.out.println("/opt/openvidu/recordings/"+filePath+"/"+filePath+".mp4");
+        File file1 = new File("/opt/openvidu/recordings/"+filePath+"/"+filePath+".mp4");
         UrlResource resource;
         log.debug("Received request to stream video with path: {}", filePath);
         try {
             Path videoPath = Paths.get("/opt/openvidu/recordings/"+filePath+"/"+filePath+".mp4");
             System.out.println(videoPath);
-            if (!Files.exists(videoPath)) {
+            if(!file1.exists()){
+            // if (!Files.exists(videoPath)) {
                 log.warn("File not found: {}", filePath);
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
