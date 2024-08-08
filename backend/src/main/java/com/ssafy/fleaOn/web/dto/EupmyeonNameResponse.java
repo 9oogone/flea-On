@@ -13,4 +13,5 @@ import lombok.NoArgsConstructor;
 public class EupmyeonNameResponse {
 
     private String eupmyeonName;
+    private String regionCode;
 }

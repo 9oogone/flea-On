@@ -1,10 +1,7 @@
 package com.ssafy.fleaOn.web.service;
 
 import com.ssafy.fleaOn.web.domain.*;
-import com.ssafy.fleaOn.web.dto.EupmyeonNameResponse;
-import com.ssafy.fleaOn.web.dto.GugunNameResponse;
-import com.ssafy.fleaOn.web.dto.MainShortsResponse;
-import com.ssafy.fleaOn.web.dto.SidoNameResponse;
+import com.ssafy.fleaOn.web.dto.*;
 import com.ssafy.fleaOn.web.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -28,10 +25,28 @@ public class MainService {
     private final ProductRepository productRepository;
 
     private final RegionInfoRepository regionInfoRepository;
+    private final UserRegionRepository userRegionRepository;
 
     public Slice<Live> getMainLiveListByLiveDate(LocalDateTime liveDate) {
         Pageable pageable = PageRequest.of(0, 10);
         return liveRepository.findAllByOrderByIsLiveDescLiveDateAsc(pageable);
+    }
+
+//    public Slice<MainLiveResponse> getMainLiveListByRegionCode(List<UserRegion> findUserRegionList){
+//        Pageable pageable = PageRequest.of(0, 10);
+//        List<MainLiveResponse> mainLiveResponseList = new ArrayList<>();
+//
+//        for(UserRegion userRegion : findUserRegionList){
+//            String regionCode = userRegion.getRegion().getRegionCode();
+//
+//            List<Live> findLiveList = liveRepository.findByRegionCode
+//
+//        }
+//    }
+
+    public List<UserRegion> getUserRegionByUserId(int userId){
+        Optional<List<UserRegion>> userRegionList = userRegionRepository.findByUser_userId(userId);
+        return Optional.ofNullable(userRegionList.get()).orElse(Collections.emptyList());
     }
 
     public Slice<MainShortsResponse> getMainShortsListByUploadDate() {
@@ -146,7 +161,7 @@ public class MainService {
         return regionInfoRepository.findDistinctGugunBySido(sidoName);
     }
 
-    public List<EupmyeonNameResponse> getEupmyeonNameBySidoNameAndGugunName(String sidoName, String gugunName){
+    public List<EupmyeonNameResponse> getEupmyeonNameAndRegionCodeBySidoNameAndGugunName(String sidoName, String gugunName){
         return regionInfoRepository.findDistinctBySidoAndGugun(sidoName, gugunName);
     }
 }
