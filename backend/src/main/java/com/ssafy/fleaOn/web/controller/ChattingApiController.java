@@ -44,7 +44,7 @@ public class ChattingApiController {
 
             User user = userService.findByEmail(userEmail); // 이메일로 userId 가져오기
             if (user == null) {
-                return new ResponseEntity<>("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>("사용자를 찾을 수 없습니다.", HttpStatus.UNAUTHORIZED);
             }
 
             List<ChattingResponse> chattingResponses = chattingService.getChattingByUserId(user.getUserId());
@@ -70,7 +70,7 @@ public class ChattingApiController {
 
             User user = userService.findByEmail(userEmail); // 이메일로 userId 가져오기
             if (user == null) {
-                return new ResponseEntity<>("사용자를 찾을 수 없습니다.", HttpStatus.OK);
+                return new ResponseEntity<>("사용자를 찾을 수 없습니다.", HttpStatus.UNAUTHORIZED);
             }
 
             ChattingMessageResponse chattingMessageResponse = chattingService.getChatMessage(chattingId, user);
