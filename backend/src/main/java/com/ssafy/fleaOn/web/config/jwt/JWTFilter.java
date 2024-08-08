@@ -34,39 +34,38 @@ public class JWTFilter extends OncePerRequestFilter {
         if (method.equals("OPTIONS")) return;
         String authorization = request.getHeader("Authorization");
         if (authorization != null) {
-            System.out.println("Authorization: " + authorization);
+            logger.info("Authorization: " + authorization);
         }
 
         // Authorization 헤더 검증
         if (authorization == null || !authorization.startsWith("Bearer ")) {
-            System.out.println("Token is null or doesn't start with Bearer");
+            logger.info("Token is null or doesn't start with Bearer");
             filterChain.doFilter(request, response);
             return;
         }
 
         // "Bearer " 접두사 제거
         String token = authorization.substring(7).trim();
-        System.out.println("jwtToken: " + token);
+        logger.info("jwtToken: " + token);
 
         try {
             if (jwtUtil.isExpired(token)) {
-                System.out.println("Token expired");
+                logger.info("Token expired");
 
                 // 만료된 토큰을 갱신하여 새로운 토큰 생성
                 String newToken = jwtUtil.refreshToken(token);
                 response.addCookie(createCookie("Authorization", newToken));
                 // 새로운 토큰으로 인증 세션 업데이트
                 updateAuthentication(newToken);
-                filterChain.doFilter(request, response);
-                return;
+                logger.info("Token refreshed and new token set in the response cookie");
+            } else {
+                // 토큰에서 username과 role 획득
+                updateAuthentication(token);
             }
-
-            // 토큰에서 username과 role 획득
-            updateAuthentication(token);
 
         } catch (Exception e) {
             // JWT 파싱 오류 처리
-            e.printStackTrace();
+            logger.error("JWT Parsing error: ", e);
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
@@ -78,9 +77,9 @@ public class JWTFilter extends OncePerRequestFilter {
         String userIdentifier = jwtUtil.getUserIdentifier(token);
         String role = jwtUtil.getRole(token);
         String email = jwtUtil.getEmail(token);
-        System.out.println("userIdentifier: " + userIdentifier);
-        System.out.println("role: " + role);
-        System.out.println("email: " + email);
+        logger.info("userIdentifier: " + userIdentifier);
+        logger.info("role: " + role);
+        logger.info("email: " + email);
 
         // userEntity를 생성하여 값 set
         User user = User.builder()
@@ -97,10 +96,6 @@ public class JWTFilter extends OncePerRequestFilter {
 
         // 세션에 사용자 등록
         SecurityContextHolder.getContext().setAuthentication(authToken);
-
-//        filterChain.doFilter(request, response);
-//
-//        String requestUri = request.getRequestURI();
     }
 
     private Cookie createCookie(String name, String value) {
