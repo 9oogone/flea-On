@@ -32,7 +32,7 @@ const ChatNav = ({ onClose, onCancelTrade, onTradeDetail, onChangeTime }) => {
         {" "}
         먼 차이인가용 고우니에게 물어보기
       
-        <div className={styles.instanceParent} ref={instanceParentRef}>
+        <div className={styles.instanceParent} regif={instanceParentRef}>
           <div className={styles.frameDiv} onClick={onChangeTime}>
             {" "}
             <img className={styles.dicons} alt="" src={timeicons} />
