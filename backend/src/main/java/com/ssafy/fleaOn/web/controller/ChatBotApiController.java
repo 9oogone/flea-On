@@ -37,7 +37,7 @@ public class ChatBotApiController {
 
             User user = userService.findByEmail(userEmail); // 이메일로 userId 가져오기
             if (user == null) {
-                return new ResponseEntity<>("사용자를 찾을 수 없습니다.", HttpStatus.OK);
+                return new ResponseEntity<>("사용자를 찾을 수 없습니다.", HttpStatus.UNAUTHORIZED);
             }
 
             ChatbotDetailResponse chatbotDetailResponse = chatBotService.getChattingDetailsByChatId(chatId, user.getUserId());
@@ -62,7 +62,7 @@ public class ChatBotApiController {
             User user = userService.findByEmail(userEmail); // 이메일로 userId 가져오기
             if (user == null) {
                 logger.info("판매자와 대화에서 사용자 찾을 수 없음");
-                return new ResponseEntity<>("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>("사용자를 찾을 수 없습니다.", HttpStatus.UNAUTHORIZED);
             }
 
             logger.info("판매자 대화 시작한다");
@@ -85,7 +85,7 @@ public class ChatBotApiController {
 
             User user = userService.findByEmail(userEmail); // 이메일로 userId 가져오기
             if (user == null) {
-                return new ResponseEntity<>("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>("사용자를 찾을 수 없습니다.", HttpStatus.UNAUTHORIZED);
             }
 
             chatBotService.updateTradeTime(changeTimeRequest);
