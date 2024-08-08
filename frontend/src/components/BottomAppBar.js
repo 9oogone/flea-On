@@ -44,7 +44,7 @@ const BottomAppBar = () => {
   }, [navigate]);
 
   // 채팅 경로인지 확인
-  const isChatRoom = location.pathname.startsWith("/chat");
+  const isChatRoom = location.pathname.startsWith("/chat/");
 
   return (
     <>

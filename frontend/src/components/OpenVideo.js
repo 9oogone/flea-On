@@ -4,7 +4,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { setLoading, unSetLoading } from "../features/live/loadingSlice";
 import { getToken, startRecording, stopRecording } from "../api/openViduAPI";
 import { useParams } from "react-router-dom";
-import { Button, Box, Typography, Modal, TextField } from "@mui/material";
+import {
+  Button,
+  Box,
+  Typography,
+  Modal,
+  TextField,
+  Avatar,
+} from "@mui/material";
 import Slider from "react-slick";
 import baseAxios from "../utils/httpCommons";
 import { useSpeechRecognition } from "react-speech-kit";
@@ -12,11 +19,54 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import useDidMountEffect from "../utils/useDidMountEffect";
 import Calendar from "../components/SelectTradeTime"; // SelectTradeTime 컴포넌트를 불러옵니다.
+import CustomerDateTimeSelector from "./CustomerDateTimeSelector";
 import FlipCameraAndroidIcon from "@mui/icons-material/FlipCameraAndroid";
 import SendIcon from "@mui/icons-material/Send";
 import CloseIcon from "@mui/icons-material/Close";
-import { Avatar } from "@mui/material";
 import { styled } from "@mui/system";
+
+const dummyDatas = {
+  place: "덕명동 삼성화재 유성연수원 경비실 앞",
+  live_date: "2024-08-06",
+  times: [
+    {
+      tradeStart: "10:00",
+      tradeEnd: "17:00",
+      date: "2024-08-06",
+    },
+    {
+      tradeStart: "06:00",
+      tradeEnd: "10:00",
+      date: "2024-08-07",
+    },
+    {
+      tradeStart: "14:00",
+      tradeEnd: "16:00",
+      date: "2024-08-07",
+    },
+    {
+      tradeStart: "11:00",
+      tradeEnd: "13:00",
+      date: "2024-08-08",
+    },
+    {
+      tradeStart: "10:00",
+      tradeEnd: "11:00",
+      date: "2024-08-10",
+    },
+    {
+      tradeStart: "12:00",
+      tradeEnd: "19:00",
+      date: "2024-08-11",
+    },
+    {
+      tradeStart: "01:00",
+      tradeEnd: "20:00",
+      date: "2024-08-12",
+    },
+  ],
+};
+
 const OpenVideo = () => {
   const videoRef = useRef(null);
   const [isRecording, setIsRecording] = useState(false);
@@ -34,6 +84,43 @@ const OpenVideo = () => {
   const [mainStreamManager, setMainStreamManager] = useState(undefined);
   const [sttValue, setSttValue] = useState("");
   const [publisher, setPublisher] = useState(undefined);
+
+  //거래장소시간 선택 모달
+  const [open, setOpen] = useState(false);
+  const [place, setPlace] = useState(dummyDatas.place);
+  const [live_date, setLiveDate] = useState(dummyDatas.live_date);
+  const [times, setTimes] = useState([]);
+
+  const handleCustomerClick = () => {
+    setPlace(dummyDatas.place);
+    setLiveDate(dummyDatas.live_date);
+    const timeSlots = generateTimeSlots(dummyDatas.times);
+    setTimes(timeSlots);
+    setOpen(true);
+  };
+
+  const handleClose = () => setOpen(false);
+
+  const generateTimeSlots = (tradeTimes) => {
+    const slots = [];
+
+    tradeTimes.forEach((time) => {
+      let start = new Date(`${time.date}T${time.tradeStart}`);
+      const end = new Date(`${time.date}T${time.tradeEnd}`);
+
+      while (start < end) {
+        slots.push({
+          time: start.toTimeString().slice(0, 5),
+          date: time.date,
+        });
+
+        // 새로운 Date 객체를 생성하여 30분을 추가합니다.
+        start = new Date(start.getTime() + 30 * 60000); // 30분 = 30 * 60000 밀리초
+      }
+    });
+    return slots;
+  };
+  //
 
   let subscribers = [];
 
@@ -480,11 +567,13 @@ const OpenVideo = () => {
                 variant="contained"
                 color="secondary"
                 disabled={!isRecording}
-                onClick={() => handleBuy(currentProduct.id)} // 구매 버튼 클릭 시 handleBuy 호출
+                // onClick={() => handleBuy(currentProduct.id)} // 구매 버튼 클릭 시 handleBuy 호출
+                onClick={handleCustomerClick}
                 sx={{ width: "36vw" }}
               >
                 {isRecording ? "구매하기" : "상품 준비중"}
               </Button>
+              /////////////////////////////////////////////얘다 달력 연결할 애임///////
             )}
             {currentProduct && (
               <Box sx={{ marginTop: 2 }}>
@@ -582,9 +671,16 @@ const OpenVideo = () => {
             p: 4,
           }}
         >
-          <Calendar
+          {/* <Calendar
             productId={selectedProductId}
             onClose={() => setIsModalOpen(false)}
+          /> */}
+          <CustomerDateTimeSelector
+            open={open}
+            handleClose={handleClose}
+            place={place}
+            live_date={live_date}
+            times={times}
           />
         </Box>
       </Modal>
