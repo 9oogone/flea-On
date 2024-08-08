@@ -43,28 +43,34 @@ public class Live {
     @JoinColumn(name = "seller_id", nullable = false)
     private User seller;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "region_code", nullable = false)
+    private RegionInfo regionInfo;
+
     @Builder
-    public Live(String title, LocalDateTime liveDate, String liveThumbnail, String tradePlace, User seller) {
+    public Live(String title, LocalDateTime liveDate, String liveThumbnail, String tradePlace, User seller, RegionInfo regionInfo, int isLive) {
         this.title = title;
         this.liveDate = liveDate;
         this.liveThumbnail = liveThumbnail;
         this.tradePlace = tradePlace;
         this.seller = seller;
-        this.isLive = 0;
+        this.regionInfo = regionInfo;
+        this.isLive = isLive;
     }
 
-    public void update(String title, LocalDateTime liveDate, String liveThumbnail, String tradePlace) {
+    public void update(String title, LocalDateTime liveDate, String liveThumbnail, String tradePlace, RegionInfo regionInfo) {
         this.title = title;
         this.liveDate = liveDate;
         this.liveThumbnail = liveThumbnail;
         this.tradePlace = tradePlace;
+        this.regionInfo = regionInfo;
     }
 
-    public void on(){
+    public void on() {
         this.isLive = 1;
     }
 
-    public void off(){
+    public void off() {
         this.isLive = 2;
     }
 }

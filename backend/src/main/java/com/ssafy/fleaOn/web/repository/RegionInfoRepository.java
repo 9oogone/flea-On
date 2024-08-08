@@ -22,4 +22,6 @@ public interface RegionInfoRepository extends JpaRepository<RegionInfo, Integer>
 
     @Query("SELECT DISTINCT new com.ssafy.fleaOn.web.dto.EupmyeonNameResponse(r.eupmyeon, r.regionCode) FROM RegionInfo r WHERE r.sido = :sidoName AND r.gugun = :gugunName")
     List<EupmyeonNameResponse> findDistinctBySidoAndGugun(@Param("sidoName") String sidoName, @Param("gugunName") String gugunName);
+
+    Optional<RegionInfo> findByRegionCode(String regionCode);
 }
