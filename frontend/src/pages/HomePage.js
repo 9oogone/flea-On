@@ -135,7 +135,7 @@ const HomePage = () => {
     ],
     shorts: [
       {
-        id: 2,
+        id: 13,
         name: "키티템 정리",
         price: 3000,
         trade_place: "덕명동",
@@ -145,7 +145,7 @@ const HomePage = () => {
         shorts_id: 1,
       },
       {
-        id: 2,
+        id: 14,
         name: "키티템 정리",
         price: 3000,
         trade_place: "덕명동",

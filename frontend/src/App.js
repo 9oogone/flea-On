@@ -21,6 +21,7 @@ import SearchShorts from "./pages/SearchShortsPage";
 import SearchLive from "./pages/SearchLivePage";
 import PrivateRoute from "./components/PrivateRoute";
 import OpenVideo from "./components/OpenVideo";
+import Shorts from "./pages/ShortsPage";
 import AddressSearch from "./pages/AddressSearch";
 import BuyList from "./features/mypage/components/BuyList";
 import SellList from "./features/mypage/components/SellList";
@@ -53,7 +54,8 @@ function App() {
       location.pathname === "/initial" ||
       location.pathname === "/welcome" ||
       location.pathname === "/address-search" ||
-      location.pathname.startsWith("/live/");
+      location.pathname.startsWith("/live/") ||
+      location.pathname.startsWith("/shorts/");
     const isSearchPage =
       location.pathname === "/" ||
       location.pathname === "/category" ||
@@ -69,7 +71,7 @@ function App() {
   };
 
   return (
-    <Router basename={process.env.PUBLIC_URL}>
+    <Router>
       <LocationWrapper>
         <Routes>
           {routes.map((route) =>
@@ -89,6 +91,7 @@ function App() {
           )}
 
           <Route path={"/live/:sessionName"} element={<OpenVideo />}></Route>
+          <Route path={"/shorts/:shortsId"} element={<Shorts />}></Route>
         </Routes>
       </LocationWrapper>
     </Router>
