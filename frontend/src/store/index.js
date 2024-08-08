@@ -10,6 +10,8 @@ import buylistReducer from "../features/mypage/buylistSlice";
 import selllistReducer from "../features/mypage/selllistSlice";
 import watchlistReducer from "../features/mypage/watchlistSlice";
 import shortsReducer from "../features/shorts/shortsSlice";
+import chatReducer from "../features/chat/chatSlice"
+
 import "../styles/global.css";
 
 const store = configureStore({
@@ -25,6 +27,7 @@ const store = configureStore({
     sell: selllistReducer,
     watch: watchlistReducer,
     shorts: shortsReducer,
+    chat: chatReducer,
   },
 });
 

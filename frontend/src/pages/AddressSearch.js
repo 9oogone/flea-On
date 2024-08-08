@@ -10,11 +10,14 @@ const AddressSearch = () => {
             new window.daum.Postcode({
                 oncomplete: (data) => {
                     window.opener.postMessage({
-                        address: data.address
+                        address: data.address,
+                        bcode:data.bcode
                     }, "*");
                     window.close();
+              
                 }
             }).embed(postcodeElement);
+        
         };
 
         if (!document.getElementById(scriptId)) {
