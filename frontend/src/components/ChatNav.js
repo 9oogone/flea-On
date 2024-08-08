@@ -29,12 +29,8 @@ const ChatNav = ({ onClose, onCancelTrade, onTradeDetail, onChangeTime }) => {
   return (
     <div className={styles.chatNav}>
       <div className={styles.backblur}>
-        {" "}
-        먼 차이인가용 고우니에게 물어보기
-      
-        <div className={styles.instanceParent} regif={instanceParentRef}>
-          <div className={styles.frameDiv} onClick={onChangeTime}>
-            {" "}
+        <div className={styles.instanceParent} ref={instanceParentRef}>
+          <div className={styles.diconsParent1} onClick={onChangeTime}>
             <img className={styles.dicons} alt="" src={timeicons} />
             <div className={styles.div1}>시간 변경</div>
           </div>
@@ -42,7 +38,7 @@ const ChatNav = ({ onClose, onCancelTrade, onTradeDetail, onChangeTime }) => {
             <img className={styles.dicons} alt="" src={detailicons} />
             <div className={styles.div1}>거래 상세</div>
           </div>
-          <div className={styles.frameDiv} onClick={onCancelTrade}>
+          <div className={styles.diconsParent1} onClick={onCancelTrade}>
             <img className={styles.dicons} alt="" src={cancelicons} />
             <div className={styles.div1}>거래 취소</div>
           </div>
