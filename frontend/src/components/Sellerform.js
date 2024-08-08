@@ -32,6 +32,7 @@ const SellerformSelect = ({ onClose }) => {
     { date: dayjs(), from: dayjs(), to: dayjs() },
   ]);
   const [address, setAddress] = useState("");
+  const [bcode, setBcode] = useState("");
   const [detailedAddress, setDetailedAddress] = useState("");
   const [items, setItems] = useState([
     { name: "", price: "", firstCategoryId: 0, secondCategoryId: 0 },
@@ -114,6 +115,7 @@ const SellerformSelect = ({ onClose }) => {
       }
       if (event.data.address) {
         setAddress(event.data.address);
+        setBcode(event.data.bcode);
       }
     };
     window.addEventListener("message", handleMessage);
@@ -149,13 +151,14 @@ const SellerformSelect = ({ onClose }) => {
       //   body: formData,
       // });
       // const result = await response.json();
-      console.log(transactionTimes);
+      console.log(bcode);
       const liveData = {
         title: document.getElementById("outlined-basic").value,
         liveDate: dayjs(startDate).format("YYYY-MM-DDTHH:mm:ss"),
         // liveThumbnail: result.filePath, -> 백 완성되면 하기
         liveThumbnail: "https://picsum.photos/160/250",
         tradePlace: `${address} ${detailedAddress}`,
+        regionCode: bcode,
         product: items.map((item) => ({
           name: item.name,
           price: parseInt(item.price, 10),

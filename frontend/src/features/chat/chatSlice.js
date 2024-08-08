@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import baseAxios from '../../utils/httpCommons';
 
 const initialState = {
   chats: [],
@@ -8,7 +8,7 @@ const initialState = {
 };
 
 export const fetchChats = createAsyncThunk('chat/fetchChats', async () => {
-  const response = await axios.get('https://i11b202.p.ssafy.io/fleaon/chat');
+  const response = await baseAxios().get('/fleaon/chat');
   return response.data;
 });
 
