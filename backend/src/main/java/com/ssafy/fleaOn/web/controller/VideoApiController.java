@@ -36,6 +36,7 @@ public class VideoApiController {
         log.debug("Received request to stream video with path: {}", filePath);
         try {
             Path videoPath = Paths.get("/opt/openvidu/recordings/"+filePath+"/"+filePath+".mp4");
+            System.out.println(videoPath);
             if (!Files.exists(videoPath)) {
                 log.warn("File not found: {}", filePath);
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
