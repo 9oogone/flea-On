@@ -28,22 +28,78 @@ import SellList from "./features/mypage/components/SellList";
 import WatchList from "./features/mypage/components/WatchList";
 
 const routes = [
-  { path: "/", element: <HomePage />, isPrivate: false },
+  {
+    path: "/",
+    element: <HomePage />,
+    isPrivate: process.env.REACT_APP_LOGIN_BOOL === "true",
+  },
   { path: "/login", element: <LoginPage />, isPrivate: false },
   { path: "/check", element: <CheckLogin />, isPrivate: false },
-  { path: "/initial", element: <Initial />, isPrivate: false },
-  { path: "/welcome", element: <WelcomePage />, isPrivate: false },
-  { path: "/category", element: <Category />, isPrivate: false },
-  { path: "/search", element: <Search />, isPrivate: false },
-  { path: "/chat", element: <Chat />, isPrivate: false },
-  { path: "/chat/:chatID", element: <ChatRoom />, isPrivate: false },
-  { path: "/mypage", element: <MyPage />, isPrivate: false },
-  { path: "/mypage/buy-list", element: <BuyList />, isPrivate: false },
-  { path: "/mypage/sell-list", element: <SellList />, isPrivate: false },
-  { path: "/mypage/watch-list", element: <WatchList />, isPrivate: false },
-  { path: "/address-search", element: <AddressSearch />, isPrivate: false },
-  { path: "/search/shorts", element: <SearchShorts />, isPrivate: false },
-  { path: "/search/live", element: <SearchLive />, isPrivate: false },
+  {
+    path: "/initial",
+    element: <Initial />,
+    isPrivate: process.env.REACT_APP_LOGIN_BOOL === "true",
+  },
+  {
+    path: "/welcome",
+    element: <WelcomePage />,
+    isPrivate: process.env.REACT_APP_LOGIN_BOOL === "true",
+  },
+  {
+    path: "/category",
+    element: <Category />,
+    isPrivate: process.env.REACT_APP_LOGIN_BOOL === "true",
+  },
+  {
+    path: "/search",
+    element: <Search />,
+    isPrivate: process.env.REACT_APP_LOGIN_BOOL === "true",
+  },
+  {
+    path: "/chat",
+    element: <Chat />,
+    isPrivate: process.env.REACT_APP_LOGIN_BOOL === "true",
+  },
+  {
+    path: "/chat/:chatID",
+    element: <ChatRoom />,
+    isPrivate: process.env.REACT_APP_LOGIN_BOOL === "true",
+  },
+  {
+    path: "/mypage",
+    element: <MyPage />,
+    isPrivate: process.env.REACT_APP_LOGIN_BOOL === "true",
+  },
+  {
+    path: "/mypage/buy-list",
+    element: <BuyList />,
+    isPrivate: process.env.REACT_APP_LOGIN_BOOL === "true",
+  },
+  {
+    path: "/mypage/sell-list",
+    element: <SellList />,
+    isPrivate: process.env.REACT_APP_LOGIN_BOOL === "true",
+  },
+  {
+    path: "/mypage/watch-list",
+    element: <WatchList />,
+    isPrivate: process.env.REACT_APP_LOGIN_BOOL === "true",
+  },
+  {
+    path: "/address-search",
+    element: <AddressSearch />,
+    isPrivate: process.env.REACT_APP_LOGIN_BOOL === "true",
+  },
+  {
+    path: "/search/shorts",
+    element: <SearchShorts />,
+    isPrivate: process.env.REACT_APP_LOGIN_BOOL === "true",
+  },
+  {
+    path: "/search/live",
+    element: <SearchLive />,
+    isPrivate: process.env.REACT_APP_LOGIN_BOOL === "true",
+  },
 ];
 
 function App() {
