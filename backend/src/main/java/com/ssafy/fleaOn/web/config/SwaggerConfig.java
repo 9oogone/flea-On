@@ -47,15 +47,4 @@ public class SwaggerConfig {
                 .description("Let's practice Swagger UI") // API에 대한 설명
                 .version("1.0.0"); // API의 버전
     }
-    @Bean
-    public OpenAPI customOpenAPI() {
-        return new OpenAPI()
-                .info(new Info().title("API Documentation").version("1.0.0"))
-                .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
-                .components(new io.swagger.v3.oas.models.Components()
-                        .addSecuritySchemes("bearerAuth", new SecurityScheme()
-                                .type(SecurityScheme.Type.HTTP)
-                                .scheme("bearer")
-                                .bearerFormat("JWT")));
-    }
 }

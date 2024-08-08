@@ -29,12 +29,14 @@ public class JWTFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        logger.info("여기 두필터야");
-        String method = request.getMethod();
-        if (method.equals("OPTIONS")) return;
+        logger.info("Request Method: " + request.getMethod());
+        logger.info("Request URL: " + request.getRequestURL().toString());
+
         String authorization = request.getHeader("Authorization");
         if (authorization != null) {
             logger.info("Authorization: " + authorization);
+        } else {
+            logger.info("Authorization header is null");
         }
 
         // Authorization 헤더 검증
@@ -46,7 +48,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
         // "Bearer " 접두사 제거
         String token = authorization.substring(7).trim();
-        logger.info("jwtToken: " + token);
+        logger.info("JWT Token: " + token);
 
         try {
             if (jwtUtil.isExpired(token)) {
@@ -77,9 +79,9 @@ public class JWTFilter extends OncePerRequestFilter {
         String userIdentifier = jwtUtil.getUserIdentifier(token);
         String role = jwtUtil.getRole(token);
         String email = jwtUtil.getEmail(token);
-        logger.info("userIdentifier: " + userIdentifier);
-        logger.info("role: " + role);
-        logger.info("email: " + email);
+        logger.info("User Identifier: " + userIdentifier);
+        logger.info("Role: " + role);
+        logger.info("Email: " + email);
 
         // userEntity를 생성하여 값 set
         User user = User.builder()
