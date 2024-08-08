@@ -1,5 +1,7 @@
 import { useRef, useEffect, useState, createElement } from 'react';
 import { useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchChatRoom } from '../features/chat/chatroomSlice'; 
 import styles from '../styles/ChatRoom.module.css';
 import ChatInput from '../components/ChatInput';
 import tailSent from '../assets/images/tail-sent.svg';
@@ -16,6 +18,9 @@ const formatTime = date => {
 
 const ChatRoom = () => {
   const { chatID } = useParams();
+  const dispatch = useDispatch();
+  const { chatRoom, status, error } = useSelector((state) => state.chatRoom);
+  const userId = useSelector((state) => state.auth.user?.id); 
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState('');
   const [isChatNavOpen, setIsChatNavOpen] = useState(false);
@@ -23,29 +28,19 @@ const ChatRoom = () => {
   const isFocusedRef = useRef(false);
 
   useEffect(() => {
-    const dummyMessages = [
-      { text: `안녕하세요 초호기 딸기왕님!<br/>
-초합금 고라니의 마켓에 오신 것을 환영해요.<br/><br/>
-✨ 거래 안내 <br/>
-거래 시간 :  2024. 07. 23. 목요일 오후 3 시<br/>
-거래 장소 :  대전광역시 유성구 동서대로 125<br/>
-한밭대학교 주차장 1 <br/>
-거래 상품 :  황토로 만든 커다란 독 외 3 개 상품<br/>
-거래 금액 : ❤️무료나눔❤️<br/><br/>
-거래 예정입니다!<br/>
-늦지 않게 약속된 장소에서 만나요~`, isSent: false, time: formatTime(new Date()) },
-      { text: 'I am good, thanks! How about you?', isSent: true, time: formatTime(new Date()) },
-      { text: 'I am doing great!', isSent: false, time: formatTime(new Date()) },
-      { text: 'That is good to hear.', isSent: true, time: formatTime(new Date()) },
-      {
-        text: '상품을 잘 받으셨나요? 구매하신 상품을 자랑해보세요!',
-        isSent: false,
-        time: formatTime(new Date()),
-        button: { text: '채널 추가', onClick: () => alert('채널이 추가되었습니다.') }
-      }
-    ];
-    setMessages(dummyMessages);
-  }, []);
+    dispatch(fetchChatRoom(chatID));
+  }, [chatID, dispatch]);
+
+  useEffect(() => {
+    if (chatRoom && chatRoom.messages) {
+      const formattedMessages = chatRoom.messages.map(msg => ({
+        text: msg.chat_content,
+        isSent: msg.writer_id === userId,
+        time: formatTime(new Date(msg.chat_time)),
+      }));
+      setMessages(formattedMessages);
+    }
+  }, [chatRoom, userId]);
 
   const handleSendMessage = () => {
     if (message.trim() !== '') {
@@ -79,6 +74,17 @@ const ChatRoom = () => {
     return currentMessage.isSent !== nextMessage.isSent || currentMessage.time !== nextMessage.time;
   };
 
+  if (status === 'loading') {
+    return <div>Loading...</div>;
+  }
+
+  if (status === 'failed') {
+    return <div>Error: {error}</div>;
+  }
+
+  const isSeller = chatRoom?.seller_id === userId;
+  const isBuyer = chatRoom?.buyer_id === userId;
+
   return createElement('div', { className: styles.chatRoom },
     createElement(ProfileHeader),
     createElement('ul', { className: styles.messageList },
@@ -106,7 +112,9 @@ const ChatRoom = () => {
       handleSendMessage,
       setFocus: (focus) => isFocusedRef.current = focus,
       isChatNavOpen,
-      setIsChatNavOpen
+      setIsChatNavOpen,
+      isSeller, 
+      isBuyer   
     })
   );
 };
