@@ -1,5 +1,6 @@
 package com.ssafy.fleaOn.web.config.jwt;
 
+import com.ssafy.fleaOn.web.controller.PurchaseApiController;
 import com.ssafy.fleaOn.web.dto.CustomOAuth2User;
 import com.ssafy.fleaOn.web.domain.User;
 import jakarta.servlet.FilterChain;
@@ -7,6 +8,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,6 +19,8 @@ import java.io.IOException;
 
 public class JWTFilter extends OncePerRequestFilter {
 
+    private static final Logger logger = LoggerFactory.getLogger(PurchaseApiController.class);
+
     private final JWTUtil jwtUtil;
 
     public JWTFilter(JWTUtil jwtUtil) {
@@ -24,6 +29,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        logger.info("여기 두필터야");
         String method = request.getMethod();
         if (method.equals("OPTIONS")) return;
         String authorization = request.getHeader("Authorization");
