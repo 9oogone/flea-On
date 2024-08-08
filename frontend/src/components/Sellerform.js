@@ -151,7 +151,6 @@ const SellerformSelect = ({ onClose }) => {
       //   body: formData,
       // });
       // const result = await response.json();
-      console.log(bcode);
       const liveData = {
         title: document.getElementById("outlined-basic").value,
         liveDate: dayjs(startDate).format("YYYY-MM-DDTHH:mm:ss"),
