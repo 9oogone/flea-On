@@ -7,6 +7,7 @@ import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import theme from "./theme";
 import { ThemeProvider } from "@mui/material/styles";
+import './styles/global.css';
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
