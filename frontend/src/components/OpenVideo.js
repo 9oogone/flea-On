@@ -349,6 +349,7 @@ const OpenVideo = () => {
 
   const handleBuy = (productId) => {
     setSelectedProductId(productId);
+    handleCustomerClick();
     setIsModalOpen(true); // 모달을 엽니다.
   };
 
@@ -567,8 +568,8 @@ const OpenVideo = () => {
                 variant="contained"
                 color="secondary"
                 disabled={!isRecording}
-                // onClick={() => handleBuy(currentProduct.id)} // 구매 버튼 클릭 시 handleBuy 호출
-                onClick={handleCustomerClick}
+                onClick={() => handleBuy(currentProduct.id)} // 구매 버튼 클릭 시 handleBuy 호출
+                // onClick={handleCustomerClick}
                 sx={{ width: "36vw" }}
               >
                 {isRecording ? "구매하기" : "상품 준비중"}
@@ -651,39 +652,13 @@ const OpenVideo = () => {
         </Slider>
       </Box>
 
-      {/* MUI Modal 컴포넌트 */}
-      <Modal
-        open={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        aria-labelledby="modal-title"
-        aria-describedby="modal-description"
-      >
-        <Box
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: 400,
-            bgcolor: "background.paper",
-            border: "2px solid #000",
-            boxShadow: 24,
-            p: 4,
-          }}
-        >
-          {/* <Calendar
-            productId={selectedProductId}
-            onClose={() => setIsModalOpen(false)}
-          /> */}
-          <CustomerDateTimeSelector
-            open={open}
-            handleClose={handleClose}
-            place={place}
-            live_date={live_date}
-            times={times}
-          />
-        </Box>
-      </Modal>
+      <CustomerDateTimeSelector
+        open={open}
+        handleClose={handleClose}
+        place={place}
+        live_date={live_date}
+        times={times}
+      />
     </div>
   );
 };

@@ -28,22 +28,22 @@ import SellList from "./features/mypage/components/SellList";
 import WatchList from "./features/mypage/components/WatchList";
 
 const routes = [
-  { path: "/", element: <HomePage />, isPrivate: true },
+  { path: "/", element: <HomePage />, isPrivate: false },
   { path: "/login", element: <LoginPage />, isPrivate: false },
   { path: "/check", element: <CheckLogin />, isPrivate: false },
-  { path: "/initial", element: <Initial />, isPrivate: true },
-  { path: "/welcome", element: <WelcomePage />, isPrivate: true },
-  { path: "/category", element: <Category />, isPrivate: true },
-  { path: "/search", element: <Search />, isPrivate: true },
-  { path: "/chat", element: <Chat />, isPrivate: true },
-  { path: "/chat/:chatID", element: <ChatRoom />, isPrivate: true },
-  { path: "/mypage", element: <MyPage />, isPrivate: true },
-  { path: "/mypage/buy-list", element: <BuyList />, isPrivate: true },
-  { path: "/mypage/sell-list", element: <SellList />, isPrivate: true },
-  { path: "/mypage/watch-list", element: <WatchList />, isPrivate: true },
-  { path: "/address-search", element: <AddressSearch />, isPrivate: true },
-  { path: "/search/shorts", element: <SearchShorts />, isPrivate: true },
-  { path: "/search/live", element: <SearchLive />, isPrivate: true },
+  { path: "/initial", element: <Initial />, isPrivate: false },
+  { path: "/welcome", element: <WelcomePage />, isPrivate: false },
+  { path: "/category", element: <Category />, isPrivate: false },
+  { path: "/search", element: <Search />, isPrivate: false },
+  { path: "/chat", element: <Chat />, isPrivate: false },
+  { path: "/chat/:chatID", element: <ChatRoom />, isPrivate: false },
+  { path: "/mypage", element: <MyPage />, isPrivate: false },
+  { path: "/mypage/buy-list", element: <BuyList />, isPrivate: false },
+  { path: "/mypage/sell-list", element: <SellList />, isPrivate: false },
+  { path: "/mypage/watch-list", element: <WatchList />, isPrivate: false },
+  { path: "/address-search", element: <AddressSearch />, isPrivate: false },
+  { path: "/search/shorts", element: <SearchShorts />, isPrivate: false },
+  { path: "/search/live", element: <SearchLive />, isPrivate: false },
 ];
 
 function App() {
