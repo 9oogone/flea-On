@@ -30,27 +30,27 @@ public class MainApiController {
     private final MainService mainService;
     private final UserService userService;
 
-//    @Operation(summary = "실시간 방송 목록 조회", description = "라이브 방송 목록을 조회할 때 사용합니다. ")
-//    @GetMapping("/mainLive")
-//    public ResponseEntity<?> getMainLive(HttpServletRequest request) {
-//        try {
-//            String authorizationToken = request.getHeader("Authorization");
-//            if (authorizationToken.isEmpty() || !authorizationToken.startsWith("Bearer ")) {
-//                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
-//            }
-//            String token = authorizationToken.substring(7);
-//            String email = JWTUtil.getEmail(token);
-//            User user = userService.findByEmail(email);
-//            if (user == null) {
-//                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당하는 사용자가 없습니다. ");
-//            }
-//            List<UserRegion> findUerRegionList = mainService.getUserRegionByUserId(user.getUserId());
-//            Slice<MainLiveResponse> mainLiveResponses = mainService.getMainLiveListByRegionCode(findUerRegionList);
-//            return ResponseEntity.status(HttpStatus.OK).body(mainLiveResponses);
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-//        }
-//    }
+    @Operation(summary = "실시간 방송 목록 조회", description = "라이브 방송 목록을 조회할 때 사용합니다. ")
+    @GetMapping("/mainLive")
+    public ResponseEntity<?> getMainLive(HttpServletRequest request) {
+        try {
+            String authorizationToken = request.getHeader("Authorization");
+            if (authorizationToken.isEmpty() || !authorizationToken.startsWith("Bearer ")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+            }
+            String token = authorizationToken.substring(7);
+            String email = JWTUtil.getEmail(token);
+            User user = userService.findByEmail(email);
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당하는 사용자가 없습니다. ");
+            }
+            List<UserRegion> findUerRegionList = mainService.getUserRegionByUserId(user.getUserId());
+            Slice<MainLiveResponse> mainLiveResponses = mainService.getMainLiveListByRegionCode(findUerRegionList);
+            return ResponseEntity.status(HttpStatus.OK).body(mainLiveResponses);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
 
     @Operation(summary = "쇼츠 목록 조회", description = "쇼츠 목록을 조회할 때 사용합니다. ")
     @GetMapping("/mainShorts")

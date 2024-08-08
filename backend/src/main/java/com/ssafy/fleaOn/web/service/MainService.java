@@ -32,38 +32,38 @@ public class MainService {
         return liveRepository.findAllByOrderByIsLiveDescLiveDateAsc(pageable);
     }
 
-//    public Slice<MainLiveResponse> getMainLiveListByRegionCode(List<UserRegion> findUserRegionList){
-//        Pageable pageable = PageRequest.of(0, 10);
-//        List<MainLiveResponse> mainLiveResponseList = new ArrayList<>();
-//
-//        for(UserRegion userRegion : findUserRegionList) {
-//            String regionCode = userRegion.getRegion().getRegionCode();
-//
-//            Optional<Slice<Live>> livePageOptional = Optional.ofNullable(liveRepository.findByRegionInfo_regionCode(regionCode, pageable));
-//            if (livePageOptional.isPresent()) {
-//                for (Live live : livePageOptional.get()) {
-//                    Optional<List<Product>> findProductList = productRepository.findByLive_LiveId(live.getLiveId());
-//                    if (findProductList.isPresent()) {
-//                        MainLiveResponse mainLiveResponse = MainLiveResponse.builder()
-//                                .liveId(live.getLiveId())
-//                                .liveTitle(live.getTitle())
-//                                .product(findProductList.get())
-//                                .tradePlace(live.getTradePlace())
-//                                .isLive(live.getIsLive())
-//                                .build();
-//
-//                        mainLiveResponseList.add(mainLiveResponse);
-//                    }
-//                }
-//            }
-//        }
-//        int start = (int) pageable.getOffset();
-//        int end = Math.min((start + pageable.getPageSize()), mainLiveResponseList.size());
-//        boolean hasNext = mainLiveResponseList.size() > end;
-//        List<MainLiveResponse> content = mainLiveResponseList.subList(start, end);
-//
-//        return new SliceImpl<>(content, pageable, hasNext);
-//    }
+    public Slice<MainLiveResponse> getMainLiveListByRegionCode(List<UserRegion> findUserRegionList){
+        Pageable pageable = PageRequest.of(0, 10);
+        List<MainLiveResponse> mainLiveResponseList = new ArrayList<>();
+
+        for(UserRegion userRegion : findUserRegionList) {
+            String regionCode = userRegion.getRegion().getRegionCode();
+
+            Optional<Slice<Live>> livePageOptional = Optional.ofNullable(liveRepository.findByRegionInfo_regionCode(regionCode, pageable));
+            if (livePageOptional.isPresent()) {
+                for (Live live : livePageOptional.get()) {
+                    Optional<List<Product>> findProductList = productRepository.findByLive_LiveId(live.getLiveId());
+                    if (findProductList.isPresent()) {
+                        MainLiveResponse mainLiveResponse = MainLiveResponse.builder()
+                                .liveId(live.getLiveId())
+                                .liveTitle(live.getTitle())
+                                .product(findProductList.get())
+                                .tradePlace(live.getTradePlace())
+                                .isLive(live.getIsLive())
+                                .build();
+
+                        mainLiveResponseList.add(mainLiveResponse);
+                    }
+                }
+            }
+        }
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), mainLiveResponseList.size());
+        boolean hasNext = mainLiveResponseList.size() > end;
+        List<MainLiveResponse> content = mainLiveResponseList.subList(start, end);
+
+        return new SliceImpl<>(content, pageable, hasNext);
+    }
 
     public List<UserRegion> getUserRegionByUserId(int userId){
         Optional<List<UserRegion>> userRegionList = userRegionRepository.findByUser_userId(userId);
