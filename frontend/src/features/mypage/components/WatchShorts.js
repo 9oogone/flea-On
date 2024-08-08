@@ -1,7 +1,8 @@
 import React from "react";
 import { Box, Typography, Grid, Button } from "@mui/material";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
-import BookmarkIcon from "@mui/icons-material/Bookmark";
+import { FavoriteRounded } from "@mui/icons-material";
+
 import { useNavigate } from "react-router-dom";
 
 const WatchlistShorts = ({ items }) => {
@@ -43,7 +44,7 @@ const WatchlistShorts = ({ items }) => {
                       color: "white",
                     }}
                   >
-                    <BookmarkIcon />
+                    <FavoriteRounded sx={{ color: "#FF0B55" }} />
                   </Box>
                   <Box
                     sx={{

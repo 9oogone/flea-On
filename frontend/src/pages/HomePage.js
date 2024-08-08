@@ -135,7 +135,7 @@ const HomePage = () => {
     ],
     shorts: [
       {
-        id: 2,
+        id: 1,
         name: "키티템 정리",
         price: 3000,
         trade_place: "덕명동",
@@ -146,6 +146,26 @@ const HomePage = () => {
       },
       {
         id: 2,
+        name: "키티템 정리",
+        price: 3000,
+        trade_place: "덕명동",
+        length: "01:30",
+        is_scrap: false,
+        thumbnail: "https://picsum.photos/160/250",
+        shorts_id: 1,
+      },
+      {
+        id: 3,
+        name: "키티템 정리",
+        price: 3000,
+        trade_place: "덕명동",
+        length: "01:30",
+        is_scrap: true,
+        thumbnail: "https://picsum.photos/160/250",
+        shorts_id: 2,
+      },
+      {
+        id: 4,
         name: "키티템 정리",
         price: 3000,
         trade_place: "덕명동",

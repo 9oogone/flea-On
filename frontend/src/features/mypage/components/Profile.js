@@ -113,10 +113,14 @@ const Profile = () => {
 
   return (
     <div className="profile">
-      <img src={userInfo.profileImage} alt={`${userInfo.nickname}'s profile`} />
+      <img
+        onClick={handleCustomerClick}
+        src={userInfo.profileImage}
+        alt={`${userInfo.nickname}'s profile`}
+      />
       <h3>{userInfo.nickname}</h3>
       <p>{extractDong(userInfo.address)} 주민</p>
-      <button onClick={handleCustomerClick}>프로필 편집</button>
+      <button>프로필 편집</button>
       <CustomerDateTimeSelector
         open={open}
         handleClose={handleClose}

@@ -45,6 +45,7 @@ const Buys = ({ items }) => {
 
     return distance;
   };
+
   return (
     <Box>
       {items.map((item) => {
