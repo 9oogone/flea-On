@@ -5,6 +5,7 @@ import levelReducer from "../features/mypage/levelSlice";
 import contentReducer from "../features/home/contentSlice";
 import loadingReducer from "../features/live/loadingSlice";
 import sessionReducer from "../features/live/sessionSlice";
+import scrapReducer from "../features/live/scrapSlice";
 import buylistReducer from "../features/mypage/buylistSlice";
 import selllistReducer from "../features/mypage/selllistSlice";
 import watchlistReducer from "../features/mypage/watchlistSlice";
@@ -21,6 +22,7 @@ const store = configureStore({
     content: contentReducer,
     loading: loadingReducer,
     session: sessionReducer,
+    scrap: scrapReducer,
     buy: buylistReducer,
     sell: selllistReducer,
     watch: watchlistReducer,
