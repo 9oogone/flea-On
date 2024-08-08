@@ -121,7 +121,7 @@ public class LiveApiController {
 
             User user = userService.findByEmail(userEmail); // 이메일로 사용자 정보를 가져옴
             if (user == null) {
-                return new ResponseEntity<>("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>("사용자를 찾을 수 없습니다.", HttpStatus.UNAUTHORIZED);
             }
 
             LiveDetailResponse onLive = liveService.onLive(liveID); // 서비스를 통해 Live 정보를 업데이트
@@ -142,7 +142,7 @@ public class LiveApiController {
 
             User user = userService.findByEmail(userEmail); // 이메일로 사용자 정보를 가져옴
             if (user == null) {
-                return new ResponseEntity<>("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>("사용자를 찾을 수 없습니다.", HttpStatus.UNAUTHORIZED);
             }
 
             LiveDetailResponse offLive = liveService.offLive(liveID); // 서비스를 통해 Live 정보를 업데이트
