@@ -1,23 +1,59 @@
 import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Box, Typography, Grid, Button } from "@mui/material";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
-import { FavoriteRounded } from "@mui/icons-material";
-
+import { FavoriteBorderRounded, FavoriteRounded } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import { toggleScrap } from "../../../features/shorts/shortsSlice";
+import { switchTab } from "../../../features/home/contentSlice";
 
-const WatchlistShorts = ({ items }) => {
+const WatchlistShorts = () => {
+  const dispatch = useDispatch();
+  const shorts = useSelector((state) => state.shorts.shorts);
   const navigate = useNavigate();
+
+  const handleNavigateToShorts = () => {
+    dispatch(switchTab("shorts")); // 탭을 "shorts"로 설정
+    navigate("/"); // 홈페이지로 이동
+  };
 
   const handleButtonClick = (shortsId) => {
     navigate(`/shorts/${shortsId}`);
   };
 
+  const handleScrapToggle = (id) => {
+    dispatch(toggleScrap({ shortsId: id }));
+  };
+
+  const watchShorts = shorts.filter((item) => item.is_scrap);
+
   return (
     <Grid item xs={12}>
       <Grid container>
-        {items
-          .filter((item) => item.is_scrap)
-          .map((item) => (
+        {watchShorts.length === 0 ? (
+          <Grid item xs={12} sx={{ textAlign: "center", mt: 4 }}>
+            <Typography variant="h6" sx={{ color: "grey.700" }}>
+              관심있는 판매 쇼츠가 없어요 <br />
+              한번 둘러보세요
+            </Typography>
+            <Button
+              onClick={handleNavigateToShorts}
+              sx={{
+                mt: 2,
+                color: "white",
+                backgroundColor: "#FF0B55",
+                padding: "10px 20px",
+                borderRadius: 3,
+                textTransform: "none",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              쇼츠 보러 가기
+            </Button>
+          </Grid>
+        ) : (
+          watchShorts.map((item) => (
             <Grid key={item.id} item xs={6} sx={{ textAlign: "center" }}>
               <Button
                 onClick={() => handleButtonClick(item.shorts_id)}
@@ -44,7 +80,26 @@ const WatchlistShorts = ({ items }) => {
                       color: "white",
                     }}
                   >
-                    <FavoriteRounded sx={{ color: "#FF0B55" }} />
+                    <Box
+                      sx={{
+                        position: "absolute",
+                        top: 0,
+                        right: 0,
+                        p: 1,
+                        cursor: "pointer",
+                        zIndex: 1,
+                      }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleScrapToggle(item.id);
+                      }}
+                    >
+                      {item.is_scrap ? (
+                        <FavoriteRounded sx={{ color: "#FF0B55" }} />
+                      ) : (
+                        <FavoriteBorderRounded />
+                      )}
+                    </Box>
                   </Box>
                   <Box
                     sx={{
@@ -116,7 +171,8 @@ const WatchlistShorts = ({ items }) => {
                 </Box>
               </Button>
             </Grid>
-          ))}
+          ))
+        )}
       </Grid>
     </Grid>
   );
