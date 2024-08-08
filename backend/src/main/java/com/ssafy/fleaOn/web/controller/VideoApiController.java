@@ -1,11 +1,14 @@
 package com.ssafy.fleaOn.web.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpRange;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,41 +22,39 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/fleaon/video")
-@Tag(name = "vidoe 관련 API", description = "video 관련 API입니다. ")
+@Slf4j
+@Tag(name = "video API", description = "video 관련 API")
 public class VideoApiController {
 
-    @GetMapping("/")
-    public ResponseEntity<Resource> getVideo(@RequestParam String filename, HttpRange range) {
+    @Operation(summary = "쇼츠 보기", description = "쇼츠를 볼 때 사용합니다.")
+    @GetMapping("/streamVideo")
+    public ResponseEntity<Resource> streamVideo(@RequestParam("filePath") String filePath) {
+        UrlResource resource;
+        log.debug("Received request to stream video with path: {}", filePath);
         try {
-            Path videoPath = Paths.get("videos/" + filename);
+            Path videoPath = Paths.get("/opt/openvidu/recordings/"+filePath+"/"+filePath+".mp4");
             if (!Files.exists(videoPath)) {
+                log.warn("File not found: {}", filePath);
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
-
-            Resource videoResource = new UrlResource(videoPath.toUri());
-
-            long contentLength = videoResource.contentLength();
-            long start = 0;
-            long end = contentLength - 1;
-            if (range != null) {
-                start = range.getRangeStart(contentLength);
-                end = range.getRangeEnd(contentLength);
-            }
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Range", "bytes " + start + "-" + end + "/" + contentLength);
-            headers.add("Accept-Ranges", "bytes");
-            headers.setContentLength(end - start + 1);
-
-            return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT)
-                    .headers(headers)
-                    .body(videoResource);
-
+            resource = new UrlResource(videoPath.toUri());
         } catch (MalformedURLException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            log.error("The given file path is not valid: {}", filePath, e);
+            throw new RuntimeException("The given URL path is not valid", e);
         }
+
+        String contentType;
+        try {
+            contentType = Files.probeContentType(Paths.get(filePath));
+        } catch (IOException e) {
+            contentType = "application/octet-stream";
+        }
+
+        return ResponseEntity
+                .ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .body(resource);
     }
 }
