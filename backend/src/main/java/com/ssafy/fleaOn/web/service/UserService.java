@@ -308,54 +308,55 @@ public class UserService {
         }
     }
 
-    public void addUserRegion(int userId, Map<String, Object> region) {
-        Optional<User> user = userRepository.findById(userId);
+    @Transactional
+    public void addUserRegion(int userId, String regionCode) {
+        Optional<User> user = userRepository.findByUserId(userId);
         if (user.isPresent()) {
-            String sido = region.get("sido").toString();
-            String gugun = region.get("gugun").toString();
-            String eupmyeon = region.get("eupmyeon") != null ? region.get("eupmyeon").toString() : null;
-            String li = region.get("li") != null ? region.get("li").toString() : null;
-
-            Optional<RegionInfo> findRegionInfo = regionInfoRepository.findBySidoAndGugunAndEupmyeonAndLi(sido, gugun, eupmyeon, li);
-            if (findRegionInfo.isPresent()) {
-                RegionInfo regionInfo = findRegionInfo.get();
-
-                // UserRegion 객체 생성 시 User와 RegionInfo 객체를 직접 할당
-                UserRegion addUserRegion = UserRegion.builder()
+            Optional<RegionInfo> regionInfo = regionInfoRepository.findByRegionCode(regionCode);
+            if (regionInfo.isPresent()) {
+                UserRegion userRegion = UserRegion.builder()
                         .user(user.get())
-                        .region(regionInfo)
+                        .region(regionInfo.get())
                         .build();
-
-                userRegionRepository.save(addUserRegion);
+                userRegionRepository.save(userRegion);
+                System.out.println("Saved user region: " + userRegion);
+            } else {
+                System.out.println("Region info not found for code: " + regionCode);
             }
+        } else {
+            System.out.println("User not found for id: " + userId);
         }
     }
 
-    public void updateUserRegion(int userId, Map<String, Object> newRegion, Map<String, Object> deleteRegion) {
+    public UserRegion getUserRegion(int userId,String regionCode) {
+        Optional<UserRegion> userRegion = userRegionRepository.findByUser_userIdAndRegion_RegionCode(userId, regionCode);
+        return userRegion.get();
+    }
+
+    public void updateUserRegion(int userId, String deleteRegionCode, String newRegionCode) {
         try {
-            Optional<UserRegion> findUser = userRegionRepository.findByUser_userIdAndRegion_RegionCode(userId, (String) deleteRegion.get("region_code"));
-            Optional<User> user = userRepository.findById(userId);
-            if (findUser.isPresent()) {
-                String sido = newRegion.get("sido").toString();
-                String gugun = newRegion.get("gugun").toString();
-                String eupmyeon = newRegion.get("eupmyeon") != null ? newRegion.get("eupmyeon").toString() : null;
-                String li = newRegion.get("li") != null ? newRegion.get("li").toString() : null;
+            Optional<UserRegion> findUserReion = userRegionRepository.findByUser_userIdAndRegion_RegionCode(userId, deleteRegionCode);
+            Optional<User> findUser = userRepository.findByUserId(userId);
+            Optional<RegionInfo> findRegionInfo = regionInfoRepository.findByRegionCode(newRegionCode);
 
-                Optional<RegionInfo> findRegionInfo = regionInfoRepository.findBySidoAndGugunAndEupmyeonAndLi(sido, gugun, eupmyeon, li);
-                if (findRegionInfo.isPresent()) {
-                    RegionInfo regionInfo = findRegionInfo.get();
+            if (findUserReion.isPresent() && findUser.isPresent()) {
+                UserRegion userRegion = UserRegion.builder()
+                        .user(findUser.get())
+                        .region(findRegionInfo.get())
+                        .build();
 
-                    UserRegion updateUserRegion = UserRegion.builder()
-                            .user(user.get())
-                            .region(regionInfo)
-                            .build();
-
-                    userRegionRepository.save(updateUserRegion);
-                }
+                userRegionRepository.save(userRegion);
             }
         } catch (Exception e) {
             e.printStackTrace();
             throw e;
+        }
+    }
+
+    public void deleteUserRegion(int userId, String regionCode) {
+        Optional<UserRegion> findUserReion = userRegionRepository.findByUser_userIdAndRegion_RegionCode(userId, regionCode);
+        if (findUserReion.isPresent()) {
+            userRegionRepository.delete(findUserReion.get());
         }
     }
 
