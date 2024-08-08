@@ -7,4 +7,6 @@ import java.util.Optional;
 
 public interface RegionInfoRepository extends JpaRepository<RegionInfo, Integer> {
     Optional<RegionInfo> findBySidoAndGugunAndEupmyeonAndLi(String sido, String gugun, String eupmyeon, String li);
+
+    Optional<RegionInfo> findByRegionCode(String regionCode);
 }

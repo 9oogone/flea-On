@@ -1,17 +1,11 @@
 package com.ssafy.fleaOn.web.service;
 
-import com.ssafy.fleaOn.web.domain.Live;
-import com.ssafy.fleaOn.web.domain.LiveTradeTime;
-import com.ssafy.fleaOn.web.domain.Product;
-import com.ssafy.fleaOn.web.domain.User;
+import com.ssafy.fleaOn.web.domain.*;
 import com.ssafy.fleaOn.web.dto.AddLiveRequest;
 import com.ssafy.fleaOn.web.dto.CustomOAuth2User;
 import com.ssafy.fleaOn.web.dto.UpdateLiveRequest;
 import com.ssafy.fleaOn.web.dto.LiveDetailResponse;
-import com.ssafy.fleaOn.web.repository.LiveRepository;
-import com.ssafy.fleaOn.web.repository.LiveTradeTimeRepository;
-import com.ssafy.fleaOn.web.repository.ProductRepository;
-import com.ssafy.fleaOn.web.repository.UserRepository;
+import com.ssafy.fleaOn.web.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,11 +25,14 @@ public class LiveService {
     private final LiveTradeTimeRepository liveTradeTimeRepository;
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
+    private final RegionInfoRepository regionInfoRepository;
 
     @Transactional
     public Live saveLive(AddLiveRequest addLiveRequest, User user) {
+        RegionInfo regionInfo = regionInfoRepository.findByRegionCode(addLiveRequest.getRegionCode())
+                .orElseThrow(()-> new IllegalArgumentException("no products found for region id: " + addLiveRequest.getRegionCode()));
         // Live 엔티티 생성 및 저장
-        Live live = addLiveRequest.toEntity(user);
+        Live live = addLiveRequest.toEntity(user, regionInfo);
         live = liveRepository.save(live);
 
         // Product 엔티티 생성 및 저장
@@ -67,7 +63,9 @@ public class LiveService {
         authorizeArticleAuthor(live);
         DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
         LocalDateTime parsedDate = LocalDateTime.parse(request.getLiveDate(), formatter);
-        live.update(request.getTitle(), parsedDate, request.getLiveThumbnail(), request.getTradePlace());
+        RegionInfo regionInfo = regionInfoRepository.findByRegionCode(request.getRegionCode())
+                .orElseThrow(()-> new IllegalArgumentException("no products found for region id: " + request.getRegionCode()));
+        live.update(request.getTitle(), parsedDate, request.getLiveThumbnail(), request.getTradePlace(), regionInfo);
 
         // 라이브 내의 Product 수정
         List<Product> deleteProducts = productRepository.findByLive_LiveId(liveId).orElseThrow(() -> new IllegalArgumentException("no products found for live id: " + liveId));
