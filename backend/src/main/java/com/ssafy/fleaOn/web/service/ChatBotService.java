@@ -1,5 +1,6 @@
 package com.ssafy.fleaOn.web.service;
 
+import com.ssafy.fleaOn.web.controller.PurchaseApiController;
 import com.ssafy.fleaOn.web.domain.Chatting;
 import com.ssafy.fleaOn.web.domain.Product;
 import com.ssafy.fleaOn.web.domain.Reservation;
@@ -8,6 +9,8 @@ import com.ssafy.fleaOn.web.dto.*;
 import com.ssafy.fleaOn.web.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
@@ -19,6 +22,8 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class ChatBotService {
+
+    private static final Logger logger = LoggerFactory.getLogger(PurchaseApiController.class);
 
     private final ChattingRepository chattingRepository;
     private final ReservationRepository reservationRepository;
@@ -62,9 +67,13 @@ public class ChatBotService {
     }
 
     public int startWithSellerChat(int chatId) {
+        logger.info("서비스에 들어왔어");
         Chatting chatting = chattingRepository.findById(chatId).orElseThrow(() -> new RuntimeException("Chatting not found"));
+        logger.info("채팅찾았어");
         chatting.show();
+        logger.info("판매자한테 표시했어");
         chattingRepository.save(chatting);
+        logger.info("저장하고 보낼게");
         return chatting.getSeller().getUserId();
     }
 

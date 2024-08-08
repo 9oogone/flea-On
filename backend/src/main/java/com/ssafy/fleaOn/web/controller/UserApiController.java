@@ -60,7 +60,7 @@ public class UserApiController {
                     userService.deleteUserByEmail(email);
                     return ResponseEntity.ok("회원 탈퇴 성공");
                 } else {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("회원 탈퇴 실패: 사용자를 찾을 수 없습니다.");
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("회원 탈퇴 실패: 사용자를 찾을 수 없습니다.");
                 }
             } catch (Exception e) {
                 // JWT 파싱 오류 처리
@@ -77,7 +77,7 @@ public class UserApiController {
     public ResponseEntity<?> getUserInfo(@PathVariable("email") String email) {
         User user = userService.findByEmail(email);
         if (user == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } else {
             return ResponseEntity.status(HttpStatus.OK).body(user);
         }

@@ -65,7 +65,7 @@ public class ShortsApiController {
                     return ResponseEntity.status(HttpStatus.OK).body(user);
                 }
                 else {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
                 }
             }
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Authorization 헤더가 없거나 형식이 올바르지 않습니다. ");
@@ -90,7 +90,7 @@ public class ShortsApiController {
                     return ResponseEntity.status(HttpStatus.OK).body(user);
                 }
                 else {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
                 }
             }
             else {
