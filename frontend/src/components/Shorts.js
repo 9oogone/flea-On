@@ -1,21 +1,32 @@
-import React from "react";
+import React, { useState } from "react";
 import { Box, Typography, Grid, Button } from "@mui/material";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
-import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
-import BookmarkIcon from "@mui/icons-material/Bookmark";
+import {
+  LocationOn,
+  FavoriteBorderRounded,
+  FavoriteRounded,
+} from "@mui/icons-material";
 import { useNavigate } from "react-router-dom"; // 최신 버전 React Router 사용
 
 const Shorts = ({ items }) => {
+  const [shortItems, setShortItems] = useState(items);
   const navigate = useNavigate(); // navigate 함수 생성
 
   const handleButtonClick = (shortsId) => {
     navigate(`/shorts/${shortsId}`);
   };
 
+  const toggleFavorite = (id) => {
+    setShortItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id === id ? { ...item, is_scrap: !item.is_scrap } : item
+      )
+    );
+  };
+
   return (
     <Grid item xs={12}>
       <Grid container>
-        {items.map((item) => (
+        {shortItems.map((item) => (
           <Grid key={item.id} item xs={6} sx={{ textAlign: "center" }}>
             <Button
               onClick={() => handleButtonClick(item.shorts_id)}
@@ -41,8 +52,16 @@ const Shorts = ({ items }) => {
                     textAlign: "end",
                     color: "white",
                   }}
+                  onClick={(e) => {
+                    e.stopPropagation(); // 부모 요소의 클릭 이벤트가 트리거되지 않도록 방지
+                    toggleFavorite(item.id);
+                  }}
                 >
-                  {item.is_scrap ? <BookmarkIcon /> : <BookmarkBorderIcon />}
+                  {item.is_scrap ? (
+                    <FavoriteRounded sx={{ color: "#FF0B55" }} />
+                  ) : (
+                    <FavoriteBorderRounded />
+                  )}
                 </Box>
                 <Box
                   sx={{
@@ -78,7 +97,7 @@ const Shorts = ({ items }) => {
                           fontWeight: 400,
                         }}
                       >
-                        <LocationOnIcon sx={{ fontSize: "8px" }} />
+                        <LocationOn sx={{ fontSize: "8px" }} />
                         {item.trade_place}
                       </Typography>
                     </Box>
