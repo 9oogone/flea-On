@@ -1,14 +1,17 @@
 package com.ssafy.fleaOn.web.dto;
 
 import com.ssafy.fleaOn.web.domain.*;
-import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 @Getter
-@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class TradeRequest {
     private int tradeId;
     private int buyerId;
@@ -18,32 +21,21 @@ public class TradeRequest {
 
     private String tradePlace;
     private String tradeTime;
-    private String tradeDate;
+    private LocalDate tradeDate;
 
     public Trade toEntity(Live live, Product product, Chatting chatting, Shorts shorts) {
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+        LocalTime parsedTime = LocalTime.parse(this.tradeTime, timeFormatter);
         return Trade.builder()
                 .sellerId(this.sellerId)
                 .buyerId(this.buyerId)
                 .tradePlace(this.tradePlace)
-                .tradeTime(LocalTime.parse(this.tradeTime))
-                .tradeDate(LocalDate.parse(this.tradeDate))
+                .tradeTime(parsedTime)
+                .tradeDate(this.tradeDate)
                 .live(live)
                 .product(product)
                 .chatting(chatting)
                 .shorts(shorts)
                 .build();
     }
-
-//    public TradeDone toTradeDone(Trade trade) {
-//        return TradeDone.builder()
-//                .buyer(trade.getBuyer())
-//                .seller(trade.getSeller())
-//                .productName(trade.getProduct().getName())
-//                .productPrice(trade.getProduct().getPrice())
-//                .tradeDate(trade.getTradeDate())
-//                .tradeTime(trade.getTradeTime())
-//                .tradePlace(trade.getTradePlace())
-//                .liveTitle(trade.getLive().getTitle())
-//                .build();
-//    }
 }

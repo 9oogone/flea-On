@@ -230,7 +230,8 @@ public class PurchaseService {
         Live live = liveRepository.findById(request.getLiveId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid live ID"));
 
-        Shorts shorts = shortsRepository.findByProduct_ProductId(request.getProductId()).orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
+        Shorts shorts = shortsRepository.findByProduct_ProductId(request.getProductId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
 
         // Find or create chatting
         Optional<Chatting> optionalChatting = chattingRepository.findByBuyer_UserIdAndLive_LiveId(request.getBuyerId(), request.getLiveId());
@@ -238,8 +239,10 @@ public class PurchaseService {
         if (optionalChatting.isPresent()) {
             chatting = optionalChatting.get();
         } else {
-            User buyer = userRepository.findById(request.getBuyerId()).orElseThrow(() -> new IllegalArgumentException("Invalid buyer ID"));
-            User seller = userRepository.findById(request.getSellerId()).orElseThrow(() -> new IllegalArgumentException("Invalid seller ID"));
+            User buyer = userRepository.findById(request.getBuyerId())
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid buyer ID"));
+            User seller = userRepository.findById(request.getSellerId())
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid seller ID"));
             chatting = Chatting.builder()
                     .live(live)
                     .buyer(buyer)
@@ -249,18 +252,12 @@ public class PurchaseService {
         }
 
         System.out.println(chatting);
+
         if (request.getBuyerId() == product.getCurrentBuyerId()) {
             Trade trade = request.toEntity(live, product, chatting, shorts);
             tradeRepository.save(trade);
             productRepository.save(product);
-            // 구매 확정 결과를 Redis에 설정
-            redisTemplate.opsForValue().set("confirmResult:" + request.getBuyerId() + ":" + request.getProductId(), "confirmed");
-        } else {
-            // 구매자와 현재 구매자가 일치하지 않는 경우 결과를 Redis에 설정
-            redisTemplate.opsForValue().set("confirmResult:" + request.getBuyerId() + ":" + request.getProductId(), "not confirmed");
-        }
 
-        if (request.getBuyerId() == product.getCurrentBuyerId()) {
             // 구매 확정 처리 및 관련 데이터 삭제
             tradeService.confirmTrade(request);
 
@@ -271,4 +268,5 @@ public class PurchaseService {
             redisTemplate.opsForValue().set("confirmResult:" + request.getBuyerId() + ":" + request.getProductId(), "not confirmed");
         }
     }
+
 }

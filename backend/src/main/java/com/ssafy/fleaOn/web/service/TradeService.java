@@ -23,12 +23,14 @@ public class TradeService {
     private final LiveScrapRepository liveScrapRepository;
     private final ShortsScrapRepository shortsScrapRepository;
     private final UserRepository userRepository;
+    private final LiveTradeTimeRepository liveTradeTimeRepository;
 
     @Transactional
     public void confirmTrade(TradeRequest request) {
         // 1. Trade 정보를 가져와서 TradeDone으로 옮기기
-        Trade trade = tradeRepository.findById(request.getTradeId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid trade ID"));
+        Trade trade = tradeRepository.findByBuyerIdAndProduct_ProductId(request.getBuyerId(), request.getProductId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid trade data"));
+
         User buyer = userRepository.findById(trade.getBuyerId()).orElseThrow(() -> new IllegalArgumentException("Invalid buyer ID"));
         User seller = userRepository.findById(trade.getSellerId()).orElseThrow(() -> new IllegalArgumentException("Invalid seller ID"));
 
@@ -45,13 +47,13 @@ public class TradeService {
 
         tradeDoneRepository.save(tradeDone);
 
-        // 2. Trade 삭제
-        tradeRepository.delete(trade);
-
-        // 3. 관련된 Shorts, Reservation, Product 삭제
+        // 2. 관련된 Shorts, Reservation, Product 삭제
         deleteShortsAndRelatedData(trade.getProduct());
         reservationRepository.deleteByProduct_ProductId(trade.getProduct().getProductId());
         productRepository.delete(trade.getProduct());
+
+        // 3. Trade 삭제
+        tradeRepository.delete(trade);
 
         // 4. Live에 속한 모든 Product가 삭제된 경우, Live와 관련된 데이터 삭제
         int liveId = trade.getLive().getLiveId();
@@ -75,6 +77,9 @@ public class TradeService {
     public void deleteLiveAndRelatedData(int liveId) {
         // LiveScrap 삭제
         liveScrapRepository.deleteByLive_LiveId(liveId);
+
+        // Live 관련 TradeTime 삭제
+        liveTradeTimeRepository.deleteByLive_LiveId(liveId);
 
         // Live 삭제
         liveRepository.deleteById(liveId);
