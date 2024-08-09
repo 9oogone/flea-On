@@ -24,6 +24,11 @@ const ScrapShorts = ({ items }) => {
     // console.log("찍히니", id);
     dispatch(toggleScrap({ id, type: "shorts" }));
   };
+  // 주소에서 '동' 부분만 추출하기
+  const extractDong = (address) => {
+    const match = address.match(/(\S+동)/);
+    return match ? match[1] : "";
+  };
 
   return (
     <Grid item xs={12}>
