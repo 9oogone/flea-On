@@ -226,6 +226,7 @@ public class PurchaseService {
         logger.info("Processing confirm purchase request for productId: {} and buyerId: {}", request.getProductId(), request.getBuyerId());
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
+        product.setCurrentBuyerId(request.getBuyerId());
 
         Live live = liveRepository.findById(request.getLiveId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid live ID"));
@@ -250,14 +251,27 @@ public class PurchaseService {
                     .build();
             chatting = chattingRepository.save(chatting);
         }
-
-        System.out.println(chatting);
+        productRepository.save(product);
 
         if (request.getBuyerId() == product.getCurrentBuyerId()) {
             Trade trade = request.toEntity(live, product, chatting, shorts);
             tradeRepository.save(trade);
             productRepository.save(product);
 
+            // 구매 확정 결과를 Redis에 설정
+            redisTemplate.opsForValue().set("confirmResult:" + request.getBuyerId() + ":" + request.getProductId(), "confirmed");
+        } else {
+            // 구매자와 현재 구매자가 일치하지 않는 경우 결과를 Redis에 설정
+            redisTemplate.opsForValue().set("confirmResult:" + request.getBuyerId() + ":" + request.getProductId(), "not confirmed");
+        }
+    }
+
+    @Transactional
+    public void processConfirmTradeRequest(TradeRequest request) {
+        Product product = productRepository.findById(request.getProductId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
+
+        if (request.getBuyerId() == product.getCurrentBuyerId()) {
             // 구매 확정 처리 및 관련 데이터 삭제
             tradeService.confirmTrade(request);
 
@@ -268,5 +282,4 @@ public class PurchaseService {
             redisTemplate.opsForValue().set("confirmResult:" + request.getBuyerId() + ":" + request.getProductId(), "not confirmed");
         }
     }
-
 }

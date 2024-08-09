@@ -13,7 +13,6 @@ import java.time.format.DateTimeFormatter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TradeRequest {
-    private int tradeId;
     private int buyerId;
     private int sellerId;
     private int productId;

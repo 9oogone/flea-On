@@ -28,6 +28,8 @@ public class TradeService {
     private final ShortsScrapRepository shortsScrapRepository;
     private final UserRepository userRepository;
     private final LiveTradeTimeRepository liveTradeTimeRepository;
+    private final ChattingRepository chattingRepository;
+    private final ChattingListRepository chattingListRepository;
 
     @Transactional
     public void confirmTrade(TradeRequest request) {
@@ -67,6 +69,9 @@ public class TradeService {
         productRepository.delete(trade.getProduct());
         logger.info("shorts, reservations, products delete");
 
+        Chatting chatting = chattingRepository.findByBuyer_UserIdAndLive_LiveId(request.getBuyerId(), request.getLiveId()).orElseThrow(()-> new RuntimeException("Chatting not found"));
+        deleteChattingAndRelatedData(chatting);
+
         // 3. Trade 삭제
         tradeRepository.delete(trade);
         logger.info("trade delete");
@@ -77,6 +82,12 @@ public class TradeService {
             deleteLiveAndRelatedData(liveId);
             logger.info("live deleted");
         }
+    }
+
+    @Transactional
+    public void deleteChattingAndRelatedData(Chatting chatting) {
+        chattingListRepository.deleteByChatting_ChattingId(chatting.getChattingId());
+        chattingRepository.delete(chatting);
     }
 
     @Transactional
