@@ -6,6 +6,7 @@ import com.ssafy.fleaOn.web.domain.User;
 import com.ssafy.fleaOn.web.domain.UserRegion;
 import com.ssafy.fleaOn.web.dto.ExtraInfoRequest;
 import com.ssafy.fleaOn.web.dto.UpdateRegionCodeRequest;
+import com.ssafy.fleaOn.web.dto.UserFullInfoResponse;
 import com.ssafy.fleaOn.web.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -92,19 +93,11 @@ public class UserApiController {
         String authorizationHeader = request.getHeader("Authorization");
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             String jwtToken = authorizationHeader.substring(7).trim();
-            System.out.println("jwtToken: " + jwtToken);
 
             try {
-                // JWTUtil을 사용하여 토큰에서 이메일 추출
                 String email = JWTUtil.getEmail(jwtToken);
-                System.out.println("email : " + email);
-
-                // 이메일로 사용자 조회
-                User user = userService.findByEmail(email);
-                System.out.println("해당 회원 찾음 : " + user);
-
+                UserFullInfoResponse user = userService.getUserFullInfoByEmail(email);
                 if (user != null) {
-                    // 사용자 정보를 ResponseEntity 본문에 포함하여 반환
                     return ResponseEntity.status(HttpStatus.OK).body(user);
                 } else {
                     return ResponseEntity.status(HttpStatus.NOT_FOUND).body("회원 정보를 찾을 수 없습니다.");
@@ -282,7 +275,7 @@ public class UserApiController {
 
     @Operation(summary = "초기 선호 지역 추가", description = "회원 가입 후 선호 지역을 추가할 때 사용합니다. ")
     @PostMapping("/region")
-    public ResponseEntity<?> addUserRegion(@RequestParam String regionCode, HttpServletRequest request) {
+    public ResponseEntity<?> addUserRegion(@RequestParam(name = "regionCode") String regionCode, HttpServletRequest request) {
         try {
             String authorizationHeader = request.getHeader("Authorization");
             if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
@@ -334,7 +327,7 @@ public class UserApiController {
 
     @Operation(summary = "선호 지역 삭제", description = "사용자가 선호 지역을 삭제할 때 사용합니다.")
     @DeleteMapping("/region")
-    public ResponseEntity<?> deleteUserRegion(@RequestBody String regionCode, HttpServletRequest request) {
+    public ResponseEntity<?> deleteUserRegion(@RequestParam(name = "regionCode") String regionCode, HttpServletRequest request) {
         try {
             String authorizationHeader = request.getHeader("Authorization");
             if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
@@ -358,7 +351,7 @@ public class UserApiController {
 
     @Operation(summary = "스크랩한 라이브 추가", description = "회원이 라이브를 스크랩할 때 사용합니다. ")
     @PostMapping("/liveScrap")
-    public ResponseEntity<?> addUserLiveScrap(HttpServletRequest request, @RequestBody int liveId) {
+    public ResponseEntity<?> addUserLiveScrap(HttpServletRequest request, @RequestParam("liveId") int liveId) {
         try {
             String authorizationHeader = request.getHeader("Authorization");
             if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
@@ -385,7 +378,7 @@ public class UserApiController {
 
     @Operation(summary = "스크랩한 라이브 삭제", description = "회원이 스크랩한 라이브를 삭제할 때 사용합니다. ")
     @DeleteMapping("/liveScrap")
-    public ResponseEntity<?> deleteUserLiveScrap(HttpServletRequest request, @RequestBody int liveId) {
+    public ResponseEntity<?> deleteUserLiveScrap(HttpServletRequest request, @RequestParam("liveId") int liveId) {
         try {
             String authorizationHeader = request.getHeader("Authorization");
             if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {

@@ -3,6 +3,7 @@ package com.ssafy.fleaOn.web.service;
 import com.ssafy.fleaOn.web.domain.*;
 import com.ssafy.fleaOn.web.dto.*;
 import com.ssafy.fleaOn.web.repository.*;
+import com.sun.tools.javac.Main;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
@@ -27,11 +28,6 @@ public class MainService {
     private final RegionInfoRepository regionInfoRepository;
     private final UserRegionRepository userRegionRepository;
 
-    public Slice<Live> getMainLiveListByLiveDate(LocalDateTime liveDate) {
-        Pageable pageable = PageRequest.of(0, 10);
-        return liveRepository.findAllByOrderByIsLiveDescLiveDateAsc(pageable);
-    }
-
     public Slice<MainLiveResponse> getMainLiveListByRegionCode(List<UserRegion> findUserRegionList, LocalDateTime currentTime){
         Pageable pageable = PageRequest.of(0, 10);
         List<MainLiveResponse> mainLiveResponseList = new ArrayList<>();
@@ -41,17 +37,11 @@ public class MainService {
             System.out.println("코드요 : " + regionCode);
 
             Slice<Live> livePage = liveRepository.findByRegionInfo_RegionCodeAndLiveDateGreaterThanEqual(regionCode, currentTime, pageable);
+
             for (Live live : livePage) {
                 Optional<List<Product>> findProductList = productRepository.findByLive_LiveId(live.getLiveId());
                 if (findProductList.isPresent()) {
-                    MainLiveResponse mainLiveResponse = MainLiveResponse.builder()
-                            .liveId(live.getLiveId())
-                            .liveTitle(live.getTitle())
-                            .product(findProductList.get())
-                            .tradePlace(live.getTradePlace())
-                            .isLive(live.getIsLive())
-                            .build();
-
+                    MainLiveResponse mainLiveResponse = MainLiveResponse.fromEntity(live, findProductList.get());
                     mainLiveResponseList.add(mainLiveResponse);
                 }
             }
@@ -72,27 +62,26 @@ public class MainService {
 
     public Slice<MainShortsResponse> getMainShortsListByUploadDate() {
         Pageable pageable = PageRequest.of(0, 10);
+        List<MainShortsResponse> mainShortsResponseList = new ArrayList<>();
 
         // Shorts 데이터 가져오기 (Slice로)
         Slice<Shorts> shortsSlice = shortsRepository.findAllByOrderByUploadDateAsc(pageable);
+        for (Shorts shorts : shortsSlice) {
+            Optional<Product> product = productRepository.findByProductId(shorts.getProduct().getProductId());
+            Optional<Live> live = liveRepository.findByLiveId(product.get().getLive().getLiveId());
 
-        // Shorts 데이터를 DTO로 변환
-        List<MainShortsResponse> shortsResponsesList = shortsSlice.map(shorts -> {
-            Product product = shorts.getProduct();
-            Live live = product.getLive();
+            if (product.isPresent() && live.isPresent()) {
+                MainShortsResponse mainShortsResponse = MainShortsResponse.fromEntity(shorts, product.get(), live.get());
+                mainShortsResponseList.add(mainShortsResponse);
+            }
+        }
 
-            return new MainShortsResponse(
-                    shorts.getShortsId(),
-                    shorts.getUploadDate(),
-                    product.getName(),
-                    product.getPrice(),
-                    live.getTradePlace(),
-                    shorts.getShortsThumbnail()
-            );
-        }).getContent();
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), mainShortsResponseList.size());
+        boolean hasNext = mainShortsResponseList.size() > end;
+        List<MainShortsResponse> content = mainShortsResponseList.subList(start, end);
 
-        // Slice 형태로 반환
-        return new SliceImpl<>(shortsResponsesList, pageable, shortsSlice.hasNext());
+        return new SliceImpl<>(content, pageable, hasNext);
     }
 
     public Optional<List<Category>> getMainCategoryList() {

@@ -3,6 +3,7 @@ package com.ssafy.fleaOn.web.service;
 
 import com.ssafy.fleaOn.web.domain.*;
 import com.ssafy.fleaOn.web.dto.ExtraInfoRequest;
+import com.ssafy.fleaOn.web.dto.UserFullInfoResponse;
 import com.ssafy.fleaOn.web.repository.*;
 import com.ssafy.fleaOn.web.util.DateUtil;
 import jakarta.transaction.Transactional;
@@ -73,9 +74,9 @@ public class UserService {
                 .userId(existingUser.getUserId()) // 기존 ID를 명시적으로 보존
                 .email(existingUser.getEmail()) // 이메일 보존
                 .name(existingUser.getName()) // 기존 이름 보존
-                .nickname(extraInfoRequest.getNickname()) // 닉네임 업데이트
-                .phone(extraInfoRequest.getPhone()) // 전화번호 업데이트
-                .profilePicture(existingUser.getProfilePicture()) // 프로필 사진 보존
+                .nickname(extraInfoRequest.getNickname() == null ? existingUser.getNickname() : extraInfoRequest.getNickname())// 닉네임 업데이트
+                .phone(extraInfoRequest.getPhone() == null ? existingUser.getPhone() : extraInfoRequest.getPhone()) // 전화번호 업데이트
+                .profilePicture(extraInfoRequest.getProfilePicture() == null ? existingUser.getProfilePicture() : extraInfoRequest.getProfilePicture()) // 프로필 사진 보존
                 .level(existingUser.getLevel())
                 .role(existingUser.getRole())
                 .userIdentifier(existingUser.getUserIdentifier())// 레벨 보존
@@ -85,7 +86,45 @@ public class UserService {
         userRepository.save(updatedUser);
         return updatedUser;
     }
+    public UserFullInfoResponse getUserFullInfoByEmail(String email) {
+        Optional<User> userOptional = userRepository.findByEmail(email);
 
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            Optional<List<UserRegion>> userRegionListOptional = userRegionRepository.findByUser_userId(user.getUserId());
+            List<String> eupmyeonList = new ArrayList<>();
+            List<String> regionCodes = new ArrayList<>();
+
+            if (userRegionListOptional.isPresent()) {
+                List<UserRegion> userRegionList = userRegionListOptional.get();
+
+                for (UserRegion userRegion : userRegionList) {
+                    // regionCode 리스트 생성
+                    String regionCode = userRegion.getRegion().getRegionCode();
+                    regionCodes.add(regionCode);
+
+                    // regionCode에 해당하는 Eupmyeon 가져오기
+                    String eupmyeon = userRegion.getRegion().getEupmyeon();
+                    eupmyeonList.add(eupmyeon);
+                }
+            }
+
+            // UserFullInfoResponse 객체 생성 및 반환
+            return UserFullInfoResponse.builder()
+                    .userId(user.getUserId())
+                    .email(user.getEmail())
+                    .profilePicture(user.getProfilePicture())
+                    .name(user.getName())
+                    .nickname(user.getNickname())
+                    .phone(user.getPhone())
+                    .level(user.getLevel())
+                    .dongName(eupmyeonList)  // Eupmyeon 리스트 추가
+                    .regionCode(regionCodes) // regionCodes 추가
+                    .build();
+        }
+
+        return null; // 또는 Optional<UserFullInfoResponse>를 반환하여 empty()로 반환
+    }
 
     public Map<String, Object> getUserInfoByEmail(String email) {
         Optional<User> userOptional = userRepository.findByEmail(email);
