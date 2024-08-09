@@ -373,8 +373,10 @@ public class UserService {
 
     @Transactional
     public void deleteUserRegion(int userId, String regionCode) {
-        Optional<UserRegion> userRegion = userRegionRepository.findByUser_userIdAndRegion_RegionCode(userId, regionCode);
-        userRegion.ifPresent(userRegionRepository::delete);
+        Optional<UserRegion> findUserReion = userRegionRepository.findByUser_userIdAndRegion_RegionCode(userId, regionCode);
+        if (findUserReion.isPresent()) {
+            userRegionRepository.delete(findUserReion.get());
+        }
     }
 
     public void addUserLiveScrap(int userId, int liveId) {
