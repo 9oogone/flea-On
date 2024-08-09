@@ -43,8 +43,9 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         GrantedAuthority auth = iterator.next();
         String role = auth.getAuthority();
 
-        String token = jwtUtil.createJwt(userIdentifier, role, email, 60*60*60*60L);
+        String token = jwtUtil.createJwt(userIdentifier, role, email, 365L * 24 * 60 * 60 * 1000);
 
+        System.out.println("token : " + token);
         response.addCookie(createCookie("Authorization", token));
         response.sendRedirect("https://fleaon.shop/check?access_token=" + token);
 

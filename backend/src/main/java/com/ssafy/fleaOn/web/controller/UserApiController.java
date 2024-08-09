@@ -3,7 +3,9 @@ package com.ssafy.fleaOn.web.controller;
 import com.ssafy.fleaOn.web.config.jwt.JWTUtil;
 import com.ssafy.fleaOn.web.domain.Live;
 import com.ssafy.fleaOn.web.domain.User;
+import com.ssafy.fleaOn.web.domain.UserRegion;
 import com.ssafy.fleaOn.web.dto.ExtraInfoRequest;
+import com.ssafy.fleaOn.web.dto.UpdateRegionCodeRequest;
 import com.ssafy.fleaOn.web.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -280,7 +282,7 @@ public class UserApiController {
 
     @Operation(summary = "초기 선호 지역 추가", description = "회원 가입 후 선호 지역을 추가할 때 사용합니다. ")
     @PostMapping("/region")
-    public ResponseEntity<?> addUserRegion(@RequestBody Map<String, Object> region, HttpServletRequest request) {
+    public ResponseEntity<?> addUserRegion(@RequestParam String regionCode, HttpServletRequest request) {
         try {
             String authorizationHeader = request.getHeader("Authorization");
             if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
@@ -288,8 +290,9 @@ public class UserApiController {
                 String email = JWTUtil.getEmail(jwtToken);
                 User user = userService.findByEmail(email);
                 if (user != null) {
-                    userService.addUserRegion(user.getUserId(), region);
-                    return ResponseEntity.status(HttpStatus.OK).body(user);
+                    userService.addUserRegion(user.getUserId(), regionCode);
+                    UserRegion userRegion = userService.getUserRegion(user.getUserId(), regionCode);
+                    return ResponseEntity.status(HttpStatus.OK).body(userRegion);
                 }
                 else {
                     return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -305,7 +308,7 @@ public class UserApiController {
 
     @Operation(summary = "선호 지역 수정", description = "회원이 선호 지역을 수정할 때 사용합니다. ")
     @PutMapping("/region")
-    public ResponseEntity<?> updateUserRegion(@RequestBody Map<String, Object> newRegion,@RequestBody Map<String, Object> deleteRegion, HttpServletRequest request) {
+    public ResponseEntity<?> updateUserRegion(@RequestBody UpdateRegionCodeRequest updateRegionCodeRequest, HttpServletRequest request) {
         try {
             String authorizationHeader = request.getHeader("Authorization");
             if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
@@ -313,8 +316,9 @@ public class UserApiController {
                 String email = JWTUtil.getEmail(jwtToken);
                 User user = userService.findByEmail(email);
                 if (user != null) {
-                    userService.updateUserRegion(user.getUserId(), newRegion, deleteRegion);
-                    return ResponseEntity.status(HttpStatus.OK).body(user);
+                    userService.updateUserRegion(user.getUserId(), updateRegionCodeRequest.getOldRegionCode(), updateRegionCodeRequest.getNewRegionCode());
+                    UserRegion userRegion = userService.getUserRegion(user.getUserId(), updateRegionCodeRequest.getNewRegionCode());
+                    return ResponseEntity.status(HttpStatus.OK).body(userRegion);
                 }
                 else {
                     return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -323,6 +327,30 @@ public class UserApiController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Authorization 헤더가 없거나 형식이 올바르지 않습니다. ");
         }
         catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @Operation(summary = "선호 지역 삭제", description = "사용자가 선호 지역을 삭제할 때 사용합니다.")
+    @DeleteMapping("/region")
+    public ResponseEntity<?> deleteUserRegion(@RequestBody String regionCode, HttpServletRequest request) {
+        try {
+            String authorizationHeader = request.getHeader("Authorization");
+            if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+                String jwtToken = authorizationHeader.substring(7).trim();
+                String email = JWTUtil.getEmail(jwtToken);
+                User user = userService.findByEmail(email);
+                if (user != null) {
+                    userService.deleteUserRegion(user.getUserId(), regionCode);
+                    return ResponseEntity.status(HttpStatus.OK).build();
+                } else {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+                }
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Authorization 헤더가 없거나 형식이 올바르지 않습니다.");
+            }
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
