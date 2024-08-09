@@ -298,32 +298,6 @@ public class UserApiController {
         }
     }
 
-    @Operation(summary = "선호 지역 수정", description = "회원이 선호 지역을 수정할 때 사용합니다. ")
-    @PutMapping("/region")
-    public ResponseEntity<?> updateUserRegion(@RequestBody UpdateRegionCodeRequest updateRegionCodeRequest, HttpServletRequest request) {
-        try {
-            String authorizationHeader = request.getHeader("Authorization");
-            if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-                String jwtToken = authorizationHeader.substring(7).trim();
-                String email = JWTUtil.getEmail(jwtToken);
-                User user = userService.findByEmail(email);
-                if (user != null) {
-                    userService.updateUserRegion(user.getUserId(), updateRegionCodeRequest.getOldRegionCode(), updateRegionCodeRequest.getNewRegionCode());
-                    UserRegion userRegion = userService.getUserRegion(user.getUserId(), updateRegionCodeRequest.getNewRegionCode());
-                    return ResponseEntity.status(HttpStatus.OK).body(userRegion);
-                }
-                else {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-                }
-            }
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Authorization 헤더가 없거나 형식이 올바르지 않습니다. ");
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
-    }
-
     @Operation(summary = "선호 지역 삭제", description = "사용자가 선호 지역을 삭제할 때 사용합니다.")
     @DeleteMapping("/region")
     public ResponseEntity<?> deleteUserRegion(@RequestParam(name = "regionCode") String regionCode, HttpServletRequest request) {
