@@ -18,7 +18,7 @@ public class ExtraInfoRequest {
     @JsonProperty("phone")
     private String phone;
 
-    @JsonProperty("profile_picture")
-    private String profilePicture;
+//    @JsonProperty("profile_picture")
+//    private String profilePicture;
 
 }

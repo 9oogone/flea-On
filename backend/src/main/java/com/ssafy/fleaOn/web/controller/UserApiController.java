@@ -4,6 +4,7 @@ import com.ssafy.fleaOn.web.config.jwt.JWTUtil;
 import com.ssafy.fleaOn.web.domain.Live;
 import com.ssafy.fleaOn.web.domain.User;
 import com.ssafy.fleaOn.web.domain.UserRegion;
+import com.ssafy.fleaOn.web.dto.CommerceLiveExpectedResponse;
 import com.ssafy.fleaOn.web.dto.ExtraInfoRequest;
 import com.ssafy.fleaOn.web.dto.UpdateRegionCodeRequest;
 import com.ssafy.fleaOn.web.dto.UserFullInfoResponse;
@@ -12,6 +13,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -434,6 +436,28 @@ public class UserApiController {
             else{
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+    @Operation(summary = "사용자가 판매자일 때 라이브 시작", description = "사용자가 판매자인 라이브 예정 방송을 조회할 때 사용합니다. ")
+    @GetMapping("/commerceLive/expected")
+    public ResponseEntity<?> getCommerceLiveExpected(HttpServletRequest request) {
+        try {
+            String authorizationHeader = request.getHeader("Authorization");
+            if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+                String jwtToken = authorizationHeader.substring(7).trim();
+                String email = JWTUtil.getEmail(jwtToken);
+                User user = userService.findByEmail(email);
+                if (user != null) {
+                    CommerceLiveExpectedResponse commerceLiveExpectedResponse = userService.getUserCommerceLiveExpectedByUserId(user.getUserId());
+                    return ResponseEntity.status(HttpStatus.OK).body(commerceLiveExpectedResponse);
+                }
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("유요한 토큰 아님");
         }
         catch (Exception e){
             e.printStackTrace();
