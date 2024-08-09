@@ -3,8 +3,6 @@ import ProfileDefault from "../../../assets/images/profile_default.svg";
 import { Container, Avatar, Box, Typography } from "@mui/material";
 
 const Profile = ({ user }) => {
-  const userRegion = user?.user_region[0]?.split(" > ").pop() || "플리온";
-
   return (
     <Container
       sx={{
@@ -33,7 +31,7 @@ const Profile = ({ user }) => {
         <Typography variant="h6" sx={{ fontWeight: "600" }}>
           {user?.nickname || "닉네임"}
         </Typography>
-        <Typography>{userRegion} 주민</Typography>
+        <Typography> 플리온 주민</Typography>
       </Box>
       <Box
         sx={{
