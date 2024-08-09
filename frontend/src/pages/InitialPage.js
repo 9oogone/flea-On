@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import PhoneInput from "../features/auth/components/PhoneInput";
 import NicknameInput from "../features/auth/components/NicknameInput";
 import UserRegionInput from "../features/auth/components/UserRegionInput";
-
+import baseAxios from "../utils/httpCommons";
 const InitialPage = () => {
   const [step, setStep] = useState(0);
   const user = useSelector((state) => state.auth.user);
@@ -20,7 +20,7 @@ const InitialPage = () => {
     setStep((prev) => prev + 1);
   };
 
-  const handleFinalSubmit = () => {
+  const handleFinalSubmit = async () => {
     navigate("/welcome");
   };
 
@@ -45,13 +45,27 @@ const InitialPage = () => {
         {step === 2 && (
           <Button
             onClick={handleFinalSubmit}
-            variant="contained"
-            color="primary"
+            variant={
+              step === 2 &&
+              (!user.dongName ||
+                user.dongName.length === 0 ||
+                user.dongName.length > 3)
+                ? "outlined"
+                : "contained"
+            }
+            color={
+              step === 2 &&
+              (!user.dongName ||
+                user.dongName.length === 0 ||
+                user.dongName.length > 3)
+                ? "primary"
+                : "secondary"
+            }
             disabled={
               step === 2 &&
-              (!user.user_region ||
-                user.user_region.length === 0 ||
-                user.user_region.length > 3)
+              (!user.dongName ||
+                user.dongName.length === 0 ||
+                user.dongName.length > 3)
             }
             fullWidth
           >

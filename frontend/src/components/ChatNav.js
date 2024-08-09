@@ -1,4 +1,3 @@
-// ChatNav.jsx
 import React, { useEffect, useRef } from "react";
 import styles from "../styles/ChatNav.module.css";
 import backicons from "../assets/images/navicon/backicons.svg";

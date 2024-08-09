@@ -1,4 +1,3 @@
-// ChatInput.js
 import React, { useRef, useEffect, useState } from "react";
 import inputStyles from "../styles/ChatInput.module.css";
 import ArrowCircleRightIcon from "@mui/icons-material/ArrowCircleRight";
@@ -6,7 +5,7 @@ import { IconButton } from "@mui/material";
 import ChatNav from "./ChatNav";
 import CancelTrade from "./CancelTrade";
 import ChatTradeDetail from "./ChatTradeDetail";
-import ChangeTime from "../components/ChangeTime"; // ChangeTime 컴포넌트 임포트
+import ChangeTime from "../components/ChangeTime"; 
 
 const ChatInput = ({
   message,
@@ -15,10 +14,12 @@ const ChatInput = ({
   setFocus,
   isChatNavOpen,
   setIsChatNavOpen,
+  // isSeller, // 일단은 사용하지 않음 
+  isBuyer   
 }) => {
   const [isCancelTradeOpen, setIsCancelTradeOpen] = useState(false);
   const [isTradeDetailOpen, setIsTradeDetailOpen] = useState(false);
-  const [isChangeTimeOpen, setIsChangeTimeOpen] = useState(false); // ChangeTime 모달 상태 변수
+  const [isChangeTimeOpen, setIsChangeTimeOpen] = useState(false);
   const inputRef = useRef(null);
 
   useEffect(() => {
@@ -56,13 +57,13 @@ const ChatInput = ({
 
   return (
     <div
-      className={`${inputStyles.chatInputContainer} ${
-        isChatNavOpen ? inputStyles.blurBackground : ""
-      }`}
+      className={`${inputStyles.chatInputContainer} ${isChatNavOpen ? inputStyles.blurBackground : ""}`}
     >
-      <div className={inputStyles.plusIcon} onClick={handlePlusIconClick}>
-        +
-      </div>
+      {isBuyer && ( // 구매자인 경우에만 + 아이콘을 표시합니다.
+        <div className={inputStyles.plusIcon} onClick={handlePlusIconClick}>
+          +
+        </div>
+      )}
       {isChatNavOpen && (
         <ChatNav
           onClose={() => setIsChatNavOpen(false)}
@@ -79,7 +80,6 @@ const ChatInput = ({
         isOpen={isTradeDetailOpen}
         onClose={() => setIsTradeDetailOpen(false)}
       />
-
       <ChangeTime
         open={isChangeTimeOpen}
         handleClose={() => setIsChangeTimeOpen(false)}
