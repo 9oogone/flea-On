@@ -2,6 +2,7 @@ package com.ssafy.fleaOn.web.service;
 
 
 import com.ssafy.fleaOn.web.domain.*;
+import com.ssafy.fleaOn.web.dto.CommerceLiveExpectedResponse;
 import com.ssafy.fleaOn.web.dto.ExtraInfoRequest;
 import com.ssafy.fleaOn.web.dto.UserFullInfoResponse;
 import com.ssafy.fleaOn.web.repository.*;
@@ -11,8 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import com.ssafy.fleaOn.web.domain.User;
 
@@ -76,7 +77,7 @@ public class UserService {
                 .name(existingUser.getName()) // 기존 이름 보존
                 .nickname(extraInfoRequest.getNickname() == null ? existingUser.getNickname() : extraInfoRequest.getNickname())// 닉네임 업데이트
                 .phone(extraInfoRequest.getPhone() == null ? existingUser.getPhone() : extraInfoRequest.getPhone()) // 전화번호 업데이트
-                .profilePicture(extraInfoRequest.getProfilePicture() == null ? existingUser.getProfilePicture() : extraInfoRequest.getProfilePicture()) // 프로필 사진 보존
+//                .profilePicture(extraInfoRequest.getProfilePicture() == null ? existingUser.getProfilePicture() : extraInfoRequest.getProfilePicture()) // 프로필 사진 보존
                 .level(existingUser.getLevel())
                 .role(existingUser.getRole())
                 .userIdentifier(existingUser.getUserIdentifier())// 레벨 보존
@@ -488,5 +489,21 @@ public class UserService {
         else {
             throw new IllegalArgumentException("Cannot find live scrap");
         }
+    }
+    public CommerceLiveExpectedResponse getUserCommerceLiveExpectedByUserId(int userId){
+        LocalDateTime currentTime = LocalDateTime.now();
+        Optional<Live> findLive = liveRepository.findBySeller_userIdAndIsLiveAndLiveDateGreaterThanEqual(userId, 0, currentTime);
+        if (findLive.isPresent()) {
+            CommerceLiveExpectedResponse commerceLiveExpectedResponse = CommerceLiveExpectedResponse.builder()
+                    .liveId(findLive.get().getLiveId())
+                    .isExist(true)
+                    .build();
+            return commerceLiveExpectedResponse;
+        }
+        CommerceLiveExpectedResponse commerceLiveExpectedResponse = CommerceLiveExpectedResponse.builder()
+                .liveId(0)
+                .isExist(false)
+                .build();
+        return commerceLiveExpectedResponse;
     }
 }
