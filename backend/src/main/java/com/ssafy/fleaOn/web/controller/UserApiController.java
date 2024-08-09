@@ -404,12 +404,12 @@ public class UserApiController {
     }
 
     @Operation(summary = "판매 내역 - 쇼츠 목록", description = "회원이 판매 중인 쇼츠 목록을 조회할 때 사용합니다. ")
-    @GetMapping("/{email}/short")
-    public ResponseEntity<?> getUserCommerceItem(@PathVariable("email") String email) {
+    @GetMapping("/{email}/shorts")
+    public ResponseEntity<?> getUserShorts(@PathVariable("email") String email) {
         try {
             User user = userService.findByEmail(email);
             if (user != null) {
-                List<Map<String, Object>> userShortsList = userService.getUserShortsListByUserId(user.getUserId());
+                SalesShortsListResponse userShortsList = userService.getUserShortsListByUserId(user.getUserId());
                 return ResponseEntity.status(HttpStatus.OK).body(userShortsList);
             }
             else {

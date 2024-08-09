@@ -2,10 +2,7 @@ package com.ssafy.fleaOn.web.service;
 
 
 import com.ssafy.fleaOn.web.domain.*;
-import com.ssafy.fleaOn.web.dto.CommerceLiveExpectedResponse;
-import com.ssafy.fleaOn.web.dto.ExtraInfoRequest;
-import com.ssafy.fleaOn.web.dto.MyPageResponse;
-import com.ssafy.fleaOn.web.dto.UserFullInfoResponse;
+import com.ssafy.fleaOn.web.dto.*;
 import com.ssafy.fleaOn.web.repository.*;
 import com.ssafy.fleaOn.web.util.DateUtil;
 import jakarta.transaction.Transactional;
@@ -394,10 +391,12 @@ public class UserService {
         }
     }
 
+    @Transactional
     public void deleteUserRegion(int userId, String regionCode) {
         Optional<UserRegion> findUserReion = userRegionRepository.findByUser_userIdAndRegion_RegionCode(userId, regionCode);
         if (findUserReion.isPresent()) {
             userRegionRepository.delete(findUserReion.get());
+            System.out.println("지워용 ~~");
         }
     }
 
@@ -449,28 +448,33 @@ public class UserService {
         }
     }
 
-    public List<Map<String, Object>> getUserShortsListByUserId(int userId) {
-        Optional<List<Shorts>> shortsOptional = shortsRepository.findByUser_userId(userId);
-        List<Map<String, Object>> shrotsList = new ArrayList<>();
-        if (shortsOptional.isPresent()) {
-            for (Shorts shorts : shortsOptional.get()) {
-                Map<String, Object> shortsMap = new HashMap<>();
+    public SalesShortsListResponse getUserShortsListByUserId(int userId) {
+        Optional<User>findUser = userRepository.findByUserId(userId);
+        if (findUser.isPresent()) {
+            Optional<List<Shorts>> shortsList = shortsRepository.findByUser_userId(findUser.get().getUserId());
+            if (shortsList.isPresent()) {
+                for (Shorts shorts : shortsList.get()) {
+                    Optional<Product> findProduct= productRepository.findByProductId(shorts.getProduct().getProductId());
+                    Optional<Live> findLive = liveRepository.findByLiveId(findProduct.get().getLive().getLiveId());
+                    Optional<TradeDone> findTradeDone = tradeDoneRepository.findBySeller_UserId(findUser.get().getUserId());
+                    System.out.println(findTradeDone.get());
+                    TradeDone tradeDone = findTradeDone.orElse(null);
 
-                shortsMap.put("short_id", shorts.getShortsId());
-                shortsMap.put("name", shorts.getProduct().getName());
-                shortsMap.put("price", shorts.getProduct().getPrice());
-                shortsMap.put("trade_place", shorts.getProduct().getLive().getTradePlace());
-                shortsMap.put("length", shorts.getLength());
-                shortsMap.put("video_address", shorts.getVideoAddress());
-                shortsMap.put("user_id", shorts.getUser().getUserId());
-                shrotsList.add(shortsMap);
+                    SalesShortsListResponse salesShortsListResponse = SalesShortsListResponse.builder()
+                            .shortsId(shorts.getShortsId())
+                            .productName(findProduct.get().getName())
+                            .productPrice(findProduct.get().getPrice())
+                            .tradePlace(findLive.get().getTradePlace())
+                            .length(shorts.getLength())
+                            .videoAddress(shorts.getVideoAddress())
+                            .userId(findUser.get().getUserId())
+                            .tradeDone(tradeDone)
+                            .build();
+                    return salesShortsListResponse;
+                }
             }
-
         }
-        else {
-            throw new IllegalArgumentException("Cannot find short list");
-        }
-        return shrotsList;
+        return null;
     }
 
     public Optional<List<Map<String, Object>>> getUserInfoByLiveId(int liveId){
