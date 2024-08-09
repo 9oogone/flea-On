@@ -26,6 +26,7 @@ import AddressSearch from "./pages/AddressSearch";
 import BuyList from "./features/mypage/components/BuyList";
 import SellList from "./features/mypage/components/SellList";
 import WatchList from "./features/mypage/components/WatchList";
+import ProfileEdit from "./pages/ProfileEdit";
 
 const routes = [
   {
@@ -100,6 +101,12 @@ const routes = [
     element: <SearchLive />,
     isPrivate: process.env.REACT_APP_LOGIN_BOOL === "true",
   },
+  {
+    path: "/profile-edit/:email",
+    element: <ProfileEdit />,
+    isPrivate: process.env.REACT_APP_LOGIN_BOOL === "true",
+  },
+  
 ];
 
 function App() {
@@ -145,7 +152,6 @@ function App() {
               />
             )
           )}
-
           <Route path={"/live/:sessionName"} element={<OpenVideo />}></Route>
           <Route path={"/shorts/:shortsId"} element={<Shorts />}></Route>
         </Routes>

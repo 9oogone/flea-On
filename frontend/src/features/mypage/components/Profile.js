@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 // import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import "../../../styles/Profile.css";
 import ProfileDefault from "../../../assets/images/profile_default.svg";
 
@@ -63,7 +64,7 @@ const mockUserInfo = {
 const Profile = () => {
   // 리덕스 스토어에서 사용자 정보를 가져옵니다.
   //   const userInfo = useSelector((state) => state.mypage.userInfo);
-
+  const navigate = useNavigate();
   const userInfo = mockUserInfo; // 임시 사용자 정보 사용
 
   // 주소에서 '동' 부분만 추출하기
@@ -108,6 +109,10 @@ const Profile = () => {
     });
     return slots;
   };
+
+  const handleProfileEdit = () => {
+    navigate(`/profile-edit/${userInfo.email}`);
+  };
   //////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////
 
@@ -120,7 +125,7 @@ const Profile = () => {
       />
       <h3>{userInfo.nickname}</h3>
       <p>{extractDong(userInfo.address)} 주민</p>
-      <button>프로필 편집</button>
+      <button onClick={handleProfileEdit}>프로필 편집</button>
       <CustomerDateTimeSelector
         open={open}
         handleClose={handleClose}
