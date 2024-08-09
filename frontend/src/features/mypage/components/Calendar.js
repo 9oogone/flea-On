@@ -16,11 +16,9 @@ import {
   Sell,
 } from "@mui/icons-material";
 import CalendarTrade from "./CalendarTrade";
-
+import baseAxios from "../../../utils/httpCommons";
 import Trade from "../../../assets/images/trade.svg";
 import TradeDone from "../../../assets/images/trade_done.svg";
-
-// import { ReactComponent as TradeIcon } from "../../../assets/images/trade.svg";
 import { ReactComponent as TradeDoneIcon } from "../../../assets/images/trade_done.svg";
 import "../../../styles/Calendar.css";
 
@@ -30,6 +28,7 @@ const Calendar = () => {
   const [weeklyTrades, setWeeklyTrades] = useState({});
   // const [trades, setTrades] = useState({}); //api
   const [userId] = useState(1);
+  const [dailyTrades, setDailyTrades] = useState({});
 
   const startDate = startOfWeek(currentWeek, { weekStartsOn: 0 });
 
@@ -49,9 +48,25 @@ const Calendar = () => {
         obj[key] = dummyTrades[key];
         return obj;
       }, {});
+    /*
+const fetchWeeklyTrades = async () => {
+    const startOfWeekStr = format(startDate, "yyyy-MM-dd");
+    const endOfWeekStr = format(addDays(startDate, 6), "yyyy-MM-dd");
 
+    try {
+      const response = await baseAxios().get(`/fleaon/users/${email}/${startOfWeekStr}/schedule`);
+      setWeeklyTrades(response.data);
+    } catch (error) {
+      console.error("주간 거래 정보를 가져오는데 실패했습니다:", error);
+    }
+  };
+
+   fetchWeeklyTrades();
+  }, [currentWeek, startDate, userId]);
+*/
     setWeeklyTrades(filteredTrades);
   };
+
   const handlePreviousWeek = () => {
     setCurrentWeek(subWeeks(currentWeek, 1));
     setSelectedDate(null);
@@ -62,9 +77,25 @@ const Calendar = () => {
     setSelectedDate(null);
   };
 
-  const handleDateClick = (event, date) => {
+  const handleDateClick = async (event, date) => {
     event.preventDefault();
     setSelectedDate(date);
+
+    const email = "qsc753969";
+    const tradeDate = format(date, "yyyy-MM-dd");
+    try {
+      const response = await baseAxios().get(
+        `/fleaon/users/${email}/${tradeDate}/schedule`
+      );
+      if (response.status === 200) {
+        setDailyTrades(response.data);
+        console.log("나오나~~~~~", setDailyTrades);
+      } else {
+        console.error("일자별 거래 데이터를 wwwww가져오는데 실패했습니다.");
+      }
+    } catch (error) {
+      console.error("일자별 거래 데이터를 gggg가져오는데 실패했습니다:", error);
+    }
   };
 
   // 주간 날짜 배열 생성
@@ -274,6 +305,7 @@ const Calendar = () => {
     weeklyTrades,
     userId
   );
+
   return (
     <Box className="calendar-container">
       <Box className="calendar-header">

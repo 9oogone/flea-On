@@ -1,9 +1,15 @@
+<<<<<<< HEAD
 import React, { useState } from "react";
 // import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import "../../../styles/Profile.css";
+=======
+import React from "react";
+>>>>>>> b1fcdcdbf75b61dd03a812f5b7f24f8dca87768b
 import ProfileDefault from "../../../assets/images/profile_default.svg";
+import { Container, Avatar, Box, Typography } from "@mui/material";
 
+<<<<<<< HEAD
 ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////
 import CustomerDateTimeSelector from "../../../components/CustomerDateTimeSelector";
@@ -116,13 +122,27 @@ const Profile = () => {
   //////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////
 
+=======
+const Profile = ({ user }) => {
+>>>>>>> b1fcdcdbf75b61dd03a812f5b7f24f8dca87768b
   return (
-    <div className="profile">
-      <img
-        onClick={handleCustomerClick}
-        src={userInfo.profileImage}
-        alt={`${userInfo.nickname}'s profile`}
+    <Container
+      sx={{
+        mt: 7,
+        mb: 2,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        flexDirection: "column",
+        gap: 1,
+      }}
+    >
+      <Avatar
+        src={user?.profilePicture || ProfileDefault}
+        alt={`${user?.nickname || "사용자"}'s profile`}
+        sx={{ width: 60, height: 60 }}
       />
+<<<<<<< HEAD
       <h3>{userInfo.nickname}</h3>
       <p>{extractDong(userInfo.address)} 주민</p>
       <button onClick={handleProfileEdit}>프로필 편집</button>
@@ -134,6 +154,34 @@ const Profile = () => {
         times={times}
       />
     </div>
+=======
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center", // 이 부분 유지
+          mt: 0.5,
+        }}
+      >
+        <Typography variant="h6" sx={{ fontWeight: "600" }}>
+          {user?.nickname || "닉네임"}
+        </Typography>
+        <Typography> 플리온 주민</Typography>
+      </Box>
+      <Box
+        sx={{
+          px: 1,
+          py: 0.5,
+          bgcolor: "#CCCCCC",
+          color: "#FFFFFF",
+          borderRadius: 5,
+          fontSize: 12,
+        }}
+      >
+        프로필 수정
+      </Box>
+    </Container>
+>>>>>>> b1fcdcdbf75b61dd03a812f5b7f24f8dca87768b
   );
 };
 

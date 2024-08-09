@@ -1,13 +1,45 @@
 // HomePage.js
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import Switch from "../components/Switch";
 import LiveBroadcasts from "../components/LiveBroadcasts";
 import Shorts from "../components/Shorts";
-import { Grid, Box, Container } from "@mui/material";
+import { Grid, Box, Button, Container } from "@mui/material";
+import baseAxios from "../utils/httpCommons";
+import { useNavigate } from "react-router-dom";
+
 const HomePage = () => {
   const selectedTab = useSelector((state) => state.content.selectedTab);
   // const contents = useSelector((state) => state.content.contents);
+  const [hasLive, setHasLive] = useState(false);
+  const [liveId, setLiveId] = useState(null);
+  const navigate = useNavigate();
+  useEffect(() => {
+    const checkLiveExistence = async () => {
+      try {
+        const response = await baseAxios().get(
+          "/fleaon/users/commerceLive/expected"
+        );
+        setHasLive(response.data.exist);
+        if (hasLive) {
+          setLiveId(response.data.liveId);
+        }
+      } catch (error) {
+        console.error("Error checking live existence", error);
+      }
+    };
+
+    checkLiveExistence();
+  }, []);
+  const startLiveBroadcast = async (liveId) => {
+    try {
+      await baseAxios().put(`/fleaon/live/${liveId}/on`);
+      navigate(`/live/${liveId}`);
+    } catch (error) {
+      console.error("Failed to start live broadcast", error);
+    }
+  };
+
   const contents = {
     live: [
       {
@@ -183,7 +215,44 @@ const HomePage = () => {
 
   return (
     <Container>
-      <Grid container spacing={3} sx={{ marginTop: "12vh" }}>
+      <Grid container sx={{ marginTop: "12vh" }}>
+        {hasLive ? (
+          <Grid
+            item
+            xs={12}
+            sx={{
+              mr: 2,
+              p: 1,
+              ml: 2,
+              mb: 2,
+              borderRadius: 2,
+              background:
+                "linear-gradient(100deg, rgba(255, 87, 87, 0.18) 50%, rgba(255, 11, 85, 0.18) 100%)",
+            }}
+          >
+            <Grid container>
+              <Grid item xs={8}>
+                <Box>방송시간입니다</Box>
+                <Box>시청자들이 기다리고 있어요!</Box>
+              </Grid>
+              <Grid
+                item
+                xs={4}
+                sx={{ display: "flex", justifyContent: "center" }}
+              >
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => startLiveBroadcast(liveId)}
+                >
+                  시작하기
+                </Button>
+              </Grid>
+            </Grid>
+          </Grid>
+        ) : (
+          <Box></Box>
+        )}
         {selectedTab === "live" && <LiveBroadcasts items={contents.live} />}
         {selectedTab === "shorts" && <Shorts items={contents.shorts} />}
         <Box

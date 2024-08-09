@@ -1,30 +1,62 @@
 import React from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { updateSalesCount } from "../levelSlice";
-import { Box, Typography, Avatar, LinearProgress, Button } from "@mui/material";
+import { Box, Typography, Avatar, LinearProgress } from "@mui/material";
+import levelBaby from "../../../assets/images/level_baby.svg";
+import levelSmall from "../../../assets/images/level_small.svg";
+import levelMiddle from "../../../assets/images/level_middle.svg";
+import levelBig from "../../../assets/images/level_big.svg";
 
-const UserLevel = () => {
-  const dispatch = useDispatch();
-  const salesCount = useSelector((state) => state.level.salesCount);
-  const level = useSelector((state) => state.level.level);
-  const nextLevel = useSelector((state) => state.level.nextLevel);
-  const levelIcon = useSelector((state) => state.level.levelIcon);
-  const nextLevelIcon = useSelector((state) => state.level.nextLevelIcon);
-  const salesGoal = useSelector((state) => state.level.salesGoal);
-  const remainingSales = salesGoal - salesCount;
-  const progressValue = (salesCount / salesGoal) * 100;
+const levels = [
+  {
+    name: "아기손",
+    minSales: 0,
+    maxSales: 1,
+    icon: levelBaby,
+  },
+  {
+    name: "작은손",
+    minSales: 2,
+    maxSales: 5,
+    icon: levelSmall,
+  },
+  {
+    name: "중간손",
+    minSales: 7,
+    maxSales: 25,
+    icon: levelMiddle,
+  },
+  {
+    name: "큰손",
+    minSales: 26,
+    maxSales: "MAX",
+    icon: levelBig,
+  },
+];
 
-  const handleUpdateSalesCount = () => {
-    dispatch(updateSalesCount(salesCount + 1));
-  };
+const UserLevel = ({ level }) => {
+  const salesCount = level;
+  // 현재 레벨과 다음 레벨 찾기
+  let currentLevel, nextLevel;
+  for (let i = 0; i < levels.length; i++) {
+    if (salesCount < levels[i].maxSales || levels[i].maxSales === "MAX") {
+      currentLevel = levels[i];
+      nextLevel = levels[i + 1] || null;
+      break;
+    }
+  }
+
+  const remainingSales = nextLevel ? currentLevel.maxSales - salesCount : 0;
+  const progressValue =
+    currentLevel.maxSales === "MAX"
+      ? 100
+      : (salesCount / currentLevel.maxSales) * 100;
 
   const getProfileStyles = () => {
-    switch (level) {
+    switch (currentLevel.name) {
       case "아기손":
         return {
-          color: "#8D751C", //텍스트 색
-          barColor: "linear-gradient(270deg, #FFFACC 0%, #E6E6E6 100%)", //이게 게이지 배경색
-          progressColor: "#E6E6E6", //이게 게이지바 색
+          color: "#8D751C",
+          barColor: "linear-gradient(270deg, #FFFACC 0%, #E6E6E6 100%)",
+          progressColor: "#E6E6E6",
         };
       case "작은손":
         return {
@@ -59,13 +91,14 @@ const UserLevel = () => {
     <Box
       sx={{
         p: 2,
+        pb: 2.5,
         backgroundColor: "white",
         borderRadius: "20px",
         boxShadow: "0px 0px 12px rgba(13, 39, 105, 0.10)",
         border: "2px solid rgba(243, 242, 241, 0.20)",
         display: "flex",
         flexDirection: "column",
-        gap: 2,
+        gap: 1.5,
         alignItems: "flex-start",
       }}
     >
@@ -78,16 +111,16 @@ const UserLevel = () => {
         >
           <Box
             component="img"
-            src={levelIcon}
-            alt={`${level} 아이콘`}
+            src={currentLevel.icon}
+            alt={`${currentLevel.name} 아이콘`}
             sx={{ width: "100%", height: "100%" }}
           />
         </Avatar>
         <Box>
           <Typography sx={{ fontSize: 17, fontWeight: 600, color: "#2E2E2E" }}>
-            {level}
+            {currentLevel.name}
           </Typography>
-          {level !== "큰손" ? (
+          {currentLevel.name !== "큰손" ? (
             <Typography
               sx={{
                 fontSize: 12,
@@ -95,7 +128,7 @@ const UserLevel = () => {
                 color: "rgba(0, 0, 0, 0.3)",
               }}
             >
-              {`${remainingSales}개만 더 거래하면 ${nextLevel}!`}
+              {`${remainingSales}개만 더 거래하면 ${nextLevel.name}!`}
             </Typography>
           ) : (
             <Typography
@@ -112,16 +145,16 @@ const UserLevel = () => {
       </Box>
       <Box sx={{ width: "100%", position: "relative" }}>
         <LinearProgress
-          variant="determinate" //진행상황을 나타내는 옵션
-          value={progressValue} //진행정도
+          variant="determinate"
+          value={progressValue}
           sx={{
             height: 30,
             borderRadius: 5,
             background: profileStyles.barColor,
             "& .MuiLinearProgress-bar": {
               background: profileStyles.progressColor,
-              borderRadius: 5, // 게이지 바 끝을 둥글게
-              margin: "0 10px", // 바깥과의 간격
+              borderRadius: 5,
+              margin: "0 10px",
             },
           }}
         />
@@ -136,9 +169,10 @@ const UserLevel = () => {
             color: profileStyles.color,
           }}
         >
-          {salesCount}/{salesGoal}
+          {salesCount}/
+          {currentLevel.maxSales === "MAX" ? "MAX" : currentLevel.maxSales}
         </Box>
-        {level !== "큰손" && (
+        {currentLevel.name !== "큰손" && (
           <Avatar
             sx={{
               width: 24,
@@ -151,21 +185,13 @@ const UserLevel = () => {
           >
             <Box
               component="img"
-              src={nextLevelIcon}
-              alt={`${nextLevel} 아이콘`}
+              src={nextLevel.icon}
+              alt={`${nextLevel.name} 아이콘`}
               sx={{ width: "100%", height: "100%" }}
             />
           </Avatar>
         )}
       </Box>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleUpdateSalesCount}
-        sx={{ mt: 2 }}
-      >
-        판매 갯수 업데이트
-      </Button>
     </Box>
   );
 };
