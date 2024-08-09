@@ -101,7 +101,7 @@ public class PurchaseApiController {
         }
     }
 
-    @PutMapping("/reserve")
+    @PostMapping("/reserve")
     @Operation(summary = "예약하기", description = "예약버튼이 활성화되어있을 시 예약합니다.")
     public ResponseEntity<Integer> reserve(@RequestBody PurchaseRequest request) {
         try {

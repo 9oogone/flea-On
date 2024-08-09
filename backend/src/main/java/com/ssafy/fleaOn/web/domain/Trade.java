@@ -6,13 +6,13 @@ import lombok.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-@AllArgsConstructor
-@Table(name = "trade")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Getter
 @Entity
-@Builder
+@Table(name = "trade")
+@Getter
 @Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class Trade {
 
     @Id
@@ -20,8 +20,11 @@ public class Trade {
     @Column(name = "trade_id")
     private int tradeId;
 
+    @Column(name = "buyer_id")
+    private Integer buyerId;
+
     @Column(name = "seller_id")
-    private int sellerId;
+    private Integer sellerId;
 
     @Column(name = "trade_date")
     private LocalDate tradeDate;
@@ -32,27 +35,24 @@ public class Trade {
     @Column(name = "trade_place")
     private String tradePlace;
 
-    @Column(name = "buyer_id")
-    private int buyerId;
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "live_id")
+    @JoinColumn(name = "live_id", foreignKey = @ForeignKey(name = "live_id_foreign"))
     private Live live;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "chatting_id")
+    @JoinColumn(name = "chatting_id", foreignKey = @ForeignKey(name = "FKdfuysadep6uq9pv49vf4yqf60"))
     private Chatting chatting;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id")
+    @JoinColumn(name = "product_id", foreignKey = @ForeignKey(name = "FKk7rb0h3k3agu32548w3lk4b8n"))
     private Product product;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "shorts_id")
+    @JoinColumn(name = "shorts_id", foreignKey = @ForeignKey(name = "FK4vwxjamrx8yjltmxlvt36p695"))
     private Shorts shorts;
 
     @Builder
-    public Trade(int sellerId, int buyerId, LocalDate tradeDate, LocalTime tradeTime, String tradePlace, Live live, Product product, Chatting chatting, Shorts shorts) {
+    public Trade(Integer sellerId, Integer buyerId, LocalDate tradeDate, LocalTime tradeTime, String tradePlace, Live live, Product product, Chatting chatting, Shorts shorts) {
         this.sellerId = sellerId;
         this.buyerId = buyerId;
         this.tradeDate = tradeDate;
