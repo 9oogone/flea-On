@@ -151,14 +151,18 @@ public class UserApiController {
     @Operation(summary = "구매 목록 조회", description = "회원의 구매목록을 조회할 때 사용합니다. ")
     @GetMapping("/{email}/purchaseList")
     public ResponseEntity<?> getUserPurchaseList(@PathVariable("email") String email) {
-        User user = userService.findByEmail(email);
-
-        Optional<List<Map<String, Object>>> userPurchaseList = userService.getUserPurchaseListByUserId(user.getUserId());
-        if (userPurchaseList.isPresent()) {
+        try{
+            User user = userService.findByEmail(email);
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+            Optional<List<PurchaseResponse>> userPurchaseList = userService.getUserPurchaseListByUserId(user.getUserId());
             return ResponseEntity.status(HttpStatus.OK).body(userPurchaseList.get());
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-
+        catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
     @Operation(summary = "줄서기 목록 조회", description = "회원의 줄서기 목록을 조회할 때 사용합니다. ")
@@ -227,7 +231,7 @@ public class UserApiController {
         try {
             User user = userService.findByEmail(email);
 
-            Optional<List<Map<String, Object>>> userScrapShortsList = userService.getUserScrapShortsByUserId(user.getUserId());
+            Optional<List<ScrapShortsResponse>> userScrapShortsList = userService.getUserScrapShortsByUserId(user.getUserId());
             if (userScrapShortsList.isPresent()) {
                 return ResponseEntity.status(HttpStatus.OK).body(userScrapShortsList.get());
             }

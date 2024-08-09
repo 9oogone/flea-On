@@ -11,4 +11,6 @@ public interface TradeDoneRepository extends JpaRepository<TradeDone, Integer> {
     int countByBuyer_UserIdOrSeller_UserIdAndTradeDate (int buyerId, int sellerId, LocalDate tradeDate);
 
     Optional<TradeDone> findBySeller_UserId(int sellerId);
+
+    Optional<TradeDone> findByBuyer_UserId(int buyerId);
 }
