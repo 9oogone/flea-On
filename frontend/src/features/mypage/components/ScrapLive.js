@@ -7,35 +7,30 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { switchTab } from "../../../features/home/contentSlice";
 
-const Lives = ({ items }) => {
+const ScrapLive = ({ items }) => {
+  // console.log(items);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [open, setOpen] = useState(false);
-  const [modalLiveDate, setModalLiveDate] = useState("");
-  const [modalTitle, setModalTitle] = useState("");
-  const [modalProducts, setModalProducts] = useState([]);
-  const [modalThumbnail, setModalThumbnail] = useState("");
-  const [modalAuthor, setModalAuthor] = useState("");
-  const [modalTradePlace, setModalTradePlace] = useState("");
+  // const [open, setOpen] = useState(false);
+  // const [modalLiveDate, setModalLiveDate] = useState("");
+  // const [modalTitle, setModalTitle] = useState("");
+  // const [modalProducts, setModalProducts] = useState([]);
+  // const [modalThumbnail, setModalThumbnail] = useState("");
+  // const [modalAuthor, setModalAuthor] = useState("");
+  // const [modalTradePlace, setModalTradePlace] = useState("");
 
-  const handleButtonClick = (item) => {
-    setModalLiveDate(item.live_date);
-    setModalTitle(item.title);
-    setModalProducts(item.products || []);
-    setModalThumbnail(item.thumbnail);
-    setModalAuthor(item.author);
-    setModalTradePlace(item.trade_place);
-    setOpen(true);
-  };
+  // const handleButtonClick = (item) => {
+  //   setModalLiveDate(item.live_date);
+  //   setModalTitle(item.title);
+  //   setModalProducts(item.products || []);
+  //   setModalThumbnail(item.thumbnail);
+  //   setModalAuthor(item.author);
+  //   setModalTradePlace(item.trade_place);
+  //   setOpen(true);
+  // };
 
-  const handleClose = () => setOpen(false);
+  // const handleClose = () => setOpen(false);
 
-  const scrapItems = useSelector((state) =>
-    items.filter(
-      (item) =>
-        state.scrap.live.find((scrapItem) => scrapItem.id === item.id)?.is_scrap
-    )
-  );
   const handleNavigateToLive = () => {
     dispatch(switchTab("live"));
     navigate("/");
@@ -43,7 +38,7 @@ const Lives = ({ items }) => {
   return (
     <Grid item xs={12}>
       <Grid container>
-        {scrapItems.length === 0 ? (
+        {items.length === 0 ? (
           <Grid item xs={12} sx={{ textAlign: "center", mt: 4 }}>
             <Typography variant="h6" sx={{ color: "grey.700" }}>
               관심있는 라이브가 없어요. <br />
@@ -66,17 +61,17 @@ const Lives = ({ items }) => {
             </Button>
           </Grid>
         ) : (
-          scrapItems.map((item) => (
+          items.map((item) => (
             <Grid key={item.id} item xs={6} sx={{ textAlign: "center" }}>
               <Button
-                onClick={() => handleButtonClick(item)}
+                // onClick={() => handleButtonClick(item)}
                 sx={{ padding: 0, minWidth: 0 }}
               >
                 <Box
                   sx={{
                     width: "16vh",
                     height: "28vh",
-                    backgroundImage: `url(${item.thumbnail})`,
+                    backgroundImage: `url(${item.live_thumbnail})`,
                     backgroundSize: "cover",
                     backgroundPosition: "center",
                     borderRadius: 2,
@@ -91,7 +86,10 @@ const Lives = ({ items }) => {
                       height: "85%",
                     }}
                   >
-                    <UpcomingHeader id={item.id} liveDate={item.live_date} />
+                    <UpcomingHeader
+                      liveDate={item.live_date}
+                      isScrap={item.is_scrap}
+                    />
                   </Box>
                   <UpcomingFooter
                     tradePlace={item.trade_place}
@@ -99,7 +97,7 @@ const Lives = ({ items }) => {
                   />
                 </Box>
               </Button>
-              <UpcomingModal
+              {/* <UpcomingModal
                 id={item.id}
                 open={open}
                 handleClose={handleClose}
@@ -109,7 +107,7 @@ const Lives = ({ items }) => {
                 thumbnail={modalThumbnail}
                 author={modalAuthor}
                 tradePlace={modalTradePlace}
-              />
+              /> */}
             </Grid>
           ))
         )}
@@ -118,4 +116,4 @@ const Lives = ({ items }) => {
   );
 };
 
-export default Lives;
+export default ScrapLive;

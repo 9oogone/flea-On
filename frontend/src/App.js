@@ -25,7 +25,7 @@ import Shorts from "./pages/ShortsPage";
 import AddressSearch from "./pages/AddressSearch";
 import BuyList from "./features/mypage/components/BuyList";
 import SellList from "./features/mypage/components/SellList";
-import WatchList from "./features/mypage/components/WatchList";
+import ScrapList from "./features/mypage/components/ScrapList";
 
 const routes = [
   {
@@ -81,8 +81,8 @@ const routes = [
     isPrivate: process.env.REACT_APP_LOGIN_BOOL === "true",
   },
   {
-    path: "/mypage/watch-list",
-    element: <WatchList />,
+    path: "/mypage/scrap-list",
+    element: <ScrapList />,
     isPrivate: process.env.REACT_APP_LOGIN_BOOL === "true",
   },
   {

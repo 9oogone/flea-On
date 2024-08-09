@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { switchTab as switchContentTab } from "../features/home/contentSlice";
 import { switchTab as switchBuyTab } from "../features/mypage/buylistSlice";
 import { switchTab as switchSellTab } from "../features/mypage/selllistSlice";
-import { switchTab as switchWatchTab } from "../features/mypage/watchlistSlice";
+import { switchTab as switchWatchTab } from "../features/mypage/scrapSlice";
 import { ButtonGroup, Button } from "@mui/material";
 
 const Switch = ({ options, type }) => {
@@ -16,8 +16,8 @@ const Switch = ({ options, type }) => {
         return state.buy.selectedTab;
       case "sell":
         return state.sell.selectedTab;
-      case "watch":
-        return state.watch.selectedTab;
+      case "scrap":
+        return state.scrap.selectedTab;
       default:
         return null;
     }
@@ -32,7 +32,7 @@ const Switch = ({ options, type }) => {
       dispatch(switchBuyTab(tab));
     } else if (type === "sell") {
       dispatch(switchSellTab(tab));
-    } else if (type === "watch") {
+    } else if (type === "scrap") {
       dispatch(switchWatchTab(tab));
     }
   };
