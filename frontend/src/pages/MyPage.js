@@ -12,6 +12,7 @@ const MyPage = () => {
   const dispatch = useDispatch();
   
   useEffect(() => {
+    console.log("들어왓니")
     dispatch(fetchUserInfo());
   }, [dispatch]);
 
