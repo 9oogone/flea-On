@@ -97,8 +97,8 @@ public class    SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         //JWTFilter 추가
-//        http
-//                .addFilterAfter(new JWTFilter(jwtUtil), OAuth2LoginAuthenticationFilter.class);
+        http
+                .addFilterAfter(new JWTFilter(jwtUtil), OAuth2LoginAuthenticationFilter.class);
 
 
         return http.build();
