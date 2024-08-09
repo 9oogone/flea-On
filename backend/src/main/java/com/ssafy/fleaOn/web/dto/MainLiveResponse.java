@@ -1,5 +1,6 @@
 package com.ssafy.fleaOn.web.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ssafy.fleaOn.web.domain.Product;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,5 +20,7 @@ public class MainLiveResponse {
     private int productPrice;
     private String tradePlace;
     private int isLive;
+
+    @JsonProperty
     private List<Product> product;
 }

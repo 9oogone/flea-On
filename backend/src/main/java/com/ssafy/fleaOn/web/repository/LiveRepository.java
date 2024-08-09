@@ -1,6 +1,7 @@
 package com.ssafy.fleaOn.web.repository;
 
 import com.ssafy.fleaOn.web.domain.Live;
+import org.springframework.cglib.core.Local;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -22,5 +23,5 @@ public interface LiveRepository extends JpaRepository<Live, Integer> {
 
     Optional<Live> findByLiveIdAndSeller_userId(int liveId, int userId);
 
-    Slice<Live> findByRegionInfo_regionCode(String regionCode, Pageable pageable);
+    Slice<Live> findByRegionInfo_RegionCodeAndLiveDateGreaterThanEqual(String regionCode, LocalDateTime currentTime, Pageable pageable);
 }
