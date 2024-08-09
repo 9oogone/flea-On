@@ -376,7 +376,6 @@ public class UserService {
         Optional<UserRegion> findUserReion = userRegionRepository.findByUser_userIdAndRegion_RegionCode(userId, regionCode);
         if (findUserReion.isPresent()) {
             userRegionRepository.delete(findUserReion.get());
-            System.out.println("지워용 ~~");
         }
     }
 
