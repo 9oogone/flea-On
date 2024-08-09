@@ -72,10 +72,21 @@ public class RedisQueueConsumer {
 
     // 주기적으로 구매 확정 요청을 처리하는 메서드
     @Scheduled(fixedDelay = 1000)
-    public void handleConfirmRequest() {
-        TradeRequest request = (TradeRequest) redisTemplate.opsForList().leftPop("confirmQueue");
+    public void handleConfirmPurchaseRequest() {
+        TradeRequest request = (TradeRequest) redisTemplate.opsForList().leftPop("confirmPurchaseQueue");
         if (request != null) {
             purchaseService.processConfirmPurchaseRequest(request);
+//            logger.info("sned it!!");
+            redisTemplate.opsForValue().set("confirmResult:" + request.getBuyerId() + ":" + request.getProductId(), "confirmed");
+        }
+    }
+
+    // 주기적으로 구매 확정 요청을 처리하는 메서드
+    @Scheduled(fixedDelay = 1000)
+    public void handleConfirmReadeRequest() {
+        TradeRequest request = (TradeRequest) redisTemplate.opsForList().leftPop("confirmTradeQueue");
+        if (request != null) {
+            purchaseService.processConfirmTradeRequest(request);
 //            logger.info("sned it!!");
             redisTemplate.opsForValue().set("confirmResult:" + request.getBuyerId() + ":" + request.getProductId(), "confirmed");
         }

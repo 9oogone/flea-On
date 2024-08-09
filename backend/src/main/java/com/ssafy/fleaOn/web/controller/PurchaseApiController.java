@@ -161,12 +161,43 @@ public class PurchaseApiController {
         }
     }
 
-    @PostMapping("/confirm")
+    @PostMapping("/confirmPurchase")
     @Operation(summary = "구매 확정하기", description = "구매 예정자가 구매 시간 설정 후 구매를 확정합니다.")
+    public ResponseEntity<?> confirmPurchase(@RequestBody TradeRequest request) {
+        try {
+            // 구매 확정 요청을 큐에 추가
+            redisQueueProducer.sendConfirmPurchaseRequest(request);
+
+            // 결과를 일정 시간 동안 폴링하여 조회
+            int maxRetries = 10;  // 최대 10번 시도
+            int retryInterval = 1000; // 1초 간격으로 시도
+
+            String result = null;
+            for (int i = 0; i < maxRetries; i++) {
+                result = (String) redisTemplate.opsForValue().get("confirmResult:" + request.getBuyerId() + ":" + request.getProductId());
+                if (result != null) {
+                    break; // 결과를 성공적으로 가져온 경우
+                }
+                Thread.sleep(retryInterval); // 대기
+            }
+
+            if (result == null) {
+                logger.info("null here!!");
+                return ResponseEntity.ok("not confirmed"); // 아직 결과가 없는 경우
+            }
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            logger.error("Error processing confirm request", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error processing confirm request");
+        }
+    }
+
+    @PostMapping("/confirmTrade")
+    @Operation(summary = "거래 확정하기", description = "거래를 확정합니다.")
     public ResponseEntity<?> confirm(@RequestBody TradeRequest request) {
         try {
             // 구매 확정 요청을 큐에 추가
-            redisQueueProducer.sendConfirmRequest(request);
+            redisQueueProducer.sendConfirmTradeRequest(request);
 
             // 결과를 일정 시간 동안 폴링하여 조회
             int maxRetries = 10;  // 최대 10번 시도
