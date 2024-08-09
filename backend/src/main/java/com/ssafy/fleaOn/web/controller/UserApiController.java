@@ -4,10 +4,7 @@ import com.ssafy.fleaOn.web.config.jwt.JWTUtil;
 import com.ssafy.fleaOn.web.domain.Live;
 import com.ssafy.fleaOn.web.domain.User;
 import com.ssafy.fleaOn.web.domain.UserRegion;
-import com.ssafy.fleaOn.web.dto.CommerceLiveExpectedResponse;
-import com.ssafy.fleaOn.web.dto.ExtraInfoRequest;
-import com.ssafy.fleaOn.web.dto.UpdateRegionCodeRequest;
-import com.ssafy.fleaOn.web.dto.UserFullInfoResponse;
+import com.ssafy.fleaOn.web.dto.*;
 import com.ssafy.fleaOn.web.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -129,9 +127,8 @@ public class UserApiController {
 
     @Operation(summary = "마이페이지 조회", description = "사용자의 마이페이지를 조회할 때 사용합니다. ")
     @GetMapping("/{email}/mypage")
-    public ResponseEntity<?> getMyPage(@PathVariable("email") String email) {
-        Map<String, Object> userInfo = userService.getUserInfoByEmail(email);
-
+    public ResponseEntity<?> getMyPage(@PathVariable("email") String email, @RequestParam("today") LocalDate today) {
+        MyPageResponse userInfo = userService.getUserPageByEmail(email, today);
         if (userInfo == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } else {
