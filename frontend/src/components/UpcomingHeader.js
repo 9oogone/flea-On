@@ -2,18 +2,28 @@ import React from "react";
 import { Box, Typography } from "@mui/material";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
-import { useSelector, useDispatch } from "react-redux";
-import { toggleScrap } from "../features/live/scrapSlice";
+import { format, parseISO, isToday, isTomorrow } from "date-fns";
+// import { toggleScrap } from "../features/live/scrapSlice";
 
-const UpcomingHeader = ({ id, liveDate }) => {
-  const dispatch = useDispatch();
-  const isScrap = useSelector(
-    (state) => state.scrap.live.find((item) => item.id === id)?.is_scrap
-  );
+const UpcomingHeader = ({ liveDate, isScrap }) => {
+  // liveDate를 Date 객체로 변환
+  const date = parseISO(liveDate);
+  // 현재 날짜와 비교하여 형식 결정
+  let formattedDate;
+  if (isToday(date)) {
+    formattedDate = "오늘";
+  } else if (isTomorrow(date)) {
+    formattedDate = "내일";
+  } else {
+    formattedDate = format(date, "MM/dd"); // 예: 11/30
+  }
 
-  const handleScrapToggle = () => {
-    dispatch(toggleScrap({ id }));
-  };
+  // 시간 포맷 설정 (오전/오후 00시 00분)
+  const formattedTime = format(date, "a hh시 mm분");
+
+  // const handleScrapToggle = () => {
+  //   dispatch(toggleScrap({ id }));
+  // };
   return (
     <Box>
       <Box
@@ -31,7 +41,7 @@ const UpcomingHeader = ({ id, liveDate }) => {
             lineHeight: "8px",
           }}
         >
-          {liveDate}
+          {`${formattedDate}, ${formattedTime}`}
         </Typography>
       </Box>
       <Box
@@ -39,10 +49,10 @@ const UpcomingHeader = ({ id, liveDate }) => {
           textAlign: "end",
           color: "white",
         }}
-        onClick={(e) => {
-          e.stopPropagation();
-          handleScrapToggle();
-        }}
+        // onClick={(e) => {
+        //   e.stopPropagation();
+        //   handleScrapToggle();
+        // }}
       >
         {isScrap ? <BookmarkIcon /> : <BookmarkBorderIcon />}
       </Box>

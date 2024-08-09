@@ -25,12 +25,10 @@ import Shorts from "./pages/ShortsPage";
 import AddressSearch from "./pages/AddressSearch";
 import BuyList from "./features/mypage/components/BuyList";
 import SellList from "./features/mypage/components/SellList";
-import WatchList from "./features/mypage/components/WatchList";
-<<<<<<< HEAD
+import ScrapList from "./features/mypage/components/ScrapList";
+
 import ProfileEdit from "./pages/ProfileEdit";
-=======
 import Notification from "./pages/NotificationPage";
->>>>>>> b1fcdcdbf75b61dd03a812f5b7f24f8dca87768b
 
 const routes = [
   {
@@ -91,8 +89,8 @@ const routes = [
     isPrivate: process.env.REACT_APP_LOGIN_BOOL === "true",
   },
   {
-    path: "/mypage/watch-list",
-    element: <WatchList />,
+    path: "/mypage/scrap-list",
+    element: <ScrapList />,
     isPrivate: process.env.REACT_APP_LOGIN_BOOL === "true",
   },
   {
@@ -115,7 +113,6 @@ const routes = [
     element: <ProfileEdit />,
     isPrivate: process.env.REACT_APP_LOGIN_BOOL === "true",
   },
-  
 ];
 
 function App() {

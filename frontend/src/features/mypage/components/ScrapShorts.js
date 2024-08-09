@@ -1,20 +1,19 @@
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { Box, Typography, Grid, Button } from "@mui/material";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
-import { FavoriteBorderRounded, FavoriteRounded } from "@mui/icons-material";
+import { FavoriteRounded } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import { toggleScrap } from "../../../features/shorts/shortsSlice";
+import { toggleScrap } from "../scrapSlice";
 import { switchTab } from "../../../features/home/contentSlice";
 
-const WatchlistShorts = () => {
+const ScrapShorts = ({ items }) => {
   const dispatch = useDispatch();
-  const shorts = useSelector((state) => state.shorts.shorts);
   const navigate = useNavigate();
-
+  // console.log(items);
   const handleNavigateToShorts = () => {
-    dispatch(switchTab("shorts")); // 탭을 "shorts"로 설정
-    navigate("/"); // 홈페이지로 이동
+    dispatch(switchTab("shorts"));
+    navigate("/");
   };
 
   const handleButtonClick = (shortsId) => {
@@ -22,15 +21,14 @@ const WatchlistShorts = () => {
   };
 
   const handleScrapToggle = (id) => {
-    dispatch(toggleScrap({ shortsId: id }));
+    // console.log("찍히니", id);
+    dispatch(toggleScrap({ id, type: "shorts" }));
   };
-
-  const watchShorts = shorts.filter((item) => item.is_scrap);
 
   return (
     <Grid item xs={12}>
       <Grid container>
-        {watchShorts.length === 0 ? (
+        {items.length === 0 ? (
           <Grid item xs={12} sx={{ textAlign: "center", mt: 4 }}>
             <Typography variant="h6" sx={{ color: "grey.700" }}>
               관심있는 판매 쇼츠가 없어요 <br />
@@ -53,8 +51,8 @@ const WatchlistShorts = () => {
             </Button>
           </Grid>
         ) : (
-          watchShorts.map((item) => (
-            <Grid key={item.id} item xs={6} sx={{ textAlign: "center" }}>
+          items.map((item) => (
+            <Grid key={item.shorts_id} item xs={6} sx={{ textAlign: "center" }}>
               <Button
                 onClick={() => handleButtonClick(item.shorts_id)}
                 sx={{ padding: 0, minWidth: 0 }}
@@ -63,7 +61,7 @@ const WatchlistShorts = () => {
                   sx={{
                     width: "16vh",
                     height: "28vh",
-                    backgroundImage: `url(${item.thumbnail})`,
+                    backgroundImage: `url(${item.shorts_thumbnail})`,
                     backgroundSize: "cover",
                     backgroundPosition: "center",
                     borderRadius: 2,
@@ -91,14 +89,10 @@ const WatchlistShorts = () => {
                       }}
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleScrapToggle(item.id);
+                        handleScrapToggle(item.shorts_id);
                       }}
                     >
-                      {item.is_scrap ? (
-                        <FavoriteRounded sx={{ color: "#FF0B55" }} />
-                      ) : (
-                        <FavoriteBorderRounded />
-                      )}
+                      <FavoriteRounded sx={{ color: "#FF0B55" }} />
                     </Box>
                   </Box>
                   <Box
@@ -126,7 +120,8 @@ const WatchlistShorts = () => {
                             fontWeight: 600,
                           }}
                         >
-                          {item.name}
+                          {/* {item.name} */}
+                          상품명아 와라
                         </Typography>
                         <Typography
                           sx={{
@@ -136,7 +131,8 @@ const WatchlistShorts = () => {
                           }}
                         >
                           <LocationOnIcon sx={{ fontSize: "8px" }} />
-                          {item.trade_place}
+                          {/* {item.trade_place} */}
+                          플리동
                         </Typography>
                       </Box>
                       <Box
@@ -154,7 +150,8 @@ const WatchlistShorts = () => {
                             fontWeight: 500,
                           }}
                         >
-                          {item.price}원
+                          {/* {item.price}원 */}
+                          3000원
                         </Typography>
                         <Typography
                           sx={{
@@ -178,4 +175,4 @@ const WatchlistShorts = () => {
   );
 };
 
-export default WatchlistShorts;
+export default ScrapShorts;

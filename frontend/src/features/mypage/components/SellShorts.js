@@ -6,7 +6,7 @@ import { ko } from "date-fns/locale";
 
 const formatPrice = (price) => {
   if (price === "0") {
-    /////////뭔데 야는 왜 문자열 비교 해주ㅓ야 되냐...?...///
+    /////////뭔데 얘는 왜 문자열 비교 해주ㅓ야 되냐...?...///
     return "♥무료나눔♥";
   }
   if (price < 10000) {

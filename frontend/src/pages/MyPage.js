@@ -26,7 +26,6 @@ const MyPage = () => {
 const MyPage = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
-  console.log(user.level);
 
   useEffect(() => {
     // 페이지가 로드될 때 사용자 정보 가져오기

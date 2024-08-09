@@ -2,6 +2,7 @@
 
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import baseAxios from "../../utils/httpCommons";
+
 // 상품 카테고리 조회 액션
 export const fetchCategories = createAsyncThunk(
   "live/fetchCategories",

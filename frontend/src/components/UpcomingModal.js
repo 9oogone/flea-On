@@ -1,6 +1,6 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { toggleScrap } from "../features/live/scrapSlice";
+// import { toggleScrap } from "../features/live/scrapSlice";
 import { Box, Typography, Modal, List, ListItem } from "@mui/material";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
@@ -22,9 +22,9 @@ const UpcomingModal = ({
     (state) => state.scrap.live.find((item) => item.id === id)?.is_scrap
   );
 
-  const handleScrapToggle = () => {
-    dispatch(toggleScrap({ id }));
-  };
+  // const handleScrapToggle = () => {
+  //   dispatch(toggleScrap({ id }));
+  // };
   return (
     <Modal
       open={open}
@@ -46,7 +46,8 @@ const UpcomingModal = ({
             <div className={styles.textContainer}>
               <Typography variant="h6" component="h2" className={styles.title}>
                 <span className={styles.titleText}>{title}</span>
-                <Box onClick={handleScrapToggle}>
+                <Box>
+                  {/* <Box onClick={handleScrapToggle}> */}
                   {isScrap ? (
                     <BookmarkIcon className={styles.bookmarkIcon} />
                   ) : (
