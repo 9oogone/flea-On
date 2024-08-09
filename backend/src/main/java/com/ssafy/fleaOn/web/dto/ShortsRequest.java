@@ -19,19 +19,15 @@ public class ShortsRequest {
     private String thumbnail;
     private String length;
     private String videoAddress;
-    private String uploadDate;
     private int productId;
 
     public Shorts toEntity(Product product, User seller){
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
         LocalTime parsedShortsLength = LocalTime.parse(length, timeFormatter);
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-        LocalDateTime parsedUploadDate = LocalDateTime.parse(uploadDate, formatter);
 
         return Shorts.builder()
                 .shortsThumbnail(thumbnail)
                 .length(parsedShortsLength)
-                .uploadDate(parsedUploadDate)
                 .videoAddress(videoAddress)
                 .product(product)
                 .seller(seller)
