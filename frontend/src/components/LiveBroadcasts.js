@@ -64,10 +64,7 @@ const LiveBroadcasts = ({ items }) => {
                   {item.is_live ? (
                     <LiveHeader />
                   ) : (
-                    <UpcomingHeader
-                      liveDate={item.live_date}
-                      isScrap={item.is_scrap}
-                    />
+                    <UpcomingHeader id={item.id} liveDate={item.live_date} />
                   )}
                 </Box>
                 {item.is_live ? (
@@ -86,6 +83,7 @@ const LiveBroadcasts = ({ items }) => {
               </Box>
             </Button>
             <UpcomingModal
+              id={item.id}
               open={open}
               handleClose={handleClose}
               liveDate={modalLiveDate}
