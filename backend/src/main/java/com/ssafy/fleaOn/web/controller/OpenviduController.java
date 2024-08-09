@@ -274,6 +274,7 @@ public class OpenviduController {
         Recording.OutputMode outputMode = Recording.OutputMode.valueOf((String) params.get("outputMode"));
         boolean hasAudio = (boolean) params.get("hasAudio");
         boolean hasVideo = (boolean) params.get("hasVideo");
+        String name = (String) params.get("name");
 
         RecordingProperties properties = new RecordingProperties.Builder().outputMode(outputMode).hasAudio(hasAudio)
                 .hasVideo(hasVideo).build();
