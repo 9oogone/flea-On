@@ -29,8 +29,9 @@ public interface TradeRepository extends JpaRepository<Trade, Integer> {
 
      Optional<List<Trade>> findByChatting_chattingId(int chattingId);
 
-     Optional<List<Trade>> findByLive_liveId(int liveId);
      Optional<List<Trade>> findByLive_liveIdAndBuyerId(int liveId, int buyerId);
 
     Optional<List<Trade>> findByBuyerIdAndProduct_ProductId(int buyerId, int productId);
+
+     void deleteByShorts_ShortsId(int shortsId);
 }
