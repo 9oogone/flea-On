@@ -84,7 +84,6 @@ const OpenVideo = () => {
   const [mainStreamManager, setMainStreamManager] = useState(undefined);
   const [sttValue, setSttValue] = useState("");
   const [publisher, setPublisher] = useState(undefined);
-  const [isFrontCamera, setIsFrontCamera] = useState(true);
 
   //거래장소시간 선택 모달
   const [open, setOpen] = useState(false);
@@ -228,7 +227,7 @@ const OpenVideo = () => {
       listen({ continuous: true });
     },
   });
-  
+
   const switchCamera = useCallback(async () => {
     try {
       const devices = await OV.current.getDevices();
@@ -243,17 +242,16 @@ const OpenVideo = () => {
 
         if (newVideoDevice.length > 0) {
           const newPublisher = OV.current.initPublisher(undefined, {
-            videoSource: isFrontCamera ? newVideoDevice[1].deviceId : newVideoDevice[0].deviceId,
+            videoSource: newVideoDevice[0].deviceId,
             publishAudio: true,
             publishVideo: true,
             mirror: true,
           });
 
-          if (session.current) {
+          if (session) {
             await session.unpublish(mainStreamManager);
             await session.publish(newPublisher);
-            // setCurrentVideoDevice(newVideoDevice[0]);
-            setIsFrontCamera(!isFrontCamera);
+            setCurrentVideoDevice(newVideoDevice[0]);
             setMainStreamManager(newPublisher);
             setPublisher(newPublisher);
           }
