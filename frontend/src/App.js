@@ -25,6 +25,7 @@ import Shorts from "./pages/ShortsPage";
 import AddressSearch from "./pages/AddressSearch";
 import BuyList from "./features/mypage/components/BuyList";
 import SellList from "./features/mypage/components/SellList";
+// import WatchList from "./features/mypage/components/WatchList";
 import ScrapList from "./features/mypage/components/ScrapList";
 
 import ProfileEdit from "./pages/ProfileEdit";
