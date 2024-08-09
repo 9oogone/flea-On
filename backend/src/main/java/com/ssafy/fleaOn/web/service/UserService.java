@@ -374,31 +374,10 @@ public class UserService {
         return userRegion.get();
     }
 
-    public void updateUserRegion(int userId, String deleteRegionCode, String newRegionCode) {
-        try {
-            Optional<UserRegion> findUserReion = userRegionRepository.findByUser_userIdAndRegion_RegionCode(userId, deleteRegionCode);
-            Optional<User> findUser = userRepository.findByUserId(userId);
-            Optional<RegionInfo> findRegionInfo = regionInfoRepository.findByRegionCode(newRegionCode);
-
-            if (findUserReion.isPresent() && findUser.isPresent()) {
-                UserRegion userRegion = UserRegion.builder()
-                        .user(findUser.get())
-                        .region(findRegionInfo.get())
-                        .build();
-
-                userRegionRepository.save(userRegion);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
-    }
-
+    @Transactional
     public void deleteUserRegion(int userId, String regionCode) {
-        Optional<UserRegion> findUserReion = userRegionRepository.findByUser_userIdAndRegion_RegionCode(userId, regionCode);
-        if (findUserReion.isPresent()) {
-            userRegionRepository.delete(findUserReion.get());
-        }
+        Optional<UserRegion> userRegion = userRegionRepository.findByUser_userIdAndRegion_RegionCode(userId, regionCode);
+        userRegion.ifPresent(userRegionRepository::delete);
     }
 
     public void addUserLiveScrap(int userId, int liveId) {
