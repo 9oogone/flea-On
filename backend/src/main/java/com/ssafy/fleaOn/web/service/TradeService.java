@@ -28,8 +28,13 @@ public class TradeService {
     @Transactional
     public void confirmTrade(TradeRequest request) {
         // 1. Trade 정보를 가져와서 TradeDone으로 옮기기
-        Trade trade = tradeRepository.findByBuyerIdAndProduct_ProductId(request.getBuyerId(), request.getProductId())
+        List<Trade> trades = tradeRepository.findByBuyerIdAndProduct_ProductId(request.getBuyerId(), request.getProductId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid trade data"));
+        if (trades.size() != 1) {
+            throw new IllegalStateException("Expected one trade but found " + trades.size());
+        }
+
+        Trade trade = trades.get(0);
 
         User buyer = userRepository.findById(trade.getBuyerId()).orElseThrow(() -> new IllegalArgumentException("Invalid buyer ID"));
         User seller = userRepository.findById(trade.getSellerId()).orElseThrow(() -> new IllegalArgumentException("Invalid seller ID"));
@@ -85,3 +90,4 @@ public class TradeService {
         liveRepository.deleteById(liveId);
     }
 }
+
