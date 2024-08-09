@@ -30,11 +30,12 @@ public class PurchaseService {
     private final UserRepository userRepository;
     private final ShortsRepository shortsRepository;
     private final ChattingListRepository chattingListRepository;
+    private final TradeService tradeService;
 
     @Autowired
     public PurchaseService(ProductRepository productRepository, LiveRepository liveRepository,
                            ReservationRepository reservationRepository, TradeRepository tradeRepository,
-                           ChattingRepository chattingRepository, RedisTemplate<String, Object> redisTemplate, UserRepository userRepository, ShortsRepository shortsRepository, ChattingListRepository chattingListRepository) {
+                           ChattingRepository chattingRepository, RedisTemplate<String, Object> redisTemplate, UserRepository userRepository, ShortsRepository shortsRepository, ChattingListRepository chattingListRepository, TradeService tradeService) {
         this.productRepository = productRepository;
         this.liveRepository = liveRepository;
         this.reservationRepository = reservationRepository;
@@ -44,6 +45,7 @@ public class PurchaseService {
         this.userRepository = userRepository;
         this.shortsRepository = shortsRepository;
         this.chattingListRepository = chattingListRepository;
+        this.tradeService = tradeService;
     }
 
     @Transactional
@@ -251,6 +253,17 @@ public class PurchaseService {
             Trade trade = request.toEntity(live, product, chatting, shorts);
             tradeRepository.save(trade);
             productRepository.save(product);
+            // 구매 확정 결과를 Redis에 설정
+            redisTemplate.opsForValue().set("confirmResult:" + request.getBuyerId() + ":" + request.getProductId(), "confirmed");
+        } else {
+            // 구매자와 현재 구매자가 일치하지 않는 경우 결과를 Redis에 설정
+            redisTemplate.opsForValue().set("confirmResult:" + request.getBuyerId() + ":" + request.getProductId(), "not confirmed");
+        }
+
+        if (request.getBuyerId() == product.getCurrentBuyerId()) {
+            // 구매 확정 처리 및 관련 데이터 삭제
+            tradeService.confirmTrade(request);
+
             // 구매 확정 결과를 Redis에 설정
             redisTemplate.opsForValue().set("confirmResult:" + request.getBuyerId() + ":" + request.getProductId(), "confirmed");
         } else {

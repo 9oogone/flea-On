@@ -13,4 +13,5 @@ public interface ShortsScrapRepository extends JpaRepository<ShortsScrap, Intege
     Optional<List<ShortsScrap>> findByUser_userId(int userId);
 
     Optional<ShortsScrap> findByUser_userIdAndShorts_shortsId(int userId, int shortsId);
+    void deleteByShorts_ShortsId(int shortsId);
 }
