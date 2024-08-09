@@ -19,4 +19,5 @@ public interface ShortsRepository extends JpaRepository<Shorts, Integer> {
     Optional<List<Shorts>> findByUser_userId(int userId);
 
     Optional<Shorts> findByProduct_ProductId(int productId);
+
 }

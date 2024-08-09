@@ -38,11 +38,11 @@ public class LiveApiController {
 
     @PostMapping("/")
     @Operation(summary = "라이브 생성", description = "라이브의 정보를 저장하여 새로운 라이브를 생성합니다.")
-    public ResponseEntity<?> createLive(HttpServletRequest request, @RequestBody AddLiveRequest addLiveRequest) {
+    public ResponseEntity<?> createLive(HttpServletRequest request, @ModelAttribute AddLiveRequest addLiveRequest) {
         String authorizationHeader = request.getHeader("Authorization");
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            String jwtToken = authorizationHeader.substring(7).trim(); // "Bearer " 이후의 토큰만 추출하고 공백 제거
+            String jwtToken = authorizationHeader.substring(7).trim();
             System.out.println("jwtToken: " + jwtToken);
 
             try {
@@ -63,6 +63,8 @@ public class LiveApiController {
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("라이브 생성 실패: 토큰이 없습니다.");
     }
+
+
 
 
     @PutMapping("/{liveID}")
