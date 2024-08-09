@@ -11,7 +11,7 @@ const UpcomingModal = ({
   open,
   handleClose,
   liveDate,
-  products,
+  products= [], // 오류 때문에 일단 = [] 넣음 상품이 없을 시 빈 배열
   title,
   thumbnail,
   author,

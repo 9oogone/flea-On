@@ -295,7 +295,8 @@ const OpenVideo = () => {
       }, 5000);
       dispatch(setLoading());
       startRecording({
-        session: session.current.sessionId,
+        session: session.current.sessionId+currentProductIndex,
+        id:currentProductIndex,
         outputMode: "COMPOSED",
         hasAudio: true,
         hasVideo: true,
@@ -321,6 +322,7 @@ const OpenVideo = () => {
       dispatch(setLoading());
       stopRecording({
         recording: session.current.sessionId,
+        id:currentProductIndex
       })
         .then(() => {
           setIsRecording(false);

@@ -42,7 +42,6 @@ const ChatRoom = () => {
     console.log(chat)
     dispatch(setLoading());
 
-<<<<<<< HEAD
     MakeSession(dispatch, chatID)
       .then((ss) => {
         console.log('MakeSession 성공');
@@ -52,35 +51,6 @@ const ChatRoom = () => {
         console.error('MakeSession 오류:', error);
         dispatch(unSetLoading());
       });
-=======
-  useEffect(() => {
-    dispatch(fetchChatRoom(chatID));
-  }, [chatID, dispatch]);
-
-  useEffect(() => {
-    if (chatRoom && chatRoom.messages) {
-      const formattedMessages = chatRoom.messages.map(msg => ({
-        text: msg.chat_content,
-        isSent: msg.writer_id === userId,
-        time: formatTime(new Date(msg.chat_time)),
-      }));
-      setMessages(formattedMessages);
-    }
-  }, [chatRoom, userId]);
-
-  const handleSendMessage = () => {
-    if (message.trim() !== "") {
-      setMessages([...messages, message]);
-      setMessage("");
-    }
-  };
-
-  const handleKeyPress = (event) => {
-    if (event.key === "Enter") {
-      handleSendMessage();
-    }
-  };
->>>>>>> b1fcdcdbf75b61dd03a812f5b7f24f8dca87768b
 
     return () => {
       console.log("closeSession")
@@ -95,7 +65,6 @@ const ChatRoom = () => {
   }, [chatID]);
   
   useEffect(() => {
-<<<<<<< HEAD
     dispatch(fetchChatRoom(chatID)).then((data) => {
       if (data.payload && data.payload.messageResponses) {
         const updatedMessages = data.payload.messageResponses.map((message) => {
@@ -140,10 +109,6 @@ const ChatRoom = () => {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messageList]);
-=======
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
->>>>>>> b1fcdcdbf75b61dd03a812f5b7f24f8dca87768b
 
   useEffect(() => {
     const handleResize = () => {
@@ -177,10 +142,9 @@ const ChatRoom = () => {
   const shouldShowTime = (currentIndex, currentMessage) => {
     if (currentIndex === messageList.length - 1) return true;
     const nextMessage = messageList[currentIndex + 1];
-    return currentMessage.isSent !== nextMessage.isSent || currentMessage.time !== nextMessage.time;
+    return currentMessage.isSent !== nextMessage.isSent || currentMessage.chatTime !== nextMessage.chatTime;
   }; // 같은 시간이면서 같은 사람이 보낸 메시지에는 마지막 메시지에만 시간이 나타나도록 함
 
-<<<<<<< HEAD
   const sendMessage = () => {
 
     if (session.current && newMessage.trim() !== '') {
@@ -261,39 +225,6 @@ const ChatRoom = () => {
       // isBuyer={isBuyer}
     />
   </div>
-=======
-  return createElement('div', { className: styles.chatRoom },
-    createElement(ProfileHeader),
-    createElement('ul', { className: styles.messageList },
-      messages.map((msg, index) => 
-        createElement('div', {
-          key: index,
-          className: msg.isSent ? styles.sentMessageContainer : styles.receivedMessageContainer
-        },
-          createElement('div', { className: msg.isSent ? styles.defaultbaloon : styles.receivedbaloon },
-            createElement('div', { className: styles.msg, dangerouslySetInnerHTML: { __html: msg.text } }),
-            msg.button && createElement('button', {
-              className: styles.messageButton,
-              onClick: msg.button.onClick
-            }, msg.button.text),
-            createElement('img', { className: styles.tailIcon, alt: '', src: msg.isSent ? tailSent : tailReceived })
-          ),
-          shouldShowTime(index, msg) && createElement('div', { className: styles.time }, msg.time)
-        )
-      ),
-      React.createElement("div", { ref: messagesEndRef })
-    ),
-    createElement(ChatInput, {
-      message,
-      setMessage,
-      handleSendMessage,
-      setFocus: (focus) => isFocusedRef.current = focus,
-      isChatNavOpen,
-      setIsChatNavOpen,
-      isSeller, 
-      isBuyer   
-    })
->>>>>>> b1fcdcdbf75b61dd03a812f5b7f24f8dca87768b
   );
 };
 
