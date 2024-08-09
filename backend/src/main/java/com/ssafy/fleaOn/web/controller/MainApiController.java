@@ -10,6 +10,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Slice;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -27,6 +29,7 @@ import java.util.Optional;
 @Tag(name = "main API", description = "main 관련 API입니다. ")
 public class MainApiController {
 
+    private static final Logger log = LoggerFactory.getLogger(MainApiController.class);
     private final MainService mainService;
     private final UserService userService;
 
@@ -45,7 +48,13 @@ public class MainApiController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당하는 사용자가 없습니다. ");
             }
             List<UserRegion> findUerRegionList = mainService.getUserRegionByUserId(user.getUserId());
-            Slice<MainLiveResponse> mainLiveResponses = mainService.getMainLiveListByRegionCode(findUerRegionList);
+            LocalDateTime currentTime = LocalDateTime.now();
+            for (UserRegion userRegion : findUerRegionList) {
+                System.out.println(userRegion.getRegion().getRegionCode());
+                System.out.println("코드당");
+            }
+            System.out.println(currentTime);
+            Slice<MainLiveResponse> mainLiveResponses = mainService.getMainLiveListByRegionCode(findUerRegionList, currentTime);
             return ResponseEntity.status(HttpStatus.OK).body(mainLiveResponses);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());

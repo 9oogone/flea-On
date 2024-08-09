@@ -1,5 +1,6 @@
 package com.ssafy.fleaOn.web.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -37,6 +38,7 @@ public class Product {
     private int reservationCount;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     @JoinColumn(name = "live_id", nullable = false)
     private Live live;
 

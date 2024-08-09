@@ -282,7 +282,7 @@ public class UserApiController {
 
     @Operation(summary = "초기 선호 지역 추가", description = "회원 가입 후 선호 지역을 추가할 때 사용합니다. ")
     @PostMapping("/region")
-    public ResponseEntity<?> addUserRegion(@RequestBody String regionCode, HttpServletRequest request) {
+    public ResponseEntity<?> addUserRegion(@RequestParam String regionCode, HttpServletRequest request) {
         try {
             String authorizationHeader = request.getHeader("Authorization");
             if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
