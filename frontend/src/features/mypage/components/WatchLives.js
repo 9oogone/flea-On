@@ -1,10 +1,15 @@
 import React, { useState } from "react";
-import { Box, Grid, Button } from "@mui/material";
+import { Box, Grid, Button, Typography } from "@mui/material";
 import UpcomingHeader from "../../../components/UpcomingHeader";
 import UpcomingFooter from "../../../components/UpcomingFooter";
 import UpcomingModal from "../../../components/UpcomingModal";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { switchTab } from "../../../features/home/contentSlice";
 
 const Lives = ({ items }) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [modalLiveDate, setModalLiveDate] = useState("");
   const [modalTitle, setModalTitle] = useState("");
@@ -25,57 +30,89 @@ const Lives = ({ items }) => {
 
   const handleClose = () => setOpen(false);
 
+  const scrapItems = useSelector((state) =>
+    items.filter(
+      (item) =>
+        state.scrap.live.find((scrapItem) => scrapItem.id === item.id)?.is_scrap
+    )
+  );
+  const handleNavigateToLive = () => {
+    dispatch(switchTab("live"));
+    navigate("/");
+  };
   return (
     <Grid item xs={12}>
       <Grid container>
-        {items.map((item) => (
-          <Grid key={item.id} item xs={6} sx={{ textAlign: "center" }}>
+        {scrapItems.length === 0 ? (
+          <Grid item xs={12} sx={{ textAlign: "center", mt: 4 }}>
+            <Typography variant="h6" sx={{ color: "grey.700" }}>
+              관심있는 라이브가 없어요. <br />
+              지금 라이브를 보러 가세용
+            </Typography>
             <Button
-              onClick={() => handleButtonClick(item)}
-              sx={{ padding: 0, minWidth: 0 }}
+              onClick={handleNavigateToLive}
+              sx={{
+                mt: 2,
+                color: "white",
+                backgroundColor: "#FF0B55",
+                padding: "10px 20px",
+                borderRadius: 3,
+                textTransform: "none",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
             >
-              <Box
-                sx={{
-                  width: "16vh",
-                  height: "28vh",
-                  backgroundImage: `url(${item.thumbnail})`,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                  borderRadius: 2,
-                  boxShadow: "0px -40px 20px rgba(0, 0, 0, 0.25) inset",
-                  mb: 2,
-                  p: 1,
-                }}
+              라이브보러가기
+            </Button>
+          </Grid>
+        ) : (
+          scrapItems.map((item) => (
+            <Grid key={item.id} item xs={6} sx={{ textAlign: "center" }}>
+              <Button
+                onClick={() => handleButtonClick(item)}
+                sx={{ padding: 0, minWidth: 0 }}
               >
                 <Box
                   sx={{
-                    position: "relative",
-                    height: "85%",
+                    width: "16vh",
+                    height: "28vh",
+                    backgroundImage: `url(${item.thumbnail})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    borderRadius: 2,
+                    boxShadow: "0px -40px 20px rgba(0, 0, 0, 0.25) inset",
+                    mb: 2,
+                    p: 1,
                   }}
                 >
-                  <UpcomingHeader
-                    liveDate={item.live_date}
-                    isScrap={item.is_scrap}
+                  <Box
+                    sx={{
+                      position: "relative",
+                      height: "85%",
+                    }}
+                  >
+                    <UpcomingHeader id={item.id} liveDate={item.live_date} />
+                  </Box>
+                  <UpcomingFooter
+                    tradePlace={item.trade_place}
+                    title={item.title}
                   />
                 </Box>
-                <UpcomingFooter
-                  tradePlace={item.trade_place}
-                  title={item.title}
-                />
-              </Box>
-            </Button>
-            <UpcomingModal
-              open={open}
-              handleClose={handleClose}
-              liveDate={modalLiveDate}
-              products={modalProducts}
-              title={modalTitle}
-              thumbnail={modalThumbnail}
-              author={modalAuthor}
-              tradePlace={modalTradePlace}
-            />
-          </Grid>
-        ))}
+              </Button>
+              <UpcomingModal
+                id={item.id}
+                open={open}
+                handleClose={handleClose}
+                liveDate={modalLiveDate}
+                products={modalProducts}
+                title={modalTitle}
+                thumbnail={modalThumbnail}
+                author={modalAuthor}
+                tradePlace={modalTradePlace}
+              />
+            </Grid>
+          ))
+        )}
       </Grid>
     </Grid>
   );
