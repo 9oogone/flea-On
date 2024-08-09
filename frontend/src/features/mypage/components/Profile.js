@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import ProfileDefault from "../../../assets/images/profile_default.svg";
 import { Container, Avatar, Box, Typography, Button } from "@mui/material";
