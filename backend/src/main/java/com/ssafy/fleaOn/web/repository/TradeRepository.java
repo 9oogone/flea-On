@@ -34,4 +34,12 @@ public interface TradeRepository extends JpaRepository<Trade, Integer> {
     Optional<List<Trade>> findByBuyerIdAndProduct_ProductId(int buyerId, int productId);
 
      void deleteByShorts_ShortsId(int shortsId);
+
+     int countByBuyerIdOrSellerIdAndTradeDate(int buyerId, int sellerId, LocalDate tradeDate);
+
+     int countBySellerIdAndTradeDate(int sellerId, LocalDate tradeDate);
+
+     int countByBuyerIdAndTradeDate(int buyerId, LocalDate tradeDate);
+
+
 }

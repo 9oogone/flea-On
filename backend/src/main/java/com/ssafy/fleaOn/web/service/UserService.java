@@ -4,6 +4,7 @@ package com.ssafy.fleaOn.web.service;
 import com.ssafy.fleaOn.web.domain.*;
 import com.ssafy.fleaOn.web.dto.CommerceLiveExpectedResponse;
 import com.ssafy.fleaOn.web.dto.ExtraInfoRequest;
+import com.ssafy.fleaOn.web.dto.MyPageResponse;
 import com.ssafy.fleaOn.web.dto.UserFullInfoResponse;
 import com.ssafy.fleaOn.web.repository.*;
 import com.ssafy.fleaOn.web.util.DateUtil;
@@ -41,6 +42,7 @@ public class UserService {
     private final RegionInfoRepository regionInfoRepository;
 
     private final ReservationRepository reservationRepository;
+    private final TradeDoneRepository tradeDoneRepository;
 
     public User findByEmail(String email) {
         Optional<User> user = userRepository.findByEmail(email);
@@ -127,40 +129,39 @@ public class UserService {
         return null; // 또는 Optional<UserFullInfoResponse>를 반환하여 empty()로 반환
     }
 
-    public Map<String, Object> getUserInfoByEmail(String email) {
+    public MyPageResponse getUserPageByEmail(String email, LocalDate today) {
         Optional<User> userOptional = userRepository.findByEmail(email);
-
         if (userOptional.isEmpty()) {
             return null;
         }
-
-        User user = userOptional.get();
-        Map<String, Object> userInfo = new HashMap<>();
-        userInfo.put("nickname", user.getNickname());
-        userInfo.put("level", user.getLevel());
-        userInfo.put("profile_picture", user.getProfilePicture());
-
-        // UserRegion 리스트 처리
-        Optional<List<UserRegion>> userRegionListOptional = userRegionRepository.findByUser_userId(user.getUserId());
+        Optional<List<UserRegion>> userRegionListOptional = userRegionRepository.findByUser_userId(userOptional.get().getUserId());
         if (userRegionListOptional.isPresent()) {
-            List<UserRegion> userRegionList = userRegionListOptional.get();
-            for (UserRegion userRegion : userRegionList) {
-                userInfo.put("region_code", userRegion.getRegion().getRegionCode());
+            List<String> userRegionCodes = new ArrayList<>();
+            for (UserRegion userRegion : userRegionListOptional.get()) {
+                userRegionCodes.add(userRegion.getRegion().getRegionCode());
             }
+            int totalTrade = tradeRepository.countByBuyerIdOrSellerIdAndTradeDate(userOptional.get().getUserId(),userOptional.get().getUserId(), today);
+            int saleCount = tradeRepository.countBySellerIdAndTradeDate(userOptional.get().getUserId(), today);
+            int purchaseCount = tradeRepository.countByBuyerIdAndTradeDate(userOptional.get().getUserId(), today);
+            int completedTrades = tradeDoneRepository.countByBuyer_UserIdOrSeller_UserIdAndTradeDate(userOptional.get().getUserId(), userOptional.get().getUserId(), today);
+
+            Map<String, Object> tradeCount = new HashMap<>();
+            tradeCount.put("totalTrade", totalTrade);
+            tradeCount.put("saleCount", saleCount);
+            tradeCount.put("purchaseCount", purchaseCount);
+            tradeCount.put("completedTrades", completedTrades);
+
+            MyPageResponse myPageResponse = MyPageResponse.builder()
+                    .nickName(userOptional.get().getNickname())
+                    .level(userOptional.get().getLevel())
+                    .profilePicture(userOptional.get().getProfilePicture())
+                    .regionCode(userRegionCodes)
+                    .tradeInfo(tradeCount)
+                    .build();
+
+            return myPageResponse;
         }
-        // Trade 리스트 처리
-        Optional<List<Trade>> tradeListOptional = tradeRepository.findBySellerIdOrBuyerId(user.getUserId(), user.getUserId());
-        if (tradeListOptional.isPresent()) {
-            List<Trade> tradeList = tradeListOptional.get();
-            for (Trade trade : tradeList) {
-                userInfo.put("buyer_id", trade.getBuyerId());
-                userInfo.put("seller_id", trade.getSellerId());
-                userInfo.put("trade_place", trade.getTradePlace());
-                userInfo.put("trade_date", trade.getTradeDate());
-                userInfo.put("trade_time", trade.getTradeTime());
-            }
-        }
-        return userInfo;
+        return null;
     }
 
     public Optional<List<Map<String, Object>>> getUserScheduleListByUserIdAndDate(int userId, LocalDate tradeDate) {
