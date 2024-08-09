@@ -1,3 +1,5 @@
+importScripts("firebase-messaging-sw.js");
+
 const CACHE_NAME = "fleaOn-cache-v1";
 const urlsToCache = [
   "/",

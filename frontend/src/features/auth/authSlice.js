@@ -1,6 +1,6 @@
 // src/features/auth/authSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
+import baseAxios from "../../utils/httpCommons";
 
 // Helper functions to handle localStorage
 const loadState = () => {
@@ -47,8 +47,8 @@ export const updateUserInfo = createAsyncThunk(
     const state = getState();
     const token = state.auth.token;
 
-    const response = await axios.put(
-      `https://i11b202.p.ssafy.io/fleaon/users/${email}/info`,
+    const response = await baseAxios().put(
+      `/fleaon/users/${email}/info`,
       data,
       {
         headers: {
@@ -87,7 +87,8 @@ const authSlice = createSlice({
       saveState(state);
     },
     setUserRegion(state, action) {
-      state.user.user_region = action.payload;
+      state.user.dongName = action.payload.dongName;
+      state.user.regionCode = action.payload.regionCode;
       saveState(state);
     },
   },

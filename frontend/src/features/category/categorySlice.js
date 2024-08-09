@@ -33,7 +33,6 @@ export const fetchCategories = () => async (dispatch) => {
   dispatch(fetchCategoriesRequest());
   try {
     const response = await baseAxios().get("/fleaon/category/");
-    console.log("카테고리 가져오기");
     dispatch(fetchCategoriesSuccess(response.data));
   } catch (error) {
     dispatch(fetchCategoriesFailure(error.message));
