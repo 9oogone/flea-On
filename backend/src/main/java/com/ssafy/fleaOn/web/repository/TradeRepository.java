@@ -31,4 +31,6 @@ public interface TradeRepository extends JpaRepository<Trade, Integer> {
 
      Optional<List<Trade>> findByLive_liveId(int liveId);
      Optional<List<Trade>> findByLive_liveIdAndBuyerId(int liveId, int buyerId);
+
+    Optional<List<Trade>> findByBuyerIdAndProduct_ProductId(int buyerId, int productId);
 }

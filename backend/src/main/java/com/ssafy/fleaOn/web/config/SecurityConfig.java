@@ -22,14 +22,13 @@ import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
-public class    SecurityConfig {
+public class SecurityConfig {
 
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomSuccessHandler customSuccessHandler;
     private final JWTUtil jwtUtil;
 
     public SecurityConfig(CustomOAuth2UserService customOAuth2UserService, CustomSuccessHandler customSuccessHandler, JWTUtil jwtUtil) {
-
         this.customOAuth2UserService = customOAuth2UserService;
         this.customSuccessHandler = customSuccessHandler;
         this.jwtUtil = jwtUtil;
@@ -40,7 +39,6 @@ public class    SecurityConfig {
 
         http
                 .cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
-
                     @Override
                     public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
 
@@ -52,8 +50,7 @@ public class    SecurityConfig {
                         configuration.setAllowedHeaders(Collections.singletonList("*"));
                         configuration.setMaxAge(3600L);
 
-                        configuration.setExposedHeaders(Collections.singletonList("Set-Cookie"));
-                        configuration.setExposedHeaders(Collections.singletonList("Authorization"));
+                        configuration.setExposedHeaders(Arrays.asList("Set-Cookie", "Authorization"));
 
                         return configuration;
                     }
@@ -99,7 +96,6 @@ public class    SecurityConfig {
         //JWTFilter 추가
         http
                 .addFilterAfter(new JWTFilter(jwtUtil), OAuth2LoginAuthenticationFilter.class);
-
 
         return http.build();
     }

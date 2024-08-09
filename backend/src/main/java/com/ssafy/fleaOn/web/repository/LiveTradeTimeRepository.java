@@ -9,4 +9,6 @@ import java.util.Optional;
 @Repository
 public interface LiveTradeTimeRepository extends JpaRepository<LiveTradeTime, Integer> {
     Optional<List<LiveTradeTime>> findByLive_LiveId(int liveId);
+
+    void deleteByLive_LiveId(int liveId);
 }

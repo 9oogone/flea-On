@@ -11,7 +11,8 @@ public class CorsMvcConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry corsRegistry) {
         corsRegistry
                 .addMapping("/**")
-                .allowedOriginPatterns("https://i11b202.p.ssafy.io") // 명시적인 도메인
+                .allowedOriginPatterns("*","https://i11b202.p.ssafy.io",
+                        "http://i11b202.p.ssafy.io ") // 명시적인 도메인
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .exposedHeaders("Set-Cookie", "Authorization")

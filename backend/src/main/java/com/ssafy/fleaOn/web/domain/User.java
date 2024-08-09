@@ -44,4 +44,11 @@ public class User {
 
     @Column(name = "level")
     private int level;
+
+    @Column(name = "fcm")
+    private String fcm;
+
+    public void updateFcm(String fcm) {
+        this.fcm = fcm;
+    }
 }

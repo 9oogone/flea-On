@@ -30,11 +30,12 @@ public class PurchaseService {
     private final UserRepository userRepository;
     private final ShortsRepository shortsRepository;
     private final ChattingListRepository chattingListRepository;
+    private final TradeService tradeService;
 
     @Autowired
     public PurchaseService(ProductRepository productRepository, LiveRepository liveRepository,
                            ReservationRepository reservationRepository, TradeRepository tradeRepository,
-                           ChattingRepository chattingRepository, RedisTemplate<String, Object> redisTemplate, UserRepository userRepository, ShortsRepository shortsRepository, ChattingListRepository chattingListRepository) {
+                           ChattingRepository chattingRepository, RedisTemplate<String, Object> redisTemplate, UserRepository userRepository, ShortsRepository shortsRepository, ChattingListRepository chattingListRepository, TradeService tradeService) {
         this.productRepository = productRepository;
         this.liveRepository = liveRepository;
         this.reservationRepository = reservationRepository;
@@ -44,6 +45,7 @@ public class PurchaseService {
         this.userRepository = userRepository;
         this.shortsRepository = shortsRepository;
         this.chattingListRepository = chattingListRepository;
+        this.tradeService = tradeService;
     }
 
     @Transactional
@@ -228,7 +230,8 @@ public class PurchaseService {
         Live live = liveRepository.findById(request.getLiveId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid live ID"));
 
-        Shorts shorts = shortsRepository.findByProduct_ProductId(request.getProductId()).orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
+        Shorts shorts = shortsRepository.findByProduct_ProductId(request.getProductId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
 
         // Find or create chatting
         Optional<Chatting> optionalChatting = chattingRepository.findByBuyer_UserIdAndLive_LiveId(request.getBuyerId(), request.getLiveId());
@@ -236,8 +239,10 @@ public class PurchaseService {
         if (optionalChatting.isPresent()) {
             chatting = optionalChatting.get();
         } else {
-            User buyer = userRepository.findById(request.getBuyerId()).orElseThrow(() -> new IllegalArgumentException("Invalid buyer ID"));
-            User seller = userRepository.findById(request.getSellerId()).orElseThrow(() -> new IllegalArgumentException("Invalid seller ID"));
+            User buyer = userRepository.findById(request.getBuyerId())
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid buyer ID"));
+            User seller = userRepository.findById(request.getSellerId())
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid seller ID"));
             chatting = Chatting.builder()
                     .live(live)
                     .buyer(buyer)
@@ -247,10 +252,15 @@ public class PurchaseService {
         }
 
         System.out.println(chatting);
+
         if (request.getBuyerId() == product.getCurrentBuyerId()) {
             Trade trade = request.toEntity(live, product, chatting, shorts);
             tradeRepository.save(trade);
             productRepository.save(product);
+
+            // 구매 확정 처리 및 관련 데이터 삭제
+            tradeService.confirmTrade(request);
+
             // 구매 확정 결과를 Redis에 설정
             redisTemplate.opsForValue().set("confirmResult:" + request.getBuyerId() + ":" + request.getProductId(), "confirmed");
         } else {
@@ -258,4 +268,5 @@ public class PurchaseService {
             redisTemplate.opsForValue().set("confirmResult:" + request.getBuyerId() + ":" + request.getProductId(), "not confirmed");
         }
     }
+
 }
