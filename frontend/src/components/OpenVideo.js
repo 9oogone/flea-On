@@ -235,15 +235,15 @@ const OpenVideo = () => {
       const videoDevices = devices.filter(
         (device) => device.kind === "videoinput"
       );
-
+      
       if (videoDevices && videoDevices.length > 1) {
-        const newVideoDevice = videoDevices.filter(
-          (device) => device.deviceId !== currentVideoDevice.deviceId
-        );
+        // const newVideoDevice = videoDevices.filter(
+        //   (device) => device.deviceId !== currentVideoDevice.deviceId
+        // );
 
-        if (newVideoDevice.length > 0) {
+        // if (newVideoDevice.length > 0) {
           const newPublisher = OV.current.initPublisher(undefined, {
-            videoSource: isFrontCamera ? newVideoDevice[1].deviceId : newVideoDevice[0].deviceId,
+            videoSource: isFrontCamera ? videoDevices[1].deviceId : videoDevices[0].deviceId,
             publishAudio: true,
             publishVideo: true,
             mirror: true,
@@ -257,7 +257,7 @@ const OpenVideo = () => {
             setMainStreamManager(newPublisher);
             setPublisher(newPublisher);
           }
-        }
+        // }
       }
     } catch (e) {
       console.error(e);
