@@ -43,18 +43,20 @@ const ChatRoom = () => {
   }, [chatRoom, userId]);
 
   const handleSendMessage = () => {
-    if (message.trim() !== '') {
-      setMessages(prevMessages => {
-        const updatedMessages = [...prevMessages, { text: message.replace(/\n/g, '<br/>'), isSent: true, time: formatTime(new Date()) }];
-        return updatedMessages;
-      });
-      setMessage('');
-      isFocusedRef.current = false;
+    if (message.trim() !== "") {
+      setMessages([...messages, message]);
+      setMessage("");
+    }
+  };
+
+  const handleKeyPress = (event) => {
+    if (event.key === "Enter") {
+      handleSendMessage();
     }
   };
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'auto' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   useEffect(() => {
@@ -104,7 +106,7 @@ const ChatRoom = () => {
           shouldShowTime(index, msg) && createElement('div', { className: styles.time }, msg.time)
         )
       ),
-      createElement('div', { ref: messagesEndRef })
+      React.createElement("div", { ref: messagesEndRef })
     ),
     createElement(ChatInput, {
       message,

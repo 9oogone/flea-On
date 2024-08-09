@@ -26,11 +26,17 @@ import AddressSearch from "./pages/AddressSearch";
 import BuyList from "./features/mypage/components/BuyList";
 import SellList from "./features/mypage/components/SellList";
 import WatchList from "./features/mypage/components/WatchList";
+import Notification from "./pages/NotificationPage";
 
 const routes = [
   {
     path: "/",
     element: <HomePage />,
+    isPrivate: process.env.REACT_APP_LOGIN_BOOL === "true",
+  },
+  {
+    path: "/notifications",
+    element: <Notification />,
     isPrivate: process.env.REACT_APP_LOGIN_BOOL === "true",
   },
   { path: "/login", element: <LoginPage />, isPrivate: false },
