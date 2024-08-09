@@ -9,7 +9,9 @@ import buylistReducer from "../features/mypage/buylistSlice";
 import selllistReducer from "../features/mypage/selllistSlice";
 import watchlistReducer from "../features/mypage/watchlistSlice";
 import shortsReducer from "../features/shorts/shortsSlice";
-import chatReducer from "../features/chat/chatSlice";
+import chatReducer from "../features/chat/chatSlice"
+import chatroomReducer from "../features/chat/chatroomSlice"
+
 
 import "../styles/global.css";
 
@@ -26,6 +28,7 @@ const store = configureStore({
     watch: watchlistReducer,
     shorts: shortsReducer,
     chat: chatReducer,
+    chatroom: chatroomReducer,
   },
 });
 
