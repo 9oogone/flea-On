@@ -126,34 +126,33 @@ public class UserService {
         return null; // 또는 Optional<UserFullInfoResponse>를 반환하여 empty()로 반환
     }
 
-    public MyPageResponse getUserPageByEmail(String email, LocalDate today) {
-        Optional<User> userOptional = userRepository.findByEmail(email);
-        if (userOptional.isEmpty()) {
-            return null;
-        }
-        Optional<List<UserRegion>> userRegionListOptional = userRegionRepository.findByUser_userId(userOptional.get().getUserId());
+    public MyPageResponse getUserPageByEmail(String email, LocalDate startOfWeek) {
+        User userOptional = userRepository.findByEmail(email).orElseThrow(()->new IllegalArgumentException("User not found with email: " + email));
+
+        Optional<List<UserRegion>> userRegionListOptional = userRegionRepository.findByUser_userId(userOptional.getUserId());
         if (userRegionListOptional.isPresent()) {
             List<String> userRegionCodes = new ArrayList<>();
             for (UserRegion userRegion : userRegionListOptional.get()) {
                 userRegionCodes.add(userRegion.getRegion().getRegionCode());
             }
-            int totalTrade = tradeRepository.countByBuyerIdOrSellerIdAndTradeDate(userOptional.get().getUserId(),userOptional.get().getUserId(), today);
-            int saleCount = tradeRepository.countBySellerIdAndTradeDate(userOptional.get().getUserId(), today);
-            int purchaseCount = tradeRepository.countByBuyerIdAndTradeDate(userOptional.get().getUserId(), today);
-            int completedTrades = tradeDoneRepository.countByBuyer_UserIdOrSeller_UserIdAndTradeDate(userOptional.get().getUserId(), userOptional.get().getUserId(), today);
 
-            Map<String, Object> tradeCount = new HashMap<>();
-            tradeCount.put("totalTrade", totalTrade);
-            tradeCount.put("saleCount", saleCount);
-            tradeCount.put("purchaseCount", purchaseCount);
-            tradeCount.put("completedTrades", completedTrades);
+            LocalDate endOfWeek = startOfWeek.plusDays(6);
+
+            int totalTrade = tradeRepository.countByBuyerIdOrSellerIdAndTradeDateBetween(
+                    userOptional.getUserId(), startOfWeek, endOfWeek);
+            int saleCount = tradeRepository.countBySellerIdAndTradeDateBetween(
+                    userOptional.getUserId(), startOfWeek, endOfWeek);
+            int purchaseCount = tradeRepository.countByBuyerIdAndTradeDateBetween(
+                    userOptional.getUserId(), startOfWeek, endOfWeek);
+            int completedTrades = tradeDoneRepository.countCompletedTrades(
+                    userOptional.getUserId(), startOfWeek, endOfWeek);
 
             MyPageResponse myPageResponse = MyPageResponse.builder()
-                    .nickName(userOptional.get().getNickname())
-                    .level(userOptional.get().getLevel())
-                    .profilePicture(userOptional.get().getProfilePicture())
+                    .nickName(userOptional.getNickname())
+                    .level(userOptional.getLevel())
+                    .profilePicture(userOptional.getProfilePicture())
                     .regionCode(userRegionCodes)
-                    .tradeInfo(tradeCount)
+                    .tradeInfo(new TradeCountResponse(totalTrade, saleCount, purchaseCount, completedTrades))
                     .build();
 
             return myPageResponse;
