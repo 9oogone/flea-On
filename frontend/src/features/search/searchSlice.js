@@ -24,6 +24,7 @@ const searchSlice = createSlice({
         state.results = action.payload;
       })
       .addCase(fetchSearchResults.rejected, (state, action) => {
+        console.error("Search Slice Error:", action.payload); // 콘솔에 에러 출력
         state.loading = false;
         state.error = action.payload;
       });

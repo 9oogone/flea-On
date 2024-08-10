@@ -23,9 +23,19 @@ const SearchPage = () => {
     }
   }, [dispatch, query]);
 
+  useEffect(() => {
+    if (error) {
+      console.error("SearchPage Error:", error);
+    }
+  }, [error]);
+
+  useEffect(() => {
+    console.log("Results updated:", results);
+  }, [results]);
+
   const getErrorMessage = () => {
     if (error === "500") {
-      return "검색 결과가 없습니다";
+      return "서버 에러가 발생했습니다. 잠시 후 다시 시도해 주세요.";
     }
     return `에러가 발생했습니다: ${error}`;
   };
@@ -34,9 +44,9 @@ const SearchPage = () => {
     <Container sx={{ mt: 10 }}>
       {loading && <CircularProgress />}
       {error && <Typography color="error">{getErrorMessage()}</Typography>}
-      {!loading && !error && (
+      {!loading && !error && results && (
         <Grid container spacing={3}>
-          <UpcomingBroadcasts items={results.upcoming} />
+          <UpcomingBroadcasts items={results.upcoming ? results.upcoming : []} />
           <Grid item xs={12}>
             <Box
               sx={{
@@ -51,7 +61,7 @@ const SearchPage = () => {
               </Button>
             </Box>
           </Grid>
-          <Shorts items={results.shorts.slice(0, 2)} />
+          <Shorts items={Array.isArray(results.shorts) ? results.shorts.slice(0, 2) : []} />
           <Grid item xs={12}>
             <Box
               sx={{
@@ -66,7 +76,7 @@ const SearchPage = () => {
               </Button>
             </Box>
           </Grid>
-          <LiveBroadcasts items={results.live.slice(0, 2)} />
+          <LiveBroadcasts items={Array.isArray(results.live) ? results.live.slice(0, 2) : []} />
         </Grid>
       )}
     </Container>
