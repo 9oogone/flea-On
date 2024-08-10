@@ -10,12 +10,14 @@ import java.time.format.DateTimeFormatter;
 @Component
 public class FileHandler {
 
+    // 기본 저장 경로를 /opt/openvidu/recordings/live/로 설정
+    private static final String BASE_PATH = "/opt/openvidu/recordings/live/";
+
     public String parseFileInfo(MultipartFile multipartFile) throws Exception {
         // 전달되어 온 파일이 존재할 경우
         if (multipartFile != null && !multipartFile.isEmpty()) {
             String originalFileExtension = null;
             String path = null;
-            String absolutePath = new File("").getAbsolutePath() + File.separator;
 
             // 파일명을 업로드한 날짜로 변환하여 저장
             LocalDateTime now = LocalDateTime.now();
@@ -23,8 +25,8 @@ public class FileHandler {
             String currentDate = now.format(dateTimeFormatter);
 
             // 파일을 저장할 세부 경로 지정
-            path = "images" + File.separator + currentDate;
-            File directory = new File(absolutePath + path);
+            path = BASE_PATH + currentDate;
+            File directory = new File(path);
 
             // 디렉토리가 존재하지 않을 경우 생성
             if (!directory.exists()) {
@@ -49,7 +51,7 @@ public class FileHandler {
             String newFileName = System.nanoTime() + originalFileExtension;
 
             // 업로드 한 파일 데이터를 지정한 파일에 저장
-            String filePath = absolutePath + path + File.separator + newFileName;
+            String filePath = path + File.separator + newFileName;
             File file = new File(filePath);
             multipartFile.transferTo(file);
 
@@ -58,7 +60,7 @@ public class FileHandler {
             file.setReadable(true);
 
             // 파일 경로 반환
-            return path + File.separator + newFileName;
+            return filePath;
         } else {
             // 파일이 없을 경우 null 반환
             return null;
