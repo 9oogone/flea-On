@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -225,7 +226,10 @@ public class PurchaseService {
     public void processConfirmPurchaseRequest(TradeRequest request) {
         logger.info("Processing confirm purchase request for productId: {} and buyerId: {}", request.getProductId(), request.getBuyerId());
         Product product = productRepository.findById(request.getProductId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
+                .orElseThrow(() -> {
+                    logger.error("Invalid product ID: {}", request.getProductId());
+                    return new IllegalArgumentException("Invalid product ID: " + request.getProductId());
+                });
         product.setCurrentBuyerId(request.getBuyerId());
 
         Live live = liveRepository.findById(request.getLiveId())
@@ -233,6 +237,10 @@ public class PurchaseService {
 
         Shorts shorts = shortsRepository.findByProduct_ProductId(request.getProductId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
+
+        System.out.println(product.getProductId());
+        System.out.println(live.getLiveId());
+        System.out.println(shorts.getShortsId());
 
         // Find or create chatting
         Optional<Chatting> optionalChatting = chattingRepository.findByBuyer_UserIdAndLive_LiveId(request.getBuyerId(), request.getLiveId());
@@ -248,10 +256,11 @@ public class PurchaseService {
                     .live(live)
                     .buyer(buyer)
                     .seller(seller)
+                    .createTime(LocalDateTime.now())
                     .build();
             chatting = chattingRepository.save(chatting);
         }
-        productRepository.save(product);
+        System.out.println(chatting.getChattingId());
 
         if (request.getBuyerId() == product.getCurrentBuyerId()) {
             Trade trade = request.toEntity(live, product, chatting, shorts);

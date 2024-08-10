@@ -15,13 +15,13 @@ public class RedisQueueProducer {
     private static final Logger logger = LoggerFactory.getLogger(RedisQueueConsumer.class);
 
     // Redis 큐 이름 상수 정의
-    private static final String PURCHASE_QUEUE = "purchaseQueue";
-    private static final String CANCEL_PURCHASE_QUEUE = "cancelPurchaseQueue";
-    private static final String RESERVATION_QUEUE = "reservationQueue";
-    private static final String CANCEL_RESERVATION_QUEUE = "cancelReservationQueue";
-    private static final String CONFIRM_PURCHASE_QUEUE = "confirmPurchaseQueue";
-    private static final String CONFIRM_TRADE_QUEUE = "confirmTradeQueue";
-    private static final String BREAK_TRADE_QUEUE = "breakTradeQueue"; // 거래 파기 큐 추가
+    public static final String PURCHASE_QUEUE = "purchaseQueue";
+    public static final String CANCEL_PURCHASE_QUEUE = "cancelPurchaseQueue";
+    public static final String RESERVATION_QUEUE = "reservationQueue";
+    public static final String CANCEL_RESERVATION_QUEUE = "cancelReservationQueue";
+    public static final String CONFIRM_PURCHASE_QUEUE = "confirmPurchaseQueue";
+    public static final String CONFIRM_TRADE_QUEUE = "confirmTradeQueue";
+    public static final String BREAK_TRADE_QUEUE = "breakTradeQueue"; // 거래 파기 큐 추가
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
