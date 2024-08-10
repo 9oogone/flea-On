@@ -36,32 +36,20 @@ public class RedisConfig {
 
         // ObjectMapper 설정
         ObjectMapper objectMapper = new ObjectMapper();
-
-        // 더 안전한 방식으로 polymorphic type handling 설정
         PolymorphicTypeValidator ptv = BasicPolymorphicTypeValidator.builder()
-                .allowIfSubType("com.ssafy.fleaOn.web.dto.") // DTO 패키지 경로를 지정
+                .allowIfSubType("com.ssafy.fleaOn.web.dto.") // DTO 패키지 경로 지정
                 .build();
-
         objectMapper.activateDefaultTyping(ptv, ObjectMapper.DefaultTyping.NON_FINAL);
         objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
         objectMapper.registerModule(new JavaTimeModule());
 
         // GenericJackson2JsonRedisSerializer 설정
         GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer(objectMapper);
-
-        // key serializer 설정
-        template.setKeySerializer(new StringRedisSerializer());
-
-        // value serializer 설정
         template.setValueSerializer(serializer);
-
-        // hash key serializer 설정
-        template.setHashKeySerializer(new StringRedisSerializer());
-
-        // hash value serializer 설정
-        template.setHashValueSerializer(serializer);
+        template.setKeySerializer(new StringRedisSerializer());
 
         template.afterPropertiesSet();
         return template;
     }
+
 }
