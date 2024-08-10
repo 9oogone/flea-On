@@ -189,22 +189,22 @@ public class RedisQueueConsumer {
 
     @Scheduled(fixedDelay = 1000)
     public void handleBreakTradeRequest() {
-        Object data = redisTemplate.opsForList().leftPop("BREAKTRADE_QUEUE");
-        logger.info("Data popped from queue: {}", data);
-        if (data instanceof int[]) {
-            int[] chatAndUserId = (int[]) data;
-            if (chatAndUserId.length == 2) {
-                int chatId = chatAndUserId[0];
-                int userId = chatAndUserId[1];
-                logger.info("Received BreakTradeRequest for chatId: {} and userId: {}", chatId, userId);
+        Object data = redisTemplate.opsForList().leftPop(BREAK_TRADE_QUEUE);
+//        logger.info("Data popped from queue: {}", data);
+        if (data instanceof List) {
+            List<Integer> dataList = (List<Integer>) data;
+            int chatId = dataList.get(0);
+            int userId = dataList.get(1);
+            logger.info("Processing BreakTradeRequest for chatId: " + chatId + " and userId: " + userId);
 
-                List<PurchaseCancleResponse> result = purchaseService.breakTrade(chatId, userId);
-                logger.info("Processed BreakTradeRequest with result: {}", result);
+            List<PurchaseCancleResponse> result = purchaseService.breakTrade(chatId, userId);
+            logger.info("Processed BreakTradeRequest with result: {}", result);
 
-                redisTemplate.opsForValue().set("breakTradeResult:" + chatId + ":" + userId, result);
-            }
+            String redisKey = "breakTradeResult:" + chatId + ":" + userId; // Redis 키 정확히 설정
+            redisTemplate.opsForValue().set(redisKey, result);
         } else {
-            logger.info("No BreakTradeRequest found in queue");
+//            logger.info("No BreakTradeRequest found in queue");
         }
     }
+
 }

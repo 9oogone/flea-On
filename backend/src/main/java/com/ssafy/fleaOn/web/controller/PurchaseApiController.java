@@ -243,8 +243,9 @@ public class PurchaseApiController {
             int retryInterval = 1000; // 1초 간격으로 시도
 
             List<PurchaseCancleResponse> result = null;
+            String redisKey = "breakTradeResult:" + chatId + ":" + user.getUserId(); // 정확한 Redis 키 설정
             for (int i = 0; i < maxRetries; i++) {
-                Object response = redisTemplate.opsForValue().get("breakTradeResult:" + chatId);
+                Object response = redisTemplate.opsForValue().get(redisKey);
                 if (response != null && response instanceof List) {
                     result = (List<PurchaseCancleResponse>) response;
                     break; // 결과를 성공적으로 가져온 경우
