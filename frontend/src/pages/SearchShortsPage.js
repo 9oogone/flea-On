@@ -18,9 +18,16 @@ const SearchShorts = () => {
 
   useEffect(() => {
     if (query) {
+      console.log("Fetching search results for query:", query);
       dispatch(fetchSearchResults(query));
     }
   }, [dispatch, query]);
+
+  useEffect(() => {
+    if (error) {
+      console.error("SearchShorts Error:", error);
+    }
+  }, [error]);
 
   const handleIconClick = () => {
     navigate(-1);
@@ -36,7 +43,7 @@ const SearchShorts = () => {
       {loading && <CircularProgress />}
       {error && <Typography color="error">에러가 발생했습니다: {error}</Typography>}
 
-      <Shorts items={results.shorts} />
+      <Shorts items={results.shorts ? results.shorts : []} />
     </Container>
   );
 };

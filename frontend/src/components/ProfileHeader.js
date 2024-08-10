@@ -1,17 +1,20 @@
 import React from 'react';
 import styles from '../styles/ProfileHeader.module.css';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { useNavigate } from 'react-router-dom';
 
 const ProfileHeader = ({chat}) => {
+  const navigate = useNavigate();
   const goBack = () => {
     // 뒤로가기 버튼 클릭 시 실행할 함수
-    window.history.back();
+    navigate("/chat")
+    // window.history.back();
   };
 
   return (
     <div className={styles.header}>
       <button className={styles.backButton} onClick={goBack}>
-        <ArrowBackIcon />
+        <ArrowBackIcon sx={{color: 'black'}}/>
       </button>
       <div className={styles.headerContainer}>
         <img src={chat.profile} alt="Profile" className={styles.profileImage} />

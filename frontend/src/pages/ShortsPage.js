@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { setCurrentShort } from "../features/shorts/shortsSlice";
+import CustomVideoPlayer from "../components/CustomVideoPlayer";
 import {
   Container,
   Typography,
@@ -16,7 +17,6 @@ import {
 } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ShareIcon from "@mui/icons-material/Share";
-import CommentIcon from "@mui/icons-material/Comment";
 
 const dummyVideoUrl =
   "https://videos.pexels.com/video-files/8549588/8549588-hd_1080_1920_25fps.mp4";
@@ -40,66 +40,111 @@ const ShortsPage = () => {
   const currentShort = useSelector((state) => state.shorts.currentShort);
 
   useEffect(() => {
-    // 쇼츠 ID에 따라 더미 데이터를 설정
     dispatch(setCurrentShort(dummyData));
   }, [shortsId, dispatch]);
 
   if (!currentShort) return <Typography>Loading...</Typography>;
 
   return (
-    <Container sx={{ m: 0, p: 0 }}>
-      <video
-        loop
-        controls
-        height="100%"
+    <Container sx={{ m: 0, p: 0, position: "relative", height: "100vh" }}>
+      <CustomVideoPlayer
         src={currentShort.url}
-        style={{ width: "100vw", height: "100vh", position: "fixed", top: 0 }}
+        loop
         autoPlay
         muted
-      >
-        Your browser does not support the video tag.
-      </video>
+        style={{ width: "100vw", height: "100vh", position: "fixed", top: 0 }}
+      />
       <Box
         sx={{
-          position: "fixed",
-          display: "flex",
-          bottom: 0,
+          position: "absolute",
+          top: 0,
+          left: 0,
           width: "100%",
-          color: "white",
           p: 2,
-          background: "rgba(0, 0, 0, 0.5)",
+          color: "white",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
         }}
       >
-        <Typography variant="h5">{currentShort.name}</Typography>
-        <Typography variant="h6">{currentShort.price}</Typography>
-        <Button variant="contained" color="primary" sx={{ mt: 1 }}>
-          구매하기
-        </Button>
-        <List sx={{ mt: 2 }}>
+        <Typography variant="h6">창고 대방출</Typography>
+        <IconButton color="inherit" sx={{marginRight:"7%"}}>
+          <ShareIcon />
+        </IconButton>
+      </Box>
+      <Box
+        sx={{
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          width: "100%",
+          p: 2,
+          color: "white",
+          background: "rgba(0, 0, 0, 0)",
+        }}
+      >
+        <div>
+        <List sx={{ mt: 2 ,backgroundColor: "rgba(0, 0, 0, 0.25)", marginLeft:"-2%", paddingLeft:"4%", borderRadius:"10px", marginRight:"25%"}} >
           {currentShort.comments.map((comment) => (
-            <ListItem key={comment.id} sx={{ color: "white" }}>
+            <ListItem key={comment.id} sx={{ p: 0 }}>
               <ListItemAvatar>
-                <Avatar>{comment.username[0].toUpperCase()}</Avatar>
+                <Avatar sx={{ bgcolor: "#333" }}>
+                  {comment.username[0].toUpperCase()}
+                </Avatar>
               </ListItemAvatar>
               <ListItemText
                 primary={comment.username}
                 secondary={comment.text}
-                sx={{ color: "white" }}
+                primaryTypographyProps={{ color: "white" }}
+                secondaryTypographyProps={{ color: "white" }}
               />
             </ListItem>
           ))}
         </List>
-        <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
-          <IconButton color="inherit">
-            <FavoriteIcon /> {currentShort.likes}
-          </IconButton>
-          <IconButton color="inherit">
-            <ShareIcon />
-          </IconButton>
-          <IconButton color="inherit">
-            <CommentIcon />
-          </IconButton>
-        </Box>
+        </div>
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+  <Box>
+    <Typography variant="h6">{currentShort.name}</Typography>
+    <Typography>{currentShort.price}</Typography>
+  </Box>
+  <Button
+    variant="contained"
+    sx={{
+      backgroundColor: "#FF0B55",
+      color: "white",
+      height: "50px",
+      marginRight: "10%",
+      width: "60%",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      marginTop: "5%"
+    }}
+  >
+    구매하기
+  </Button>
+</Box>
+
+      </Box>
+      <Box
+        sx={{
+          position: "absolute",
+          right: 0,
+          bottom: "15%",
+          transform: "translateX(-50%)",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          color: "white",
+        }}
+      >
+        <IconButton color="inherit">
+  <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+    <FavoriteIcon />
+    <Typography>{currentShort.likes}</Typography>
+  </Box>
+</IconButton>
+
       </Box>
     </Container>
   );
