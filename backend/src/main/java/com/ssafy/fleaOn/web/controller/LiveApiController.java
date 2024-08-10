@@ -1,6 +1,7 @@
 
 package com.ssafy.fleaOn.web.controller;
 
+import com.ssafy.fleaOn.web.config.handler.FileHandler;
 import com.ssafy.fleaOn.web.config.jwt.JWTUtil;
 import com.ssafy.fleaOn.web.domain.Live;
 import com.ssafy.fleaOn.web.domain.User;
@@ -35,6 +36,7 @@ public class LiveApiController {
 
     private final LiveService liveService;
     private final UserService userService;
+    private final FileHandler fileHandler;
 
     @PostMapping("/")
     @Operation(summary = "라이브 생성", description = "라이브의 정보를 저장하여 새로운 라이브를 생성합니다.")
@@ -50,7 +52,18 @@ public class LiveApiController {
                 User user = userService.findByEmail(email);
 
                 if (user != null) {
+                    String thumbnail = null;
+
+                    // 파일 처리 중 예외가 발생할 수 있으므로 try-catch로 감싸서 처리
+                    try {
+                        thumbnail = fileHandler.parseFileInfo(addLiveRequest.getLiveThumbnail());
+                    } catch (Exception e) {
+                        log.error("파일 처리 중 오류 발생: {}", e.getMessage());
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("파일 처리 중 오류가 발생했습니다: " + e.getMessage());
+                    }
+
                     Live savedLive = liveService.saveLive(addLiveRequest, user);
+                    System.out.println(thumbnail);
                     return ResponseEntity.status(HttpStatus.CREATED).body(savedLive);
                 } else {
                     return ResponseEntity.status(HttpStatus.NOT_FOUND).body("라이브 생성 실패: 사용자를 찾을 수 없습니다.");
@@ -63,6 +76,7 @@ public class LiveApiController {
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("라이브 생성 실패: 토큰이 없습니다.");
     }
+
 
 
 

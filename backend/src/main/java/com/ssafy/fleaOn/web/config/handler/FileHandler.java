@@ -15,7 +15,7 @@ public class FileHandler {
         if (multipartFile != null && !multipartFile.isEmpty()) {
             String originalFileExtension = null;
             String path = null;
-            String absolutePath = new File("").getAbsolutePath() + File.separator + File.separator;
+            String absolutePath = new File("").getAbsolutePath() + File.separator;
 
             // 파일명을 업로드한 날짜로 변환하여 저장
             LocalDateTime now = LocalDateTime.now();
@@ -24,14 +24,13 @@ public class FileHandler {
 
             // 파일을 저장할 세부 경로 지정
             path = "images" + File.separator + currentDate;
-            File file = new File(path);
+            File directory = new File(absolutePath + path);
 
             // 디렉토리가 존재하지 않을 경우 생성
-            if (!file.exists()) {
-                boolean wasSuccessful = file.mkdirs();
+            if (!directory.exists()) {
+                boolean wasSuccessful = directory.mkdirs();
                 if (!wasSuccessful) {
-                    System.out.println("file: was not successful");
-                    return null;
+                    throw new Exception("파일 디렉토리 생성에 실패했습니다.");
                 }
             }
 
@@ -43,20 +42,22 @@ public class FileHandler {
                 originalFileExtension = ".png";
             } else {
                 // 처리할 수 없는 파일 형식인 경우
-                return null;
+                throw new Exception("지원하지 않는 파일 형식입니다.");
             }
 
             // 파일명 중복 피하고자 나노초까지 얻어와 지정
             String newFileName = System.nanoTime() + originalFileExtension;
 
             // 업로드 한 파일 데이터를 지정한 파일에 저장
-            file = new File(absolutePath + path + File.separator + newFileName);
+            String filePath = absolutePath + path + File.separator + newFileName;
+            File file = new File(filePath);
             multipartFile.transferTo(file);
 
             // 파일 권한 설정(쓰기, 읽기)
             file.setWritable(true);
             file.setReadable(true);
 
+            // 파일 경로 반환
             return path + File.separator + newFileName;
         } else {
             // 파일이 없을 경우 null 반환
