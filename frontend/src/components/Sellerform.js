@@ -1,4 +1,3 @@
-// src/components/SellerForm.js
 import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import styles from "../styles/SellerForm.module.css";
@@ -6,11 +5,7 @@ import dayjs from "dayjs";
 import "dayjs/locale/ko";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import {
-  TimePicker,
-  DatePicker,
-  DesktopDateTimePicker,
-} from "@mui/x-date-pickers";
+import { TimePicker, DatePicker, DesktopDateTimePicker } from "@mui/x-date-pickers";
 import TextField from "@mui/material/TextField";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import IconButton from "@mui/material/IconButton";
@@ -29,15 +24,11 @@ const SellerformSelect = ({ onClose }) => {
   const [thumbnail, setThumbnail] = useState(null);
   const [thumbnailPreview, setThumbnailPreview] = useState(null);
   const [startDate, setStartDate] = useState(dayjs());
-  const [transactionTimes, setTransactionTimes] = useState([
-    { date: dayjs(), from: dayjs(), to: dayjs() },
-  ]);
+  const [transactionTimes, setTransactionTimes] = useState([{ date: dayjs(), from: dayjs(), to: dayjs() }]);
   const [address, setAddress] = useState("");
   const [bcode, setBcode] = useState("");
   const [detailedAddress, setDetailedAddress] = useState("");
-  const [items, setItems] = useState([
-    { name: "", price: "", firstCategoryId: 0, secondCategoryId: 0 },
-  ]);
+  const [items, setItems] = useState([{ name: "", price: "", firstCategoryId: 0, secondCategoryId: 0 }]);
 
   const handleThumbnailChange = (event) => {
     const file = event.target.files[0];
@@ -48,10 +39,7 @@ const SellerformSelect = ({ onClose }) => {
   };
 
   const handleAddTransactionTime = () => {
-    setTransactionTimes([
-      ...transactionTimes,
-      { date: dayjs(), from: dayjs(), to: dayjs() },
-    ]);
+    setTransactionTimes([...transactionTimes, { date: dayjs(), from: dayjs(), to: dayjs() }]);
   };
 
   const handleRemoveTransactionTime = (index) => {
@@ -68,11 +56,7 @@ const SellerformSelect = ({ onClose }) => {
   };
 
   const handleOpenAddressSearch = () => {
-    window.open(
-      "/address-search",
-      "popup",
-      "width=600,height=400,scrollbars=yes,resizable=yes"
-    );
+    window.open("/address-search", "popup", "width=600,height=400,scrollbars=yes,resizable=yes");
   };
 
   const handleInputChange = (index, field, value) => {
@@ -94,10 +78,7 @@ const SellerformSelect = ({ onClose }) => {
   };
 
   const handleAddItem = () => {
-    setItems([
-      ...items,
-      { name: "", price: "", firstCategoryId: 0, secondCategoryId: 0 },
-    ]);
+    setItems([...items, { name: "", price: "", firstCategoryId: 0, secondCategoryId: 0 }]);
   };
 
   const handleRemoveItem = (index) => {
@@ -140,12 +121,11 @@ const SellerformSelect = ({ onClose }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const formData = new FormData();
-    formData.append("liveThumbnail", thumbnail);
 
     const liveData = {
       title: document.getElementById("outlined-basic").value,
       liveDate: dayjs(startDate).format("YYYY-MM-DDTHH:mm:ss"),
+      liveThumbnail: "", 
       tradePlace: `${address} ${detailedAddress}`,
       regionCode: bcode,
       product: items.map((item) => ({
@@ -157,25 +137,11 @@ const SellerformSelect = ({ onClose }) => {
       liveTradeTime: formatLiveTradeTimes(transactionTimes),
     };
 
-    formData.append("title", liveData.title);
-    formData.append("liveDate", liveData.liveDate);
-    formData.append("tradePlace", liveData.tradePlace);
-    formData.append("regionCode", liveData.regionCode);
+    const formData = new FormData();
+    formData.append("photoFile", thumbnail);
+    formData.append("data", new Blob([JSON.stringify(liveData)], { type: "application/json" }));
 
-    liveData.product.forEach((item, index) => {
-      formData.append(`product[${index}][name]`, item.name);
-      formData.append(`product[${index}][price]`, item.price);
-      formData.append(`product[${index}][firstCategoryId]`, item.firstCategoryId);
-      formData.append(`product[${index}][secondCategoryId]`, item.secondCategoryId);
-    });
-
-    liveData.liveTradeTime.forEach((time, index) => {
-      formData.append(`liveTradeTime[${index}][tradeStart]`, time.tradeStart);
-      formData.append(`liveTradeTime[${index}][tradeEnd]`, time.tradeEnd);
-      formData.append(`liveTradeTime[${index}][date]`, time.date);
-    });
-
-    // Debugging output
+    // 디버깅 출력
     for (let pair of formData.entries()) {
       console.log(pair[0] + ', ' + pair[1]);
     }
@@ -183,6 +149,7 @@ const SellerformSelect = ({ onClose }) => {
     try {
       await dispatch(createLiveBroadcast(formData));
       alert("라이브 방송이 성공적으로 등록되었습니다!");
+      onClose(); 
     } catch (error) {
       console.error("에러 발생:", error);
       alert("라이브 방송 등록 중 에러가 발생했습니다.");
@@ -324,9 +291,7 @@ const SellerformSelect = ({ onClose }) => {
                       <DatePicker
                         label="날짜"
                         value={time.date}
-                        onChange={(newValue) =>
-                          handleTransactionTimeChange(index, "date", newValue)
-                        }
+                        onChange={(newValue) => handleTransactionTimeChange(index, "date", newValue)}
                         renderInput={(params) => <TextField {...params} />}
                         inputFormat="YYYY년 MM월 DD일"
                       />
@@ -336,9 +301,7 @@ const SellerformSelect = ({ onClose }) => {
                         <TimePicker
                           label="부터"
                           value={time.from}
-                          onChange={(newValue) =>
-                            handleTransactionTimeChange(index, "from", newValue)
-                          }
+                          onChange={(newValue) => handleTransactionTimeChange(index, "from", newValue)}
                           renderInput={(params) => <TextField {...params} />}
                         />
                       </DemoItem>
@@ -347,9 +310,7 @@ const SellerformSelect = ({ onClose }) => {
                         <TimePicker
                           label="까지"
                           value={time.to}
-                          onChange={(newValue) =>
-                            handleTransactionTimeChange(index, "to", newValue)
-                          }
+                          onChange={(newValue) => handleTransactionTimeChange(index, "to", newValue)}
                           renderInput={(params) => <TextField {...params} />}
                         />
                       </DemoItem>
