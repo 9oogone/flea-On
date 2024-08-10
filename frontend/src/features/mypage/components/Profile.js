@@ -36,9 +36,10 @@ const Profile = ({ user }) => {
         <Typography variant="h6" sx={{ fontWeight: "600" }}>
           {user?.nickname || "닉네임"}
         </Typography>
-        <Typography> 플리온 주민</Typography>
+        <Typography> {user?.dongName[0] || "플리온"} 주민</Typography>
       </Box>
-      <Button onClick={handleProfileEdit}
+      <Button
+        onClick={handleProfileEdit}
         sx={{
           px: 1,
           py: 0.5,
