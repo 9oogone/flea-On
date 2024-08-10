@@ -88,7 +88,7 @@ public class MainApiController {
             User user = userService.findByEmail(email);
             if (user != null) {
                 try {
-                    Slice<List<Map<String, Object>>> searchResultSlice = mainService.getSearchResultByName(name, user.getUserId());
+                    Slice<Map<String, Object>> searchResultSlice = mainService.getSearchResultByName(name, user.getUserId());
                     if (searchResultSlice.isEmpty()) {
                         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No result data found");
                     }
