@@ -1,3 +1,4 @@
+// src/components/SellerForm.js
 import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import styles from "../styles/SellerForm.module.css";
@@ -64,7 +65,6 @@ const SellerformSelect = ({ onClose }) => {
       idx === index ? { ...time, [field]: value } : time
     );
     setTransactionTimes(updatedTimes);
-    console.log(updatedTimes);
   };
 
   const handleOpenAddressSearch = () => {
@@ -84,9 +84,7 @@ const SellerformSelect = ({ onClose }) => {
       dispatch(fetchCategories(value)).then((action) => {
         const payload = action.payload;
 
-        // payload가 존재하고, 필요한 속성이 있는지 확인
         if (payload && payload.firstCategoryId) {
-          console.log("카테고리가 잘 나올까요? : ", payload.firstCategoryId);
           newItems[index].firstCategoryId = payload.firstCategoryId;
           newItems[index].secondCategoryId = payload.secondCategoryId;
           setItems(newItems);
@@ -143,33 +141,51 @@ const SellerformSelect = ({ onClose }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const formData = new FormData();
-    formData.append("thumbnail", thumbnail);
+    formData.append("liveThumbnail", thumbnail);
+
+    const liveData = {
+      title: document.getElementById("outlined-basic").value,
+      liveDate: dayjs(startDate).format("YYYY-MM-DDTHH:mm:ss"),
+      tradePlace: `${address} ${detailedAddress}`,
+      regionCode: bcode,
+      product: items.map((item) => ({
+        name: item.name,
+        price: parseInt(item.price, 10),
+        firstCategoryId: parseInt(item.firstCategoryId, 10),
+        secondCategoryId: parseInt(item.secondCategoryId, 10),
+      })),
+      liveTradeTime: formatLiveTradeTimes(transactionTimes),
+    };
+
+    formData.append("title", liveData.title);
+    formData.append("liveDate", liveData.liveDate);
+    formData.append("tradePlace", liveData.tradePlace);
+    formData.append("regionCode", liveData.regionCode);
+
+    liveData.product.forEach((item, index) => {
+      formData.append(`product[${index}][name]`, item.name);
+      formData.append(`product[${index}][price]`, item.price);
+      formData.append(`product[${index}][firstCategoryId]`, item.firstCategoryId);
+      formData.append(`product[${index}][secondCategoryId]`, item.secondCategoryId);
+    });
+
+    liveData.liveTradeTime.forEach((time, index) => {
+      formData.append(`liveTradeTime[${index}][tradeStart]`, time.tradeStart);
+      formData.append(`liveTradeTime[${index}][tradeEnd]`, time.tradeEnd);
+      formData.append(`liveTradeTime[${index}][date]`, time.date);
+    });
+
+    // Debugging output
+    for (let pair of formData.entries()) {
+      console.log(pair[0] + ', ' + pair[1]);
+    }
 
     try {
-      // const response = await fetch('/api/upload-thumbnail', { //썸네일 서버에 올리는거 백에 묻기..
-      //   method: 'POST',
-      //   body: formData,
-      // });
-      // const result = await response.json();
-      const liveData = {
-        title: document.getElementById("outlined-basic").value,
-        liveDate: dayjs(startDate).format("YYYY-MM-DDTHH:mm:ss"),
-        // liveThumbnail: result.filePath, -> 백 완성되면 하기
-        liveThumbnail: "https://picsum.photos/160/250",
-        tradePlace: `${address} ${detailedAddress}`,
-        regionCode: bcode,
-        product: items.map((item) => ({
-          name: item.name,
-          price: parseInt(item.price, 10),
-          firstCategoryId: item.firstCategoryId,
-          secondCategoryId: item.secondCategoryId,
-        })),
-        liveTradeTime: formatLiveTradeTimes(transactionTimes),
-      };
-
-      dispatch(createLiveBroadcast(liveData));
+      await dispatch(createLiveBroadcast(formData));
+      alert("라이브 방송이 성공적으로 등록되었습니다!");
     } catch (error) {
-      console.error("Error:", error);
+      console.error("에러 발생:", error);
+      alert("라이브 방송 등록 중 에러가 발생했습니다.");
     }
   };
 
@@ -183,9 +199,7 @@ const SellerformSelect = ({ onClose }) => {
           <div className={styles.input}>
             <label className={styles.label}></label>
           </div>
-          <div
-            style={{ display: "flex", alignItems: "flex-start", gap: "10px" }}
-          >
+          <div style={{ display: "flex", alignItems: "flex-start", gap: "10px" }}>
             <div style={{ flex: 1 }}>
               <TextField
                 id="outlined-basic"
@@ -196,18 +210,13 @@ const SellerformSelect = ({ onClose }) => {
                 sx={{ marginBottom: "10px", marginTop: "10px" }}
               />
               <div className="livestarttime" style={{ marginBottom: "10px" }}>
-                <LocalizationProvider
-                  dateAdapter={AdapterDayjs}
-                  adapterLocale="ko"
-                >
+                <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="ko">
                   <DemoContainer components={["DesktopDateTimePicker"]}>
                     <DesktopDateTimePicker
                       label="라이브 방송 시간"
                       value={startDate}
                       onChange={(newValue) => setStartDate(newValue)}
-                      renderInput={(params) => (
-                        <TextField {...params} fullWidth />
-                      )}
+                      renderInput={(params) => <TextField {...params} fullWidth />}
                       ampm={true}
                       disablePast={true}
                       slotProps={{
@@ -308,16 +317,9 @@ const SellerformSelect = ({ onClose }) => {
           <div className={styles.sellerTimeContainer}>
             <div className={styles.sellerTime}>
               <div className={styles.div1}>거래 가능 시간</div>
-              <LocalizationProvider
-                dateAdapter={AdapterDayjs}
-                adapterLocale="ko"
-              >
+              <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="ko">
                 {transactionTimes.map((time, index) => (
-                  <div
-                    key={index}
-                    className={styles.dateParent}
-                    style={{ marginBottom: "20px" }}
-                  >
+                  <div key={index} className={styles.dateParent} style={{ marginBottom: "20px" }}>
                     <div>
                       <DatePicker
                         label="날짜"
@@ -329,13 +331,7 @@ const SellerformSelect = ({ onClose }) => {
                         inputFormat="YYYY년 MM월 DD일"
                       />
                     </div>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "10px",
-                      }}
-                    >
+                    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                       <DemoItem>
                         <TimePicker
                           label="부터"
@@ -358,10 +354,7 @@ const SellerformSelect = ({ onClose }) => {
                         />
                       </DemoItem>
                       {transactionTimes.length > 1 && (
-                        <IconButton
-                          onClick={() => handleRemoveTransactionTime(index)}
-                          style={{ marginLeft: "10px" }}
-                        >
+                        <IconButton onClick={() => handleRemoveTransactionTime(index)} style={{ marginLeft: "10px" }}>
                           <CloseIcon />
                         </IconButton>
                       )}
@@ -375,11 +368,7 @@ const SellerformSelect = ({ onClose }) => {
             <Button
               color="primary"
               onClick={handleAddTransactionTime}
-              startIcon={
-                <AddCircleOutlineIcon
-                  style={{ color: "gray", fontSize: "30" }}
-                />
-              }
+              startIcon={<AddCircleOutlineIcon style={{ color: "gray", fontSize: "30" }} />}
               style={{ marginBottom: "10px", display: "flex" }}
             ></Button>
           </div>
@@ -396,9 +385,7 @@ const SellerformSelect = ({ onClose }) => {
                   <TextField
                     label="상품 이름"
                     value={item.name}
-                    onChange={(e) =>
-                      handleInputChange(index, "name", e.target.value)
-                    }
+                    onChange={(e) => handleInputChange(index, "name", e.target.value)}
                     variant="outlined"
                     size="small"
                     className={styles.itemName}
@@ -407,18 +394,13 @@ const SellerformSelect = ({ onClose }) => {
                   <TextField
                     label="가격"
                     value={item.price}
-                    onChange={(e) =>
-                      handleInputChange(index, "price", e.target.value)
-                    }
+                    onChange={(e) => handleInputChange(index, "price", e.target.value)}
                     variant="outlined"
                     size="small"
                     className={styles.itemPrice}
                   />
                   {items.length > 1 && (
-                    <IconButton
-                      onClick={() => handleRemoveItem(index)}
-                      style={{ marginLeft: "10px" }}
-                    >
+                    <IconButton onClick={() => handleRemoveItem(index)} style={{ marginLeft: "10px" }}>
                       <CloseIcon />
                     </IconButton>
                   )}

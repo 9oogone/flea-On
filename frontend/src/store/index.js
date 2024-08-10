@@ -13,6 +13,7 @@ import regionReducer from "../features/region/regionSlice";
 import chatReducer from "../features/chat/chatSlice";
 import chatroomReducer from "../features/chat/chatroomSlice";
 import profileeditReducer from "../features/mypage/profileEditSlice";
+import searchReducer from "../features/search/searchSlice";
 import "../styles/global.css";
 
 const store = configureStore({
@@ -31,6 +32,7 @@ const store = configureStore({
     chat: chatReducer,
     chatroom: chatroomReducer,
     profileedit: profileeditReducer,
+    search: searchReducer,
   },
 });
 

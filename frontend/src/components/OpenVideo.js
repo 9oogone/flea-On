@@ -260,6 +260,7 @@ const OpenVideo = () => {
     });
   }
 
+
   const fetchProductList = async (sessionName) => {
     try {
       // const response = await baseAxios().get(
