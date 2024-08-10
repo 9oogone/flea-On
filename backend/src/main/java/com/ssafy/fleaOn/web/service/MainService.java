@@ -91,18 +91,15 @@ public class MainService {
     public Slice<Map<String, Object>> getSearchResultByName(String name, int userId) {
         Pageable pageable = PageRequest.of(0, 10);
 
-        int findFirstCategory = -1;
-        int findSecondCategory = -1;
-
         // findProductByName을 사용하여 Product를 찾습니다.
-        Optional<Product> findProduct = productRepository.findProductByName(name);
+        Optional<List<Product>> findProduct = productRepository.findProductByName(name);
 
-        findFirstCategory = categoryRepository.findByFirstCategoryId(findProduct.get().getFirstCategoryId());
-        findSecondCategory = categoryRepository.findBySecondCategoryId(findProduct.get().getSecondCategoryId());
+        System.out.println(findProduct.get().get(0).getFirstCategoryId());
+        System.out.println(findProduct.get().get(0).getSecondCategoryId());
 
         // 이름과 카테고리를 기반으로 검색
-        Slice<Product> searchResultResponseSlice = productRepository.findByNameContainingOrFirstCategoryIdOrSecondCategoryId(
-                name, findFirstCategory, findSecondCategory, pageable);
+        Slice<Product> searchResultResponseSlice = productRepository.findByNameContainingOrFirstCategoryIdAndSecondCategoryId(
+                name, findProduct.get().get(0).getFirstCategoryId(), findProduct.get().get(0).getSecondCategoryId(), pageable);
 
         List<Map<String, Object>> resultList = new ArrayList<>();
         // 검색 결과를 순회하며 필요한 데이터를 추출합니다.

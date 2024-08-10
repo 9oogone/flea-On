@@ -10,9 +10,9 @@ import java.util.Optional;
 public interface CategoryRepository extends JpaRepository<Category, Integer> {
     void deleteById(int id);
 
-    int findByFirstCategoryId(int firstCategoryId);
+    Optional<List<Category>> findByFirstCategoryId(int firstCategoryId);
 
-    int findBySecondCategoryId(int secondCategoryId);
+    Optional<List<Category>> findBySecondCategoryId(int secondCategoryId);
 
     List<Category> findByFirstCategoryName(String firstCategoryName);
 
