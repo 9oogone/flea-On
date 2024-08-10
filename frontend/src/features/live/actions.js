@@ -21,7 +21,11 @@ export const createLiveBroadcast = createAsyncThunk(
   async (formData) => {
     console.log(formData);
 
-    const response = await baseAxios().post("/fleaOn/live/", formData);
+    const response = await baseAxios().post("/fleaOn/live/", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
     return response.data;
   }
 );

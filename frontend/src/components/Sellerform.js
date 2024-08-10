@@ -84,7 +84,6 @@ const SellerformSelect = ({ onClose }) => {
       dispatch(fetchCategories(value)).then((action) => {
         const payload = action.payload;
 
-        // payload가 존재하고, 필요한 속성이 있는지 확인
         if (payload && payload.firstCategoryId) {
           console.log("카테고리가 잘 나올까요? : ", payload.firstCategoryId);
           newItems[index].firstCategoryId = payload.firstCategoryId;
@@ -143,34 +142,41 @@ const SellerformSelect = ({ onClose }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const formData = new FormData();
-    formData.append("thumbnail", thumbnail);
+    formData.append("liveThumbnail", thumbnail);
 
-    try {
-      // const response = await fetch('/api/upload-thumbnail', { //썸네일 서버에 올리는거 백에 묻기..
-      //   method: 'POST',
-      //   body: formData,
-      // });
-      // const result = await response.json();
-      const liveData = {
-        title: document.getElementById("outlined-basic").value,
-        liveDate: dayjs(startDate).format("YYYY-MM-DDTHH:mm:ss"),
-        // liveThumbnail: result.filePath, -> 백 완성되면 하기
-        liveThumbnail: "https://picsum.photos/160/250",
-        tradePlace: `${address} ${detailedAddress}`,
-        regionCode: bcode,
-        product: items.map((item) => ({
-          name: item.name,
-          price: parseInt(item.price, 10),
-          firstCategoryId: item.firstCategoryId,
-          secondCategoryId: item.secondCategoryId,
-        })),
-        liveTradeTime: formatLiveTradeTimes(transactionTimes),
-      };
+    const liveData = {
+      title: document.getElementById("outlined-basic").value,
+      liveDate: dayjs(startDate).format("YYYY-MM-DDTHH:mm:ss"),
+      tradePlace: `${address} ${detailedAddress}`,
+      regionCode: bcode,
+      product: items.map((item) => ({
+        name: item.name,
+        price: parseInt(item.price, 10),
+        firstCategoryId: item.firstCategoryId,
+        secondCategoryId: item.secondCategoryId,
+      })),
+      liveTradeTime: formatLiveTradeTimes(transactionTimes),
+    };
 
-      dispatch(createLiveBroadcast(liveData));
-    } catch (error) {
-      console.error("Error:", error);
-    }
+    formData.append("title", liveData.title);
+    formData.append("liveDate", liveData.liveDate);
+    formData.append("tradePlace", liveData.tradePlace);
+    formData.append("regionCode", liveData.regionCode);
+
+    liveData.product.forEach((item, index) => {
+      formData.append(`product[${index}][name]`, item.name);
+      formData.append(`product[${index}][price]`, item.price); // 숫자 그대로 추가
+      formData.append(`product[${index}][firstCategoryId]`, item.firstCategoryId); // 숫자 그대로 추가
+      formData.append(`product[${index}][secondCategoryId]`, item.secondCategoryId); // 숫자 그대로 추가
+    });
+
+    liveData.liveTradeTime.forEach((time, index) => {
+      formData.append(`liveTradeTime[${index}][tradeStart]`, time.tradeStart);
+      formData.append(`liveTradeTime[${index}][tradeEnd]`, time.tradeEnd);
+      formData.append(`liveTradeTime[${index}][date]`, time.date);
+    });
+
+    dispatch(createLiveBroadcast(formData));
   };
 
   return (
