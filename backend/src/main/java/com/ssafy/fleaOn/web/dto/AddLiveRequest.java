@@ -23,6 +23,7 @@ public class AddLiveRequest {
 
     @Parameter(description = "Thumbnail file", schema = @Schema(type = "string", format = "binary"))
     private MultipartFile liveThumbnail;
+
     private String tradePlace;
     private String regionCode;
     private List<AddProductRequest> product;
