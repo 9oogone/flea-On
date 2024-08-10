@@ -23,6 +23,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 
@@ -40,7 +41,9 @@ public class LiveApiController {
 
     @PostMapping("/")
     @Operation(summary = "라이브 생성", description = "라이브의 정보를 저장하여 새로운 라이브를 생성합니다.")
-    public ResponseEntity<?> createLive(HttpServletRequest request, @ModelAttribute AddLiveRequest addLiveRequest) {
+    public ResponseEntity<?> createLive(HttpServletRequest request,
+                                        @RequestPart("liveThumbnail") MultipartFile liveThumbnail,
+                                        @RequestPart("data") AddLiveRequest addLiveRequest) {
         String authorizationHeader = request.getHeader("Authorization");
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
@@ -56,11 +59,13 @@ public class LiveApiController {
 
                     // 파일 처리 중 예외가 발생할 수 있으므로 try-catch로 감싸서 처리
                     try {
-                        thumbnail = fileHandler.parseFileInfo(addLiveRequest.getLiveThumbnail());
+                        thumbnail = fileHandler.parseFileInfo(liveThumbnail);
                     } catch (Exception e) {
                         log.error("파일 처리 중 오류 발생: {}", e.getMessage());
                         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("파일 처리 중 오류가 발생했습니다: " + e.getMessage());
                     }
+                    System.out.println("controller : " + addLiveRequest.getRegionCode());
+                    System.out.println("AddLiveRequest: " + addLiveRequest.toString());
 
                     Live savedLive = liveService.saveLive(addLiveRequest, user);
                     System.out.println(thumbnail);
@@ -76,10 +81,6 @@ public class LiveApiController {
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("라이브 생성 실패: 토큰이 없습니다.");
     }
-
-
-
-
 
     @PutMapping("/{liveID}")
     @Operation(summary = "라이브 정보 변경", description = "특정 라이브의 정보를 변경, 업데이트 합니다.")

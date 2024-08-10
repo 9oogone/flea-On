@@ -31,6 +31,7 @@ public class LiveService {
 
     @Transactional
     public Live saveLive(AddLiveRequest addLiveRequest, User user) throws Exception {
+        System.out.println(addLiveRequest.getRegionCode());
         RegionInfo regionInfo = regionInfoRepository.findByRegionCode(addLiveRequest.getRegionCode())
                 .orElseThrow(()-> new IllegalArgumentException("no products found for region id: " + addLiveRequest.getRegionCode()));
         // Live 엔티티 생성 및 저장
