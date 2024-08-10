@@ -8,6 +8,7 @@ import ChatTradeDetail from "./ChatTradeDetail";
 import ChangeTime from "../components/ChangeTime"; 
 
 const ChatInput = ({
+  chatID,
   message,
   setMessage,
   handleSendMessage,
@@ -73,6 +74,8 @@ const ChatInput = ({
         />
       )}
       <CancelTrade
+        chatID={chatID}
+        setIsOpen = {setIsCancelTradeOpen}
         isOpen={isCancelTradeOpen}
         onClose={() => setIsCancelTradeOpen(false)}
       />

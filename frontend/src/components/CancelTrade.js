@@ -1,8 +1,28 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from '@mui/material';
+import baseAxios from '../utils/httpCommons';
+import Spinner from "../components/Spinner.js"
 
 
-const CancelTrade = ({ isOpen, onClose }) => {
+const CancelTrade = ({ isOpen, onClose, chatID }) => {
+  const [loading, setLoading] = useState(false)
+  const navigate = useNavigate();
+  const baseURL = baseAxios();
+  async function cancelTrade() {
+    try {
+        setLoading(true)
+        await baseURL.delete("fleaon/purchase/break-trade/"+chatID);
+        setLoading(false)
+        navigate("/chat",{replace:true})
+        onClose();
+    } catch (error) {
+        console.error("Error cancelling trade:", error);
+        throw error;
+    }
+}
+
   return (
     <Dialog open={isOpen} onClose={onClose} aria-labelledby="cancel-trade-dialog-title">
       <DialogTitle id="cancel-trade-dialog-title">거래 파기</DialogTitle>
@@ -18,10 +38,15 @@ const CancelTrade = ({ isOpen, onClose }) => {
         <Button onClick={onClose} color="primary">
           취소
         </Button>
-        <Button onClick={onClose} color="primary" autoFocus>
+        <Button onClick={cancelTrade} color="primary" autoFocus>
           확인
         </Button>
       </DialogActions>
+      {loading?(
+        <div>
+        <Spinner/>
+      </div>
+        ):(null)}
     </Dialog>
   );
 };

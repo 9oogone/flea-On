@@ -22,6 +22,12 @@ const SearchLive = () => {
     }
   }, [dispatch, query]);
 
+  useEffect(() => {
+    if (error) {
+      console.error("SearchLive Error:", error);
+    }
+  }, [error]);
+
   const handleIconClick = () => {
     navigate(-1);
   };
@@ -34,9 +40,9 @@ const SearchLive = () => {
       </Typography>
 
       {loading && <CircularProgress />}
-      {error && <Typography color="error">에러가 발생했습니다: {error}</Typography>}
+      {error && <Typography color="error">에러가 발생했습니다: {error === "500" ? "서버 에러가 발생했습니다. 잠시 후 다시 시도해 주세요." : error}</Typography>}
 
-      <LiveBroadcasts items={results.live} />
+      <LiveBroadcasts items={results.live ? results.live : []} />
     </Container>
   );
 };
