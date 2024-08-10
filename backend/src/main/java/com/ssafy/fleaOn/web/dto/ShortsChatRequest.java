@@ -27,7 +27,7 @@ public class ShortsChatRequest {
         LocalTime parsedShortsLength = LocalTime.parse(time, timeFormatter);
 
         return ShortsChatting.builder()
-                .content(this.content)
+                .content(content)
                 .time(parsedShortsLength)
                 .shorts(shorts)
                 .user(writer)

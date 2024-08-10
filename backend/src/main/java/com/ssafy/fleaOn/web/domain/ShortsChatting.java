@@ -20,6 +20,7 @@ import java.time.LocalTime;
 public class ShortsChatting {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "live_chat_id")
     private int liveChatId;
 
@@ -32,11 +33,11 @@ public class ShortsChatting {
     private LocalTime time;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "shorts_id", insertable = false, updatable = false)
+    @JoinColumn(name = "shorts_id", nullable = false)
     private Shorts shorts;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @Builder
