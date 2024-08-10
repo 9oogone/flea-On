@@ -20,23 +20,20 @@ import java.util.List;
 public class AddLiveRequest {
     private String title;
     private String liveDate;
-
-    @Parameter(description = "Thumbnail file", schema = @Schema(type = "string", format = "binary"))
-    private MultipartFile liveThumbnail;
-
+    private String liveThumbnail;
     private String tradePlace;
     private String regionCode;
     private List<AddProductRequest> product;
     private List<AddLiveTradeRequest> liveTradeTime;
 
-    public Live toEntity(User user, RegionInfo regionInfo, String thumbnail) {
+    public Live toEntity(User user, RegionInfo regionInfo,String filePath) {
         DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
         LocalDateTime parsedDate = LocalDateTime.parse(liveDate, formatter);
         return Live.builder()
                 .title(title)
                 .liveDate(parsedDate)
                 .tradePlace(tradePlace)
-                .liveThumbnail(thumbnail)
+                .liveThumbnail(filePath)
                 .seller(user)
                 .regionInfo(regionInfo)
                 .build();
