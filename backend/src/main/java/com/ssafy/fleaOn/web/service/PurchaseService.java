@@ -256,6 +256,7 @@ public class PurchaseService {
                     .live(live)
                     .buyer(buyer)
                     .seller(seller)
+                    .view(false)
                     .createTime(LocalDateTime.now())
                     .build();
             chatting = chattingRepository.save(chatting);
