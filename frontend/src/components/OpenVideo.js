@@ -3,9 +3,10 @@ import { OpenVidu } from "openvidu-browser";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoading, unSetLoading } from "../features/live/loadingSlice";
 import { getToken, startRecording, stopRecording } from "../api/openViduAPI";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   Button,
+  IconButton,
   Box,
   Typography,
   Modal,
@@ -90,7 +91,7 @@ const OpenVideo = () => {
   const [place, setPlace] = useState(dummyDatas.place);
   const [live_date, setLiveDate] = useState(dummyDatas.live_date);
   const [times, setTimes] = useState([]);
-
+  const navigate = useNavigate();
   const handleCustomerClick = () => {
     setPlace(dummyDatas.place);
     setLiveDate(dummyDatas.live_date);
@@ -300,6 +301,7 @@ const OpenVideo = () => {
         outputMode: "COMPOSED",
         hasAudio: true,
         hasVideo: true,
+        name: session.current.sessionId + currentProductIndex,
       })
         .then(() => {
           setIsRecording(true);
@@ -380,7 +382,8 @@ const OpenVideo = () => {
 
   const sliderSettings = {
     dots: false,
-    infinite: false, // 무한 루프를 끕니다.
+    infinite: false,
+    arrows: false,
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
@@ -419,185 +422,179 @@ const OpenVideo = () => {
   });
 
   return (
-    <div style={{ padding: "-8px" }}>
-      {isPublisher ? (
-        <div>
-          <video
-            autoPlay={true}
-            ref={videoRef}
-            style={{
-              objectFit: "cover",
-              width: "100vw",
-              height: "100vh",
-              position: "fixed",
-              zIndex: "-1",
-            }}
-          ></video>
-        </div>
-      ) : (
-        <div style={{ padding: "-8px" }}>
-          <video
-            autoPlay={true}
-            ref={videoRef}
-            style={{
-              objectFit: "cover",
-              width: "100vw",
-              height: "100vh",
-              position: "fixed",
-              zIndex: "-1",
-            }}
-          ></video>
-        </div>
-      )}
+    <div style={{ width: "100%", height: "100%" }}>
+      <video
+        autoPlay={true}
+        ref={videoRef}
+        style={{
+          objectFit: "cover",
+          width: "100%",
+          height: "100%",
+          position: "fixed",
+          zIndex: "-1",
+        }}
+      ></video>
+      <div
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          background:
+            "linear-gradient(to bottom, rgba(0, 0, 0, 0) 80%, rgba(0, 0, 0, 0.2) 100%)",
+          zIndex: "-1",
+        }}
+      ></div>
       <Box>
         <Slider {...sliderSettings}>
-          <Box sx={{ display: "flex", flexDirection: "column" }}>
-            <Button>
-              <CloseIcon />
-            </Button>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              height: "100vh",
+            }}
+          >
+            <IconButton sx={{ marginLeft: "90%" }} onClick={() => navigate(-1)}>
+              <CloseIcon color="google" />
+            </IconButton>
+            <IconButton id="buttonSwitchCamera" onClick={switchCamera}>
+              <FlipCameraAndroidIcon color="google" />
+            </IconButton>
             <Box
               ref={messagesContainerRef}
               sx={{
+                mt: 58,
                 height: 200, // 메시지 목록의 최대 높이를 설정합니다.
                 overflowY: "auto", // 세로 스크롤이 가능하게 합니다.
                 position: "relative", // 흐림 효과를 위한 상대 위치 설정
                 padding: 1, // 메시지 목록의 패딩
               }}
             >
-              <Box
-                sx={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  height: 20, // 흐림 효과의 높이
-                  background:
-                    "linear-gradient(to bottom, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0))", // 흐림 효과
-                  zIndex: 1,
-                }}
-              />
-              {messages.map((msg, index) =>
-                msg.userId === user.userId ? (
+              {messages.map((msg, index) => (
+                <Box
+                  key={index}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "flex-start",
+                    marginBottom: 2, // 더 나은 가독성을 위한 여백
+                  }}
+                >
+                  <Avatar
+                    src={msg.profile}
+                    alt={msg.from}
+                    sx={{ marginRight: 2, width: 32, height: 32 }} // 깨끗한 외관을 위한 작은 아바타
+                  />
                   <Box
-                    key={index}
                     sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "flex-end",
-                      marginBottom: 1,
+                      backgroundColor: "rgba(0, 0, 0, 0.12)",
+                      borderRadius: "16px", // 둥근 모서리
+                      padding: "8px 16px", // 일정한 패딩
+                      maxWidth: "60%", // 메시지 너비 제한
                     }}
                   >
-                    <Box
-                      sx={{
-                        backgroundColor: "#f1f1f1",
-                        borderRadius: 2,
-                        padding: 1,
-                      }}
+                    <Typography
+                      variant="body2"
+                      sx={{ fontWeight: "bold", color: "white" }}
                     >
-                      {msg.from}: {msg.message}
-                    </Box>
-                    <Avatar
-                      src={msg.profile}
-                      alt={msg.from}
-                      sx={{ marginLeft: 1 }}
-                    />
+                      {msg.from}
+                    </Typography>
+                    <Typography variant="body1" sx={{ color: "white" }}>
+                      {msg.message}
+                    </Typography>
                   </Box>
-                ) : (
-                  <Box
-                    key={index}
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "flex-start",
-                      marginBottom: 1,
-                    }}
-                  >
-                    <Avatar
-                      src={msg.profile}
-                      alt={msg.from}
-                      sx={{ marginRight: 1 }}
-                    />
-                    <Box
-                      sx={{
-                        backgroundColor: "#f1f1f1",
-                        borderRadius: 2,
-                        padding: 1,
-                        color: "white",
-                      }}
-                    >
-                      {msg.from}: {msg.message}
-                    </Box>
-                  </Box>
-                )
-              )}
+                </Box>
+              ))}
             </Box>
-            <Box>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-around",
+                pr: 3,
+                pl: 3,
+              }}
+            >
               <TextField
                 type="text"
-                color="google"
                 value={newMessage}
-                sx={{ color: "white" }}
+                color="google"
+                InputProps={{
+                  sx: {
+                    borderRadius: "99px",
+                    color: "white",
+                  },
+                }}
                 onChange={(e) => setNewMessage(e.target.value)}
+                fullWidth
+                sx={{
+                  paddingTop: "5px",
+                  paddingBottom: "5px",
+                  color: "white",
+                }}
               />
-              <Button onClick={sendMessage}>
+              <IconButton onClick={sendMessage}>
                 <SendIcon color="google" />
-              </Button>
+              </IconButton>
             </Box>
-            {isPublisher ? (
-              <Box>
-                {currentProductIndex < productList.length ? (
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    onClick={isRecording ? handleRecordStop : handleRecordStart}
-                    sx={{ width: "36vw" }}
-                  >
-                    {isRecording ? "다음 상품 준비" : "판매시작"}
-                  </Button>
-                ) : (
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    onClick={endBroadcast}
-                    sx={{ width: "36vw" }}
-                  >
-                    방송종료
-                  </Button>
-                )}
-              </Box>
-            ) : (
-              <Button
-                variant="contained"
-                color="secondary"
-                disabled={!isRecording}
-                onClick={() => handleBuy(currentProduct.id)} // 구매 버튼 클릭 시 handleBuy 호출
-                // onClick={handleCustomerClick}
-                sx={{ width: "36vw" }}
-              >
-                {isRecording ? "구매하기" : "상품 준비중"}
-              </Button>
-              /////////////////////////////////////////////얘다 달력 연결할 애임///////
-            )}
-            {currentProduct && (
-              <Box sx={{ marginTop: 2 }}>
-                <Typography variant="h6">현재 판매 중인 상품:</Typography>
-                <Typography variant="subtitle1">
-                  {currentProduct.name}
-                </Typography>
-
-                <Typography variant="body1">
-                  가격: {currentProduct.price}원
-                </Typography>
-              </Box>
-            )}
-            <Button
-              id="buttonSwitchCamera"
-              onClick={switchCamera}
-              value="Switch Camera"
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-around",
+                alignItems: "center",
+                mt: 3,
+              }}
             >
-              <FlipCameraAndroidIcon color="google" />
-            </Button>
-            <Box>{sttValue} </Box>
+              {currentProduct && (
+                <Box sx={{ color: "white" }}>
+                  <Typography variant="h5">{currentProduct.name}</Typography>
+
+                  <Typography variant="body1">
+                    {currentProduct.price}원
+                  </Typography>
+                </Box>
+              )}
+              {isPublisher ? (
+                <Box>
+                  {currentProductIndex < productList.length ? (
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      onClick={
+                        isRecording ? handleRecordStop : handleRecordStart
+                      }
+                      sx={{ width: "60vw", height: "6vh", fontSize: 20 }}
+                    >
+                      {isRecording ? "다음 상품 준비" : "판매시작"}
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      onClick={endBroadcast}
+                      sx={{ width: "60vw", height: "6vh" }}
+                    >
+                      방송종료
+                    </Button>
+                  )}
+                </Box>
+              ) : (
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  disabled={!isRecording}
+                  onClick={() => handleBuy(currentProduct.id)} // 구매 버튼 클릭 시 handleBuy 호출
+                  // onClick={handleCustomerClick}
+                  sx={{ width: "60vw", height: "6vh" }}
+                >
+                  {isRecording ? "구매하기" : "상품 준비중"}
+                </Button>
+                /////////////////////////////////////////////얘다 달력 연결할 애임///////
+              )}
+            </Box>
+
+            {/* <Box>{sttValue} </Box> */}
           </Box>
           {isPublisher ? (
             <Box>
