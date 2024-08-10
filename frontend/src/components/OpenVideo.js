@@ -85,6 +85,7 @@ const OpenVideo = () => {
   const [mainStreamManager, setMainStreamManager] = useState(undefined);
   const [sttValue, setSttValue] = useState("");
   const [publisher, setPublisher] = useState(undefined);
+  const [isFrontCamera, setIsFrontCamera] = useState(false);
 
   //거래장소시간 선택 모달
   const [open, setOpen] = useState(false);
@@ -229,39 +230,40 @@ const OpenVideo = () => {
     },
   });
 
-  const switchCamera = useCallback(async () => {
-    try {
-      const devices = await OV.current.getDevices();
-      const videoDevices = devices.filter(
-        (device) => device.kind === "videoinput"
-      );
+  function switchCamera() {
+    getDevices().then(devices => {
+        // Getting only the video devices
+        var videoDevices = devices.filter(device => device.kind === 'videoinput');
 
-      if (videoDevices && videoDevices.length > 1) {
-        const newVideoDevice = videoDevices.filter(
-          (device) => device.deviceId !== currentVideoDevice.deviceId
-        );
+        if (videoDevices && videoDevices.length > 1){
 
-        if (newVideoDevice.length > 0) {
-          const newPublisher = OV.current.initPublisher(undefined, {
-            videoSource: newVideoDevice[0].deviceId,
-            publishAudio: true,
-            publishVideo: true,
-            mirror: true,
-          });
+            // Creating a new publisher with specific videoSource
+            // In mobile devices the default and first camera is the front one
+            var newPublisher = OV.initPublisher('html-element-id', {
+                videoSource: isFrontCamera ? videoDevices[1].deviceId : videoDevices[0].deviceId,
+                publishAudio: true,
+                publishVideo: true,
+                mirror: isFrontCamera // Setting mirror enable if front camera is selected
+            });
 
-          if (session) {
-            await session.unpublish(mainStreamManager);
-            await session.publish(newPublisher);
-            setCurrentVideoDevice(newVideoDevice[0]);
-            setMainStreamManager(newPublisher);
-            setPublisher(newPublisher);
-          }
+            // Changing isFrontCamera value
+            setIsFrontCamera(isFrontCamera);
+
+            // Unpublishing the old publisher
+            session.unpublish(publisher).then(() => {
+                console.log('Old publisher unpublished!');
+
+                // Assigning the new publisher to our global variable 'publisher'
+                publisher = newPublisher;
+
+                // Publishing the new publisher
+                this.session.publish(publisher).then(() => {
+                    console.log('New publisher published!');
+                });
+            });
         }
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  }, [currentVideoDevice, session, mainStreamManager]);
+    });
+}
 
   const fetchProductList = async (sessionName) => {
     try {
