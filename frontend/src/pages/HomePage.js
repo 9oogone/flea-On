@@ -1,18 +1,22 @@
 // HomePage.js
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import Switch from "../components/Switch";
 import LiveBroadcasts from "../components/LiveBroadcasts";
 import Shorts from "../components/Shorts";
 import { Grid, Box, Button, Container } from "@mui/material";
 import baseAxios from "../utils/httpCommons";
 import { useNavigate } from "react-router-dom";
-
+import { fetchUserInfo } from "../features/auth/actions";
+import { fetchShorts } from "../features/shorts/actions";
 const HomePage = () => {
   const selectedTab = useSelector((state) => state.content.selectedTab);
   // const contents = useSelector((state) => state.content.contents);
   const [hasLive, setHasLive] = useState(false);
   const [liveId, setLiveId] = useState(null);
+  const [shorts, setShorts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
   useEffect(() => {
     const checkLiveExistence = async () => {
@@ -39,6 +43,35 @@ const HomePage = () => {
       console.error("Failed to start live broadcast", error);
     }
   };
+
+  const fetchShorts = async () => {
+    try {
+      const response = await baseAxios().get("/fleaon/mainShorts");
+      const shortsData = response.data.content.map((short) => ({
+        id: short.shortsId,
+        name: short.productName,
+        price: short.productPrice,
+        trade_place: short.tradePlace,
+        length: "00:00", // 서버 데이터에 길이가 포함되어 있지 않아서 임시로 00:00으로 설정
+        is_scrap: false, // 기본값으로 설정
+        thumbnail: short.thumbnail,
+        shorts_id: short.shortsId,
+      }));
+
+      setShorts(shortsData);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching shorts:", error);
+      setError(error.message);
+      setLoading(false);
+    }
+  };
+
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(fetchUserInfo()); // 사용자 정보 가져오기
+    fetchShorts(); // 숏츠 데이터 가져오기
+  }, [dispatch]);
 
   const contents = {
     live: [
@@ -165,48 +198,7 @@ const HomePage = () => {
         products: [{ name: "라면", price: 3000 }],
       },
     ],
-    shorts: [
-      {
-        id: 13,
-        name: "키티템 정리",
-        price: 3000,
-        trade_place: "덕명동",
-        length: "01:30",
-        is_scrap: false,
-        thumbnail: "https://picsum.photos/160/250",
-        shorts_id: 1,
-      },
-      {
-        id: 14,
-        name: "키티템 정리",
-        price: 3000,
-        trade_place: "덕명동",
-        length: "01:30",
-        is_scrap: false,
-        thumbnail: "https://picsum.photos/160/250",
-        shorts_id: 1,
-      },
-      {
-        id: 3,
-        name: "키티템 정리",
-        price: 3000,
-        trade_place: "덕명동",
-        length: "01:30",
-        is_scrap: true,
-        thumbnail: "https://picsum.photos/160/250",
-        shorts_id: 2,
-      },
-      {
-        id: 4,
-        name: "키티템 정리",
-        price: 3000,
-        trade_place: "덕명동",
-        length: "01:30",
-        is_scrap: true,
-        thumbnail: "https://picsum.photos/160/250",
-        shorts_id: 2,
-      },
-    ],
+    shorts: shorts,
   };
   const switchOptions = [
     { value: "live", label: "Live" },

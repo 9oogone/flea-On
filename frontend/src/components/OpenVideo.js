@@ -25,49 +25,7 @@ import FlipCameraAndroidIcon from "@mui/icons-material/FlipCameraAndroid";
 import SendIcon from "@mui/icons-material/Send";
 import CloseIcon from "@mui/icons-material/Close";
 import { styled } from "@mui/system";
-
-const dummyDatas = {
-  place: "덕명동 삼성화재 유성연수원 경비실 앞",
-  live_date: "2024-08-06",
-  times: [
-    {
-      tradeStart: "10:00",
-      tradeEnd: "17:00",
-      date: "2024-08-06",
-    },
-    {
-      tradeStart: "06:00",
-      tradeEnd: "10:00",
-      date: "2024-08-07",
-    },
-    {
-      tradeStart: "14:00",
-      tradeEnd: "16:00",
-      date: "2024-08-07",
-    },
-    {
-      tradeStart: "11:00",
-      tradeEnd: "13:00",
-      date: "2024-08-08",
-    },
-    {
-      tradeStart: "10:00",
-      tradeEnd: "11:00",
-      date: "2024-08-10",
-    },
-    {
-      tradeStart: "12:00",
-      tradeEnd: "19:00",
-      date: "2024-08-11",
-    },
-    {
-      tradeStart: "01:00",
-      tradeEnd: "20:00",
-      date: "2024-08-12",
-    },
-  ],
-};
-
+import swipeLeftImage from "../assets/images/swipe_left.svg";
 const OpenVideo = () => {
   const videoRef = useRef(null);
   const [isRecording, setIsRecording] = useState(false);
@@ -85,44 +43,49 @@ const OpenVideo = () => {
   const [mainStreamManager, setMainStreamManager] = useState(undefined);
   const [sttValue, setSttValue] = useState("");
   const [publisher, setPublisher] = useState(undefined);
-  const [currentRecodingIndex, setCurrentRecordingIndex] = useState("");
+  const [currentRecordingId, setCurrentRecordingId] = useState("");
+  const [recordStartTime, setRecordStartTime] = useState(null);
+
   //거래장소시간 선택 모달
   const [open, setOpen] = useState(false);
-  const [place, setPlace] = useState(dummyDatas.place);
-  const [live_date, setLiveDate] = useState(dummyDatas.live_date);
+  const [place, setPlace] = useState("");
+  const [liveDate, setLiveDate] = useState("");
   const [times, setTimes] = useState([]);
   const navigate = useNavigate();
   const handleCustomerClick = () => {
-    setPlace(dummyDatas.place);
-    setLiveDate(dummyDatas.live_date);
-    const timeSlots = generateTimeSlots(dummyDatas.times);
-    setTimes(timeSlots);
+    // 이미 가져온 데이터를 사용하여 상태 업데이트
     setOpen(true);
   };
 
   const handleClose = () => setOpen(false);
-
   const generateTimeSlots = (tradeTimes) => {
     const slots = [];
 
     tradeTimes.forEach((time) => {
-      let start = new Date(`${time.date}T${time.tradeStart}`);
-      const end = new Date(`${time.date}T${time.tradeEnd}`);
+      try {
+        let start = new Date(`${time.date}T${time.tradeStart}`);
+        const end = new Date(`${time.date}T${time.tradeEnd}`);
 
-      while (start < end) {
-        slots.push({
-          time: start.toTimeString().slice(0, 5),
-          date: time.date,
-        });
+        // Date 객체가 유효한지 확인
+        if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+          throw new Error("Invalid date format");
+        }
 
-        // 새로운 Date 객체를 생성하여 30분을 추가합니다.
-        start = new Date(start.getTime() + 30 * 60000); // 30분 = 30 * 60000 밀리초
+        while (start < end) {
+          slots.push({
+            time: start.toTimeString().slice(0, 5), // 'HH:MM' 형식으로 시간 추출
+            date: time.date,
+          });
+
+          // 새로운 Date 객체를 생성하여 30분을 추가합니다.
+          start = new Date(start.getTime() + 30 * 60000); // 30분 = 30 * 60000 밀리초
+        }
+      } catch (error) {
+        console.error("Invalid time value:", time);
       }
     });
     return slots;
   };
-  //
-
   let subscribers = [];
 
   const OV = useRef();
@@ -260,21 +223,24 @@ const OpenVideo = () => {
     });
   }
 
-
   const fetchProductList = async (sessionName) => {
     try {
-      // const response = await baseAxios().get(
-      //   `https://i11b202.p.ssafy.io/fleaOn/live/${sessionName}/detail`
-      // );
-      // const { products } = response.data;
-
-      const products = [
-        { id: 1, name: "라면", price: 3000 },
-        { id: 2, name: "군것질", price: 2000 },
-        { id: 3, name: "쿠쿠다스", price: 4000 },
-      ];
+      const response = await baseAxios().get(
+        `/fleaOn/live/${sessionName}/detail`
+      );
+      const {
+        products,
+        tradePlace,
+        liveDate: live_date,
+        liveTradeTimes,
+      } = response.data;
+      console.log(response.data);
       setProductList(products);
       setCurrentProduct(products[0]); // 첫 번째 상품 설정
+      setPlace(tradePlace);
+      setLiveDate(live_date);
+      const timeSlots = generateTimeSlots(liveTradeTimes);
+      setTimes(timeSlots);
     } catch (error) {
       console.error("상품 목록 가져오기 오류:", error);
     }
@@ -293,6 +259,7 @@ const OpenVideo = () => {
         });
       }, 5000);
       dispatch(setLoading());
+      setRecordStartTime(new Date()); // 녹화 시작 시간 설정
       startRecording({
         session: session.current.sessionId,
         outputMode: "COMPOSED_QUICK_START",
@@ -301,7 +268,7 @@ const OpenVideo = () => {
       })
         .then((res) => {
           console.log(res.data.id);
-          setCurrentRecordingIndex(res.data.id);
+          setCurrentRecordingId(res.data.id);
           setIsRecording(true);
           dispatch(unSetLoading());
           listen({ continuous: true });
@@ -321,11 +288,49 @@ const OpenVideo = () => {
       stop();
       dispatch(setLoading());
       stopRecording({
-        recording: currentRecodingIndex,
+        recording: currentRecordingId,
       })
         .then(() => {
           setIsRecording(false);
           dispatch(unSetLoading());
+
+          // 녹화 종료 시간 설정
+          const recordStopTime = new Date();
+          const durationInMs = recordStopTime - recordStartTime;
+          const hours = Math.floor(durationInMs / 3600000)
+            .toString()
+            .padStart(2, "0");
+          const minutes = Math.floor((durationInMs % 3600000) / 60000)
+            .toString()
+            .padStart(2, "0");
+          const seconds = Math.floor((durationInMs % 60000) / 1000)
+            .toString()
+            .padStart(2, "0");
+
+          // 녹화 길이를 HH:mm:ss 형식의 문자열로 변환
+          const length = `${hours}:${minutes}:${seconds}`;
+
+          // 녹화 데이터를 서버로 전송
+          const videoAddress = `https://i11b202.p.ssafy.io/openvidu/recordings/${currentRecordingId}/${currentRecordingId}.mp4`;
+          const thumbnail = `https://i11b202.p.ssafy.io/openvidu/recordings/${currentRecordingId}/${currentRecordingId}.jpg`;
+
+          const data = {
+            thumbnail,
+            length: length,
+            videoAddress,
+            productId: currentProduct.productId,
+          };
+
+          baseAxios()
+            .post("fleaon/shorts/save", data)
+            .then((response) => {
+              console.log("녹화 데이터 전송 성공:", response.data);
+            })
+            .catch((error) => {
+              console.log(data);
+              console.error("녹화 데이터 전송 중 오류 발생:", error);
+            });
+
           // 다음 상품 준비
           if (currentProductIndex < productList.length - 1) {
             setCurrentProductIndex(currentProductIndex + 1);
@@ -448,10 +453,16 @@ const OpenVideo = () => {
           <Box
             sx={{
               display: "flex",
+              position: "relative",
               flexDirection: "column",
               height: "100vh",
             }}
           >
+            <img
+              src={swipeLeftImage}
+              alt="swipe"
+              style={{ position: "absolute", right: 0, top: "40%" }}
+            />
             <IconButton sx={{ marginLeft: "90%" }} onClick={() => navigate(-1)}>
               <CloseIcon color="google" />
             </IconButton>
@@ -629,7 +640,13 @@ const OpenVideo = () => {
                 ))}
             </Box>
           ) : (
-            <Box>
+            <Box
+              sx={{
+                backgroundColor: "rgba(0, 0, 0, 0.12)",
+                height: "100vh",
+                backdropFilter: "blur(10px)",
+              }}
+            >
               <Typography variant="h6">구매자 - 지나간 상품 목록</Typography>
               {productList
                 .slice(0, currentProductIndex)
@@ -654,13 +671,13 @@ const OpenVideo = () => {
         </Slider>
       </Box>
 
-      <CustomerDateTimeSelector
+      {/* <CustomerDateTimeSelector
         open={open}
         handleClose={handleClose}
         place={place}
-        live_date={live_date}
+        live_date={liveDate}
         times={times}
-      />
+      /> */}
     </div>
   );
 };

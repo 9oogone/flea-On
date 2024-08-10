@@ -1,16 +1,24 @@
 import React, { useState } from "react";
 import { Box, Typography, Modal, Button, Grid } from "@mui/material";
-import { format, addDays, isToday, isPast, parse } from "date-fns";
+import {
+  format,
+  addDays,
+  isToday,
+  isPast,
+  parse,
+  isValid,
+  parseISO,
+} from "date-fns";
 import { PlaceOutlined } from "@mui/icons-material";
 
 const CustomerDateTimeSelector = ({
   open,
   handleClose,
   place,
-  live_date,
+  liveDate,
   times = [],
 }) => {
-  const [selectedDate, setSelectedDate] = useState(live_date);
+  const [selectedDate, setSelectedDate] = useState(liveDate);
   const [selectedTime, setSelectedTime] = useState(null);
 
   const weekdayMap = {
@@ -25,8 +33,21 @@ const CustomerDateTimeSelector = ({
 
   const generateWeekDates = () => {
     const dates = [];
+    const parsedLiveDate = parseISO(liveDate);
+    console.log(parsedLiveDate);
+    if (!isValid(parsedLiveDate)) {
+      console.error("Invalid liveDate:", liveDate);
+      return dates;
+    }
+
     for (let i = 0; i < 7; i++) {
-      const day = addDays(new Date(live_date), i);
+      const day = addDays(parsedLiveDate, i);
+
+      if (!isValid(day)) {
+        console.error("Invalid date generated:", day);
+        continue;
+      }
+
       const weekday = format(day, "eeee");
       dates.push({
         date: format(day, "yyyy-MM-dd"),
@@ -41,7 +62,6 @@ const CustomerDateTimeSelector = ({
 
   const weekDates = generateWeekDates();
 
-  // 요일 박스
   const Day = ({ day }) => (
     <Box
       sx={{
@@ -67,7 +87,6 @@ const CustomerDateTimeSelector = ({
     </Box>
   );
 
-  // 날짜 박스
   const DateBox = ({ date, isSelected }) => (
     <Box
       sx={{
@@ -82,8 +101,8 @@ const CustomerDateTimeSelector = ({
         backgroundColor: isSelected ? "rgba(255, 11, 85, 0.03)" : "transparent",
         borderColor: isSelected ? "#FF0B55" : "transparent",
         ...(isSelected && {
-          borderWidth: "2px", // 선택되었을 때의 테두리 두께
-          borderStyle: "solid", // 선택되었을 때의 테두리 스타일
+          borderWidth: "2px",
+          borderStyle: "solid",
         }),
       }}
     >
@@ -108,7 +127,13 @@ const CustomerDateTimeSelector = ({
   };
 
   const formatTime = (time) => {
-    const parsedTime = parse(time, "HH:mm", new Date());
+    const parsedTime = parse(time, "HH:mm:ss", new Date());
+
+    if (!isValid(parsedTime)) {
+      console.error("Invalid time parsed:", time);
+      return { period: "", formattedTime: "" };
+    }
+
     const isPM = format(parsedTime, "a") === "PM";
     const hours = parsedTime.getHours();
     const minutes = parsedTime.getMinutes();
@@ -121,13 +146,13 @@ const CustomerDateTimeSelector = ({
     return { period, formattedTime: `${formattedHours}:${formattedMinutes}` };
   };
 
-  const currentMonth = format(new Date(selectedDate), "M월");
+  const currentMonth = format(parseISO(selectedDate), "M월");
   const filteredTimes = times.filter((slot) => slot.date === selectedDate);
   const morningSlots = filteredTimes.filter(
-    (slot) => formatTime(slot.time).period === "오전"
+    (slot) => formatTime(slot.tradeStart).period === "오전"
   );
   const afternoonSlots = filteredTimes.filter(
-    (slot) => formatTime(slot.time).period === "오후"
+    (slot) => formatTime(slot.tradeStart).period === "오후"
   );
 
   return (
@@ -240,8 +265,8 @@ const CustomerDateTimeSelector = ({
 
                 <Grid container spacing={1}>
                   {morningSlots.map((slot, index) => {
-                    const { formattedTime } = formatTime(slot.time);
-                    const isSelected = selectedTime === slot.time;
+                    const { formattedTime } = formatTime(slot.tradeStart);
+                    const isSelected = selectedTime === slot.tradeStart;
                     return (
                       <Grid
                         item
@@ -250,7 +275,7 @@ const CustomerDateTimeSelector = ({
                         sx={{ display: "flex", justifyContent: "center" }}
                       >
                         <Button
-                          onClick={() => handleTimeSelect(slot.time)}
+                          onClick={() => handleTimeSelect(slot.tradeStart)}
                           sx={{
                             width: "100%",
                             border: "1px solid rgba(0, 0, 0, 0.20)",
@@ -258,8 +283,8 @@ const CustomerDateTimeSelector = ({
                             ...(isSelected && {
                               border: "1px solid #FF0B55",
                               borderColor: "#FF0B55",
-                              borderWidth: "2px", // 선택되었을 때의 테두리 두께
-                              borderStyle: "solid", // 선택되었을 때의 테두리 스타일
+                              borderWidth: "2px",
+                              borderStyle: "solid",
                             }),
                           }}
                         >
@@ -278,8 +303,8 @@ const CustomerDateTimeSelector = ({
                 </Box>
                 <Grid container spacing={1}>
                   {afternoonSlots.map((slot, index) => {
-                    const { formattedTime } = formatTime(slot.time);
-                    const isSelected = selectedTime === slot.time;
+                    const { formattedTime } = formatTime(slot.tradeStart);
+                    const isSelected = selectedTime === slot.tradeStart;
                     return (
                       <Grid
                         item
@@ -288,7 +313,7 @@ const CustomerDateTimeSelector = ({
                         sx={{ display: "flex", justifyContent: "center" }}
                       >
                         <Button
-                          onClick={() => handleTimeSelect(slot.time)}
+                          onClick={() => handleTimeSelect(slot.tradeStart)}
                           sx={{
                             width: "100%",
                             border: "1px solid rgba(0, 0, 0, 0.20)",
@@ -296,8 +321,8 @@ const CustomerDateTimeSelector = ({
                             ...(isSelected && {
                               border: "1px solid #FF0B55",
                               borderColor: "#FF0B55",
-                              borderWidth: "2px", // 선택되었을 때의 테두리 두께
-                              borderStyle: "solid", // 선택되었을 때의 테두리 스타일
+                              borderWidth: "2px",
+                              borderStyle: "solid",
                             }),
                           }}
                         >

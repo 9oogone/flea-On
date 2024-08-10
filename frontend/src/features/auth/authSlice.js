@@ -47,15 +47,7 @@ export const updateUserInfo = createAsyncThunk(
     const state = getState();
     const token = state.auth.token;
 
-    const response = await baseAxios().put(
-      `/fleaon/users/${email}/info`,
-      data,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const response = await baseAxios().put(`/fleaon/users/${email}/info`, data);
     return response.data;
   }
 );
