@@ -10,8 +10,8 @@ import selllistReducer from "../features/mypage/selllistSlice";
 import watchlistReducer from "../features/mypage/watchlistSlice";
 import shortsReducer from "../features/shorts/shortsSlice";
 import regionReducer from "../features/region/regionSlice";
-import chatReducer from "../features/chat/chatSlice"
-import chatroomReducer from "../features/chat/chatroomSlice"
+import chatReducer from "../features/chat/chatSlice";
+import chatroomReducer from "../features/chat/chatroomSlice";
 import profileeditReducer from "../features/mypage/profileEditSlice";
 import searchReducer from "../features/search/searchSlice";
 import "../styles/global.css";
@@ -28,9 +28,7 @@ const store = configureStore({
     sell: selllistReducer,
     watch: watchlistReducer,
     shorts: shortsReducer,
-
     region: regionReducer,
-
     chat: chatReducer,
     chatroom: chatroomReducer,
     profileedit: profileeditReducer,
