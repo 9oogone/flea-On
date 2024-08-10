@@ -5,6 +5,7 @@ WORKDIR /front
 COPY package.json .
 
 ENV NODE_ENV=production
+ENV REACT_APP_LOGIN_BOOL=true
 
 RUN npm install --force
 

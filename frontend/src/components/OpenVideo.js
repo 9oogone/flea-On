@@ -3,9 +3,10 @@ import { OpenVidu } from "openvidu-browser";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoading, unSetLoading } from "../features/live/loadingSlice";
 import { getToken, startRecording, stopRecording } from "../api/openViduAPI";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   Button,
+  IconButton,
   Box,
   Typography,
   Modal,
@@ -24,49 +25,7 @@ import FlipCameraAndroidIcon from "@mui/icons-material/FlipCameraAndroid";
 import SendIcon from "@mui/icons-material/Send";
 import CloseIcon from "@mui/icons-material/Close";
 import { styled } from "@mui/system";
-
-const dummyDatas = {
-  place: "덕명동 삼성화재 유성연수원 경비실 앞",
-  live_date: "2024-08-06",
-  times: [
-    {
-      tradeStart: "10:00",
-      tradeEnd: "17:00",
-      date: "2024-08-06",
-    },
-    {
-      tradeStart: "06:00",
-      tradeEnd: "10:00",
-      date: "2024-08-07",
-    },
-    {
-      tradeStart: "14:00",
-      tradeEnd: "16:00",
-      date: "2024-08-07",
-    },
-    {
-      tradeStart: "11:00",
-      tradeEnd: "13:00",
-      date: "2024-08-08",
-    },
-    {
-      tradeStart: "10:00",
-      tradeEnd: "11:00",
-      date: "2024-08-10",
-    },
-    {
-      tradeStart: "12:00",
-      tradeEnd: "19:00",
-      date: "2024-08-11",
-    },
-    {
-      tradeStart: "01:00",
-      tradeEnd: "20:00",
-      date: "2024-08-12",
-    },
-  ],
-};
-
+import swipeLeftImage from "../assets/images/swipe_left.svg";
 const OpenVideo = () => {
   const videoRef = useRef(null);
   const [isRecording, setIsRecording] = useState(false);
@@ -84,44 +43,49 @@ const OpenVideo = () => {
   const [mainStreamManager, setMainStreamManager] = useState(undefined);
   const [sttValue, setSttValue] = useState("");
   const [publisher, setPublisher] = useState(undefined);
+  const [currentRecordingId, setCurrentRecordingId] = useState("");
+  const [recordStartTime, setRecordStartTime] = useState(null);
 
   //거래장소시간 선택 모달
   const [open, setOpen] = useState(false);
-  const [place, setPlace] = useState(dummyDatas.place);
-  const [live_date, setLiveDate] = useState(dummyDatas.live_date);
+  const [place, setPlace] = useState("");
+  const [liveDate, setLiveDate] = useState("");
   const [times, setTimes] = useState([]);
-
+  const navigate = useNavigate();
   const handleCustomerClick = () => {
-    setPlace(dummyDatas.place);
-    setLiveDate(dummyDatas.live_date);
-    const timeSlots = generateTimeSlots(dummyDatas.times);
-    setTimes(timeSlots);
+    // 이미 가져온 데이터를 사용하여 상태 업데이트
     setOpen(true);
   };
 
   const handleClose = () => setOpen(false);
-
   const generateTimeSlots = (tradeTimes) => {
     const slots = [];
 
     tradeTimes.forEach((time) => {
-      let start = new Date(`${time.date}T${time.tradeStart}`);
-      const end = new Date(`${time.date}T${time.tradeEnd}`);
+      try {
+        let start = new Date(`${time.date}T${time.tradeStart}`);
+        const end = new Date(`${time.date}T${time.tradeEnd}`);
 
-      while (start < end) {
-        slots.push({
-          time: start.toTimeString().slice(0, 5),
-          date: time.date,
-        });
+        // Date 객체가 유효한지 확인
+        if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+          throw new Error("Invalid date format");
+        }
 
-        // 새로운 Date 객체를 생성하여 30분을 추가합니다.
-        start = new Date(start.getTime() + 30 * 60000); // 30분 = 30 * 60000 밀리초
+        while (start < end) {
+          slots.push({
+            time: start.toTimeString().slice(0, 5), // 'HH:MM' 형식으로 시간 추출
+            date: time.date,
+          });
+
+          // 새로운 Date 객체를 생성하여 30분을 추가합니다.
+          start = new Date(start.getTime() + 30 * 60000); // 30분 = 30 * 60000 밀리초
+        }
+      } catch (error) {
+        console.error("Invalid time value:", time);
       }
     });
     return slots;
   };
-  //
-
   let subscribers = [];
 
   const OV = useRef();
@@ -227,55 +191,56 @@ const OpenVideo = () => {
       listen({ continuous: true });
     },
   });
-
-  const switchCamera = useCallback(async () => {
-    try {
-      const devices = await OV.current.getDevices();
-      const videoDevices = devices.filter(
+  const [isFrontCamera, setIsFrontCamera] = useState(false);
+  function switchCamera() {
+    OV.current.getDevices().then((devices) => {
+      var videoDevices = devices.filter(
         (device) => device.kind === "videoinput"
       );
 
       if (videoDevices && videoDevices.length > 1) {
-        const newVideoDevice = videoDevices.filter(
-          (device) => device.deviceId !== currentVideoDevice.deviceId
-        );
+        var newPublisher = OV.initPublisher("html-element-id", {
+          videoSource: isFrontCamera
+            ? videoDevices[1].deviceId
+            : videoDevices[0].deviceId,
+          publishAudio: true,
+          publishVideo: true,
+          mirror: isFrontCamera,
+        });
 
-        if (newVideoDevice.length > 0) {
-          const newPublisher = OV.current.initPublisher(undefined, {
-            videoSource: newVideoDevice[0].deviceId,
-            publishAudio: true,
-            publishVideo: true,
-            mirror: true,
+        setIsFrontCamera(isFrontCamera);
+
+        session.unpublish(publisher).then(() => {
+          console.log("Old publisher unpublished!");
+
+          publisher = newPublisher;
+
+          this.session.publish(publisher).then(() => {
+            console.log("New publisher published!");
           });
-
-          if (session) {
-            await session.unpublish(mainStreamManager);
-            await session.publish(newPublisher);
-            setCurrentVideoDevice(newVideoDevice[0]);
-            setMainStreamManager(newPublisher);
-            setPublisher(newPublisher);
-          }
-        }
+        });
       }
-    } catch (e) {
-      console.error(e);
-    }
-  }, [currentVideoDevice, session, mainStreamManager]);
+    });
+  }
 
   const fetchProductList = async (sessionName) => {
     try {
-      // const response = await baseAxios().get(
-      //   `https://i11b202.p.ssafy.io/fleaOn/live/${sessionName}/detail`
-      // );
-      // const { products } = response.data;
-
-      const products = [
-        { id: 1, name: "라면", price: 3000 },
-        { id: 2, name: "군것질", price: 2000 },
-        { id: 3, name: "쿠쿠다스", price: 4000 },
-      ];
+      const response = await baseAxios().get(
+        `/fleaOn/live/${sessionName}/detail`
+      );
+      const {
+        products,
+        tradePlace,
+        liveDate: live_date,
+        liveTradeTimes,
+      } = response.data;
+      console.log(response.data);
       setProductList(products);
       setCurrentProduct(products[0]); // 첫 번째 상품 설정
+      setPlace(tradePlace);
+      setLiveDate(live_date);
+      const timeSlots = generateTimeSlots(liveTradeTimes);
+      setTimes(timeSlots);
     } catch (error) {
       console.error("상품 목록 가져오기 오류:", error);
     }
@@ -294,14 +259,16 @@ const OpenVideo = () => {
         });
       }, 5000);
       dispatch(setLoading());
+      setRecordStartTime(new Date()); // 녹화 시작 시간 설정
       startRecording({
-        session: session.current.sessionId+currentProductIndex,
-        id:currentProductIndex,
-        outputMode: "COMPOSED",
+        session: session.current.sessionId,
+        outputMode: "COMPOSED_QUICK_START",
         hasAudio: true,
         hasVideo: true,
       })
-        .then(() => {
+        .then((res) => {
+          console.log(res.data.id);
+          setCurrentRecordingId(res.data.id);
           setIsRecording(true);
           dispatch(unSetLoading());
           listen({ continuous: true });
@@ -321,12 +288,49 @@ const OpenVideo = () => {
       stop();
       dispatch(setLoading());
       stopRecording({
-        recording: session.current.sessionId,
-        id:currentProductIndex
+        recording: currentRecordingId,
       })
         .then(() => {
           setIsRecording(false);
           dispatch(unSetLoading());
+
+          // 녹화 종료 시간 설정
+          const recordStopTime = new Date();
+          const durationInMs = recordStopTime - recordStartTime;
+          const hours = Math.floor(durationInMs / 3600000)
+            .toString()
+            .padStart(2, "0");
+          const minutes = Math.floor((durationInMs % 3600000) / 60000)
+            .toString()
+            .padStart(2, "0");
+          const seconds = Math.floor((durationInMs % 60000) / 1000)
+            .toString()
+            .padStart(2, "0");
+
+          // 녹화 길이를 HH:mm:ss 형식의 문자열로 변환
+          const length = `${hours}:${minutes}:${seconds}`;
+
+          // 녹화 데이터를 서버로 전송
+          const videoAddress = `https://i11b202.p.ssafy.io/openvidu/recordings/${currentRecordingId}/${currentRecordingId}.mp4`;
+          const thumbnail = `https://i11b202.p.ssafy.io/openvidu/recordings/${currentRecordingId}/${currentRecordingId}.jpg`;
+
+          const data = {
+            thumbnail,
+            length: length,
+            videoAddress,
+            productId: currentProduct.productId,
+          };
+
+          baseAxios()
+            .post("fleaon/shorts/save", data)
+            .then((response) => {
+              console.log("녹화 데이터 전송 성공:", response.data);
+            })
+            .catch((error) => {
+              console.log(data);
+              console.error("녹화 데이터 전송 중 오류 발생:", error);
+            });
+
           // 다음 상품 준비
           if (currentProductIndex < productList.length - 1) {
             setCurrentProductIndex(currentProductIndex + 1);
@@ -380,7 +384,8 @@ const OpenVideo = () => {
 
   const sliderSettings = {
     dots: false,
-    infinite: false, // 무한 루프를 끕니다.
+    infinite: false,
+    arrows: false,
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
@@ -419,188 +424,194 @@ const OpenVideo = () => {
   });
 
   return (
-    <div style={{ padding: "-8px" }}>
-      {isPublisher ? (
-        <div>
-          <video
-            autoPlay={true}
-            ref={videoRef}
-            style={{
-              objectFit: "cover",
-              width: "100vw",
-              height: "100vh",
-              position: "fixed",
-              zIndex: "-1",
-            }}
-          ></video>
-        </div>
-      ) : (
-        <div style={{ padding: "-8px" }}>
-          <video
-            autoPlay={true}
-            ref={videoRef}
-            style={{
-              objectFit: "cover",
-              width: "100vw",
-              height: "100vh",
-              position: "fixed",
-              zIndex: "-1",
-            }}
-          ></video>
-        </div>
-      )}
+    <div style={{ width: "100%", height: "100%" }}>
+      <video
+        autoPlay={true}
+        ref={videoRef}
+        style={{
+          objectFit: "cover",
+          width: "100%",
+          height: "100%",
+          position: "fixed",
+          zIndex: "-1",
+        }}
+      ></video>
+      <div
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          background:
+            "linear-gradient(to bottom, rgba(0, 0, 0, 0) 80%, rgba(0, 0, 0, 0.2) 100%)",
+          zIndex: "-1",
+        }}
+      ></div>
       <Box>
         <Slider {...sliderSettings}>
-          <Box sx={{ display: "flex", flexDirection: "column" }}>
-            <Button>
-              <CloseIcon />
-            </Button>
+          <Box
+            sx={{
+              display: "flex",
+              position: "relative",
+              flexDirection: "column",
+              height: "100vh",
+            }}
+          >
+            <img
+              src={swipeLeftImage}
+              alt="swipe"
+              style={{ position: "absolute", right: 0, top: "40%" }}
+            />
+            <IconButton sx={{ marginLeft: "90%" }} onClick={() => navigate(-1)}>
+              <CloseIcon color="google" />
+            </IconButton>
+            <IconButton id="buttonSwitchCamera" onClick={switchCamera}>
+              <FlipCameraAndroidIcon color="google" />
+            </IconButton>
             <Box
               ref={messagesContainerRef}
               sx={{
+                mt: 58,
                 height: 200, // 메시지 목록의 최대 높이를 설정합니다.
                 overflowY: "auto", // 세로 스크롤이 가능하게 합니다.
                 position: "relative", // 흐림 효과를 위한 상대 위치 설정
                 padding: 1, // 메시지 목록의 패딩
               }}
             >
-              <Box
-                sx={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  height: 20, // 흐림 효과의 높이
-                  background:
-                    "linear-gradient(to bottom, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0))", // 흐림 효과
-                  zIndex: 1,
-                }}
-              />
-              {messages.map((msg, index) =>
-                msg.userId === user.userId ? (
+              {messages.map((msg, index) => (
+                <Box
+                  key={index}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "flex-start",
+                    marginBottom: 2, // 더 나은 가독성을 위한 여백
+                  }}
+                >
+                  <Avatar
+                    src={msg.profile}
+                    alt={msg.from}
+                    sx={{ marginRight: 2, width: 32, height: 32 }} // 깨끗한 외관을 위한 작은 아바타
+                  />
                   <Box
-                    key={index}
                     sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "flex-end",
-                      marginBottom: 1,
+                      backgroundColor: "rgba(0, 0, 0, 0.12)",
+                      borderRadius: "16px", // 둥근 모서리
+                      padding: "8px 16px", // 일정한 패딩
+                      maxWidth: "60%", // 메시지 너비 제한
                     }}
                   >
-                    <Box
-                      sx={{
-                        backgroundColor: "#f1f1f1",
-                        borderRadius: 2,
-                        padding: 1,
-                      }}
+                    <Typography
+                      variant="body2"
+                      sx={{ fontWeight: "bold", color: "white" }}
                     >
-                      {msg.from}: {msg.message}
-                    </Box>
-                    <Avatar
-                      src={msg.profile}
-                      alt={msg.from}
-                      sx={{ marginLeft: 1 }}
-                    />
+                      {msg.from}
+                    </Typography>
+                    <Typography variant="body1" sx={{ color: "white" }}>
+                      {msg.message}
+                    </Typography>
                   </Box>
-                ) : (
-                  <Box
-                    key={index}
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "flex-start",
-                      marginBottom: 1,
-                    }}
-                  >
-                    <Avatar
-                      src={msg.profile}
-                      alt={msg.from}
-                      sx={{ marginRight: 1 }}
-                    />
-                    <Box
-                      sx={{
-                        backgroundColor: "#f1f1f1",
-                        borderRadius: 2,
-                        padding: 1,
-                        color: "white",
-                      }}
-                    >
-                      {msg.from}: {msg.message}
-                    </Box>
-                  </Box>
-                )
-              )}
+                </Box>
+              ))}
             </Box>
-            <Box>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-around",
+                pr: 3,
+                pl: 3,
+              }}
+            >
               <TextField
                 type="text"
-                color="google"
                 value={newMessage}
-                sx={{ color: "white" }}
+                color="google"
+                InputProps={{
+                  sx: {
+                    borderRadius: "99px",
+                    color: "white",
+                  },
+                }}
                 onChange={(e) => setNewMessage(e.target.value)}
+                fullWidth
+                sx={{
+                  paddingTop: "5px",
+                  paddingBottom: "5px",
+                  color: "white",
+                }}
               />
-              <Button onClick={sendMessage}>
+              <IconButton onClick={sendMessage}>
                 <SendIcon color="google" />
-              </Button>
+              </IconButton>
             </Box>
-            {isPublisher ? (
-              <Box>
-                {currentProductIndex < productList.length ? (
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    onClick={isRecording ? handleRecordStop : handleRecordStart}
-                    sx={{ width: "36vw" }}
-                  >
-                    {isRecording ? "다음 상품 준비" : "판매시작"}
-                  </Button>
-                ) : (
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    onClick={endBroadcast}
-                    sx={{ width: "36vw" }}
-                  >
-                    방송종료
-                  </Button>
-                )}
-              </Box>
-            ) : (
-              <Button
-                variant="contained"
-                color="secondary"
-                disabled={!isRecording}
-                onClick={() => handleBuy(currentProduct.id)} // 구매 버튼 클릭 시 handleBuy 호출
-                // onClick={handleCustomerClick}
-                sx={{ width: "36vw" }}
-              >
-                {isRecording ? "구매하기" : "상품 준비중"}
-              </Button>
-              /////////////////////////////////////////////얘다 달력 연결할 애임///////
-            )}
-            {currentProduct && (
-              <Box sx={{ marginTop: 2 }}>
-                <Typography variant="h6">현재 판매 중인 상품:</Typography>
-                <Typography variant="subtitle1">
-                  {currentProduct.name}
-                </Typography>
-
-                <Typography variant="body1">
-                  가격: {currentProduct.price}원
-                </Typography>
-              </Box>
-            )}
-            <Button
-              id="buttonSwitchCamera"
-              onClick={switchCamera}
-              value="Switch Camera"
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-around",
+                alignItems: "center",
+                mt: 3,
+              }}
             >
-              <FlipCameraAndroidIcon color="google" />
-            </Button>
-            <Box>{sttValue} </Box>
+              {currentProduct && (
+                <Box sx={{ color: "white" }}>
+                  <Typography variant="h5">{currentProduct.name}</Typography>
+
+                  <Typography variant="body1">
+                    {currentProduct.price}원
+                  </Typography>
+                </Box>
+              )}
+              {isPublisher ? (
+                <Box>
+                  {currentProductIndex < productList.length ? (
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      onClick={
+                        isRecording ? handleRecordStop : handleRecordStart
+                      }
+                      sx={{ width: "60vw", height: "6vh", fontSize: 20 }}
+                    >
+                      {isRecording ? "다음 상품 준비" : "판매시작"}
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      onClick={endBroadcast}
+                      sx={{ width: "60vw", height: "6vh" }}
+                    >
+                      방송종료
+                    </Button>
+                  )}
+                </Box>
+              ) : (
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  disabled={!isRecording}
+                  onClick={() => handleBuy(currentProduct.id)} // 구매 버튼 클릭 시 handleBuy 호출
+                  // onClick={handleCustomerClick}
+                  sx={{ width: "60vw", height: "6vh" }}
+                >
+                  {isRecording ? "구매하기" : "상품 준비중"}
+                </Button>
+                /////////////////////////////////////////////얘다 달력 연결할 애임///////
+              )}
+            </Box>
+
+            {/* <Box>{sttValue} </Box> */}
           </Box>
           {isPublisher ? (
-            <Box>
+            <Box
+              sx={{
+                backgroundColor: "rgba(0, 0, 0, 0.12)",
+                height: "100vh",
+                backdropFilter: "blur(10px)",
+              }}
+            >
               <Typography variant="h6">
                 판매자 - 다음에 판매할 상품 목록
               </Typography>
@@ -629,7 +640,13 @@ const OpenVideo = () => {
                 ))}
             </Box>
           ) : (
-            <Box>
+            <Box
+              sx={{
+                backgroundColor: "rgba(0, 0, 0, 0.12)",
+                height: "100vh",
+                backdropFilter: "blur(10px)",
+              }}
+            >
               <Typography variant="h6">구매자 - 지나간 상품 목록</Typography>
               {productList
                 .slice(0, currentProductIndex)
@@ -654,13 +671,13 @@ const OpenVideo = () => {
         </Slider>
       </Box>
 
-      <CustomerDateTimeSelector
+      {/* <CustomerDateTimeSelector
         open={open}
         handleClose={handleClose}
         place={place}
-        live_date={live_date}
+        live_date={liveDate}
         times={times}
-      />
+      /> */}
     </div>
   );
 };

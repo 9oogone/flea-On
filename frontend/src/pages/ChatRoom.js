@@ -226,6 +226,10 @@ const ChatRoom = () => {
               </div>
             )}
           </div>
+          //   {shouldShowTime(index, msg) && (
+          //     <div className={styles.time}>{new Date(msg.chatTime).toTimeString().slice(0, 5)}</div>
+          //   )}
+          // </div>
         ))}
         <div ref={messagesEndRef} />
       </ul>

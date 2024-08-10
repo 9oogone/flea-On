@@ -9,10 +9,13 @@ import {
 import { toggleScrap } from "../features/shorts/shortsSlice";
 import { useNavigate } from "react-router-dom"; // 최신 버전 React Router 사용
 
-const Shorts = () => {
+const Shorts = ({ items = [] }) => {
   const dispatch = useDispatch();
-  const shorts = useSelector((state) => state.shorts.shorts);
+
   const navigate = useNavigate();
+  if (!items || items.length === 0) {
+    return <div>No shorts available.</div>;
+  }
 
   const handleButtonClick = (shortsId) => {
     navigate(`/shorts/${shortsId}`);
@@ -25,7 +28,7 @@ const Shorts = () => {
   return (
     <Grid item xs={12}>
       <Grid container>
-        {shorts.map((item) => (
+        {items.map((item) => (
           <Grid key={item.id} item xs={6} sx={{ textAlign: "center" }}>
             <Button
               onClick={() => handleButtonClick(item.shorts_id)}
