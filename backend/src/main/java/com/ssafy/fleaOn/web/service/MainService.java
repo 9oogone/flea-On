@@ -28,11 +28,11 @@ public class MainService {
     private final RegionInfoRepository regionInfoRepository;
     private final UserRegionRepository userRegionRepository;
 
-    public Slice<MainLiveResponse> getMainLiveListByRegionCode(List<UserRegion> findUserRegionList, LocalDateTime currentTime){
+    public Slice<MainLiveResponse> getMainLiveListByRegionCode(List<UserRegion> findUserRegionList, LocalDateTime currentTime) {
         Pageable pageable = PageRequest.of(0, 10);
         List<MainLiveResponse> mainLiveResponseList = new ArrayList<>();
 
-        for(UserRegion userRegion : findUserRegionList) {
+        for (UserRegion userRegion : findUserRegionList) {
             String regionCode = userRegion.getRegion().getRegionCode();
             System.out.println("코드요 : " + regionCode);
 
@@ -55,7 +55,7 @@ public class MainService {
         return new SliceImpl<>(content, pageable, hasNext);
     }
 
-    public List<UserRegion> getUserRegionByUserId(int userId){
+    public List<UserRegion> getUserRegionByUserId(int userId) {
         Optional<List<UserRegion>> userRegionList = userRegionRepository.findByUser_userId(userId);
         return Optional.ofNullable(userRegionList.get()).orElse(Collections.emptyList());
     }
@@ -116,29 +116,34 @@ public class MainService {
 
             if (live.isPresent()) {
                 for (Live findLive : live.get()) {
-                    Map<String, Object> upcomingMap = new HashMap<>();
+                    if (findLive.getIsLive() == 0) {
+                        Map<String, Object> upcomingMap = new HashMap<>();
 
-                    // UPCOMING 정보를 담을 Map 생성
-                    upcomingMap.put("live_id", findLive.getLiveId());
-                    upcomingMap.put("name", product.getName());
-                    upcomingMap.put("price", product.getPrice());
-                    upcomingMap.put("live_date", findLive.getLiveDate());
-                    upcomingMap.put("title", findLive.getTitle());
+                        // UPCOMING 정보를 담을 Map 생성
+                        upcomingMap.put("live_id", findLive.getLiveId());
+                        upcomingMap.put("name", product.getName());
+                        upcomingMap.put("price", product.getPrice());
+                        upcomingMap.put("live_date", findLive.getLiveDate());
+                        upcomingMap.put("title", findLive.getTitle());
 
-                    resultUpcomingMapLlist.add(upcomingMap);
+                        resultUpcomingMapLlist.add(upcomingMap);
+                    }
                 }
 
-                for(Live findLive : live.get()) {
-                    Map<String, Object> liveMap = new HashMap<>();
-                    // LIVE 정보를 담을 Map 생성
-                    liveMap.put("live_id", findLive.getLiveId());
-                    liveMap.put("name", product.getName());
-                    liveMap.put("price", product.getPrice());
-                    liveMap.put("title", findLive.getTitle());
-                    liveMap.put("tradePlace", findLive.getTradePlace());
-                    liveMap.put("live_thumbnail", findLive.getLiveThumbnail());
+                for (Live findLive : live.get()) {
+                    if (findLive.getIsLive() == 1) {
 
-                    resultLiveMapList.add(liveMap);
+                        Map<String, Object> liveMap = new HashMap<>();
+                        // LIVE 정보를 담을 Map 생성
+                        liveMap.put("live_id", findLive.getLiveId());
+                        liveMap.put("name", product.getName());
+                        liveMap.put("price", product.getPrice());
+                        liveMap.put("title", findLive.getTitle());
+                        liveMap.put("tradePlace", findLive.getTradePlace());
+                        liveMap.put("live_thumbnail", findLive.getLiveThumbnail());
+
+                        resultLiveMapList.add(liveMap);
+                    }
 
                 }
             }
@@ -176,15 +181,15 @@ public class MainService {
     }
 
 
-    public List<SidoNameResponse> getSidoNameList(){
+    public List<SidoNameResponse> getSidoNameList() {
         return regionInfoRepository.findDistinctSido();
     }
 
-    public List<GugunNameResponse> getGugunNameBySidoName(String sidoName){
+    public List<GugunNameResponse> getGugunNameBySidoName(String sidoName) {
         return regionInfoRepository.findDistinctGugunBySido(sidoName);
     }
 
-    public List<EupmyeonNameResponse> getEupmyeonNameAndRegionCodeBySidoNameAndGugunName(String sidoName, String gugunName){
+    public List<EupmyeonNameResponse> getEupmyeonNameAndRegionCodeBySidoNameAndGugunName(String sidoName, String gugunName) {
         return regionInfoRepository.findDistinctBySidoAndGugun(sidoName, gugunName);
     }
 }
