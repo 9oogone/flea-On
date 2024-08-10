@@ -54,12 +54,12 @@ public class Shorts {
     private User seller;
 
     @Builder
-    public Shorts(String shortsThumbnail, LocalTime length, String videoAddress, Product product, User user) {
+    public Shorts(String shortsThumbnail, LocalTime length, String videoAddress, Product product, User user, LocalDateTime uploadDate) {
         this.shortsThumbnail = shortsThumbnail;
         this.length = length;
         this.videoAddress = videoAddress;
         this.product = product;
         this.seller = user;
-        this.uploadDate = LocalDateTime.now();
+        this.uploadDate = uploadDate;
     }
 }
