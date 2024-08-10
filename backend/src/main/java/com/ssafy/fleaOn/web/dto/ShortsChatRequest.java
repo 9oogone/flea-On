@@ -19,7 +19,6 @@ public class ShortsChatRequest {
 
     private String content;
     private String time;
-    private int shortsId;
     private int userId;
 
     public ShortsChatting toEntity(Shorts shorts, User writer){
