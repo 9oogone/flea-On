@@ -26,7 +26,19 @@ export const fetchUserInfo = () => async (dispatch, getState) => {
     }
 
     const userInfo = response.data;
+
+    // 로컬 스토리지에서 FCM 토큰 가져오기
+    const fcmToken = localStorage.getItem("fcmToken");
+
+    // FCM 토큰을 user 정보에 추가
+    if (fcmToken) {
+      userInfo.fcm = fcmToken;
+    } else {
+      console.log("No FCM Token found in local storage.");
+    }
     dispatch(setUser({ user: userInfo }));
+    await baseAxios().post(`/fleaon/users/fcm?fcmToken=${fcmToken}`);
+    console.log("FCM Token sent successfully.");
   } catch (error) {
     console.error("Failed to fetch user info:", error);
     // Optionally handle logout or error state

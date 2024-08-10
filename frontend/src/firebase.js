@@ -25,7 +25,8 @@ export function requestPermission() {
         .then((currentToken) => {
           if (currentToken) {
             console.log("FCM Token:", currentToken);
-            baseAxios.post("FCM Token");
+            //이때 로컬 스토리지에 FCM 토큰 저장
+            localStorage.setItem("fcmToken", currentToken);
           } else {
             console.log(
               "No registration token available. Request permission to generate one."
