@@ -27,4 +27,5 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     Slice<Product> findByProductId(int productId, Pageable pageable);
 
     Optional<Product> findByLive_LiveIdAndCurrentBuyerId(int liveId, int buyerId);
+
 }

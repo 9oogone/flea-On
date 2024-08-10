@@ -1,5 +1,6 @@
 package com.ssafy.fleaOn.web.service;
 
+import com.ssafy.fleaOn.web.config.handler.FileHandler;
 import com.ssafy.fleaOn.web.domain.*;
 import com.ssafy.fleaOn.web.dto.AddLiveRequest;
 import com.ssafy.fleaOn.web.dto.CustomOAuth2User;
@@ -26,13 +27,17 @@ public class LiveService {
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
     private final RegionInfoRepository regionInfoRepository;
+    private final FileHandler fileHandler;
 
     @Transactional
-    public Live saveLive(AddLiveRequest addLiveRequest, User user) {
+    public Live saveLive(AddLiveRequest addLiveRequest, User user) throws Exception {
         RegionInfo regionInfo = regionInfoRepository.findByRegionCode(addLiveRequest.getRegionCode())
                 .orElseThrow(()-> new IllegalArgumentException("no products found for region id: " + addLiveRequest.getRegionCode()));
         // Live 엔티티 생성 및 저장
-        Live live = addLiveRequest.toEntity(user, regionInfo);
+
+        String thumbnail = fileHandler.parseFileInfo(addLiveRequest.getLiveThumbnail());
+
+        Live live = addLiveRequest.toEntity(user, regionInfo, thumbnail);
         live = liveRepository.save(live);
 
         // Product 엔티티 생성 및 저장
@@ -50,6 +55,7 @@ public class LiveService {
 
         return live;
     }
+
 
     public Live findById(int id) {
         return liveRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("not found: " + id));

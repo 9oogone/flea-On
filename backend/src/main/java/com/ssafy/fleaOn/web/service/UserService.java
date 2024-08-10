@@ -193,35 +193,32 @@ public class UserService {
     }
 
 
-    public Optional<List<Map<String, Object>>> getUserPurchaseListByUserId(int userId) {
-        Optional<List<Trade>> tradesOptional = tradeRepository.findByBuyerId(userId);
+    public Optional<List<PurchaseResponse>> getUserPurchaseListByUserId(int userId) {
+        Optional<List<Trade>> findTrades = tradeRepository.findByBuyerId(userId);
+        Optional<User> findUser = userRepository.findByUserId(userId);
+        List<PurchaseResponse> purchaseResponseList = new ArrayList<>();
 
         // tradesOptional이 비어 있으면 Optional.empty() 반환
-        if (tradesOptional.isEmpty()) {
+        if (findTrades.isEmpty()) {
             return Optional.empty();
         }
+        for (Trade trade : findTrades.get()) {
+            Optional<Product> findProduct = productRepository.findByProductId(trade.getProduct().getProductId());
+            Optional<TradeDone> findTradeDone = tradeDoneRepository.findByBuyer_UserId(findUser.get().getUserId());
+            TradeDone tradeDone = findTradeDone.orElse(null);
 
-        List<Trade> trades = tradesOptional.get();
-        List<Map<String, Object>> purchaseList = new ArrayList<>();
-
-        for (Trade trade : trades) {
-            Map<String, Object> purchaseResult = new HashMap<>();
-            Optional<Product> productOptional = productRepository.findByProductId(trade.getProduct().getProductId());
-
-            // productOptional이 비어 있지 않으면 값을 가져와서 처리
-            productOptional.ifPresent(product -> {
-                purchaseResult.put("name", product.getName());
-                purchaseResult.put("price", product.getPrice());
-                purchaseResult.put("live_id", trade.getLive().getLiveId());
-            });
-
-            purchaseResult.put("product_id", trade.getProduct().getProductId());
-            purchaseResult.put("trade_place", trade.getTradePlace());
-            purchaseResult.put("trade_time", trade.getTradeTime());
-            purchaseList.add(purchaseResult);
+            PurchaseResponse purchaseResponse = PurchaseResponse.builder()
+                    .productId(findProduct.get().getProductId())
+                    .productName(findProduct.get().getName())
+                    .productPrice(findProduct.get().getPrice())
+                    .liveId(trade.getLive().getLiveId())
+                    .tradePlace(trade.getTradePlace())
+                    .tradeTime(trade.getTradeTime())
+                    .tradeDone(tradeDone)
+                    .build();
+            purchaseResponseList.add(purchaseResponse);
         }
-
-        return Optional.of(purchaseList);
+        return Optional.of(purchaseResponseList);
     }
 
 
@@ -311,28 +308,32 @@ public class UserService {
         return Optional.of(userScrapLiveList);
     }
 
-    public Optional<List<Map<String, Object>>> getUserScrapShortsByUserId(int userId) {
+    public Optional<List<ScrapShortsResponse>> getUserScrapShortsByUserId(int userId) {
         Optional<List<ShortsScrap>> scrapShortsOptional = shortsScrapRepository.findByUser_userId(userId);
         if (scrapShortsOptional.isEmpty()) {
             return Optional.empty();
         }
-        List<ShortsScrap> scrapLiveList = scrapShortsOptional.get();
-        List<Map<String, Object>> userScrapShortList = new ArrayList<>();
+        List<ScrapShortsResponse> scrapShortsResponseList = new ArrayList<>();
+        for (ShortsScrap shortsScrap : scrapShortsOptional.get()) {
+            Optional<Shorts> findShorts = shortsRepository.findByShortsId(shortsScrap.getShorts().getShortsId());
+            Optional<Product> findProduct = productRepository.findByProductId(findShorts.get().getProduct().getProductId());
+            Optional<Live> findLive = liveRepository.findByLiveId(findProduct.get().getLive().getLiveId());
 
-        for (ShortsScrap shortsScrap : scrapLiveList) {
-            Map<String, Object> shortsResult = new HashMap<>();
-            Optional<Shorts> scrapShortsList = shortsRepository.findByShortsId(shortsScrap.getShorts().getShortsId());
-            scrapShortsList.ifPresent(scrapShorts -> {
-                shortsResult.put("length", scrapShorts.getLength());
-                shortsResult.put(("product_id"), scrapShorts.getProduct().getProductId());
-                shortsResult.put(("shorts_id"), scrapShorts.getShortsId());
-                shortsResult.put(("upload_date"), scrapShorts.getUploadDate());
-                shortsResult.put(("shorts_thumbnail"), scrapShorts.getShortsThumbnail());
-                shortsResult.put("video_address", scrapShorts.getVideoAddress());
-            });
-            userScrapShortList.add(shortsResult);
+            ScrapShortsResponse scrapShortsResponse = ScrapShortsResponse.builder()
+                    .length(findShorts.get().getLength())
+                    .productId(findProduct.get().getProductId())
+                    .shortsId(findShorts.get().getShortsId())
+                    .uploadDate(findShorts.get().getUploadDate())
+                    .shortsThumbnail(findShorts.get().getShortsThumbnail())
+                    .videoAddress(findShorts.get().getVideoAddress())
+                    .productPrice(findProduct.get().getPrice())
+                    .productName(findProduct.get().getName())
+                    .tradePlace(findLive.get().getTradePlace())
+                    .build();
+
+            scrapShortsResponseList.add(scrapShortsResponse);
         }
-        return Optional.of(userScrapShortList);
+        return Optional.of(scrapShortsResponseList);
     }
 
     public void addUserExtraInfo(Map<String, Object> extraInfo, String email) {
