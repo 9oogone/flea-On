@@ -6,11 +6,11 @@ import { FavoriteRounded } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { toggleScrap } from "../scrapSlice";
 import { switchTab } from "../../../features/home/contentSlice";
-
+import { formatPrice, extractDong } from "../../../utils/cssUtils";
 const ScrapShorts = ({ items }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  // console.log(items);
+  console.log(items);
   const handleNavigateToShorts = () => {
     dispatch(switchTab("shorts"));
     navigate("/");
@@ -21,7 +21,6 @@ const ScrapShorts = ({ items }) => {
   };
 
   const handleScrapToggle = (id) => {
-    // console.log("찍히니", id);
     dispatch(toggleScrap({ id, type: "shorts" }));
   };
 
@@ -52,16 +51,16 @@ const ScrapShorts = ({ items }) => {
           </Grid>
         ) : (
           items.map((item) => (
-            <Grid key={item.shorts_id} item xs={6} sx={{ textAlign: "center" }}>
+            <Grid key={item.shortsId} item xs={6} sx={{ textAlign: "center" }}>
               <Button
-                onClick={() => handleButtonClick(item.shorts_id)}
+                onClick={() => handleButtonClick(item.shortsId)}
                 sx={{ padding: 0, minWidth: 0 }}
               >
                 <Box
                   sx={{
                     width: "16vh",
                     height: "28vh",
-                    backgroundImage: `url(${item.shorts_thumbnail})`,
+                    backgroundImage: `url(${item.shortsThumbnail})`,
                     backgroundSize: "cover",
                     backgroundPosition: "center",
                     borderRadius: 2,
@@ -89,7 +88,7 @@ const ScrapShorts = ({ items }) => {
                       }}
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleScrapToggle(item.shorts_id);
+                        handleScrapToggle(item.shortsId);
                       }}
                     >
                       <FavoriteRounded sx={{ color: "#FF0B55" }} />
@@ -101,46 +100,56 @@ const ScrapShorts = ({ items }) => {
                       left: "7.50px",
                       width: "100%",
                       display: "flex",
-                      flexDirection: "column",
                     }}
                   >
-                    <Box>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        width: "100%",
+                        flexDirection: "column",
+                      }}
+                    >
                       <Box
                         sx={{
                           display: "flex",
-                          alignItems: "center",
-                          justifyContent: "space-between",
                           width: "100%",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          textAlign: "flex-start",
                         }}
                       >
                         <Typography
                           sx={{
                             color: "white",
+                            width: "70%",
                             fontSize: 14,
                             fontWeight: 600,
+                            textAlign: "left",
+                            textOverflow: "ellipsis",
+                            overflow: "hidden",
+                            whiteSpace: "nowrap",
                           }}
                         >
-                          {/* {item.name} */}
-                          상품명아 와라
+                          {item.productName}
                         </Typography>
                         <Typography
                           sx={{
                             color: "white",
                             fontSize: 8,
                             fontWeight: 400,
+                            mr: 0.6,
                           }}
                         >
                           <LocationOnIcon sx={{ fontSize: "8px" }} />
-                          {/* {item.trade_place} */}
-                          플리동
+                          {extractDong(item.tradePlace)}
                         </Typography>
                       </Box>
                       <Box
                         sx={{
                           display: "flex",
+                          width: "100%",
                           alignItems: "center",
                           justifyContent: "space-between",
-                          width: "100%",
                         }}
                       >
                         <Typography
@@ -148,20 +157,33 @@ const ScrapShorts = ({ items }) => {
                             color: "white",
                             fontSize: 10,
                             fontWeight: 500,
+                            textAlign: "left",
                           }}
                         >
-                          {/* {item.price}원 */}
-                          3000원
+                          {formatPrice(item.productPrice)}
                         </Typography>
-                        <Typography
+                        <Box
                           sx={{
-                            color: "white",
-                            fontSize: 10,
-                            fontWeight: 500,
+                            px: 0.6,
+                            py: 0.3,
+                            backgroundColor: "rgba(128, 128, 128, 0.55)",
+                            borderRadius: 2,
+                            overflow: "hidden",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
                           }}
                         >
-                          {item.length}
-                        </Typography>
+                          <Typography
+                            sx={{
+                              color: "white",
+                              fontSize: 10,
+                              fontWeight: 500,
+                            }}
+                          >
+                            {item.length}
+                          </Typography>
+                        </Box>
                       </Box>
                     </Box>
                   </Box>
