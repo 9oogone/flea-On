@@ -282,8 +282,11 @@ public class OpenviduController {
                 + ", hasAudio=" + hasAudio + ", hasVideo=" + hasVideo + "recordingName="+name+"}");
 
         try {
+            System.out.println("1");
             Recording recording = this.openVidu.startRecording(sessionId, properties);
+            System.out.println("2");
             this.sessionRecordings.put(sessionId, true);
+            System.out.println("3");
             return new ResponseEntity<>(recording, HttpStatus.OK);
         } catch (OpenViduJavaClientException | OpenViduHttpException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
