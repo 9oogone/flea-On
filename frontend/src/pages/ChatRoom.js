@@ -110,7 +110,7 @@ const ChatRoom = () => {
     }
   };
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messageList]);
 
   useEffect(() => {
@@ -145,10 +145,7 @@ const ChatRoom = () => {
   const shouldShowTime = (currentIndex, currentMessage) => {
     if (currentIndex === messageList.length - 1) return true;
     const nextMessage = messageList[currentIndex + 1];
-    return (
-      currentMessage.isSent !== nextMessage.isSent ||
-      currentMessage.chatTime !== nextMessage.chatTime
-    );
+    return currentMessage.isSent !== nextMessage.isSent || currentMessage.chatTime !== nextMessage.chatTime;
   }; // 같은 시간이면서 같은 사람이 보낸 메시지에는 마지막 메시지에만 시간이 나타나도록 함
 
   const sendMessage = () => {
@@ -226,20 +223,24 @@ const ChatRoom = () => {
               </div>
             )}
           </div>
-        ))}
-        <div ref={messagesEndRef} />
-      </ul>
-      <ChatInput
-        message={newMessage}
-        setMessage={setNewMessage}
-        handleSendMessage={sendMessage}
-        setFocus={(focus) => (isFocusedRef.current = focus)}
-        isChatNavOpen={isChatNavOpen}
-        setIsChatNavOpen={setIsChatNavOpen}
-        // isSeller={isSeller}
-        // isBuyer={isBuyer}
-      />
-    </div>
+          {shouldShowTime(index, msg) && (
+            <div className={styles.time}>{new Date(msg.chatTime).toTimeString().slice(0, 5)}</div>
+          )}
+        </div>
+      ))}
+      <div ref={messagesEndRef} />
+    </ul>
+    <ChatInput
+      message={newMessage}
+      setMessage={setNewMessage}
+      handleSendMessage={sendMessage}
+      setFocus={(focus) => (isFocusedRef.current = focus)}
+      isChatNavOpen={isChatNavOpen}
+      setIsChatNavOpen={setIsChatNavOpen}
+      // isSeller={isSeller}
+      // isBuyer={isBuyer}
+    />
+  </div>
   );
 };
 

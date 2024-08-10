@@ -19,8 +19,8 @@ const FleaOn = () => {
     navigate("/mypage/sell-list");
   };
 
-  const handleWatchListClick = () => {
-    navigate("/mypage/watch-list");
+  const handleScrapListClick = () => {
+    navigate("/mypage/scrap-list");
   };
 
   return (
@@ -99,7 +99,7 @@ const FleaOn = () => {
           gap: 1,
           display: "flex",
         }}
-        onClick={handleWatchListClick}
+        onClick={handleScrapListClick}
       >
         <BookmarkBorderOutlined />
         <Typography variant="h5" fontWeight={400} color="black">

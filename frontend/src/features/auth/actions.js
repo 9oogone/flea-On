@@ -10,8 +10,8 @@ export const performLogout = () => (dispatch) => {
 
 export const fetchUserInfo = () => async (dispatch, getState) => {
   const token = process.env.REACT_APP_TOKEN
-  ? process.env.REACT_APP_TOKEN:getState().auth.token;
-
+    ? process.env.REACT_APP_TOKEN
+    : getState().auth.token;
 
   if (!token) {
     console.error("No token found, cannot fetch user info");

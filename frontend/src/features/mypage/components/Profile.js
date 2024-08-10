@@ -38,8 +38,7 @@ const Profile = ({ user }) => {
         </Typography>
         <Typography> 플리온 주민</Typography>
       </Box>
-      <Button
-        onClick={handleProfileEdit}
+      <Button onClick={handleProfileEdit}
         sx={{
           px: 1,
           py: 0.5,
