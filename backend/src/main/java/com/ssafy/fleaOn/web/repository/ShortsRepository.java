@@ -20,4 +20,6 @@ public interface ShortsRepository extends JpaRepository<Shorts, Integer> {
 
     Optional<Shorts> findByProduct_ProductId(int productId);
 
+    Optional<List<Shorts>> findAllByShortsId(int shortsId);
+
 }
