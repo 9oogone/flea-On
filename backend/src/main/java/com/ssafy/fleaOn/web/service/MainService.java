@@ -93,13 +93,14 @@ public class MainService {
         Pageable pageable = PageRequest.of(0, 10);
 
         // findProductByName을 사용하여 Product를 찾습니다.
-        Optional<List<Product>> findProduct = productRepository.findProductByName(name);
+        Optional<List<Product>> findProduct = productRepository.findByNameIgnoreCaseContaining(name);
 
         if (!findProduct.isPresent() || findProduct.get().isEmpty()) {
             // Optional이 비어있거나 리스트가 비어있는 경우 빈 Slice 반환
             return new SliceImpl<>(Collections.emptyList(), pageable, false);
         }
 
+        Optional<List<Category>> findCategory = categoryRepository.findAllByFirstCategoryNameOrSecondCategoryName(name, name);
         // 이름과 카테고리를 기반으로 검색
         Slice<Product> searchResultResponseSlice = productRepository.findByNameContainingOrFirstCategoryIdAndSecondCategoryId(
                 name, findProduct.get().get(0).getFirstCategoryId(), findProduct.get().get(0).getSecondCategoryId(), pageable);
