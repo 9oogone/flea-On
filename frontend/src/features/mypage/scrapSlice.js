@@ -34,7 +34,6 @@ const scrapSlice = createSlice({
         state.shortsScrap.data = state.shortsScrap.data.map((item) =>
           item.id === id ? { ...item, is_scrap: !item.is_scrap } : item
         );
-        console.log("이게 안되는거같은디", state.shortsScrap);
       }
     },
   },
