@@ -18,7 +18,7 @@ import java.util.List;
 @Service
 public class RedisQueueConsumer {
 
-//    private static final Logger logger = LoggerFactory.getLogger(RedisQueueConsumer.class);
+    private static final Logger logger = LoggerFactory.getLogger(RedisQueueConsumer.class);
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
@@ -99,12 +99,12 @@ public class RedisQueueConsumer {
         if (chatAndUserId != null && chatAndUserId.length == 2) {
             int chatId = chatAndUserId[0];
             int userId = chatAndUserId[1];
-//            logger.info("Received BreakTradeRequest for chatId: {} and userId: {}", chatId, userId); // 디버깅 로그
+            logger.info("Received BreakTradeRequest for chatId: {} and userId: {}", chatId, userId); // 디버깅 로그
             List<PurchaseCancleResponse> result = purchaseService.breakTrade(chatId, userId);
-//            logger.info("Processed BreakTradeRequest with result: {}", result); // 디버깅 로그
+            logger.info("Processed BreakTradeRequest with result: {}", result); // 디버깅 로그
             redisTemplate.opsForValue().set("breakTradeResult:" + chatId + ":" + userId, result);
         } else {
-//            logger.info("No BreakTradeRequest found in queue"); // 큐가 비어있는 경우
+            logger.info("No BreakTradeRequest found in queue"); // 큐가 비어있는 경우
         }
     }
 
