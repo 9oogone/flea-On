@@ -18,9 +18,9 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     Optional<List<Product>> findByName(String name);
 
-    Optional<Product> findProductByName (String name);
+    Optional<List<Product>> findProductByName (String name);
 
-    Slice<Product> findByNameContainingOrFirstCategoryIdOrSecondCategoryId(String name, int firstCategoryId, int secondCategoryId, Pageable pageable);
+    Slice<Product> findByNameContainingOrFirstCategoryIdAndSecondCategoryId(String name, int firstCategoryId, int secondCategoryId, Pageable pageable);
 
     Optional<List<Product>> findProductIdsByFirstCategoryIdAndSecondCategoryId(int firstCategoryId, int secondCategoryId);
 
