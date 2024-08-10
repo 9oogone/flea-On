@@ -15,7 +15,14 @@ public class FileHandler {
 
     public String parseFileInfo(MultipartFile multipartFile) throws Exception {
         // 전달되어 온 파일이 존재할 경우
-        if (multipartFile != null && !multipartFile.isEmpty()) {
+        System.out.println(multipartFile);
+        System.out.println(multipartFile.isEmpty());
+        System.out.println(multipartFile != null);
+        if (multipartFile != null) {
+            System.out.println("파일 이름: " + multipartFile.getOriginalFilename());
+            System.out.println("파일 크기: " + multipartFile.getSize());
+            System.out.println("Content-Type: " + multipartFile.getContentType());
+
             String originalFileExtension = null;
             String path = null;
 
@@ -59,9 +66,12 @@ public class FileHandler {
             file.setWritable(true);
             file.setReadable(true);
 
+            System.out.println("파일 저장 성공: " + filePath);
+
             // 파일 경로 반환
             return filePath;
         } else {
+            System.out.println("파일이 없습니다.");
             // 파일이 없을 경우 null 반환
             return null;
         }

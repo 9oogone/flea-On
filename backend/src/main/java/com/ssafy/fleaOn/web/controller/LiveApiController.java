@@ -8,7 +8,6 @@ import com.ssafy.fleaOn.web.domain.User;
 import com.ssafy.fleaOn.web.dto.AddLiveRequest;
 import com.ssafy.fleaOn.web.dto.CustomOAuth2User;
 import com.ssafy.fleaOn.web.dto.LiveDetailResponse;
-import com.ssafy.fleaOn.web.dto.UpdateLiveRequest;
 import com.ssafy.fleaOn.web.service.LiveService;
 import com.ssafy.fleaOn.web.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,22 +16,17 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.multipart.MultipartFile;
-import io.swagger.v3.oas.annotations.Operation;
-
-import java.time.LocalDateTime;
 
 @RestController
 @RequiredArgsConstructor
@@ -42,9 +36,18 @@ public class LiveApiController {
 
     private static final Logger log = LoggerFactory.getLogger(PurchaseApiController.class);
 
-    private final LiveService liveService;
-    private final UserService userService;
-    private final FileHandler fileHandler;
+    private LiveService liveService;
+    private UserService userService;
+    private FileHandler fileHandler;
+
+    @Autowired
+    public void LiveController(FileHandler fileHandler, LiveService liveService, UserService userService) {
+        this.liveService=liveService;
+        this.userService=userService;
+        this.fileHandler = fileHandler;
+    }
+
+
 
     @PostMapping(value = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "라이브 생성", description = "라이브의 정보를 저장하여 새로운 라이브를 생성합니다.")
@@ -65,6 +68,8 @@ public class LiveApiController {
                     String thumbnail = null;
                     // 파일 처리 중 예외가 발생할 수 있으므로 try-catch로 감싸서 처리
                     try {
+                        System.out.println("파일 들어가요");
+                        System.out.println(photoFile);
                         thumbnail = fileHandler.parseFileInfo(photoFile);
                     } catch (Exception e) {
                         log.error("파일 처리 중 오류 발생: {}", e.getMessage());
