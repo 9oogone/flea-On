@@ -28,15 +28,16 @@ const ChatPage = () => {
     }
   }, [status, dispatch]);
 
-  const formatChatTitle = (names) => {
-    if (names.length > 1) {
-      return `${names[0]} 외 ${names.length - 1}`;
-    }
-    return names[0];
+  const formatChatTitle = (chat) => {
+    // if (names.length > 1) {
+    //   return `${names[0]} 외 ${names.length - 1}`;
+    // }
+    return chat.userNickName;
   };
 
-  const handleChatClick = (chatId) => {
-    navigate(`/chat/${chatId}`);
+  const handleChatClick = (chat) => {
+    console.log(chat)
+    navigate(`/chat/${chat.chattingId}`, { state: chat });
   };
 
   return (
@@ -50,20 +51,20 @@ const ChatPage = () => {
       {status === 'failed' && <Typography>Error: {error}</Typography>}
       {status === 'succeeded' && noChats && <Typography>채팅방이 없습니다.</Typography>}
       <List>
-        {chats.map((chat) => (
+        {chats.map((chat,index) => (
           <ListItem
-            key={chat.id}
+            key={chat.id||index}
             button
-            onClick={() => handleChatClick(chat.id)}
+            onClick={() => handleChatClick(chat)}
           >
             <ListItemAvatar>
-              <Avatar src={chat.thumbnail} />
+              <Avatar src={chat.profile} />
             </ListItemAvatar>
             <ListItemText
               primary={
                 <Box display="flex" alignItems="center">
                   <Typography variant="body1">
-                    {formatChatTitle(chat.name)}
+                    {formatChatTitle(chat)}
                   </Typography>
                   <Typography
                     variant="caption"
@@ -87,7 +88,7 @@ const ChatPage = () => {
                     variant="body2"
                     color="textPrimary"
                   >
-                    {chat.last_chat}
+                    {chat.recentMessage}
                   </Typography>
                   <Typography
                     component="span"

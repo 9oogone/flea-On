@@ -2,7 +2,7 @@ import React from 'react';
 import styles from '../styles/ProfileHeader.module.css';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
-const ProfileHeader = () => {
+const ProfileHeader = ({chat}) => {
   const goBack = () => {
     // 뒤로가기 버튼 클릭 시 실행할 함수
     window.history.back();
@@ -14,8 +14,8 @@ const ProfileHeader = () => {
         <ArrowBackIcon />
       </button>
       <div className={styles.headerContainer}>
-        <img src="https://picsum.photos/100/100" alt="Profile" className={styles.profileImage} />
-        <span className={styles.nickname}>초합금 고라니</span>
+        <img src={chat.profile} alt="Profile" className={styles.profileImage} />
+        <span className={styles.nickname}>{chat.userNickName}</span>
       </div>
     </div>
   );
