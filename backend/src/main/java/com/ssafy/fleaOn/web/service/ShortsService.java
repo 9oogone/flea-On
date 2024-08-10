@@ -4,6 +4,7 @@ import com.ssafy.fleaOn.web.domain.*;
 import com.ssafy.fleaOn.web.domain.Product;
 import com.ssafy.fleaOn.web.domain.Shorts;
 import com.ssafy.fleaOn.web.domain.User;
+import com.ssafy.fleaOn.web.dto.ShortsChatRequest;
 import com.ssafy.fleaOn.web.dto.ShortsRequest;
 import com.ssafy.fleaOn.web.repository.*;
 import com.ssafy.fleaOn.web.repository.ProductRepository;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -24,23 +26,26 @@ public class ShortsService {
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
     private final ShortsScrapRepository shortsScrapRepository;
+    private final ShortsChattingRepository shortsChattingRepository;
 
     @Autowired
-    public ShortsService(ShortsRepository shortsRepository, ProductRepository productRepository, UserRepository userRepository, ShortsScrapRepository shortsScrapRepository) {
+    public ShortsService(ShortsRepository shortsRepository, ProductRepository productRepository, UserRepository userRepository, ShortsScrapRepository shortsScrapRepository, ShortsChattingRepository shortsChattingRepository) {
         this.shortsRepository = shortsRepository;
         this.productRepository = productRepository;
         this.userRepository = userRepository;
         this.shortsScrapRepository = shortsScrapRepository;
+        this.shortsChattingRepository = shortsChattingRepository;
     }
 
     @Transactional
-    public Shorts saveShorts(ShortsRequest request) {
+    public void saveShorts(ShortsRequest request) {
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
 
         User seller = userRepository.findById(product.getSeller().getUserId()).orElseThrow(() -> new IllegalArgumentException("Invalid seller"));
         Shorts shorts = request.toEntity(product, seller);
-        return shortsRepository.save(shorts);
+        shortsRepository.save(shorts);
+        saveShortsChatting(request.getShortsChatRequests(),shorts.getShortsId());
     }
 
     public Optional<Shorts> getShorts(int shortsId) {
@@ -94,5 +99,16 @@ public class ShortsService {
             shortsDetails.put("user_id", shorts.get().getUser().getUserId());
         }
         return shortsDetails;
+    }
+
+    public void saveShortsChatting(List<ShortsChatRequest> request, int shortsId) {
+        for (ShortsChatRequest shortsChatRequest : request) {
+            Shorts shorts = shortsRepository.findById(shortsId).orElseThrow(() -> new IllegalArgumentException("Invalid shorts ID"));
+            User user = userRepository.findById(shortsChatRequest.getUserId()).orElseThrow(() -> new IllegalArgumentException("Invalid user"));
+            System.out.println(shorts.getShortsId());
+            System.out.println(user.getUserId());
+            ShortsChatting shortsChatting = shortsChatRequest.toEntity(shorts, user);
+            shortsChattingRepository.save(shortsChatting);
+        }
     }
 }

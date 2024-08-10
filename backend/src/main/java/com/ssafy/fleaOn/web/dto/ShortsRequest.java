@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -20,6 +21,7 @@ public class ShortsRequest {
     private String length;
     private String videoAddress;
     private int productId;
+    private List<ShortsChatRequest> shortsChatRequests;
 
     public Shorts toEntity(Product product, User seller){
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
@@ -31,6 +33,7 @@ public class ShortsRequest {
                 .videoAddress(videoAddress)
                 .product(product)
                 .seller(seller)
+                .uploadDate(LocalDateTime.now())
                 .build();
     }
 }

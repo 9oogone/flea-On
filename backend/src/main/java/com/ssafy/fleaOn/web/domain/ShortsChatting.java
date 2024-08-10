@@ -9,6 +9,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -19,6 +20,7 @@ import java.time.LocalDateTime;
 public class ShortsChatting {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "live_chat_id")
     private int liveChatId;
 
@@ -28,13 +30,21 @@ public class ShortsChatting {
     @Column(name = "time")
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    private LocalDateTime time;
+    private LocalTime time;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "shorts_id", insertable = false, updatable = false)
+    @JoinColumn(name = "shorts_id", nullable = false)
     private Shorts shorts;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @Builder
+    public ShortsChatting(String content, LocalTime time, Shorts shorts, User user) {
+        this.content = content;
+        this.time = time;
+        this.shorts = shorts;
+        this.user = user;
+    }
 }
