@@ -454,7 +454,7 @@ const OpenVideo = () => {
             }}
           >
             <IconButton sx={{ marginLeft: "90%" }} onClick={() => navigate(-1)}>
-              <CloseIcon />
+              <CloseIcon color="google" />
             </IconButton>
             <IconButton id="buttonSwitchCamera" onClick={switchCamera}>
               <FlipCameraAndroidIcon color="google" />
@@ -469,92 +469,41 @@ const OpenVideo = () => {
                 padding: 1, // 메시지 목록의 패딩
               }}
             >
-              {/* <Box
-                sx={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  height: 20, // 흐림 효과의 높이
-                  background:
-                    "linear-gradient(to bottom, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0))", // 흐림 효과
-                  zIndex: 1,
-                }}
-              /> */}
-              {messages.map((msg, index) =>
-                msg.userId === user.userId ? (
+              {messages.map((msg, index) => (
+                <Box
+                  key={index}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "flex-start",
+                    marginBottom: 2, // 더 나은 가독성을 위한 여백
+                  }}
+                >
+                  <Avatar
+                    src={msg.profile}
+                    alt={msg.from}
+                    sx={{ marginRight: 2, width: 32, height: 32 }} // 깨끗한 외관을 위한 작은 아바타
+                  />
                   <Box
-                    key={index}
                     sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "flex-end",
-                      marginBottom: 2, // 더 나은 가독성을 위한 여백
+                      backgroundColor: "rgba(0, 0, 0, 0.12)",
+                      borderRadius: "16px", // 둥근 모서리
+                      padding: "8px 16px", // 일정한 패딩
+                      maxWidth: "60%", // 메시지 너비 제한
                     }}
                   >
-                    <Box
-                      sx={{
-                        backgroundColor: "rgba(0, 0, 0, 0.12)", // 피그마 스타일의 밝은 회색 배경
-                        borderRadius: "16px", // 둥근 모서리
-                        padding: "8px 16px", // 일정한 패딩
-                        maxWidth: "60%", // 메시지 너비 제한
-                        boxShadow: "0 1px 3px rgba(0, 0, 0, 0.12)", // 깊이를 위한 미묘한 그림자
-                      }}
+                    <Typography
+                      variant="body2"
+                      sx={{ fontWeight: "bold", color: "white" }}
                     >
-                      <Typography
-                        variant="body2"
-                        sx={{ fontWeight: "bold", color: "white" }}
-                      >
-                        {msg.from}
-                      </Typography>
-                      <Typography variant="body1" sx={{ color: "white" }}>
-                        {msg.message}
-                      </Typography>
-                    </Box>
-                    <Avatar
-                      src={msg.profile}
-                      alt={msg.from}
-                      sx={{ marginLeft: 2, width: 32, height: 32 }} // 깨끗한 외관을 위한 작은 아바타
-                    />
+                      {msg.from}
+                    </Typography>
+                    <Typography variant="body1" sx={{ color: "white" }}>
+                      {msg.message}
+                    </Typography>
                   </Box>
-                ) : (
-                  // 다른 사람이 보낸 메시지
-                  <Box
-                    key={index}
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "flex-start",
-                      marginBottom: 2, // 더 나은 가독성을 위한 여백
-                    }}
-                  >
-                    <Avatar
-                      src={msg.profile}
-                      alt={msg.from}
-                      sx={{ marginRight: 2, width: 32, height: 32 }} // 깨끗한 외관을 위한 작은 아바타
-                    />
-                    <Box
-                      sx={{
-                        backgroundColor: "#e1f5fe", // 피그마 스타일의 밝은 파란색 배경
-                        borderRadius: "16px", // 둥근 모서리
-                        padding: "8px 16px", // 일정한 패딩
-                        maxWidth: "60%", // 메시지 너비 제한
-                        boxShadow: "0 1px 3px rgba(0, 0, 0, 0.12)", // 깊이를 위한 미묘한 그림자
-                      }}
-                    >
-                      <Typography
-                        variant="body2"
-                        sx={{ fontWeight: "bold", color: "#333" }}
-                      >
-                        {msg.from}
-                      </Typography>
-                      <Typography variant="body1" sx={{ color: "#555" }}>
-                        {msg.message}
-                      </Typography>
-                    </Box>
-                  </Box>
-                )
-              )}
+                </Box>
+              ))}
             </Box>
             <Box
               sx={{
@@ -569,9 +518,19 @@ const OpenVideo = () => {
                 type="text"
                 value={newMessage}
                 color="google"
-                InputProps={{ sx: { borderRadius: "99px", color: "white" } }}
+                InputProps={{
+                  sx: {
+                    borderRadius: "99px",
+                    color: "white",
+                  },
+                }}
                 onChange={(e) => setNewMessage(e.target.value)}
                 fullWidth
+                sx={{
+                  paddingTop: "5px",
+                  paddingBottom: "5px",
+                  color: "white",
+                }}
               />
               <IconButton onClick={sendMessage}>
                 <SendIcon color="google" />
