@@ -1,49 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { fetchShorts } from "./actions";
 
 const initialState = {
   currentShort: null,
-  shorts: [
-    {
-      id: 13,
-      name: "키티템 정리",
-      price: 3000,
-      trade_place: "덕명동",
-      length: "01:30",
-      is_scrap: false,
-      thumbnail: "https://picsum.photos/160/250",
-      shorts_id: 1,
-    },
-    {
-      id: 14,
-      name: "키티템 정리",
-      price: 3000,
-      trade_place: "덕명동",
-      length: "01:30",
-      is_scrap: false,
-      thumbnail: "https://picsum.photos/160/250",
-      shorts_id: 1,
-    },
-    {
-      id: 3,
-      name: "키티템 정리",
-      price: 3000,
-      trade_place: "덕명동",
-      length: "01:30",
-      is_scrap: true,
-      thumbnail: "https://picsum.photos/160/250",
-      shorts_id: 2,
-    },
-    {
-      id: 4,
-      name: "키티템 정리",
-      price: 3000,
-      trade_place: "덕명동",
-      length: "01:30",
-      is_scrap: true,
-      thumbnail: "https://picsum.photos/160/250",
-      shorts_id: 2,
-    },
-  ],
+  shorts: [],
 };
 
 const shortsSlice = createSlice({
@@ -54,7 +14,9 @@ const shortsSlice = createSlice({
       state.currentShort = action.payload;
     },
     setShorts: (state, action) => {
+      console.log(action.payload);
       state.shorts = action.payload;
+      console.log(state.shorts);
     },
     toggleScrap: (state, action) => {
       const { shortsId } = action.payload;
@@ -62,6 +24,20 @@ const shortsSlice = createSlice({
         short.id === shortsId ? { ...short, is_scrap: !short.is_scrap } : short
       );
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchShorts.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchShorts.fulfilled, (state, action) => {
+        state.loading = false;
+        state.shorts = action.payload;
+      })
+      .addCase(fetchShorts.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      });
   },
 });
 
