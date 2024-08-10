@@ -88,11 +88,11 @@ public class MainApiController {
             User user = userService.findByEmail(email);
             if (user != null) {
                 try {
-                    Slice<Map<String, Object>> searchResultSlice = mainService.getSearchResultByName(name, user.getUserId());
+                    Slice<List<Map<String, Object>>> searchResultSlice = mainService.getSearchResultByName(name, user.getUserId());
                     if (searchResultSlice.isEmpty()) {
                         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No result data found");
                     }
-                    return ResponseEntity.status(HttpStatus.OK).body(searchResultSlice);
+                    return ResponseEntity.status(HttpStatus.OK).body(searchResultSlice.getContent());
                 } catch (Exception e) {
                     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while fetching search result data: " + e.getMessage());
                 }
