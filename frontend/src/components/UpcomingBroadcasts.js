@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Box, Typography, Container, Button } from "@mui/material";
 import UpcomingModal from "./UpcomingModal"; // 모달 컴포넌트 임포트
 
-const UpcomingBroadcasts = ({ items }) => {
+const UpcomingBroadcasts = ({ items = [] }) => {
   const [open, setOpen] = useState(false);
   const [modalLiveDate, setModalLiveDate] = useState("");
 
@@ -15,7 +15,7 @@ const UpcomingBroadcasts = ({ items }) => {
 
   return (
     <Container sx={{ margin: "8px" }}>
-      <Typography variant="h5" gutterBottom>
+      <Typography variant="h6" gutterBottom sx={{ marginTop: '12%' }}>
         방송예정상품
       </Typography>
       <Box

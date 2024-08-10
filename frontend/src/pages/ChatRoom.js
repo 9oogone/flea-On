@@ -37,6 +37,7 @@ const ChatRoom = () => {
   const isFocusedRef = useRef(false);
   const [newMessage, setNewMessage] = useState("");
   const user = useSelector((state) => state.auth.user);
+  const [isBuyer, setIsBuyer] = useState(false);
   let publisher;
   const session = useRef();
   useDidMountEffect(() => {
@@ -67,6 +68,8 @@ const ChatRoom = () => {
 
   useEffect(() => {
     dispatch(fetchChatRoom(chatID)).then((data) => {
+      console.log(data);
+      setIsBuyer(data.payload.buyer);
       if (data.payload && data.payload.messageResponses) {
         const updatedMessages = data.payload.messageResponses.map((message) => {
           let isSent = message.writerId === user.userId;
@@ -147,7 +150,7 @@ const ChatRoom = () => {
     const nextMessage = messageList[currentIndex + 1];
     return (
       currentMessage.isSent !== nextMessage.isSent ||
-      currentMessage.chatTime !== nextMessage.chatTime
+      new Date(currentMessage.chatTime).toTimeString().slice(0, 5) !== new Date(nextMessage.chatTime).toTimeString().slice(0, 5)
     );
   }; // 같은 시간이면서 같은 사람이 보낸 메시지에는 마지막 메시지에만 시간이 나타나도록 함
 
@@ -234,11 +237,13 @@ const ChatRoom = () => {
         <div ref={messagesEndRef} />
       </ul>
       <ChatInput
+        chatID={chatID}
         message={newMessage}
         setMessage={setNewMessage}
         handleSendMessage={sendMessage}
         setFocus={(focus) => (isFocusedRef.current = focus)}
         isChatNavOpen={isChatNavOpen}
+        isBuyer={isBuyer}
         setIsChatNavOpen={setIsChatNavOpen}
         // isSeller={isSeller}
         // isBuyer={isBuyer}
