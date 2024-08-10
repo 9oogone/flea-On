@@ -491,4 +491,10 @@ public class UserService {
                 .build();
         return commerceLiveExpectedResponse;
     }
+
+    public User updateFcmToken(User user, String fcmToken) {
+        user.updateFcm(fcmToken);
+        userRepository.save(user);
+        return user;
+    }
 }
