@@ -116,16 +116,4 @@ public class ShortsApiController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
-
-    @PostMapping("/saveChat")
-    @Operation(summary = "숏츠 채팅 정보 저장", description = "숏츠 채팅을 받아 저장합니다.")
-    public ResponseEntity<?> saveShortsChatting(@RequestBody List<ShortsChatRequest> request) {
-        try {
-            shortsService.saveShortsChatting(request);
-            return ResponseEntity.status(HttpStatus.CREATED).body("저장 완료");
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return new ResponseEntity<>("숏츠 생성 중 오류가 발생하였습니다: " + ex.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-    }
 }
