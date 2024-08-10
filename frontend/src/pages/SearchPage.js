@@ -23,48 +23,52 @@ const SearchPage = () => {
     }
   }, [dispatch, query]);
 
+  const getErrorMessage = () => {
+    if (error === "500") {
+      return "검색 결과가 없습니다";
+    }
+    return `에러가 발생했습니다: ${error}`;
+  };
+
   return (
-    <Container>
-      <Typography variant="h4" gutterBottom>
-        검색 결과: {query}
-      </Typography>
-
+    <Container sx={{ mt: 10 }}>
       {loading && <CircularProgress />}
-      {error && <Typography color="error">에러가 발생했습니다: {error}</Typography>}
-
-      <Grid container spacing={3}>
-        <UpcomingBroadcasts items={results.upcoming} />
-        <Grid item xs={12}>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <Typography variant="h5">쇼츠</Typography>
-            <Button onClick={() => navigate(`/search/shorts?query=${query}`)}>
-              모두보기
-            </Button>
-          </Box>
+      {error && <Typography color="error">{getErrorMessage()}</Typography>}
+      {!loading && !error && (
+        <Grid container spacing={3}>
+          <UpcomingBroadcasts items={results.upcoming} />
+          <Grid item xs={12}>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Typography variant="h5">쇼츠</Typography>
+              <Button onClick={() => navigate(`/search/shorts?query=${query}`)}>
+                모두보기
+              </Button>
+            </Box>
+          </Grid>
+          <Shorts items={results.shorts.slice(0, 2)} />
+          <Grid item xs={12}>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Typography variant="h5">라이브</Typography>
+              <Button onClick={() => navigate(`/search/live?query=${query}`)}>
+                모두보기
+              </Button>
+            </Box>
+          </Grid>
+          <LiveBroadcasts items={results.live.slice(0, 2)} />
         </Grid>
-        <Shorts items={results.shorts.slice(0, 2)} />
-        <Grid item xs={12}>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <Typography variant="h5">라이브</Typography>
-            <Button onClick={() => navigate(`/search/live?query=${query}`)}>
-              모두보기
-            </Button>
-          </Box>
-        </Grid>
-        <LiveBroadcasts items={results.live.slice(0, 2)} />
-      </Grid>
+      )}
     </Container>
   );
 };

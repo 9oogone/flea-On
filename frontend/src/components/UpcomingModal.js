@@ -1,6 +1,6 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-// import { toggleScrap } from "../features/live/scrapSlice";
+import { toggleScrap } from "../features/mypage/scrapSlice";
 import { Box, Typography, Modal, List, ListItem } from "@mui/material";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
@@ -11,20 +11,21 @@ const UpcomingModal = ({
   open,
   handleClose,
   liveDate,
-  products= [], // 오류 때문에 일단 = [] 넣음 상품이 없을 시 빈 배열
+  products=[],
   title,
   thumbnail,
   author,
   tradePlace,
 }) => {
   const dispatch = useDispatch();
-  const isScrap = useSelector(
-    (state) => state.scrap.live.find((item) => item.id === id)?.is_scrap
+  const isScrap = useSelector((state) =>
+    Array.isArray(state.scrap.live)
+      ? state.scrap.live.find((item) => item.id === id)?.is_scrap
+      : false
   );
-
-  // const handleScrapToggle = () => {
-  //   dispatch(toggleScrap({ id }));
-  // };
+  const handleScrapToggle = () => {
+    dispatch(toggleScrap({ id }));
+  };
   return (
     <Modal
       open={open}
@@ -46,8 +47,7 @@ const UpcomingModal = ({
             <div className={styles.textContainer}>
               <Typography variant="h6" component="h2" className={styles.title}>
                 <span className={styles.titleText}>{title}</span>
-                <Box>
-                  {/* <Box onClick={handleScrapToggle}> */}
+                <Box onClick={handleScrapToggle}>
                   {isScrap ? (
                     <BookmarkIcon className={styles.bookmarkIcon} />
                   ) : (
