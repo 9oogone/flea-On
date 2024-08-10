@@ -3,27 +3,34 @@ import { Box, Typography } from "@mui/material";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import { format, parseISO, isToday, isTomorrow } from "date-fns";
-// import { toggleScrap } from "../features/live/scrapSlice";
 
 const UpcomingHeader = ({ liveDate, isScrap }) => {
-  // liveDate를 Date 객체로 변환
-  const date = parseISO(liveDate);
-  // 현재 날짜와 비교하여 형식 결정
+  let date;
   let formattedDate;
-  if (isToday(date)) {
-    formattedDate = "오늘";
-  } else if (isTomorrow(date)) {
-    formattedDate = "내일";
-  } else {
-    formattedDate = format(date, "MM/dd"); // 예: 11/30
+  let formattedTime;
+
+  // liveDate가 유효한지 확인하고 변환
+  try {
+    date = parseISO(liveDate);
+    if (isNaN(date)) throw new Error("Invalid date");
+
+    // 현재 날짜와 비교하여 형식 결정
+    if (isToday(date)) {
+      formattedDate = "오늘";
+    } else if (isTomorrow(date)) {
+      formattedDate = "내일";
+    } else {
+      formattedDate = format(date, "MM/dd"); // 예: 11/30
+    }
+
+    // 시간 포맷 설정 (오전/오후 00시 00분)
+    formattedTime = format(date, "a hh시 mm분");
+  } catch (error) {
+    console.error("Invalid date format:", liveDate);
+    formattedDate = "Invalid date";
+    formattedTime = "";
   }
 
-  // 시간 포맷 설정 (오전/오후 00시 00분)
-  const formattedTime = format(date, "a hh시 mm분");
-
-  // const handleScrapToggle = () => {
-  //   dispatch(toggleScrap({ id }));
-  // };
   return (
     <Box>
       <Box
