@@ -2,6 +2,8 @@ package com.ssafy.fleaOn.web.repository;
 
 import com.ssafy.fleaOn.web.domain.Trade;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -35,13 +37,11 @@ public interface TradeRepository extends JpaRepository<Trade, Integer> {
 
      void deleteByShorts_ShortsId(int shortsId);
 
-     int countByBuyerIdOrSellerIdAndTradeDate(int buyerId, int sellerId, LocalDate tradeDate);
 
-     int countBySellerIdAndTradeDate(int sellerId, LocalDate tradeDate);
+    @Query("SELECT COUNT(t) FROM Trade t WHERE (t.buyerId = :userId OR t.sellerId = :userId) AND t.tradeDate BETWEEN :startOfWeek AND :endOfWeek")
+    int countByBuyerIdOrSellerIdAndTradeDateBetween(@Param("userId") int userId, @Param("startOfWeek") LocalDate startOfWeek, @Param("endOfWeek") LocalDate endOfWeek);
 
-     int countByBuyerIdAndTradeDate(int buyerId, LocalDate tradeDate);
+    int countBySellerIdAndTradeDateBetween(int userId, LocalDate startOfWeek, LocalDate endOfWeek);
 
-     Optional<Trade> findByShorts_shortsId(int shortsId);
-
-
+    int countByBuyerIdAndTradeDateBetween(int userId, LocalDate startOfWeek, LocalDate endOfWeek);
 }
