@@ -95,17 +95,21 @@ public class RedisQueueConsumer {
     // 주기적으로 거래 파기 요청을 처리하는 메서드
     @Scheduled(fixedDelay = 1000)
     public void handleBreakTradeRequest() {
+        // Retrieve the array of integers from Redis
         int[] chatAndUserId = (int[]) redisTemplate.opsForList().leftPop("breakTradeQueue");
         if (chatAndUserId != null && chatAndUserId.length == 2) {
             int chatId = chatAndUserId[0];
             int userId = chatAndUserId[1];
             logger.info("Received BreakTradeRequest for chatId: {} and userId: {}", chatId, userId); // 디버깅 로그
+
+            // Process the break trade request
             List<PurchaseCancleResponse> result = purchaseService.breakTrade(chatId, userId);
             logger.info("Processed BreakTradeRequest with result: {}", result); // 디버깅 로그
-            redisTemplate.opsForValue().set("breakTradeResult:" + chatId + ":" + userId, result);
+
+            // Save the result back to Redis
+            redisTemplate.opsForValue().set("breakTradeResult:" + chatId, result);
         } else {
             logger.info("No BreakTradeRequest found in queue"); // 큐가 비어있는 경우
         }
     }
-
 }
