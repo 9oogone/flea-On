@@ -30,13 +30,11 @@ public class LiveService {
     private final FileHandler fileHandler;
 
     @Transactional
-    public Live saveLive(AddLiveRequest addLiveRequest, User user) throws Exception {
+    public Live saveLive(AddLiveRequest addLiveRequest, User user, String thumbnail) throws Exception {
         System.out.println(addLiveRequest.getRegionCode());
         RegionInfo regionInfo = regionInfoRepository.findByRegionCode(addLiveRequest.getRegionCode())
                 .orElseThrow(()-> new IllegalArgumentException("no products found for region id: " + addLiveRequest.getRegionCode()));
         // Live 엔티티 생성 및 저장
-
-        String thumbnail = fileHandler.parseFileInfo(addLiveRequest.getLiveThumbnail());
 
         Live live = addLiveRequest.toEntity(user, regionInfo, thumbnail);
         live = liveRepository.save(live);
@@ -62,39 +60,39 @@ public class LiveService {
         return liveRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("not found: " + id));
     }
 
-    @Transactional
-    public Live updateLive(int liveId, UpdateLiveRequest request, User user) {
-        // Live 수정
-        Live live = liveRepository.findById(liveId)
-                .orElseThrow(() -> new IllegalArgumentException("not found : " + liveId));
-        authorizeArticleAuthor(live);
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-        LocalDateTime parsedDate = LocalDateTime.parse(request.getLiveDate(), formatter);
-        RegionInfo regionInfo = regionInfoRepository.findByRegionCode(request.getRegionCode())
-                .orElseThrow(()-> new IllegalArgumentException("no products found for region id: " + request.getRegionCode()));
-        live.update(request.getTitle(), parsedDate, request.getLiveThumbnail(), request.getTradePlace(), regionInfo);
-
-        // 라이브 내의 Product 수정
-        List<Product> deleteProducts = productRepository.findByLive_LiveId(liveId).orElseThrow(() -> new IllegalArgumentException("no products found for live id: " + liveId));
-        productRepository.deleteAll(deleteProducts);
-        // Product 엔티티 생성 및 저장
-        Live finalLive = live;
-        List<Product> products = request.getProduct().stream()
-                .map(addAddProductRequest -> addAddProductRequest.toEntity(finalLive, user))
-                .collect(Collectors.toList());
-
-        // 라이브 내의 live trade time 수정
-        List<LiveTradeTime> deleteLiveTradeTimes = liveTradeTimeRepository.findByLive_LiveId(liveId).orElseThrow(() -> new IllegalArgumentException("no teade times found for live id: " + liveId));
-        liveTradeTimeRepository.deleteAll(deleteLiveTradeTimes);
-        // LiveTradeTime 엔티티 생성 및 저장
-        List<LiveTradeTime> liveTradeTimes = request.getLiveTradeTime().stream()
-                .map(addLiveTradeRequest -> addLiveTradeRequest.toEntity(finalLive))
-                .toList();
-
-        productRepository.saveAll(products);
-        liveTradeTimeRepository.saveAll(liveTradeTimes);
-        return live;
-    }
+//    @Transactional
+//    public Live updateLive(int liveId, UpdateLiveRequest request, User user) {
+//        // Live 수정
+//        Live live = liveRepository.findById(liveId)
+//                .orElseThrow(() -> new IllegalArgumentException("not found : " + liveId));
+//        authorizeArticleAuthor(live);
+//        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+//        LocalDateTime parsedDate = LocalDateTime.parse(request.getLiveDate(), formatter);
+//        RegionInfo regionInfo = regionInfoRepository.findByRegionCode(request.getRegionCode())
+//                .orElseThrow(()-> new IllegalArgumentException("no products found for region id: " + request.getRegionCode()));
+//        live.update(request.getTitle(), parsedDate, request.getLiveThumbnail(), request.getTradePlace(), regionInfo);
+//
+//        // 라이브 내의 Product 수정
+//        List<Product> deleteProducts = productRepository.findByLive_LiveId(liveId).orElseThrow(() -> new IllegalArgumentException("no products found for live id: " + liveId));
+//        productRepository.deleteAll(deleteProducts);
+//        // Product 엔티티 생성 및 저장
+//        Live finalLive = live;
+//        List<Product> products = request.getProduct().stream()
+//                .map(addAddProductRequest -> addAddProductRequest.toEntity(finalLive, user))
+//                .collect(Collectors.toList());
+//
+//        // 라이브 내의 live trade time 수정
+//        List<LiveTradeTime> deleteLiveTradeTimes = liveTradeTimeRepository.findByLive_LiveId(liveId).orElseThrow(() -> new IllegalArgumentException("no teade times found for live id: " + liveId));
+//        liveTradeTimeRepository.deleteAll(deleteLiveTradeTimes);
+//        // LiveTradeTime 엔티티 생성 및 저장
+//        List<LiveTradeTime> liveTradeTimes = request.getLiveTradeTime().stream()
+//                .map(addLiveTradeRequest -> addLiveTradeRequest.toEntity(finalLive))
+//                .toList();
+//
+//        productRepository.saveAll(products);
+//        liveTradeTimeRepository.saveAll(liveTradeTimes);
+//        return live;
+//    }
 
     @Transactional
     public void delete(int id) {

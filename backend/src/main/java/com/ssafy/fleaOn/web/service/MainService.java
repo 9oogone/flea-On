@@ -26,6 +26,7 @@ public class MainService {
     private final ProductRepository productRepository;
 
     private final RegionInfoRepository regionInfoRepository;
+
     private final UserRegionRepository userRegionRepository;
 
     public Slice<MainLiveResponse> getMainLiveListByRegionCode(List<UserRegion> findUserRegionList, LocalDateTime currentTime) {
