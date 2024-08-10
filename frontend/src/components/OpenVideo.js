@@ -85,7 +85,11 @@ const OpenVideo = () => {
   const [mainStreamManager, setMainStreamManager] = useState(undefined);
   const [sttValue, setSttValue] = useState("");
   const [publisher, setPublisher] = useState(undefined);
+
   const [currentRecodingIndex, setCurrentRecordingIndex] = useState("");
+
+  const [isFrontCamera, setIsFrontCamera] = useState(false);
+
   //거래장소시간 선택 모달
   const [open, setOpen] = useState(false);
   const [place, setPlace] = useState(dummyDatas.place);
@@ -228,7 +232,7 @@ const OpenVideo = () => {
       listen({ continuous: true });
     },
   });
-  const [isFrontCamera, setIsFrontCamera] = useState(false);
+
   function switchCamera() {
     OV.current.getDevices().then((devices) => {
       var videoDevices = devices.filter(
@@ -259,6 +263,7 @@ const OpenVideo = () => {
       }
     });
   }
+
 
   const fetchProductList = async (sessionName) => {
     try {
