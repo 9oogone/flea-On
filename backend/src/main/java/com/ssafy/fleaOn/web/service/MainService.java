@@ -29,6 +29,8 @@ public class MainService {
 
     private final UserRegionRepository userRegionRepository;
 
+    private final TradeRepository tradeRepository;
+
     public Slice<MainLiveResponse> getMainLiveListByRegionCode(List<UserRegion> findUserRegionList, LocalDateTime currentTime) {
         Pageable pageable = PageRequest.of(0, 10);
         List<MainLiveResponse> mainLiveResponseList = new ArrayList<>();
@@ -89,98 +91,64 @@ public class MainService {
         return Optional.of(categoryRepository.findAll());
     }
 
-    public Slice<List<Map<String, Object>>> getSearchResultByName(String name, int userId) {
+    public Slice<Map<String, Object>> getSearchResultByName(String name, int userId) {
         Pageable pageable = PageRequest.of(0, 10);
+        Slice<Product> findProductSlice = productRepository.findByNameIgnoreCaseContaining(name, pageable);
 
-        // findProductByName을 사용하여 Product를 찾습니다.
-        Optional<List<Product>> findProduct = productRepository.findByNameIgnoreCaseContaining(name);
+        List<ResultUpcomingResponse> upcomingResponseList = new ArrayList<>();
+        List<ResultLiveResponse> liveResponseList = new ArrayList<>();
+        List<ResultShortsResponse> shortsResponseList = new ArrayList<>();
 
-        if (!findProduct.isPresent() || findProduct.get().isEmpty()) {
-            // Optional이 비어있거나 리스트가 비어있는 경우 빈 Slice 반환
-            return new SliceImpl<>(Collections.emptyList(), pageable, false);
+        for (Product product : findProductSlice) {
+            Live live = liveRepository.findByLiveId(product.getLive().getLiveId()).orElse(null);
+            Shorts shorts = shortsRepository.findByProduct_ProductId(product.getProductId()).orElse(null);
+
+            if (live != null && shorts != null) {
+                if (live.getIsLive() == 0) {
+                    ResultUpcomingResponse upcomingResponse = ResultUpcomingResponse.fromEntity(live, product);
+                    upcomingResponseList.add(upcomingResponse);
+                } else if (live.getIsLive() == 1) {
+                    ResultLiveResponse liveResponse = ResultLiveResponse.fromEntity(live, product);
+                    liveResponseList.add(liveResponse);
+                }
+                ResultShortsResponse shortsResponse = ResultShortsResponse.fromEntity(shorts, product, live);
+                shortsResponseList.add(shortsResponse);
+            }
         }
 
-        Optional<List<Category>> findCategory = categoryRepository.findAllByFirstCategoryNameOrSecondCategoryName(name, name);
-        // 이름과 카테고리를 기반으로 검색
-        Slice<Product> searchResultResponseSlice = productRepository.findByNameContainingOrFirstCategoryIdAndSecondCategoryId(
-                name, findProduct.get().get(0).getFirstCategoryId(), findProduct.get().get(0).getSecondCategoryId(), pageable);
+        Slice<Category> categorySlice = categoryRepository.findByFirstCategoryNameContainingOrSecondCategoryNameContaining(name, name, pageable);
+        for (Category category : categorySlice) {
+            Slice<Product> findCategoryProductSlice = productRepository.findByFirstCategoryIdOrSecondCategoryId(category.getFirstCategoryId(), category.getSecondCategoryId(), pageable);
+            for (Product product : findCategoryProductSlice) {
+                Live live = liveRepository.findByLiveId(product.getLive().getLiveId()).orElse(null);
+                Shorts shorts = shortsRepository.findByProduct_ProductId(product.getProductId()).orElse(null);
 
-        List<Map<String, Object>> resultLiveMapList = new ArrayList<>();
-        List<Map<String, Object>> resultUpcomingMapLlist = new ArrayList<>();
-        List<Map<String, Object>> resultShortsMapList = new ArrayList<>();
-
-        List<List<Map<String, Object>>> resultList = new ArrayList<>();
-
-        // 검색 결과를 순회하며 필요한 데이터를 추출합니다.
-        for (Product product : searchResultResponseSlice) {
-            Optional<List<Live>> live = liveRepository.findAllByLiveId(product.getLive().getLiveId());
-            Optional<List<Shorts>> shorts = shortsRepository.findAllByShortsId(product.getShorts().getShortsId());
-
-            if (live.isPresent()) {
-                for (Live findLive : live.get()) {
-                    if (findLive.getIsLive() == 0) {
-                        Map<String, Object> upcomingMap = new HashMap<>();
-
-                        // UPCOMING 정보를 담을 Map 생성
-                        upcomingMap.put("live_id", findLive.getLiveId());
-                        upcomingMap.put("name", product.getName());
-                        upcomingMap.put("price", product.getPrice());
-                        upcomingMap.put("live_date", findLive.getLiveDate());
-                        upcomingMap.put("title", findLive.getTitle());
-
-                        resultUpcomingMapLlist.add(upcomingMap);
+                if (live != null && shorts != null) {
+                    if (live.getIsLive() == 0) {
+                        ResultUpcomingResponse upcomingResponse = ResultUpcomingResponse.fromEntity(live, product);
+                        upcomingResponseList.add(upcomingResponse);
+                    } else if (live.getIsLive() == 1) {
+                        ResultLiveResponse liveResponse = ResultLiveResponse.fromEntity(live, product);
+                        liveResponseList.add(liveResponse);
                     }
-                }
-
-                for (Live findLive : live.get()) {
-                    if (findLive.getIsLive() == 1) {
-
-                        Map<String, Object> liveMap = new HashMap<>();
-                        // LIVE 정보를 담을 Map 생성
-                        liveMap.put("live_id", findLive.getLiveId());
-                        liveMap.put("name", product.getName());
-                        liveMap.put("price", product.getPrice());
-                        liveMap.put("title", findLive.getTitle());
-                        liveMap.put("tradePlace", findLive.getTradePlace());
-                        liveMap.put("live_thumbnail", findLive.getLiveThumbnail());
-
-                        resultLiveMapList.add(liveMap);
-                    }
-
+                    ResultShortsResponse shortsResponse = ResultShortsResponse.fromEntity(shorts, product, live);
+                    shortsResponseList.add(shortsResponse);
                 }
             }
-
-            if (shorts.isPresent()) {
-                for (int i = 0; i < shorts.get().size(); i++) {
-                    Shorts findShorts = shorts.get().get(i);
-                    Map<String, Object> shortsMap = new HashMap<>();
-
-                    // shortsMap 정보를 담을 Map 생성
-                    shortsMap.put("shorts_id", findShorts.getShortsId());
-                    shortsMap.put("name", product.getName());
-                    shortsMap.put("price", product.getPrice());
-                    shortsMap.put("trade_place", live.isPresent() && live.get().size() > i ? live.get().get(i).getTradePlace() : null);
-                    shortsMap.put("length", findShorts.getLength());
-                    shortsMap.put("shorts_thumbnail", findShorts.getShortsThumbnail());
-
-                    // scrap 데이터 확인 로직 추가
-                    Set<ShortsScrap> shortsScrapSet = findShorts.getShortsScrapSet();
-                    boolean isScrap = shortsScrapSet.stream()
-                            .anyMatch(scrap -> scrap.getUser().getUserId() == userId && scrap.getShorts().getShortsId() == findShorts.getShortsId());
-
-                    shortsMap.put("is_scrap", isScrap);
-                    resultShortsMapList.add(shortsMap);
-                }
-            }
-
         }
-        resultList.add(resultUpcomingMapLlist);
-        resultList.add(resultLiveMapList);
-        resultList.add(resultShortsMapList);
 
-        Slice<List<Map<String, Object>>> resultSlice = new SliceImpl<>(resultList, pageable, searchResultResponseSlice.hasNext());
-        return resultSlice;
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("upcoming", upcomingResponseList);
+        resultMap.put("live", liveResponseList);
+        resultMap.put("shorts", shortsResponseList);
+
+        List<Map<String, Object>> resultList = new ArrayList<>();
+        resultList.add(resultMap);
+
+        // Slice로 반환
+        return new SliceImpl<>(resultList, pageable, findProductSlice.hasNext() || categorySlice.hasNext());
     }
+
 
 
     public List<SidoNameResponse> getSidoNameList() {

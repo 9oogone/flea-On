@@ -16,14 +16,14 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     Optional<List<Product>> findByLive_LiveId(int liveId);
 
-    Optional<List<Product>> findByNameIgnoreCaseContaining(String name);
-
-    Slice<Product> findByNameContainingOrFirstCategoryIdAndSecondCategoryId(String name, int firstCategoryId, int secondCategoryId, Pageable pageable);
+    Slice<Product> findByNameIgnoreCaseContaining(String name, Pageable pageable);
 
     Optional<List<Product>> findProductIdsByFirstCategoryIdAndSecondCategoryId(int firstCategoryId, int secondCategoryId);
 
     Slice<Product> findByProductId(int productId, Pageable pageable);
 
     Optional<Product> findByLive_LiveIdAndCurrentBuyerId(int liveId, int buyerId);
+
+    Slice<Product> findByFirstCategoryIdOrSecondCategoryId(int firstCategoryId, int secondCategoryId, Pageable pageable);
 
 }
