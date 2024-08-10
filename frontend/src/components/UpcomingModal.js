@@ -11,7 +11,7 @@ const UpcomingModal = ({
   open,
   handleClose,
   liveDate,
-  products,
+  products=[],
   title,
   thumbnail,
   author,
