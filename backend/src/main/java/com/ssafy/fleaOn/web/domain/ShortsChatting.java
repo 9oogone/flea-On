@@ -9,6 +9,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -28,7 +29,7 @@ public class ShortsChatting {
     @Column(name = "time")
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    private LocalDateTime time;
+    private LocalTime time;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shorts_id", insertable = false, updatable = false)
@@ -37,4 +38,12 @@ public class ShortsChatting {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private User user;
+
+    @Builder
+    public ShortsChatting(String content, LocalTime time, Shorts shorts, User user) {
+        this.content = content;
+        this.time = time;
+        this.shorts = shorts;
+        this.user = user;
+    }
 }

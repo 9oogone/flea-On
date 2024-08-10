@@ -31,6 +31,7 @@ public class ShortsRequest {
                 .videoAddress(videoAddress)
                 .product(product)
                 .seller(seller)
+                .uploadDate(LocalDateTime.now())
                 .build();
     }
 }

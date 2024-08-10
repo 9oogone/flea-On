@@ -3,6 +3,7 @@ package com.ssafy.fleaOn.web.controller;
 import com.ssafy.fleaOn.web.config.jwt.JWTUtil;
 import com.ssafy.fleaOn.web.domain.Shorts;
 import com.ssafy.fleaOn.web.domain.User;
+import com.ssafy.fleaOn.web.dto.ShortsChatRequest;
 import com.ssafy.fleaOn.web.dto.ShortsRequest;
 import com.ssafy.fleaOn.web.dto.ShortsResponse;
 import com.ssafy.fleaOn.web.service.ShortsService;
@@ -15,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -35,8 +37,8 @@ public class ShortsApiController {
     @Operation(summary = "숏츠 정보 저장", description = "숏츠 정보를 받아 저장합니다.")
     public ResponseEntity<?> saveShorts(@RequestBody ShortsRequest request) {
         try {
-            Shorts savedShorts = shortsService.saveShorts(request);
-            return new ResponseEntity<>(savedShorts, HttpStatus.CREATED);
+            shortsService.saveShorts(request);
+            return new ResponseEntity<>("생성완료", HttpStatus.CREATED);
         } catch (Exception ex) {
             ex.printStackTrace();
             return new ResponseEntity<>("숏츠 생성 중 오류가 발생하였습니다: " + ex.getMessage(), HttpStatus.BAD_REQUEST);
@@ -112,6 +114,18 @@ public class ShortsApiController {
         }catch (Exception e){
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/saveChat")
+    @Operation(summary = "숏츠 채팅 정보 저장", description = "숏츠 채팅을 받아 저장합니다.")
+    public ResponseEntity<?> saveShortsChatting(@RequestBody List<ShortsChatRequest> request) {
+        try {
+            shortsService.saveShortsChatting(request);
+            return ResponseEntity.status(HttpStatus.CREATED).body("저장 완료");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new ResponseEntity<>("숏츠 생성 중 오류가 발생하였습니다: " + ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 }
