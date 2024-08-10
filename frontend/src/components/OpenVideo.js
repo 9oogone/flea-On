@@ -85,7 +85,7 @@ const OpenVideo = () => {
   const [mainStreamManager, setMainStreamManager] = useState(undefined);
   const [sttValue, setSttValue] = useState("");
   const [publisher, setPublisher] = useState(undefined);
-
+  const [currentRecodingIndex, setCurrentRecordingIndex] = useState("");
   //거래장소시간 선택 모달
   const [open, setOpen] = useState(false);
   const [place, setPlace] = useState(dummyDatas.place);
@@ -228,40 +228,37 @@ const OpenVideo = () => {
       listen({ continuous: true });
     },
   });
-
-  const switchCamera = useCallback(async () => {
-    try {
-      const devices = await OV.current.getDevices();
-      const videoDevices = devices.filter(
+  const [isFrontCamera, setIsFrontCamera] = useState(false);
+  function switchCamera() {
+    OV.current.getDevices().then((devices) => {
+      var videoDevices = devices.filter(
         (device) => device.kind === "videoinput"
       );
 
       if (videoDevices && videoDevices.length > 1) {
-        const newVideoDevice = videoDevices.filter(
-          (device) => device.deviceId !== currentVideoDevice.deviceId
-        );
+        var newPublisher = OV.initPublisher("html-element-id", {
+          videoSource: isFrontCamera
+            ? videoDevices[1].deviceId
+            : videoDevices[0].deviceId,
+          publishAudio: true,
+          publishVideo: true,
+          mirror: isFrontCamera,
+        });
 
-        if (newVideoDevice.length > 0) {
-          const newPublisher = OV.current.initPublisher(undefined, {
-            videoSource: newVideoDevice[0].deviceId,
-            publishAudio: true,
-            publishVideo: true,
-            mirror: true,
+        setIsFrontCamera(isFrontCamera);
+
+        session.unpublish(publisher).then(() => {
+          console.log("Old publisher unpublished!");
+
+          publisher = newPublisher;
+
+          this.session.publish(publisher).then(() => {
+            console.log("New publisher published!");
           });
-
-          if (session) {
-            await session.unpublish(mainStreamManager);
-            await session.publish(newPublisher);
-            setCurrentVideoDevice(newVideoDevice[0]);
-            setMainStreamManager(newPublisher);
-            setPublisher(newPublisher);
-          }
-        }
+        });
       }
-    } catch (e) {
-      console.error(e);
-    }
-  }, [currentVideoDevice, session, mainStreamManager]);
+    });
+  }
 
   const fetchProductList = async (sessionName) => {
     try {
@@ -296,14 +293,14 @@ const OpenVideo = () => {
       }, 5000);
       dispatch(setLoading());
       startRecording({
-        session: session.current.sessionId+currentProductIndex,
-        id:currentProductIndex,
-        outputMode: "COMPOSED",
+        session: session.current.sessionId,
+        outputMode: "COMPOSED_QUICK_START",
         hasAudio: true,
         hasVideo: true,
-        name: session.current.sessionId + currentProductIndex,
       })
-        .then(() => {
+        .then((res) => {
+          console.log(res.data.id);
+          setCurrentRecordingIndex(res.data.id);
           setIsRecording(true);
           dispatch(unSetLoading());
           listen({ continuous: true });
@@ -323,8 +320,7 @@ const OpenVideo = () => {
       stop();
       dispatch(setLoading());
       stopRecording({
-        recording: session.current.sessionId,
-        id:currentProductIndex
+        recording: currentRecodingIndex,
       })
         .then(() => {
           setIsRecording(false);
@@ -597,7 +593,13 @@ const OpenVideo = () => {
             {/* <Box>{sttValue} </Box> */}
           </Box>
           {isPublisher ? (
-            <Box>
+            <Box
+              sx={{
+                backgroundColor: "rgba(0, 0, 0, 0.12)",
+                height: "100vh",
+                backdropFilter: "blur(10px)",
+              }}
+            >
               <Typography variant="h6">
                 판매자 - 다음에 판매할 상품 목록
               </Typography>
