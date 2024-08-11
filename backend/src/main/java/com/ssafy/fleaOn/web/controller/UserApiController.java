@@ -183,8 +183,8 @@ public class UserApiController {
             if (user == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
-            Optional<List<PurchaseResponse>> userPurchaseList = userService.getUserPurchaseListByUserId(user.getUserId());
-            return ResponseEntity.status(HttpStatus.OK).body(userPurchaseList.get());
+            PurchaseListResponse userPurchaseList = userService.getUserPurchaseListByUserId(user.getUserId());
+            return ResponseEntity.status(HttpStatus.OK).body(userPurchaseList);
         }
         catch (Exception e) {
             e.printStackTrace();

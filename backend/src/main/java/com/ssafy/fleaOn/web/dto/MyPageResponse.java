@@ -18,5 +18,6 @@ public class MyPageResponse {
     private String profilePicture;
     private List<String> regionCode;
     private TradeCountResponse tradeInfo;
+    private List<WeeklyTrade> tradeList;
 
 }
