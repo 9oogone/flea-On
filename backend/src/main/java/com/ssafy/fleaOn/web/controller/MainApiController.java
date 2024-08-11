@@ -54,7 +54,7 @@ public class MainApiController {
                 System.out.println("코드당");
             }
             System.out.println(currentTime);
-            Slice<MainLiveResponse> mainLiveResponses = mainService.getMainLiveListByRegionCode(findUerRegionList, currentTime);
+            Slice<MainLiveResponse> mainLiveResponses = mainService.getMainLiveListByRegionCode(user.getUserId(), findUerRegionList, currentTime);
             return ResponseEntity.status(HttpStatus.OK).body(mainLiveResponses);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -63,8 +63,18 @@ public class MainApiController {
 
     @Operation(summary = "쇼츠 목록 조회", description = "쇼츠 목록을 조회할 때 사용합니다. ")
     @GetMapping("/mainShorts")
-    public ResponseEntity<?> getMainShorts() {
+    public ResponseEntity<?> getMainShorts(HttpServletRequest request) {
         try {
+            String authorizationToken = request.getHeader("Authorization");
+            if (authorizationToken.isEmpty() || !authorizationToken.startsWith("Bearer ")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+            }
+            String token = authorizationToken.substring(7);
+            String email = JWTUtil.getEmail(token);
+            User user = userService.findByEmail(email);
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당하는 사용자를 찾을 수 없습니다 .");
+            }
             Slice<MainShortsResponse> shortsSlice = mainService.getMainShortsListByUploadDate();
             if (shortsSlice.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No short data found");

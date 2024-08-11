@@ -1,6 +1,7 @@
 package com.ssafy.fleaOn.web.dto;
 
 import com.ssafy.fleaOn.web.domain.Live;
+import com.ssafy.fleaOn.web.domain.LiveScrap;
 import com.ssafy.fleaOn.web.domain.Product;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,8 +22,12 @@ public class MainLiveResponse {
     private List<Integer> productPrices;
     private String tradePlace;
     private int isLive;
+    private String liveThumbnail;
+    private boolean isScrap;
 
-    public static MainLiveResponse fromEntity(Live live, List<Product> products) {
+
+
+    public static MainLiveResponse fromEntity(Live live, List<Product> products, boolean isScrap) {
         return MainLiveResponse.builder()
                 .liveId(live.getLiveId())
                 .liveTitle(live.getTitle())
@@ -30,6 +35,8 @@ public class MainLiveResponse {
                 .productPrices(products.stream().map(Product::getPrice).collect(Collectors.toList()))
                 .tradePlace(live.getTradePlace())
                 .isLive(live.getIsLive())
+                .liveThumbnail(live.getLiveThumbnail())
+                .isScrap(isScrap)
                 .build();
     }
 }

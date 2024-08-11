@@ -466,4 +466,7 @@ public class UserApiController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
+//    @Operation(summary = "달력 날짜별 거래 조회", description = "달력에서 주간 이동을 통해서 거래 내역을 조회할 때 사용합니다. ")
+//    @GetMapping()
 }
