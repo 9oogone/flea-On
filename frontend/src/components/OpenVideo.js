@@ -138,9 +138,10 @@ const OpenVideo = () => {
         const from = data.from;
         const profile = data.profile;
         const userId = data.userId;
+        const time = data.time;
         setMessages((prevMessages) => [
           ...prevMessages,
-          { from, message, profile, userId },
+          { from, message, profile, userId, time },
         ]);
       } else if (type === 2) {
         setIsRecording(data.isRecording);
@@ -302,28 +303,67 @@ const OpenVideo = () => {
           // 녹화 종료 시간 설정
           const recordStopTime = new Date();
           const durationInMs = recordStopTime - recordStartTime;
+          console.log("durationInMs : ", durationInMs);
+          // 시간 차이를 정확하게 계산하여 HH:mm:ss 형식의 문자열로 변환
           const hours = Math.floor(durationInMs / 3600000)
             .toString()
             .padStart(2, "0");
+          console.log("hours : ", hours);
           const minutes = Math.floor((durationInMs % 3600000) / 60000)
             .toString()
             .padStart(2, "0");
+          console.log("minutes : ", minutes);
           const seconds = Math.floor((durationInMs % 60000) / 1000)
             .toString()
             .padStart(2, "0");
-
-          // 녹화 길이를 HH:mm:ss 형식의 문자열로 변환
+          console.log("seconds : ", seconds);
           const length = `${hours}:${minutes}:${seconds}`;
-
-          // 녹화 데이터를 서버로 전송
+          console.log(length);
+          // 녹화 데이터 및 채팅 메시지를 서버로 전송
           const videoAddress = `https://i11b202.p.ssafy.io/openvidu/recordings/${currentRecordingId}/${currentRecordingId}.mp4`;
           const thumbnail = `https://i11b202.p.ssafy.io/openvidu/recordings/${currentRecordingId}/${currentRecordingId}.jpg`;
 
+          // 채팅 메시지의 시간을 녹화 시작 시간과 종료 시간 기준으로 변환
+          const shortsChatRequests = messages
+            .filter((message) => {
+              const messageTime = new Date(message.time);
+              return (
+                messageTime >= recordStartTime && messageTime <= recordStopTime
+              );
+            })
+            .map((message) => {
+              const messageTime = new Date(message.time);
+              const timeDifferenceInMs = messageTime - recordStartTime;
+
+              const messageHours = Math.floor(timeDifferenceInMs / 3600000)
+                .toString()
+                .padStart(2, "0");
+              const messageMinutes = Math.floor(
+                (timeDifferenceInMs % 3600000) / 60000
+              )
+                .toString()
+                .padStart(2, "0");
+              const messageSeconds = Math.floor(
+                (timeDifferenceInMs % 60000) / 1000
+              )
+                .toString()
+                .padStart(2, "0");
+
+              const formattedTime = `${messageHours}:${messageMinutes}:${messageSeconds}`;
+
+              return {
+                content: message.message,
+                time: formattedTime,
+                userId: message.userId,
+              };
+            });
+
           const data = {
             thumbnail,
-            length: length,
+            length,
             videoAddress,
             productId: currentProduct.productId,
+            shortsChatRequests,
           };
 
           baseAxios()
@@ -332,7 +372,7 @@ const OpenVideo = () => {
               console.log("녹화 데이터 전송 성공:", response.data);
             })
             .catch((error) => {
-              console.log(data);
+              console.log(data, messages);
               console.error("녹화 데이터 전송 중 오류 발생:", error);
             });
 
@@ -372,6 +412,7 @@ const OpenVideo = () => {
         message: newMessage,
         from: user.nickname,
         profile: user.profilePicture,
+        time: new Date(),
       };
 
       session.current.signal({
@@ -679,11 +720,7 @@ const OpenVideo = () => {
                   <Button
                     variant="contained"
                     color={
-                      index < currentProductIndex
-                        ? "secondary"
-                        : index === currentProductIndex
-                        ? "primary"
-                        : "default"
+                      index <= currentProductIndex ? "primary" : "secondary"
                     }
                     onClick={() =>
                       handlePrepareProduct(index + currentProductIndex + 1)
