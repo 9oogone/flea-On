@@ -52,6 +52,7 @@ const OpenVideo = () => {
   const [place, setPlace] = useState("");
   const [liveDate, setLiveDate] = useState("");
   const [times, setTimes] = useState([]);
+  const [isFrontCamera, setIsFrontCamera] = useState(false);
   const navigate = useNavigate();
   const handleCustomerClick = () => {
     // 이미 가져온 데이터를 사용하여 상태 업데이트
@@ -184,7 +185,40 @@ const OpenVideo = () => {
       dispatch(unSetLoading());
     }
   };
+  const switchCamera = () => {
+    OV.current.getDevices().then((devices) => {
+      const videoDevices = devices.filter(
+        (device) => device.kind === "videoinput"
+      );
+      console.log(videoDevices)
+      if (videoDevices.length > 1) {
+        const newPublisher = OV.current.initPublisher("htmlVideo", {
+          videoSource: isFrontCamera
+            ? videoDevices[0].deviceId
+            : videoDevices[2].deviceId,
+          publishAudio: true,
+          publishVideo: true,
+          mirror: isFrontCamera,
+          resolution: "405x1080",
+          frameRate: 30,
+          insertMode: "APPEND",
+        });
 
+        setIsFrontCamera(!isFrontCamera);
+
+        session.current.unpublish(publisher.current).then(() => {
+          console.log("Old publisher unpublished!");
+
+          publisher.current = newPublisher;
+
+          session.current.publish(newPublisher).then(() => {
+            publisher.current.addVideoElement(videoRef.current)
+            console.log("New publisher published!");
+          });
+        });
+      }
+    });
+  };
   const { listen, listening, stop } = useSpeechRecognition({
     onResult: (result) => {
       setSttValue(result);
@@ -478,6 +512,7 @@ const OpenVideo = () => {
   return (
     <div style={{ width: "100%", height: "100%" }}>
       <video
+        id="htmlVideo"
         autoPlay={true}
         ref={videoRef}
         style={{
