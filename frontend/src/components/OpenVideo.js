@@ -191,7 +191,7 @@ const OpenVideo = () => {
       listen({ continuous: true });
     },
   });
-  const [isFrontCamera, setIsFrontCamera] = useState(false);
+  const [isFrontCamera, setIsFrontCamera] = useState(true);
   function switchCamera() {
     OV.current.getDevices().then((devices) => {
       var videoDevices = devices.filter(
@@ -200,7 +200,7 @@ const OpenVideo = () => {
       console.log(videoDevices)
 
       if (videoDevices && videoDevices.length > 1) {
-        var newPublisher = OV.current.initPublisher("html-element-id", {
+        var newPublisher = OV.current.initPublisher("htmlVideo", {
           audioSource: undefined,
           videoSource: isFrontCamera
             ? videoDevices[2].deviceId
@@ -430,6 +430,7 @@ const OpenVideo = () => {
   return (
     <div style={{ width: "100%", height: "100%" }}>
       <video
+        id="htmlVideo"
         autoPlay={true}
         ref={videoRef}
         style={{
