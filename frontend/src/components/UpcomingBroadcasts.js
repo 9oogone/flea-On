@@ -3,6 +3,7 @@ import { Box, Typography, Container, Button } from "@mui/material";
 import UpcomingModal from "./UpcomingModal"; // 모달 컴포넌트 임포트
 
 const UpcomingBroadcasts = ({ items = [] }) => {
+  console.log("UpcomingBroadcasts items:", items);
   const [open, setOpen] = useState(false);
   const [modalLiveDate, setModalLiveDate] = useState("");
 
@@ -54,7 +55,7 @@ const UpcomingBroadcasts = ({ items = [] }) => {
                 color: "#FF0B55",
               }}
             >
-              {item.live_date}
+              {item.liveDate}
             </Typography>
             <Typography
               sx={{
@@ -75,14 +76,14 @@ const UpcomingBroadcasts = ({ items = [] }) => {
                 whiteSpace: "nowrap",
               }}
             >
-              {item.name}
+              {item.productName}
             </Typography>
             <Typography
               sx={{
                 fontWeight: 300,
               }}
             >
-              {item.price}원
+              {item.productPrice}원
             </Typography>
           </Button>
         ))}

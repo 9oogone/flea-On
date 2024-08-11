@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import { fetchSearchResults } from "../features/search/actions";
@@ -16,10 +16,14 @@ const SearchPage = () => {
   const dispatch = useDispatch();
   const query = useQuery().get("query");
   const { loading, results, error } = useSelector((state) => state.search);
+  const [live, setLive] = useState([]);
+  const [shorts, setShorts] = useState([]);
+  const [upcoming, setUpcoming] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
     if (query) {
+      console.log("Fetching search results for query:", query);
       dispatch(fetchSearchResults(query));
     }
   }, [dispatch, query]);
@@ -31,7 +35,15 @@ const SearchPage = () => {
   }, [error]);
 
   useEffect(() => {
-    console.log("Results updated:", results);
+    if (results) {
+      console.log("Results updated:", results);
+      setLive(results[0].live || []);
+      setShorts(results[0].shorts || []);
+      setUpcoming(results[0].upcoming || []);
+      console.log("Live:", results.live);
+      console.log("Shorts:", results.shorts);
+      console.log("Upcoming:", results.upcoming);
+    }
   }, [results]);
 
   const getErrorMessage = () => {
@@ -41,62 +53,47 @@ const SearchPage = () => {
     return `에러가 발생했습니다: ${error}`;
   };
 
-  const isEmptyResults = () => {
-    return (
-      (!results.upcoming || results.upcoming.length === 0) &&
-      (!results.live || results.live.length === 0) &&
-      (!results.shorts || results.shorts.length === 0)
-    );
-  };
-  
   return (
     <Container sx={{ mt: 10 }}>
       {loading && <CircularProgress />}
       {error && <Typography color="error">{getErrorMessage()}</Typography>}
       {!loading && !error && results && (
-        <>
-          {isEmptyResults() ? (
-            <Typography variant="h6" sx={{ mt: '100%', textAlign: 'center' }}>
-              {query} 검색 결과가 없습니다!              
-            </Typography>
-          ) : (
-            <Grid container spacing={3}>
-              <UpcomingBroadcasts items={results.upcoming ? results.upcoming : []} />
-              <Grid item xs={12}>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                  }}
-                >
-                  <Typography variant="h5">쇼츠</Typography>
-                  <Button onClick={() => navigate(`/search/shorts?query=${query}`)}>
-                    모두보기
-                  </Button>
-                </Box>
-              </Grid>
-              <Shorts items={Array.isArray(results.shorts) ? results.shorts.slice(0, 2) : []} />
-              <Grid item xs={12}>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                  }}
-                >
-                  <Typography variant="h5">라이브</Typography>
-                  <Button onClick={() => navigate(`/search/live?query=${query}`)}>
-                    모두보기
-                  </Button>
-                </Box>
-              </Grid>
-              <LiveBroadcasts items={Array.isArray(results.live) ? results.live.slice(0, 2) : []} />
-            </Grid>
-          )}
-        </>
+        <Grid container spacing={3}>
+          <UpcomingBroadcasts items={upcoming} />
+          <Grid item xs={12}>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Typography variant="h5">쇼츠</Typography>
+              <Button onClick={() => navigate(`/search/shorts?query=${query}`)}>
+                모두보기
+              </Button>
+            </Box>
+          </Grid>
+          <Shorts items={shorts.slice(0, 2)} />
+          <Grid item xs={12}>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Typography variant="h5">라이브</Typography>
+              <Button onClick={() => navigate(`/search/live?query=${query}`)}>
+                모두보기
+              </Button>
+            </Box>
+          </Grid>
+          <LiveBroadcasts items={live.slice(0, 2)} />
+        </Grid>
       )}
     </Container>
   );
 };
+
 export default SearchPage;
