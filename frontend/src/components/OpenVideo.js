@@ -211,12 +211,12 @@ const OpenVideo = () => {
 
         setIsFrontCamera(isFrontCamera);
 
-        session.unpublish(publisher).then(() => {
+        session.currnet.unpublish(publisher).then(() => {
           console.log("Old publisher unpublished!");
 
           publisher = newPublisher;
 
-          this.session.publish(publisher).then(() => {
+          session.current.publish(publisher).then(() => {
             console.log("New publisher published!");
           });
         });
