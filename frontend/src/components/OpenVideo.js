@@ -211,7 +211,7 @@ const OpenVideo = () => {
 
         setIsFrontCamera(isFrontCamera);
 
-        session.currnet.unpublish(publisher).then(() => {
+        session.current.unpublish(publisher).then(() => {
           console.log("Old publisher unpublished!");
 
           publisher = newPublisher;
