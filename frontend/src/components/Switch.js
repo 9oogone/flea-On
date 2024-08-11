@@ -1,8 +1,8 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { switchTab as switchContentTab } from "../features/home/contentSlice";
-import { switchTab as switchBuyTab } from "../features/mypage/buylistSlice";
-import { switchTab as switchSellTab } from "../features/mypage/selllistSlice";
+import { switchTab as switchBuyTab } from "../features/mypage/buySlice";
+import { switchTab as switchSellTab } from "../features/mypage/sellSlice";
 import { switchTab as switchWatchTab } from "../features/mypage/scrapSlice";
 import { ButtonGroup, Button } from "@mui/material";
 

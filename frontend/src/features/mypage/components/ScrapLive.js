@@ -62,7 +62,7 @@ const ScrapLive = ({ items }) => {
           </Grid>
         ) : (
           items.map((item) => (
-            <Grid key={item.id} item xs={6} sx={{ textAlign: "center" }}>
+            <Grid key={item.live_id} item xs={6} sx={{ textAlign: "center" }}>
               <Button
                 // onClick={() => handleButtonClick(item)}
                 sx={{ padding: 0, minWidth: 0 }}

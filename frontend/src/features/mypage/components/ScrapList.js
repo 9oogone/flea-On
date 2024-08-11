@@ -15,13 +15,12 @@ const ScrapList = () => {
   const selectedTab = useSelector((state) => state.scrap.selectedTab);
   const liveScrap = useSelector((state) => state.scrap.liveScrap.data);
   const shortsScrap = useSelector((state) => state.scrap.shortsScrap.data);
-  const userEmail = useSelector((state) => state.auth.user.email);
+  const email = useSelector((state) => state.auth.user.email);
 
   useEffect(() => {
-    // 컴포넌트가 마운트될 때 스크랩 목록을 불러오는 액션을 실행
-    dispatch(fetchLiveScrap(userEmail));
-    dispatch(fetchShortsScrap(userEmail));
-  }, [dispatch, userEmail]);
+    dispatch(fetchLiveScrap(email));
+    dispatch(fetchShortsScrap(email));
+  }, [dispatch, email]);
 
   const switchOptions = [
     { value: "live", label: "LIVE" },

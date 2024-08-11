@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchCalendarWeek, fetchCalendarDate } from "../actions";
 import {
   format,
   addWeeks,
@@ -23,11 +25,14 @@ import { ReactComponent as TradeDoneIcon } from "../../../assets/images/trade_do
 import "../../../styles/Calendar.css";
 
 const Calendar = () => {
-  const [currentWeek, setCurrentWeek] = useState(new Date());
+  const dispatch = useDispatch();
+  const email = useSelector((state) => state.auth.user.email);
+  const dateTrade = useSelector((state) => state.calendar.date.data);
   const [selectedDate, setSelectedDate] = useState(null);
+  const [currentWeek, setCurrentWeek] = useState(new Date());
   const [weeklyTrades, setWeeklyTrades] = useState({});
   // const [trades, setTrades] = useState({}); //api
-  const [userId] = useState(1);
+  const userId = useSelector((state) => state.auth.user.userId);
   const [dailyTrades, setDailyTrades] = useState({});
 
   const startDate = startOfWeek(currentWeek, { weekStartsOn: 0 });
@@ -48,22 +53,7 @@ const Calendar = () => {
         obj[key] = dummyTrades[key];
         return obj;
       }, {});
-    /*
-const fetchWeeklyTrades = async () => {
-    const startOfWeekStr = format(startDate, "yyyy-MM-dd");
-    const endOfWeekStr = format(addDays(startDate, 6), "yyyy-MM-dd");
 
-    try {
-      const response = await baseAxios().get(`/fleaon/users/${email}/${startOfWeekStr}/schedule`);
-      setWeeklyTrades(response.data);
-    } catch (error) {
-      console.error("주간 거래 정보를 가져오는데 실패했습니다:", error);
-    }
-  };
-
-   fetchWeeklyTrades();
-  }, [currentWeek, startDate, userId]);
-*/
     setWeeklyTrades(filteredTrades);
   };
 
@@ -80,22 +70,8 @@ const fetchWeeklyTrades = async () => {
   const handleDateClick = async (event, date) => {
     event.preventDefault();
     setSelectedDate(date);
-
-    const email = "qsc753969";
-    const tradeDate = format(date, "yyyy-MM-dd");
-    try {
-      const response = await baseAxios().get(
-        `/fleaon/users/${email}/${tradeDate}/schedule`
-      );
-      if (response.status === 200) {
-        setDailyTrades(response.data);
-        console.log("나오나~~~~~", setDailyTrades);
-      } else {
-        console.error("일자별 거래 데이터를 wwwww가져오는데 실패했습니다.");
-      }
-    } catch (error) {
-      console.error("일자별 거래 데이터를 gggg가져오는데 실패했습니다:", error);
-    }
+    dispatch(fetchCalendarDate({ email, date }));
+    console.log(date);
   };
 
   // 주간 날짜 배열 생성
@@ -104,7 +80,8 @@ const fetchWeeklyTrades = async () => {
     for (let i = 0; i < 7; i++) {
       const day = addDays(startDate, i);
       dates.push({
-        date: day,
+        realDay: day,
+        date: format(day, "yyyy-MM-dd"),
         day: format(day, "d"),
         isToday: isToday(day),
         isPast: isPast(day),
@@ -353,12 +330,10 @@ const fetchWeeklyTrades = async () => {
 
         <Box className="calendar-trade">
           {generateWeekDates().map(({ date, isPast }) => {
-            const tradeCount = getTradeCount(
-              weeklyTrades[format(date, "yyyy-MM-dd")] || {}
-            );
+            const tradeCount = getTradeCount(weeklyTrades[date] || {});
             return (
               <Box
-                key={format(date, "yyyy-MM-dd")}
+                key={date}
                 className="trade-box"
                 onClick={(event) => handleDateClick(event, date)}
               >
@@ -384,8 +359,7 @@ const fetchWeeklyTrades = async () => {
 
         <Box className="calendar-footer">
           {generateWeekDates().map(({ date, day, isToday }) => {
-            const isSelected =
-              selectedDate && selectedDate.getTime() === date.getTime();
+            const isSelected = selectedDate === date;
             return (
               <Box key={day} className="footer-date-box">
                 <Box
@@ -418,257 +392,10 @@ const fetchWeeklyTrades = async () => {
       <CalendarTrade
         userId={userId}
         selectedDate={selectedDate}
-        trades={
-          selectedDate
-            ? dummyTrades[format(selectedDate, "yyyy-MM-dd")] || {}
-            : {}
-        }
+        trades={dateTrade}
       />
     </Box>
   );
 };
 
 export default Calendar;
-
-/*
-전자 코드와 다른 부분:
-jsx
-코드 복사
-import { ReactComponent as TradeIcon } from "../../../assets/images/trade.svg";
-
-const [trades, setTrades] = useState({});
-
-useEffect(() => {
-  // 현재 주간 데이터 가져오기
-  fetchWeeklyTrades();
-}, [currentWeek]);
-
-const fetchWeeklyTrades = async () => {
-  const startOfWeekStr = format(startDate, "yyyy-MM-dd");
-  const endOfWeekStr = format(addDays(startDate, 6), "yyyy-MM-dd");
-
-  try {
-    const response = await fetch(
-      `/api/trades?start=${startOfWeekStr}&end=${endOfWeekStr}&userId=${userId}`
-    );
-    const data = await response.json();
-    setTrades(data);
-  } catch (error) {
-    console.error("Failed to fetch weekly trades", error);
-  }
-};
-
-const { purchaseCount, sellCount, completeCount } = getWeekTrades(
-  trades,
-  userId
-);
-
-<CalendarTrade
-  userId={userId}
-  selectedDate={selectedDate}
-  trades={
-    selectedDate
-      ? trades[format(selectedDate, "yyyy-MM-dd")] || {}
-      : {}
-  }
-/>
-후자 코드와 다른 부분:
-jsx
-코드 복사
-// import { ReactComponent as TradeIcon } from "../../../assets/images/trade.svg";
-
-const [weeklyTrades, setWeeklyTrades] = useState({});
-
-useEffect(() => {
-  // 현재 주간 데이터 필터링
-  filterWeeklyTrades();
-}, [currentWeek]);
-
-const filterWeeklyTrades = () => {
-  const startOfWeekStr = format(startDate, "yyyy-MM-dd");
-  const endOfWeekStr = format(addDays(startDate, 6), "yyyy-MM-dd");
-
-  // 더미 데이터에서 현재 주간 데이터 필터링
-  const filteredTrades = Object.keys(dummyTrades)
-    .filter((date) => date >= startOfWeekStr && date <= endOfWeekStr)
-    .reduce((obj, key) => {
-      obj[key] = dummyTrades[key];
-      return obj;
-    }, {});
-
-  setWeeklyTrades(filteredTrades);
-};
-
-const { purchaseCount, sellCount, completeCount } = getWeekTrades(
-  weeklyTrades,
-  userId
-);
-
-// 더미 거래 데이터 생성
-const dummyTrades = {
-  "2024-08-01": {
-    덕명동: [
-      {
-        place: "한밭대학교 도서관 앞",
-        buyer_id: 1,
-        seller_id: 2,
-        product: "애플 맥북 프로",
-        price: 1500000,
-        time: "10:00:00",
-      },
-      {
-        place: "삼성화재 유성연수원 경비실 앞",
-        buyer_id: 3,
-        seller_id: 1,
-        product: "아이패드",
-        price: 600000,
-        time: "13:30:00",
-      },
-    ],
-  },
-  "2024-08-02": {
-    덕명동: [
-      {
-        place: "동네카페",
-        buyer_id: 1,
-        seller_id: 4,
-        product: "빈티지 카메라",
-        price: 200000,
-        time: "15:00:00",
-      },
-    ],
-  },
-  "2024-08-03": {},
-  "2024-08-04": {
-    덕명동: [
-      {
-        place: "삼성화재 유성연수원 경비실 앞",
-        buyer_id: 1,
-        seller_id: 5,
-        product: "허먼밀러 의자",
-        price: 808000,
-        time: "14:00:00",
-      },
-      {
-        place: "삼성화재 유성연수원 경비실 앞",
-        buyer_id: 6,
-        seller_id: 1,
-        product: "정처기 필기책",
-        price: 10000,
-        time: "15:00:00",
-      },
-    ],
-    봉명동: [
-      {
-        place: "매드블럭 옆 공터",
-        buyer_id: 1,
-        seller_id: 7,
-        product: "무접점 키보드",
-        price: 5000,
-        time: "11:00:00",
-      },
-    ],
-  },
-  "2024-08-05": {},
-  "2024-08-06": {},
-  "2024-08-07": {
-    덕명동: [
-      {
-        place: "삼성화재 ",
-        buyer_id: 8,
-        seller_id: 1,
-        product: "고성능 PC",
-        price: 2000000,
-        time: "14:00:00",
-      },
-    ],
-  },
-  "2024-08-08": {
-    덕명동: [
-      {
-        place: "한밭대학교 도서관 앞",
-        buyer_id: 1,
-        seller_id: 2,
-        product: "애플 맥북 프로",
-        price: 1500000,
-        time: "10:00:00",
-      },
-      {
-        place: "삼성화재 유성연수원 경비실 앞",
-        buyer_id: 3,
-        seller_id: 1,
-        product: "아이패드",
-        price: 600000,
-        time: "13:30:00",
-      },
-    ],
-  },
-  "2024-08-09": {
-    덕명동: [
-      {
-        place: "동네카페",
-        buyer_id: 1,
-        seller_id: 4,
-        product: "빈티지 카메라",
-        price: 200000,
-        time: "15:00:00",
-      },
-    ],
-  },
-  "2024-08-10": {},
-  "2024-08-11": {
-    덕명동: [
-      {
-        place: "삼성화재 유성연수원 경비실 앞",
-        buyer_id: 1,
-        seller_id: 5,
-        product: "허먼밀러 의자",
-        price: 808000,
-        time: "14:00:00",
-      },
-      {
-        place: "삼성화재 유성연수원 경비실 앞",
-        buyer_id: 6,
-        seller_id: 1,
-        product: "정처기 필기책",
-        price: 10000,
-        time: "15:00:00",
-      },
-    ],
-    봉명동: [
-      {
-        place: "매드블럭 옆 공터",
-        buyer_id: 1,
-        seller_id: 7,
-        product: "무접점 키보드",
-        price: 5000,
-        time: "11:00:00",
-      },
-    ],
-  },
-  "2024-08-12": {},
-  "2024-08-13": {},
-  "2024-08-14": {
-    덕명동: [
-      {
-        place: "삼성화재 ",
-        buyer_id: 8,
-        seller_id: 1,
-        product: "고성능 PC",
-        price: 2000000,
-        time: "14:00:00",
-      },
-    ],
-  },
-};
-
-<CalendarTrade
-  userId={userId}
-  selectedDate={selectedDate}
-  trades={
-    selectedDate
-      ? dummyTrades[format(selectedDate, "yyyy-MM-dd")] || {}
-      : {}
-  }
-/>
-*/

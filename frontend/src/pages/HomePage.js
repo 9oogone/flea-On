@@ -15,9 +15,11 @@ const HomePage = () => {
   const [hasLive, setHasLive] = useState(false);
   const [liveId, setLiveId] = useState(null);
   const [shorts, setShorts] = useState([]);
+  const [live, setLive] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+
   useEffect(() => {
     const checkLiveExistence = async () => {
       try {
@@ -25,9 +27,7 @@ const HomePage = () => {
           "/fleaon/users/commerceLive/expected"
         );
         setHasLive(response.data.exist);
-        if (hasLive) {
-          setLiveId(response.data.liveId);
-        }
+        setLiveId(response.data.liveId);
       } catch (error) {
         console.error("Error checking live existence", error);
       }
@@ -37,7 +37,7 @@ const HomePage = () => {
   }, []);
   const startLiveBroadcast = async (liveId) => {
     try {
-      await baseAxios().put(`/fleaon/live/${liveId}/on`);
+      await baseAxios().put(`/fleaOn/live/${liveId}/on`);
       navigate(`/live/${liveId}`);
     } catch (error) {
       console.error("Failed to start live broadcast", error);
@@ -52,8 +52,8 @@ const HomePage = () => {
         name: short.productName,
         price: short.productPrice,
         trade_place: short.tradePlace,
-        length: "00:00", // 서버 데이터에 길이가 포함되어 있지 않아서 임시로 00:00으로 설정
-        is_scrap: false, // 기본값으로 설정
+        length: short.length, // 서버 데이터에 길이가 포함되어 있지 않아서 임시로 00:00으로 설정
+        is_scrap: short.is_scrap, // 기본값으로 설정
         thumbnail: short.thumbnail,
         shorts_id: short.shortsId,
       }));
@@ -66,138 +66,38 @@ const HomePage = () => {
       setLoading(false);
     }
   };
+  const fetchLiveData = async () => {
+    try {
+      const response = await baseAxios().get("/fleaon/mainLive");
+      const liveData = response.data.content.map((liveItem) => ({
+        id: liveItem.liveId,
+        title: liveItem.liveTitle,
+        productNames: liveItem.productNames,
+        productPrices: liveItem.productPrices,
+        tradePlace: liveItem.tradePlace,
+        isLive: liveItem.isLive,
+        thumbnail: liveItem.liveThumbnail,
+        scrap: liveItem.scrap,
+      }));
+
+      setLive(liveData);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching live data:", error);
+      setError(error.message);
+      setLoading(false);
+    }
+  };
 
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(fetchUserInfo()); // 사용자 정보 가져오기
     fetchShorts(); // 숏츠 데이터 가져오기
+    fetchLiveData();
   }, [dispatch]);
 
   const contents = {
-    live: [
-      {
-        id: 2,
-        name: "웜업탑",
-        price: 5000,
-        title: "aloyoga 기능성",
-        trade_place: "덕명동",
-        thumbnail: "https://picsum.photos/160/250",
-        live_id: 1,
-        is_scrap: true,
-        is_live: true,
-        live_date: "오늘 오후 8시",
-      },
-      {
-        id: 3,
-        name: "웜업탑",
-        price: 5000,
-        title: "aloyoga 기능성",
-        trade_place: "덕명동",
-        thumbnail: "https://picsum.photos/160/250",
-        live_id: 2,
-        is_scrap: true,
-        is_live: true,
-        live_date: "오늘 오후 8시",
-        products: [{ name: "라면", price: 3000 }],
-      },
-      {
-        id: 4,
-        name: "웜업탑",
-        price: 5000,
-        title: "aloyoga 기능성",
-        trade_place: "덕명동",
-        thumbnail: "https://picsum.photos/160/250",
-        live_id: 3,
-        is_scrap: true,
-        is_live: true,
-        live_date: "오늘 오후 8시",
-        products: [{ name: "라면", price: 3000 }],
-      },
-      {
-        id: 1,
-        name: "웜업탑",
-        price: 5000,
-        title: "식료품 타이쿤 대방출",
-        trade_place:
-          "대전광역시 동구 덕명동 삼성화재연수원 유성동캠퍼스 동원가든 경비실 앞 자전거 거치대",
-        thumbnail: "https://picsum.photos/160/250",
-        author: "초호기딸기왕",
-        live_id: 1,
-        is_scrap: true,
-        is_live: false,
-        live_date: "오늘 오후 8시",
-        products: [
-          { name: "라면", price: 3000 },
-          { name: "젤리", price: 3000 },
-          { name: "푸딩", price: 3000 },
-        ],
-      },
-      {
-        id: 5,
-        name: "웜업탑",
-        price: 5000,
-        title: "aloyoga 기능성",
-        trade_place: "덕명동",
-        thumbnail: "https://picsum.photos/160/250",
-        live_id: 1,
-        is_scrap: true,
-        is_live: false,
-        live_date: "오늘 오후 8시",
-        products: [{ name: "라면", price: 3000 }],
-      },
-      {
-        id: 6,
-        name: "웜업탑",
-        price: 5000,
-        title: "aloyoga 기능성",
-        trade_place: "덕명동",
-        thumbnail: "https://picsum.photos/160/250",
-        live_id: 1,
-        is_scrap: true,
-        is_live: false,
-        live_date: "오늘 오후 8시",
-        products: [{ name: "라면", price: 3000 }],
-      },
-      {
-        id: 7,
-        name: "웜업탑",
-        price: 5000,
-        title: "aloyoga 기능성",
-        trade_place: "덕명동",
-        thumbnail: "https://picsum.photos/160/250",
-        live_id: 1,
-        is_scrap: true,
-        is_live: false,
-        live_date: "오늘 오후 8시",
-        products: [{ name: "라면", price: 3000 }],
-      },
-      {
-        id: 8,
-        name: "웜업탑",
-        price: 5000,
-        title: "aloyoga 기능성",
-        trade_place: "덕명동",
-        thumbnail: "https://picsum.photos/160/250",
-        live_id: 1,
-        is_scrap: true,
-        is_live: false,
-        live_date: "오늘 오후 8시",
-        products: [{ name: "라면", price: 3000 }],
-      },
-      {
-        id: 9,
-        name: "웜업탑",
-        price: 5000,
-        title: "aloyoga 기능성",
-        trade_place: "덕명동",
-        thumbnail: "https://picsum.photos/160/250",
-        live_id: 1,
-        is_scrap: true,
-        is_live: false,
-        live_date: "오늘 오후 8시",
-        products: [{ name: "라면", price: 3000 }],
-      },
-    ],
+    live: live,
     shorts: shorts,
   };
   const switchOptions = [

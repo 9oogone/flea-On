@@ -4,10 +4,10 @@ import categoryReducer from "../features/category/categorySlice";
 import contentReducer from "../features/home/contentSlice";
 import loadingReducer from "../features/live/loadingSlice";
 import sessionReducer from "../features/live/sessionSlice";
+import CalendarReducer from "../features/mypage/calendarSlice";
+import buyReducer from "../features/mypage/buySlice";
+import sellReducer from "../features/mypage/sellSlice";
 import scrapReducer from "../features/mypage/scrapSlice";
-import buylistReducer from "../features/mypage/buylistSlice";
-import selllistReducer from "../features/mypage/selllistSlice";
-import watchlistReducer from "../features/mypage/watchlistSlice";
 import shortsReducer from "../features/shorts/shortsSlice";
 import regionReducer from "../features/region/regionSlice";
 import chatReducer from "../features/chat/chatSlice";
@@ -15,6 +15,7 @@ import chatroomReducer from "../features/chat/chatroomSlice";
 import profileeditReducer from "../features/mypage/profileEditSlice";
 import searchReducer from "../features/search/searchSlice";
 import "../styles/global.css";
+import calendarSlice from "../features/mypage/calendarSlice";
 
 const store = configureStore({
   reducer: {
@@ -23,10 +24,10 @@ const store = configureStore({
     content: contentReducer,
     loading: loadingReducer,
     session: sessionReducer,
+    calendar: calendarSlice,
+    buy: buyReducer,
+    sell: sellReducer,
     scrap: scrapReducer,
-    buy: buylistReducer,
-    sell: selllistReducer,
-    watch: watchlistReducer,
     shorts: shortsReducer,
     region: regionReducer,
     chat: chatReducer,

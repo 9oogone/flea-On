@@ -1,42 +1,16 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
 import { ShoppingCart, Sell, PlaceOutlined } from "@mui/icons-material";
-import { parse, format } from "date-fns";
+import { formatTime, formatPrice } from "../../../utils/cssUtils";
+
 const CalendarTrade = ({ userId, selectedDate, trades }) => {
-  const formatTime = (time) => {
-    const parsedTime = parse(time, "HH:mm:ss", new Date());
-    const isPM = format(parsedTime, "a") === "PM";
-    const hours = parsedTime.getHours();
-    const minutes = parsedTime.getMinutes();
-
-    const formattedHours = hours % 12 === 0 ? 12 : hours % 12;
-    const period = isPM ? "오후" : "오전";
-
-    const formattedMinutes = minutes === 0 ? "" : `${minutes}분`;
-
-    return `${period} ${formattedHours}시 ${formattedMinutes}`.trim();
-  };
-
-  const formatPrice = (price) => {
-    if (price < 10000) {
-      return `${price}원`;
-    }
-
-    const manWon = Math.floor(price / 10000);
-    const rest = price % 10000;
-
-    if (rest === 0) {
-      return `${manWon}만원`;
-    } else {
-      return `${manWon}만 ${rest}원`;
-    }
-  };
-
   if (!selectedDate || Object.keys(trades).length === 0) {
     return null; // 아무것도 렌더링하지 않음
   }
+  console.log(trades);
 
   return (
+    // <Box>얍</Box>
     <Box
       sx={{
         width: "100%",

@@ -423,9 +423,15 @@ const OpenVideo = () => {
     }
   };
 
-  const endBroadcast = () => {
+  const endBroadcast = async () => {
     console.log("방송 종료");
-    // 방송 종료를 위한 로직 추가
+    try {
+      await baseAxios().put(`/fleaOn/live/${sessionName}`);
+      navigate("/");
+    } catch (error) {
+      console.error("방송 종료 실패", error);
+      // 오류 처리를 여기서 할 수 있습니다 (예: 사용자에게 오류 메시지 표시)
+    }
   };
 
   const sliderSettings = {
