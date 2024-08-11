@@ -44,4 +44,5 @@ public interface TradeRepository extends JpaRepository<Trade, Integer> {
     int countBySellerIdAndTradeDateBetween(int userId, LocalDate startOfWeek, LocalDate endOfWeek);
 
     int countByBuyerIdAndTradeDateBetween(int userId, LocalDate startOfWeek, LocalDate endOfWeek);
+    boolean existsByBuyerIdAndSellerIdAndChatting_ChattingId(int buyerId, int sellerId, int chattingId);
 }
