@@ -20,8 +20,8 @@ public class CalenderService {
         return findTradeList.get();
     }
 
-    public Trade getUserDayTrade(LocalDate tradeDate, int userId) {
-        Optional<Trade> findTrade = tradeRepository.findByTradeDateAndBuyerIdOrSellerId(tradeDate, userId, userId);
+    public List<Trade> getUserDayTrade(LocalDate tradeDate, int userId) {
+        Optional<List<Trade>> findTrade = tradeRepository.findByTradeDateAndBuyerIdOrSellerId(userId, tradeDate);
         return findTrade.get();
     }
 

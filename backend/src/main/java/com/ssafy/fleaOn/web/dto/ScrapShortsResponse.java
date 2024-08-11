@@ -24,7 +24,7 @@ public class ScrapShortsResponse {
     private String videoAddress;
     private int productPrice;
     private String productName;
-    private String tradePlace;
+    private String dongName;
 
 
 }

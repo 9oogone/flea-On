@@ -18,9 +18,10 @@ public class ShortsResponse {
     private final LocalDateTime uploadDate;
     private final ProductResponse product;
     private final UserResponse user;
+    private final String liveTitle;
     private final List<ShortsChatResponse> shortsChatResponseList;
 
-    public ShortsResponse(Shorts shorts, List<ShortsChatResponse> shortsChatResponseList) {
+    public ShortsResponse(Shorts shorts, String liveTitle, List<ShortsChatResponse> shortsChatResponseList) {
         this.shortsId = shorts.getShortsId();
         this.shortsThumbnail = shorts.getShortsThumbnail();
         this.length = shorts.getLength();
@@ -28,6 +29,7 @@ public class ShortsResponse {
         this.uploadDate = shorts.getUploadDate();
         this.product = new ProductResponse(shorts.getProduct());
         this.user = new UserResponse(shorts.getProduct().getSeller());
+        this.liveTitle = liveTitle;
         this.shortsChatResponseList = shortsChatResponseList;
     }
 

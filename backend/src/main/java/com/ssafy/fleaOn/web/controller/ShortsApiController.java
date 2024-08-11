@@ -1,9 +1,7 @@
 package com.ssafy.fleaOn.web.controller;
 
 import com.ssafy.fleaOn.web.config.jwt.JWTUtil;
-import com.ssafy.fleaOn.web.domain.Shorts;
-import com.ssafy.fleaOn.web.domain.ShortsChatting;
-import com.ssafy.fleaOn.web.domain.User;
+import com.ssafy.fleaOn.web.domain.*;
 import com.ssafy.fleaOn.web.dto.ShortsChatResponse;
 import com.ssafy.fleaOn.web.dto.ShortsRequest;
 import com.ssafy.fleaOn.web.dto.ShortsResponse;
@@ -56,7 +54,10 @@ public class ShortsApiController {
     public ResponseEntity<ShortsResponse> playShorts(@PathVariable int shortsId) {
         Optional<List<ShortsChatting>> shortsChattings = shortsChattingRepository.findByShorts_ShortsId(shortsId);
         List<ShortsChatResponse> shortsChatResponseList = new ArrayList<>();
+        String liveTitle;
         if (shortsChattings.isPresent()){
+            Product product = shortsChattings.get().get(0).getShorts().getProduct();;
+            liveTitle = product.getLive().getTitle();
             for (ShortsChatting shortsChatting : shortsChattings.get()) {
                 User writer = shortsChatting.getUser();
                 ShortsChatResponse shortsChatResponse = new ShortsChatResponse(
@@ -67,9 +68,11 @@ public class ShortsApiController {
                 );
                 shortsChatResponseList.add(shortsChatResponse);
             }
+        } else {
+            liveTitle = "";
         }
         return shortsService.getShorts(shortsId)
-                .map(shorts -> new ResponseEntity<>(new ShortsResponse(shorts, shortsChatResponseList), HttpStatus.OK))
+                .map(shorts -> new ResponseEntity<>(new ShortsResponse(shorts, liveTitle, shortsChatResponseList), HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
