@@ -18,7 +18,7 @@ public class FileHandler {
         System.out.println(multipartFile);
         System.out.println(multipartFile.isEmpty());
         System.out.println(multipartFile != null);
-        if (multipartFile != null) {
+       if (!multipartFile.isEmpty()) {
             System.out.println("파일 이름: " + multipartFile.getOriginalFilename());
             System.out.println("파일 크기: " + multipartFile.getSize());
             System.out.println("Content-Type: " + multipartFile.getContentType());
