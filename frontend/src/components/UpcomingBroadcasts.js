@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Box, Typography, Container, Button } from "@mui/material";
 import UpcomingModal from "./UpcomingModal"; // 모달 컴포넌트 임포트
+import { formatPrice } from "../utils/cssUtils";
 
 const UpcomingBroadcasts = ({ items = [] }) => {
   console.log("UpcomingBroadcasts items:", items);
@@ -22,7 +23,7 @@ const UpcomingBroadcasts = ({ items = [] }) => {
       <Box
         sx={{
           display: "flex",
-          overflow: "auto",
+          overflowX: "auto",
           whiteSpace: "nowrap",
           padding: "10px 0",
         }}
@@ -46,7 +47,7 @@ const UpcomingBroadcasts = ({ items = [] }) => {
               alignItems: "center",
               justifyContent: "space-between",
               flexWrap: "wrap",
-              flexShrink: 0,
+              flexShrink: 0, 
               mr: 3,
             }}
           >
@@ -83,7 +84,7 @@ const UpcomingBroadcasts = ({ items = [] }) => {
                 fontWeight: 300,
               }}
             >
-              {item.productPrice}원
+              {formatPrice(item.productPrice)}
             </Typography>
           </Button>
         ))}
