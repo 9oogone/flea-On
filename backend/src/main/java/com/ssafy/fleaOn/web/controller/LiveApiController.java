@@ -69,8 +69,12 @@ public class LiveApiController {
                     String thumbnail = null;
                     // 파일 처리 중 예외가 발생할 수 있으므로 try-catch로 감싸서 처리
                     try {
-                        System.out.println(photoFile);
-                        thumbnail = fileHandler.parseFileInfo(photoFile);
+                        if (photoFile != null && !photoFile.isEmpty()) {
+                            System.out.println("파일 들어가요");
+                            thumbnail = fileHandler.parseFileInfo(photoFile);
+                        } else {
+                            thumbnail = "https://i11b202.p.ssafy.io/openvidu/recordings/live/sampleImage.png";
+                        }
                     } catch (Exception e) {
                         log.error("파일 처리 중 오류 발생: {}", e.getMessage());
                         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
