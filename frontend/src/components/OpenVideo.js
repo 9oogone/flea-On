@@ -167,7 +167,7 @@ const OpenVideo = () => {
           },
           () => {
             publisher.current.addVideoElement(videoRef.current);
-            session.current.publish(publisher);
+            session.current.publish(publisher.current);
             dispatch(unSetLoading());
           },
           (error) => {
