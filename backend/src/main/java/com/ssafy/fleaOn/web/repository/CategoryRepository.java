@@ -2,6 +2,8 @@ package com.ssafy.fleaOn.web.repository;
 
 import com.ssafy.fleaOn.web.domain.Category;
 import com.ssafy.fleaOn.web.domain.Live;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -21,8 +23,8 @@ public interface CategoryRepository extends JpaRepository<Category, Integer> {
 
     List<Category> findAllByFirstCategoryId(int firstCategoryId);
 
-    Optional<List<Category>> findAllByFirstCategoryNameOrSecondCategoryName(String firstCategoryName, String secondCategoryName);
-
     Optional<Category> findAllByFirstCategoryNameAndSecondCategoryName(String firstCategoryName, String secondCategoryName);
+
+    Slice<Category> findByFirstCategoryNameContainingOrSecondCategoryNameContaining(String firstCategoryName, String secondCategoryName, Pageable pageable);
 
 }
