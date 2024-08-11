@@ -19,8 +19,6 @@ export const fetchCategories = createAsyncThunk(
 export const createLiveBroadcast = createAsyncThunk(
   "live/createLiveBroadcast",
   async (formData) => {
-    console.log(formData);
-
     const response = await baseAxios().post("/fleaOn/live/", formData, {
       headers: {
         "Content-Type": "multipart/form-data",

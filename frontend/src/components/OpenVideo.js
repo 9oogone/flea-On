@@ -42,10 +42,10 @@ const OpenVideo = () => {
   const [currentVideoDevice, setCurrentVideoDevice] = useState(null);
   const [mainStreamManager, setMainStreamManager] = useState(undefined);
   const [sttValue, setSttValue] = useState("");
-  const [publisher, setPublisher] = useState(undefined);
+  // const [publisher, setPublisher] = useState(undefined);
   const [currentRecordingId, setCurrentRecordingId] = useState("");
   const [recordStartTime, setRecordStartTime] = useState(null);
-
+  const publisher = useRef();
   //거래장소시간 선택 모달
   const [open, setOpen] = useState(false);
   const [place, setPlace] = useState("");
@@ -96,8 +96,8 @@ const OpenVideo = () => {
     if (session.current) {
       session.current.disconnect();
     }
-    if (publisher) {
-      publisher = null;
+    if (publisher.current) {
+      publisher.current = null;
     }
   };
 
@@ -110,7 +110,7 @@ const OpenVideo = () => {
       MakeSession(videoRef, dispatch, sessionName)
         .then((ss) => {
           console.log("MakeSession 성공");
-          session.current = ss;
+          //session.current = ss;
           fetchProductList(sessionName);
         })
         .catch((error) => {
@@ -121,15 +121,15 @@ const OpenVideo = () => {
   }, [sessionName]);
 
   const MakeSession = async (videoRef, dispatch, sessionName) => {
-    const session = OV.current.initSession();
+    session.current = OV.current.initSession();
 
-    session.on("streamCreated", (event) => {
-      var subscriber = session.subscribe(event.stream, undefined);
+    session.current.on("streamCreated", (event) => {
+      var subscriber = session.current.subscribe(event.stream, undefined);
       subscribers.push(subscriber);
       subscriber.addVideoElement(videoRef.current);
     });
 
-    session.on("signal:chat", (event) => {
+    session.current.on("signal:chat", (event) => {
       const data = JSON.parse(event.data);
       const type = data.type;
       if (type === 1) {
@@ -149,11 +149,11 @@ const OpenVideo = () => {
     try {
       const resp = await getToken({ sessionName: sessionName });
       let token = resp[0];
-      await session.connect(token, { clientData: "example" });
+      await session.current.connect(token, { clientData: "example" });
 
       if (resp[1] === true) {
         setIsPublisher(true);
-        let publisher = OV.current.initPublisher(
+        publisher.current = OV.current.initPublisher(
           undefined,
           {
             audioSource: undefined,
@@ -166,8 +166,8 @@ const OpenVideo = () => {
             mirror: false,
           },
           () => {
-            publisher.addVideoElement(videoRef.current);
-            session.publish(publisher);
+            publisher.current.addVideoElement(videoRef.current);
+            session.current.publish(publisher.current);
             dispatch(unSetLoading());
           },
           (error) => {
@@ -176,7 +176,7 @@ const OpenVideo = () => {
           }
         );
       }
-      return session;
+      return session.current;
     } catch (error) {
       console.error("세션 설정 중 오류 발생:", error);
       dispatch(unSetLoading());
@@ -197,31 +197,43 @@ const OpenVideo = () => {
       var videoDevices = devices.filter(
         (device) => device.kind === "videoinput"
       );
-
+  
       if (videoDevices && videoDevices.length > 1) {
-        var newPublisher = OV.initPublisher("html-element-id", {
-          videoSource: isFrontCamera
-            ? videoDevices[1].deviceId
-            : videoDevices[0].deviceId,
-          publishAudio: true,
-          publishVideo: true,
-          mirror: isFrontCamera,
-        });
-
-        setIsFrontCamera(isFrontCamera);
-
-        session.unpublish(publisher).then(() => {
-          console.log("Old publisher unpublished!");
-
-          publisher = newPublisher;
-
-          this.session.publish(publisher).then(() => {
-            console.log("New publisher published!");
+        const currentDeviceId = publisher.current.stream.getMediaStream().getVideoTracks()[0].getSettings().deviceId;
+        const newVideoDevice = videoDevices.find(
+          device => device.deviceId !== currentDeviceId
+        );
+  
+        if (newVideoDevice) {
+          const newPublisher = OV.current.initPublisher(undefined, {
+            audioSource: undefined,
+            videoSource: newVideoDevice.deviceId,
+            publishAudio: true,
+            publishVideo: true,
+            resolution: "405x1080",
+            insertMode: "APPEND",
+            frameRate: 30,
+            mirror: isFrontCamera,
           });
-        });
+  
+          session.current.unpublish(publisher.current)
+            .then(() => {
+              publisher.current = newPublisher;
+              publisher.current.addVideoElement(videoRef.current);
+              return session.current.publish(publisher.current);
+            })
+            .then(() => {
+              console.log("New publisher published!");
+              setIsFrontCamera(!isFrontCamera);
+            })
+            .catch((error) => {
+              console.error("Error switching camera:", error);
+            });
+        }
       }
     });
   }
+  
 
   const fetchProductList = async (sessionName) => {
     try {

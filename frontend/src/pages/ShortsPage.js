@@ -46,20 +46,33 @@ const ShortsPage = () => {
   if (!currentShort) return <Typography>Loading...</Typography>;
 
   return (
-    <Container sx={{ m: 0, p: 0, position: "relative", height: "100vh" }}>
+    <Container
+      sx={{
+        m: 0,
+        p: 0,
+        position: "relative",
+        height: "100vh",
+      }}
+    >
       <CustomVideoPlayer
         src={currentShort.url}
         loop
         autoPlay
         muted
-        style={{ width: "100vw", height: "100vh", position: "fixed", top: 0 }}
+        style={{
+          backgroundColor: "green",
+          width: "100px",
+          height: "100vh",
+          position: "fixed",
+          top: 0,
+        }}
       />
       <Box
         sx={{
           position: "absolute",
           top: 0,
           left: 0,
-          width: "100%",
+          width: "90%",
           p: 2,
           color: "white",
           display: "flex",
@@ -67,8 +80,22 @@ const ShortsPage = () => {
           alignItems: "center",
         }}
       >
-        <Typography variant="h6">창고 대방출</Typography>
-        <IconButton color="inherit" sx={{marginRight:"7%"}}>
+        <Typography
+          variant="h6"
+          sx={{
+            width: "100%",
+          }}
+        >
+          창고 대방출
+        </Typography>
+        <IconButton
+          color="inherit"
+          sx={{
+            p: 0,
+            marginRight: "0",
+            width: "10%",
+          }}
+        >
           <ShareIcon />
         </IconButton>
       </Box>
@@ -77,54 +104,69 @@ const ShortsPage = () => {
           position: "absolute",
           bottom: 0,
           left: 0,
-          width: "100%",
+          width: "90%",
           p: 2,
           color: "white",
           background: "rgba(0, 0, 0, 0)",
         }}
       >
         <div>
-        <List sx={{ mt: 2 ,backgroundColor: "rgba(0, 0, 0, 0.25)", marginLeft:"-2%", paddingLeft:"4%", borderRadius:"10px", marginRight:"25%"}} >
-          {currentShort.comments.map((comment) => (
-            <ListItem key={comment.id} sx={{ p: 0 }}>
-              <ListItemAvatar>
-                <Avatar sx={{ bgcolor: "#333" }}>
-                  {comment.username[0].toUpperCase()}
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText
-                primary={comment.username}
-                secondary={comment.text}
-                primaryTypographyProps={{ color: "white" }}
-                secondaryTypographyProps={{ color: "white" }}
-              />
-            </ListItem>
-          ))}
-        </List>
+          <List
+            sx={{
+              mt: 2,
+              backgroundColor: "rgba(0, 0, 0, 0.25)",
+              marginLeft: "-2%",
+              paddingLeft: "4%",
+              borderRadius: "10px",
+              marginRight: "25%",
+            }}
+          >
+            {currentShort.comments.map((comment) => (
+              <ListItem key={comment.id} sx={{ p: 0 }}>
+                <ListItemAvatar>
+                  <Avatar sx={{ bgcolor: "#333" }}>
+                    {comment.username[0].toUpperCase()}
+                  </Avatar>
+                </ListItemAvatar>
+                <ListItemText
+                  primary={comment.username}
+                  secondary={comment.text}
+                  primaryTypographyProps={{ color: "white" }}
+                  secondaryTypographyProps={{ color: "white" }}
+                />
+              </ListItem>
+            ))}
+          </List>
         </div>
-        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-  <Box>
-    <Typography variant="h6">{currentShort.name}</Typography>
-    <Typography>{currentShort.price}</Typography>
-  </Box>
-  <Button
-    variant="contained"
-    sx={{
-      backgroundColor: "#FF0B55",
-      color: "white",
-      height: "50px",
-      marginRight: "10%",
-      width: "60%",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      marginTop: "5%"
-    }}
-  >
-    구매하기
-  </Button>
-</Box>
-
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            width: "100%",
+          }}
+        >
+          <Box>
+            <Typography variant="h6">{currentShort.name}</Typography>
+            <Typography>{currentShort.price}</Typography>
+          </Box>
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: "#FF0B55",
+              color: "white",
+              height: "50px",
+              marginRight: "10%",
+              width: "60%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              marginTop: "5%",
+            }}
+          >
+            구매하기
+          </Button>
+        </Box>
       </Box>
       <Box
         sx={{
@@ -139,12 +181,17 @@ const ShortsPage = () => {
         }}
       >
         <IconButton color="inherit">
-  <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-    <FavoriteIcon />
-    <Typography>{currentShort.likes}</Typography>
-  </Box>
-</IconButton>
-
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            <FavoriteIcon />
+            <Typography>{currentShort.likes}</Typography>
+          </Box>
+        </IconButton>
       </Box>
     </Container>
   );
