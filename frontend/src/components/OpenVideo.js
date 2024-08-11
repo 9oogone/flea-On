@@ -197,35 +197,43 @@ const OpenVideo = () => {
       var videoDevices = devices.filter(
         (device) => device.kind === "videoinput"
       );
-
+  
       if (videoDevices && videoDevices.length > 1) {
-        var newPublisher = OV.current.initPublisher("html-element-id", {
-          audioSource: undefined,
-          videoSource: isFrontCamera
-            ? videoDevices[1].deviceId
-            : videoDevices[0].deviceId,
-          publishAudio: true,
-          publishVideo: true,
-          resolution: "405x1080",
-          insertMode: "APPEND",
-          frameRate: 30,
-          mirror: isFrontCamera,
-        });
-
-        setIsFrontCamera(!isFrontCamera);
-
-        session.current.unpublish(publisher.current).then(() => {
-          console.log("Old publisher unpublished!");
-
-          publisher.current = newPublisher;
-          publisher.current.addVideoElement(videoRef.current)
-          session.current.publish(publisher.current).then(() => {
-            console.log("New publisher published!");
+        const currentDeviceId = publisher.current.stream.getMediaStream().getVideoTracks()[0].getSettings().deviceId;
+        const newVideoDevice = videoDevices.find(
+          device => device.deviceId !== currentDeviceId
+        );
+  
+        if (newVideoDevice) {
+          const newPublisher = OV.current.initPublisher(undefined, {
+            audioSource: undefined,
+            videoSource: newVideoDevice.deviceId,
+            publishAudio: true,
+            publishVideo: true,
+            resolution: "405x1080",
+            insertMode: "APPEND",
+            frameRate: 30,
+            mirror: isFrontCamera,
           });
-        });
+  
+          session.current.unpublish(publisher.current)
+            .then(() => {
+              publisher.current = newPublisher;
+              publisher.current.addVideoElement(videoRef.current);
+              return session.current.publish(publisher.current);
+            })
+            .then(() => {
+              console.log("New publisher published!");
+              setIsFrontCamera(!isFrontCamera);
+            })
+            .catch((error) => {
+              console.error("Error switching camera:", error);
+            });
+        }
       }
     });
   }
+  
 
   const fetchProductList = async (sessionName) => {
     try {
