@@ -11,7 +11,7 @@ import java.time.format.DateTimeFormatter;
 public class FileHandler {
 
     // 기본 저장 경로를 /opt/openvidu/recordings/live/로 설정
-    private static final String BASE_PATH = "/home/ubuntu/";
+    private static final String BASE_PATH = "/opt/openvidu/recordings/live";
 
     public String parseFileInfo(MultipartFile multipartFile) throws Exception {
         try {
