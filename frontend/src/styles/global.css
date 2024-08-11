@@ -3,7 +3,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400&display=swap");
 
 body {
-  font-family: "Noto Sans", "Inter", "Noto Sans KR", "sans-serif";
+  font-family: "Noto Sans KR", "sans-serif";
 }
 
 /* 추가적인 텍스트 요소에 대한 폰트 설정 */
@@ -23,5 +23,5 @@ code,
 table,
 th,
 td {
-  font-family: "Noto Sans", "Inter", "Noto Sans KR", "sans-serif";
+  font-family: "Noto Sans KR", "sans-serif";
 }

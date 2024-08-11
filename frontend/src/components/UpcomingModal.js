@@ -11,7 +11,8 @@ const UpcomingModal = ({
   open,
   handleClose,
   liveDate,
-  products=[],
+  productNames = [],
+  productPrices = [],
   title,
   thumbnail,
   author,
@@ -89,12 +90,12 @@ const UpcomingModal = ({
           <div className={styles.modalBody}>
             <div className={styles.listtitle}>판매 상품 목록</div>
             <List className={styles.productList}>
-              {products.map((product, index) => (
+              {productNames.map((product, index) => (
                 <ListItem key={index} className={styles.productItem}>
-                  <div className={styles.productName}>{product.name}</div>
+                  <div className={styles.productName}>{product}</div>
                   <div
                     className={styles.productPrice}
-                  >{`${product.price}원`}</div>
+                  >{`${productPrices[index]}원`}</div>
                 </ListItem>
               ))}
             </List>
