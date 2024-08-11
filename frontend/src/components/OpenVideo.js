@@ -200,7 +200,7 @@ const OpenVideo = () => {
       console.log(videoDevices)
 
       if (videoDevices && videoDevices.length > 1) {
-        var newPublisher = OV.current.initPublisher("htmlVideo", {
+        var newPublisher = OV.current.initPublisher(undefined, {
           audioSource: undefined,
           videoSource: isFrontCamera
             ? videoDevices[2].deviceId
