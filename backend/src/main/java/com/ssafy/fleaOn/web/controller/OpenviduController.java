@@ -275,7 +275,7 @@ public class OpenviduController {
         boolean hasAudio = (boolean) params.get("hasAudio");
         boolean hasVideo = (boolean) params.get("hasVideo");
 
-        RecordingProperties properties = new RecordingProperties.Builder().outputMode(outputMode).hasAudio(hasAudio).hasVideo(hasVideo).resolution("405x1080").build();
+        RecordingProperties properties = new RecordingProperties.Builder().outputMode(outputMode).hasAudio(hasAudio).hasVideo(hasVideo).build();
 
         System.out.println("Starting recording for session " + sessionId + " with properties {outputMode=" + outputMode
                 + ", hasAudio=" + hasAudio + ", hasVideo=" + hasVideo+"}");
