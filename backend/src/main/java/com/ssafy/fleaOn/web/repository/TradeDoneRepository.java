@@ -16,4 +16,6 @@ public interface TradeDoneRepository extends JpaRepository<TradeDone, Integer> {
 
     @Query("SELECT COUNT(td) FROM TradeDone td WHERE (td.buyer.userId = :userId OR td.seller.userId = :userId) AND td.tradeDate BETWEEN :startOfWeek AND :endOfWeek")
     int countCompletedTrades(@Param("userId") int userId, @Param("startOfWeek") LocalDate startOfWeek, @Param("endOfWeek") LocalDate endOfWeek);
+
+    Optional<TradeDone> findByProductId(int productId);
 }

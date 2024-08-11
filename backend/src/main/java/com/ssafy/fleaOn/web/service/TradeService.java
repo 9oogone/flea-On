@@ -58,6 +58,7 @@ public class TradeService {
                 .tradeTime(trade.getTradeTime())
                 .tradePlace(trade.getTradePlace())
                 .liveTitle(trade.getLive().getTitle())
+                .productId(trade.getProduct().getProductId())
                 .build();
 
         tradeDoneRepository.save(tradeDone);
