@@ -51,6 +51,7 @@ const OpenVideo = () => {
   const [place, setPlace] = useState("");
   const [liveDate, setLiveDate] = useState("");
   const [times, setTimes] = useState([]);
+  const [isFrontCamera, setIsFrontCamera] = useState(false);
   const navigate = useNavigate();
   const handleCustomerClick = () => {
     // 이미 가져온 데이터를 사용하여 상태 업데이트
@@ -182,7 +183,40 @@ const OpenVideo = () => {
       dispatch(unSetLoading());
     }
   };
+  const switchCamera = () => {
+    OV.current.getDevices().then((devices) => {
+      const videoDevices = devices.filter(
+        (device) => device.kind === "videoinput"
+      );
+      console.log(videoDevices)
+      if (videoDevices.length > 1) {
+        const newPublisher = OV.current.initPublisher("htmlVideo", {
+          videoSource: isFrontCamera
+            ? videoDevices[0].deviceId
+            : videoDevices[2].deviceId,
+          publishAudio: true,
+          publishVideo: true,
+          mirror: isFrontCamera,
+          resolution: "405x1080",
+          frameRate: 30,
+          insertMode: "APPEND",
+        });
 
+        setIsFrontCamera(!isFrontCamera);
+
+        session.current.unpublish(publisher.current).then(() => {
+          console.log("Old publisher unpublished!");
+
+          publisher.current = newPublisher;
+
+          session.current.publish(newPublisher).then(() => {
+            publisher.current.addVideoElement(videoRef.current)
+            console.log("New publisher published!");
+          });
+        });
+      }
+    });
+  };
   const { listen, listening, stop } = useSpeechRecognition({
     onResult: (result) => {
       setSttValue(result);
@@ -191,43 +225,7 @@ const OpenVideo = () => {
       listen({ continuous: true });
     },
   });
-  const [isFrontCamera, setIsFrontCamera] = useState(true);
-  function switchCamera() {
-    OV.current.getDevices().then((devices) => {
-      var videoDevices = devices.filter(
-        (device) => device.kind === "videoinput"
-      );
-      console.log(videoDevices)
-
-      if (videoDevices && videoDevices.length > 1) {
-        var newPublisher = OV.current.initPublisher(undefined, {
-          audioSource: undefined,
-          videoSource: isFrontCamera
-            ? videoDevices[2].deviceId
-            : videoDevices[0].deviceId,
-          publishAudio: true,
-          publishVideo: true,
-          resolution: "405x1080",
-          insertMode: "APPEND",
-          frameRate: 30,
-          mirror: isFrontCamera,
-        });
-
-        
-
-        session.current.unpublish(publisher.current).then(() => {
-          console.log("Old publisher unpublished!");
-          // newPublisher.addVideoElement(videoRef.current)
-          publisher.current = newPublisher;
-          session.current.publish(publisher.current).then(() => {
-            console.log("New publisher published!");
-            setIsFrontCamera(!isFrontCamera);
-          });
-        });
-      }
-    });
-  }
-
+  
   const fetchProductList = async (sessionName) => {
     try {
       const response = await baseAxios().get(
