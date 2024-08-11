@@ -203,7 +203,7 @@ const OpenVideo = () => {
         var newPublisher = OV.current.initPublisher("html-element-id", {
           audioSource: undefined,
           videoSource: isFrontCamera
-            ? videoDevices[1].deviceId
+            ? videoDevices[2].deviceId
             : videoDevices[0].deviceId,
           publishAudio: true,
           publishVideo: true,
@@ -217,9 +217,8 @@ const OpenVideo = () => {
 
         session.current.unpublish(publisher.current).then(() => {
           console.log("Old publisher unpublished!");
-          videoRef.current = null;
+          // newPublisher.addVideoElement(videoRef.current)
           publisher.current = newPublisher;
-          publisher.current.addVideoElement(videoRef.current)
           session.current.publish(publisher.current).then(() => {
             console.log("New publisher published!");
           });
