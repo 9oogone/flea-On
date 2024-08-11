@@ -2,38 +2,12 @@ import React from "react";
 import { Box, Typography, Button } from "@mui/material";
 import { formatDistance, parseISO } from "date-fns";
 import { ko } from "date-fns/locale";
+import { extractDong, getRelativeDate } from "../../../utils/cssUtils";
 
-const Lives = ({ items }) => {
-  const getRelativeDate = (date) => {
-    const itemDate = parseISO(date);
-    const now = new Date();
-    const distance = formatDistance(itemDate, now, {
-      addSuffix: true,
-      locale: ko,
-    });
-
-    return distance;
-  };
-
-  const isUpcoming = (date, time) => {
-    const itemDate = new Date(`${date}T${time}`);
-    const now = new Date();
-    return itemDate > now;
-  };
-
-  const upcomingItems = items
-    .filter((item) => isUpcoming(item.date, item.time))
-    .sort(
-      (a, b) =>
-        new Date(`${b.date}T${b.time}`) - new Date(`${a.date}T${a.time}`)
-    );
-
-  const completedItems = items
-    .filter((item) => !isUpcoming(item.date, item.time))
-    .sort(
-      (a, b) =>
-        new Date(`${b.date}T${b.time}`) - new Date(`${a.date}T${a.time}`)
-    );
+const Live = ({ items }) => {
+  console.log(items);
+  const upcomingItems = items.filter((item) => item.is_live === 0);
+  const completedItems = items.filter((item) => item.is_live === 2);
 
   return (
     <Box>
@@ -93,7 +67,8 @@ const Lives = ({ items }) => {
                       wordWrap: "break-word",
                     }}
                   >
-                    {item.place} · {getRelativeDate(item.date)}
+                    {extractDong(item.trade_place)} ·{" "}
+                    {/* {getRelativeDate(item.date)} */}
                   </Typography>
                 </Box>
 
@@ -173,7 +148,8 @@ const Lives = ({ items }) => {
                       wordWrap: "break-word",
                     }}
                   >
-                    {item.place} · {getRelativeDate(item.date)}
+                    {extractDong(item.trade_place)} ·{" "}
+                    {/* {getRelativeDate(item.date)} */}
                   </Typography>
                 </Box>
 
@@ -197,13 +173,11 @@ const Lives = ({ items }) => {
       )}
       {upcomingItems.length === 0 && completedItems.length === 0 && (
         <Box>
-          <Typography>
-            아직 라이브를 시작 안 했네. 라이브 한번 해볼래?
-          </Typography>
+          <Typography>아직 라이브를 하지 않았어요.</Typography>
         </Box>
       )}
     </Box>
   );
 };
 
-export default Lives;
+export default Live;

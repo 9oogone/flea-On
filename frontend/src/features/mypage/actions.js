@@ -3,9 +3,66 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import baseAxios from "../../utils/httpCommons";
 
+// 캘린더 주별 거래 조회..아직 없음...
+export const fetchCalendarWeek = createAsyncThunk(
+  "calendar/fetchCalendarWeek",
+  async ({ email, date }) => {
+    // email과 date를 객체로 받아옴
+    const response = await baseAxios().get(
+      `/fleaon/users/${email}/${date}/aaaaaaaa`
+    );
+    return response.data;
+  }
+);
+
+// 캘린더 일별 거래 조회
+export const fetchCalendarDate = createAsyncThunk(
+  "calendar/fetchCalendarDate",
+  async ({ email, date }) => {
+    // email과 date를 객체로 받아옴
+    const response = await baseAxios().get(
+      `/fleaon/users/${email}/${date}/schedule`
+    );
+    return response.data;
+  }
+);
+
+// 구매 목록 조회
+export const fetchBuys = createAsyncThunk("buy/fetchBuys", async (email) => {
+  const response = await baseAxios().get(`/fleaon/users/${email}/purchaseList`);
+  return response.data;
+});
+
+// 줄서기 목록 조회
+export const fetchWaits = createAsyncThunk("buy/fetchWaits", async (email) => {
+  const response = await baseAxios().get(
+    `/fleaon/users/${email}/reservationList`
+  );
+  return response.data;
+});
+
+// 판매 라이브 목록 조회
+export const fetchSellLive = createAsyncThunk(
+  "sell/fetchSellLive",
+  async (email) => {
+    const response = await baseAxios().get(`/fleaon/users/${email}/commerceLive
+`);
+    return response.data;
+  }
+);
+
+// 판매 쇼츠 목록 조회
+export const fetchSellShorts = createAsyncThunk(
+  "sell/fetchSellShorts",
+  async (email) => {
+    const response = await baseAxios().get(`/fleaon/users/${email}/shorts`);
+    return response.data;
+  }
+);
+
 // 라이브 스크랩 목록 조회
 export const fetchLiveScrap = createAsyncThunk(
-  "live/fetchLiveScrap",
+  "scrap/fetchLiveScrap",
   async (email) => {
     const response = await baseAxios().get(`/fleaon/users/${email}/scrapLive`);
     return response.data;
@@ -14,7 +71,7 @@ export const fetchLiveScrap = createAsyncThunk(
 
 // 숏츠 스크랩 목록 조회
 export const fetchShortsScrap = createAsyncThunk(
-  "shorts/fetchShortsScrap",
+  "scrap/fetchShortsScrap",
   async (email) => {
     const response = await baseAxios().get(
       `/fleaon/users/${email}/scrapShorts`
