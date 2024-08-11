@@ -46,4 +46,7 @@ public class TradeDone {
     @Column(name = "live_title")
     private String liveTitle;
 
+    @Column(name = "product_id", nullable = false)
+    private int productId;
+
 }

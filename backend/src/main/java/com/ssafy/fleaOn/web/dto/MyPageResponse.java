@@ -17,6 +17,6 @@ public class MyPageResponse {
     private int level;
     private String profilePicture;
     private List<String> regionCode;
-    private Map<String, Object> tradeInfo;
+    private TradeCountResponse tradeInfo;
 
 }

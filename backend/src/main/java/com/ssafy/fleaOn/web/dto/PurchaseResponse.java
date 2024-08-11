@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Getter
@@ -21,5 +22,6 @@ public class PurchaseResponse {
     private int liveId;
     private String tradePlace;
     private LocalTime tradeTime;
-    private TradeDone tradeDone;
+    private LocalDate tradeDate;
+    private boolean isTradeDone;
 }

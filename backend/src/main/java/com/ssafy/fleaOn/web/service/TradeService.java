@@ -36,18 +36,21 @@ public class TradeService {
         logger.info("trade service here");
 
         // 1. Trade 정보를 가져와서 TradeDone으로 옮기기
-        List<Trade> trades = tradeRepository.findByBuyerIdAndProduct_ProductId(request.getBuyerId(), request.getProductId()).orElseThrow(()-> new RuntimeException("Trade not found"));
+        List<Trade> trades = tradeRepository.findByBuyerIdAndProduct_ProductId(request.getBuyerId(), request.getProductId())
+                .orElseThrow(() -> new RuntimeException("Trade not found"));
 
         if (trades.isEmpty()) {
             throw new IllegalArgumentException("No trades found for the given buyer and product.");
         }
 
-        // 만약 다수의 Trade가 반환되었다면, 가장 최신 거래를 선택하거나 적합한 거래를 선택합니다.
+        // 적합한 거래 선택
         Trade trade = trades.get(0);  // 예: 첫 번째 거래를 선택
 
         // 남은 로직은 동일
-        User buyer = userRepository.findById(trade.getBuyerId()).orElseThrow(() -> new IllegalArgumentException("Invalid buyer ID"));
-        User seller = userRepository.findById(trade.getSellerId()).orElseThrow(() -> new IllegalArgumentException("Invalid seller ID"));
+        User buyer = userRepository.findById(trade.getBuyerId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid buyer ID"));
+        User seller = userRepository.findById(trade.getSellerId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid seller ID"));
 
         TradeDone tradeDone = TradeDone.builder()
                 .buyer(buyer)
@@ -69,20 +72,33 @@ public class TradeService {
         productRepository.delete(trade.getProduct());
         logger.info("shorts, reservations, products delete");
 
-        Chatting chatting = chattingRepository.findByBuyer_UserIdAndLive_LiveId(request.getBuyerId(), request.getLiveId()).orElseThrow(()-> new RuntimeException("Chatting not found"));
-        deleteChattingAndRelatedData(chatting);
+        // 3. 동일한 buyer와 seller가 있는 다른 trade가 있는지 확인
+        boolean hasRelatedTrades = tradeRepository.existsByBuyerIdAndSellerIdAndChatting_ChattingId(
+                trade.getBuyerId(), trade.getSellerId(), trade.getChatting().getChattingId());
+        System.out.println(hasRelatedTrades);
 
-        // 3. Trade 삭제
+        // 4. 다른 거래가 없는 경우에만 채팅방 삭제
+        if (!hasRelatedTrades) {
+            Chatting chatting = chattingRepository.findByBuyer_UserIdAndLive_LiveId(request.getBuyerId(), request.getLiveId())
+                    .orElseThrow(() -> new RuntimeException("Chatting not found"));
+            deleteChattingAndRelatedData(chatting);
+            logger.info("chatting deleted");
+        } else {
+            logger.info("related trades found, chatting not deleted");
+        }
+
+        // 5. Trade 삭제
         tradeRepository.delete(trade);
         logger.info("trade delete");
 
-        // 4. Live에 속한 모든 Product가 삭제된 경우, Live와 관련된 데이터 삭제
+        // 6. Live에 속한 모든 Product가 삭제된 경우, Live와 관련된 데이터 삭제
         int liveId = trade.getLive().getLiveId();
         if (productRepository.findByLive_LiveId(liveId).isEmpty()) {
             deleteLiveAndRelatedData(liveId);
             logger.info("live deleted");
         }
     }
+
 
     @Transactional
     public void deleteChattingAndRelatedData(Chatting chatting) {

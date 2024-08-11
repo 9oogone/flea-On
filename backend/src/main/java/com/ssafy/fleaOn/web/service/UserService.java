@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 import com.ssafy.fleaOn.web.domain.User;
@@ -126,34 +128,33 @@ public class UserService {
         return null; // 또는 Optional<UserFullInfoResponse>를 반환하여 empty()로 반환
     }
 
-    public MyPageResponse getUserPageByEmail(String email, LocalDate today) {
-        Optional<User> userOptional = userRepository.findByEmail(email);
-        if (userOptional.isEmpty()) {
-            return null;
-        }
-        Optional<List<UserRegion>> userRegionListOptional = userRegionRepository.findByUser_userId(userOptional.get().getUserId());
+    public MyPageResponse getUserPageByEmail(String email, LocalDate startOfWeek) {
+        User userOptional = userRepository.findByEmail(email).orElseThrow(()->new IllegalArgumentException("User not found with email: " + email));
+
+        Optional<List<UserRegion>> userRegionListOptional = userRegionRepository.findByUser_userId(userOptional.getUserId());
         if (userRegionListOptional.isPresent()) {
             List<String> userRegionCodes = new ArrayList<>();
             for (UserRegion userRegion : userRegionListOptional.get()) {
                 userRegionCodes.add(userRegion.getRegion().getRegionCode());
             }
-            int totalTrade = tradeRepository.countByBuyerIdOrSellerIdAndTradeDate(userOptional.get().getUserId(),userOptional.get().getUserId(), today);
-            int saleCount = tradeRepository.countBySellerIdAndTradeDate(userOptional.get().getUserId(), today);
-            int purchaseCount = tradeRepository.countByBuyerIdAndTradeDate(userOptional.get().getUserId(), today);
-            int completedTrades = tradeDoneRepository.countByBuyer_UserIdOrSeller_UserIdAndTradeDate(userOptional.get().getUserId(), userOptional.get().getUserId(), today);
 
-            Map<String, Object> tradeCount = new HashMap<>();
-            tradeCount.put("totalTrade", totalTrade);
-            tradeCount.put("saleCount", saleCount);
-            tradeCount.put("purchaseCount", purchaseCount);
-            tradeCount.put("completedTrades", completedTrades);
+            LocalDate endOfWeek = startOfWeek.plusDays(6);
+
+            int totalTrade = tradeRepository.countByBuyerIdOrSellerIdAndTradeDateBetween(
+                    userOptional.getUserId(), startOfWeek, endOfWeek);
+            int saleCount = tradeRepository.countBySellerIdAndTradeDateBetween(
+                    userOptional.getUserId(), startOfWeek, endOfWeek);
+            int purchaseCount = tradeRepository.countByBuyerIdAndTradeDateBetween(
+                    userOptional.getUserId(), startOfWeek, endOfWeek);
+            int completedTrades = tradeDoneRepository.countCompletedTrades(
+                    userOptional.getUserId(), startOfWeek, endOfWeek);
 
             MyPageResponse myPageResponse = MyPageResponse.builder()
-                    .nickName(userOptional.get().getNickname())
-                    .level(userOptional.get().getLevel())
-                    .profilePicture(userOptional.get().getProfilePicture())
+                    .nickName(userOptional.getNickname())
+                    .level(userOptional.getLevel())
+                    .profilePicture(userOptional.getProfilePicture())
                     .regionCode(userRegionCodes)
-                    .tradeInfo(tradeCount)
+                    .tradeInfo(new TradeCountResponse(totalTrade, saleCount, purchaseCount, completedTrades))
                     .build();
 
             return myPageResponse;
@@ -204,8 +205,9 @@ public class UserService {
         }
         for (Trade trade : findTrades.get()) {
             Optional<Product> findProduct = productRepository.findByProductId(trade.getProduct().getProductId());
-            Optional<TradeDone> findTradeDone = tradeDoneRepository.findByBuyer_UserId(findUser.get().getUserId());
-            TradeDone tradeDone = findTradeDone.orElse(null);
+            Optional<TradeDone> findTradeDone = tradeDoneRepository.findByProductId(trade.getProduct().getProductId());
+            boolean isDone = findTradeDone.isPresent();
+            ZonedDateTime zonedDateTime = ZonedDateTime.of(trade.getTradeDate(), trade.getTradeTime(), ZoneId.systemDefault());
 
             PurchaseResponse purchaseResponse = PurchaseResponse.builder()
                     .productId(findProduct.get().getProductId())
@@ -213,8 +215,9 @@ public class UserService {
                     .productPrice(findProduct.get().getPrice())
                     .liveId(trade.getLive().getLiveId())
                     .tradePlace(trade.getTradePlace())
-                    .tradeTime(trade.getTradeTime())
-                    .tradeDone(tradeDone)
+                    .tradeTime(zonedDateTime.toLocalTime())
+                    .tradeDate(zonedDateTime.toLocalDate())
+                    .isTradeDone(isDone)
                     .build();
             purchaseResponseList.add(purchaseResponse);
         }
@@ -429,29 +432,29 @@ public class UserService {
     }
 
     public SalesShortsListResponse getUserShortsListByUserId(int userId) {
-        Optional<User>findUser = userRepository.findByUserId(userId);
-        if (findUser.isPresent()) {
-            Optional<List<Shorts>> shortsList = shortsRepository.findByUser_userId(findUser.get().getUserId());
-            if (shortsList.isPresent()) {
-                for (Shorts shorts : shortsList.get()) {
-                    Optional<Product> findProduct= productRepository.findByProductId(shorts.getProduct().getProductId());
-                    Optional<Live> findLive = liveRepository.findByLiveId(findProduct.get().getLive().getLiveId());
-                    Optional<TradeDone> findTradeDone = tradeDoneRepository.findBySeller_UserId(findUser.get().getUserId());
-                    System.out.println(findTradeDone.get());
-                    TradeDone tradeDone = findTradeDone.orElse(null);
+        User findUser = userRepository.findByUserId(userId).orElseThrow(()->new RuntimeException("User not found for userId: " + userId));
+        Optional<List<Shorts>> shortsList = shortsRepository.findByUser_userId(findUser.getUserId());
+        if (shortsList.isPresent()) {
+            for (Shorts shorts : shortsList.get()) {
+                Product findProduct= productRepository.findByProductId(shorts.getProduct().getProductId()).orElseThrow(()->new RuntimeException("Product not found for productId: " + shorts.getProduct().getProductId()));
+                Live findLive = liveRepository.findByLiveId(findProduct.getLive().getLiveId()).orElseThrow(()->new RuntimeException("Live not found for liveId: " + findProduct.getLive().getLiveId()));
+                Optional<TradeDone> findTradeDone = tradeDoneRepository.findByProductId(findProduct.getProductId());
+                boolean isDone = findTradeDone.isPresent();
+                ZonedDateTime zonedDateTime = findLive.getLiveDate().atZone(ZoneId.of("Asia/Seoul"));
 
-                    SalesShortsListResponse salesShortsListResponse = SalesShortsListResponse.builder()
-                            .shortsId(shorts.getShortsId())
-                            .productName(findProduct.get().getName())
-                            .productPrice(findProduct.get().getPrice())
-                            .tradePlace(findLive.get().getTradePlace())
-                            .length(shorts.getLength())
-                            .videoAddress(shorts.getVideoAddress())
-                            .userId(findUser.get().getUserId())
-                            .tradeDone(tradeDone)
-                            .build();
-                    return salesShortsListResponse;
-                }
+                SalesShortsListResponse salesShortsListResponse = SalesShortsListResponse.builder()
+                        .shortsId(shorts.getShortsId())
+                        .productName(findProduct.getName())
+                        .productPrice(findProduct.getPrice())
+                        .tradePlace(findLive.getTradePlace())
+                        .length(shorts.getLength())
+                        .videoAddress(shorts.getVideoAddress())
+                        .userId(findUser.getUserId())
+                        .tradeTime(zonedDateTime.toLocalTime())
+                        .tradeDate(zonedDateTime.toLocalDate())
+                        .isTradeDone(isDone)
+                        .build();
+                return salesShortsListResponse;
             }
         }
         return null;
