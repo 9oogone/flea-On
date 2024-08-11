@@ -40,15 +40,15 @@
   border-radius: 4px;
 }
 
-.button {
+.sellerformbutton {
   display: flex;
   justify-content: center;
   width: 100%;
 }
 
-.button1 {
+.sellerformbutton1 {
   padding: 10px 20px;
-  background-color: #007bff;
+  background-color: #FF0B55;
   color: white;
   border: none;
   border-radius: 4px;
@@ -57,8 +57,8 @@
   max-width: 300px;
 }
 
-.button1:hover {
-  background-color: #0056b3;
+.sellerformbutton1:hover {
+  background-color:#FF0B55;
 }
 
 .dateAndTimeCompactColl,
@@ -96,7 +96,7 @@
     max-width: 300px;
   }
 
-  .button1 {
+  .sellerformbutton1 {
     padding: 15px 30px;
   }
 }
@@ -111,7 +111,7 @@
     max-width: 400px;
   }
 
-  .button1 {
+  .sellerformbutton1 {
     padding: 20px 40px;
   }
 }
@@ -195,7 +195,7 @@
     box-sizing: border-box;
   }
 
-  .button1 {
+  .sellerformbutton1 {
     padding: 8px 16px !important;
   }
 }
@@ -234,7 +234,7 @@
     height: 60px;
   }
 
-  .button1 {
+  .sellerformbutton1 {
     padding: 6px 12px !important;
     padding: 6px 12px !important;
   }
@@ -286,15 +286,15 @@
   flex: 1;
 }
 
-.button {
+.sellerformbutton {
   display: flex;
   justify-content: center;
   width: 100%;
 }
 
-.button1 {
+.sellerformbutton1 {
   padding: 10px 20px;
-  background-color: #007bff;
+  background-color: #FF0B55;
   color: white;
   border: none;
   border-radius: 4px;
@@ -303,8 +303,8 @@
   max-width: 300px;
 }
 
-.button1:hover {
-  background-color: #0056b3;
+.sellerformbutton1:hover {
+  background-color: #FF0B55;
 }
 
 .itemsList {
