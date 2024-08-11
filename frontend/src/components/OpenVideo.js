@@ -42,11 +42,10 @@ const OpenVideo = () => {
   const [currentVideoDevice, setCurrentVideoDevice] = useState(null);
   const [mainStreamManager, setMainStreamManager] = useState(undefined);
   const [sttValue, setSttValue] = useState("");
-  const [publisher, setPublisher] = useState(undefined);
+  // const [publisher, setPublisher] = useState(undefined);
   const [currentRecordingId, setCurrentRecordingId] = useState("");
   const [recordStartTime, setRecordStartTime] = useState(null);
-  const [title, setTitle] = useState("");
-  const [seller, setSeller] = useState({});
+  const publisher = useRef();
   //거래장소시간 선택 모달
   const [open, setOpen] = useState(false);
   const [place, setPlace] = useState("");
@@ -97,8 +96,8 @@ const OpenVideo = () => {
     if (session.current) {
       session.current.disconnect();
     }
-    if (publisher) {
-      publisher = null;
+    if (publisher.current) {
+      publisher.current = null;
     }
   };
 
@@ -154,7 +153,7 @@ const OpenVideo = () => {
 
       if (resp[1] === true) {
         setIsPublisher(true);
-        let publisher = OV.current.initPublisher(
+        publisher.current = OV.current.initPublisher(
           undefined,
           {
             audioSource: undefined,
@@ -167,7 +166,7 @@ const OpenVideo = () => {
             mirror: false,
           },
           () => {
-            publisher.addVideoElement(videoRef.current);
+            publisher.current.addVideoElement(videoRef.current);
             session.publish(publisher);
             dispatch(unSetLoading());
           },
@@ -211,12 +210,12 @@ const OpenVideo = () => {
 
         setIsFrontCamera(isFrontCamera);
 
-        session.current.unpublish(publisher).then(() => {
+        session.current.unpublish(publisher.current).then(() => {
           console.log("Old publisher unpublished!");
 
-          publisher = newPublisher;
+          publisher.current = newPublisher;
 
-          session.current.publish(publisher).then(() => {
+          session.current.publish(publisher.current).then(() => {
             console.log("New publisher published!");
           });
         });
@@ -230,16 +229,12 @@ const OpenVideo = () => {
         `/fleaOn/live/${sessionName}/detail`
       );
       const {
-        title,
         products,
         tradePlace,
         liveDate: live_date,
         liveTradeTimes,
-        user,
       } = response.data;
       console.log(response.data);
-      setTitle(title);
-      setSeller(user);
       setProductList(products);
       setCurrentProduct(products[0]); // 첫 번째 상품 설정
       setPlace(tradePlace);
@@ -609,122 +604,70 @@ const OpenVideo = () => {
 
             {/* <Box>{sttValue} </Box> */}
           </Box>
-          <Box
-            sx={{
-              backgroundColor: "rgba(0, 0, 0, 0.12)",
-              height: "100vh",
-              backdropFilter: "blur(10px)",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "flex-start",
-              alignItems: "center",
-              pr: 5,
-              pl: 5,
-              pt: 15,
-            }}
-          >
+          {isPublisher ? (
             <Box
               sx={{
-                display: "flex",
-                alignItems: "center",
-                marginBottom: 2,
+                backgroundColor: "rgba(0, 0, 0, 0.12)",
+                height: "100vh",
+                backdropFilter: "blur(10px)",
               }}
             >
-              <Avatar
-                src={seller.profilePicture}
-                alt={seller.nickname}
-                sx={{ marginRight: 2, width: 32, height: 32 }} // 깨끗한 외관을 위한 작은 아바타
-              />
-              <Box>
-                <Typography
-                  variant="body2"
-                  sx={{ fontWeight: "bold", color: "white" }}
-                >
-                  {seller.nickname}
-                </Typography>
-                <Typography variant="body1" sx={{ color: "white" }}>
-                  {title}
-                </Typography>
-              </Box>
+              <Typography variant="h6">
+                판매자 - 다음에 판매할 상품 목록
+              </Typography>
+              {productList
+                .slice(currentProductIndex + 1)
+                .map((product, index) => (
+                  <Box
+                    key={index + currentProductIndex + 1}
+                    sx={{ marginBottom: 2 }}
+                  >
+                    <Typography variant="subtitle1">{product.name}</Typography>
+                    <Typography variant="body1">
+                      가격: {product.price}원
+                    </Typography>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() =>
+                        handlePrepareProduct(index + currentProductIndex + 1)
+                      }
+                      sx={{ width: "36vw" }}
+                    >
+                      이 상품 준비하기
+                    </Button>
+                  </Box>
+                ))}
             </Box>
-
-            <Typography variant="h6" sx={{ color: "white", marginBottom: 5 }}>
-              상품 목록
-            </Typography>
-
-            {productList.map((product, index) => (
-              <Box
-                key={index}
-                sx={{
-                  marginBottom: 2,
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  width: "80%", // 전체 width 설정
-                }}
-              >
-                <Box>
-                  <Typography
-                    variant="body2"
-                    sx={{ fontWeight: "bold", color: "white" }}
-                  >
-                    {product.name}
-                  </Typography>
-                  <Typography variant="body1" sx={{ color: "white" }}>
-                    가격: {product.price}원
-                  </Typography>
-                </Box>
-                {isPublisher ? (
-                  <Button
-                    variant="contained"
-                    color={
-                      index < currentProductIndex
-                        ? "secondary"
-                        : index === currentProductIndex
-                        ? "primary"
-                        : "default"
-                    }
-                    onClick={() =>
-                      handlePrepareProduct(index + currentProductIndex + 1)
-                    }
-                    disabled={index <= currentProductIndex}
-                    sx={{
-                      width: "36vw",
-                      color: "white",
-                      "&.Mui-disabled": {
-                        color: "white",
-                      },
-                    }}
-                  >
-                    {index < currentProductIndex
-                      ? "방송 종료"
-                      : index === currentProductIndex
-                      ? "방송 중"
-                      : "이 상품 준비하기"}
-                  </Button>
-                ) : (
-                  <Button
-                    variant="contained"
-                    color={
-                      index === currentProductIndex ? "secondary" : "primary"
-                    }
-                    disabled={index !== currentProductIndex}
-                    onClick={() => handleBuy(product.id)}
-                    sx={{
-                      width: "36vw",
-                      color: "white",
-                      "&.Mui-disabled": {
-                        color: "white",
-                      },
-                    }}
-                  >
-                    {index === currentProductIndex ? "구매하기" : "방송예정"}
-                  </Button>
-                )}
-              </Box>
-            ))}
-          </Box>
+          ) : (
+            <Box
+              sx={{
+                backgroundColor: "rgba(0, 0, 0, 0.12)",
+                height: "100vh",
+                backdropFilter: "blur(10px)",
+              }}
+            >
+              <Typography variant="h6">구매자 - 지나간 상품 목록</Typography>
+              {productList
+                .slice(0, currentProductIndex)
+                .map((product, index) => (
+                  <Box key={index} sx={{ marginBottom: 2 }}>
+                    <Typography variant="subtitle1">{product.name}</Typography>
+                    <Typography variant="body1">
+                      가격: {product.price}원
+                    </Typography>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => handleBuy(product.id)} // 지나간 상품에 대해서도 구매 버튼 클릭 시 handleBuy 호출
+                      sx={{ width: "36vw" }}
+                    >
+                      구매하기
+                    </Button>
+                  </Box>
+                ))}
+            </Box>
+          )}
         </Slider>
       </Box>
 
