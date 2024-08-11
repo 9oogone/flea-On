@@ -190,7 +190,7 @@ const OpenVideo = () => {
       const videoDevices = devices.filter(
         (device) => device.kind === "videoinput"
       );
-      console.log(videoDevices)
+      console.log(videoDevices);
       if (videoDevices.length > 1) {
         const newPublisher = OV.current.initPublisher("htmlVideo", {
           videoSource: isFrontCamera
@@ -212,7 +212,7 @@ const OpenVideo = () => {
           publisher.current = newPublisher;
 
           session.current.publish(newPublisher).then(() => {
-            publisher.current.addVideoElement(videoRef.current)
+            publisher.current.addVideoElement(videoRef.current);
             console.log("New publisher published!");
           });
         });
@@ -227,37 +227,6 @@ const OpenVideo = () => {
       listen({ continuous: true });
     },
   });
-  const [isFrontCamera, setIsFrontCamera] = useState(false);
-  function switchCamera() {
-    OV.current.getDevices().then((devices) => {
-      var videoDevices = devices.filter(
-        (device) => device.kind === "videoinput"
-      );
-
-      if (videoDevices && videoDevices.length > 1) {
-        var newPublisher = OV.initPublisher("html-element-id", {
-          videoSource: isFrontCamera
-            ? videoDevices[1].deviceId
-            : videoDevices[0].deviceId,
-          publishAudio: true,
-          publishVideo: true,
-          mirror: isFrontCamera,
-        });
-
-        setIsFrontCamera(isFrontCamera);
-
-        session.unpublish(publisher).then(() => {
-          console.log("Old publisher unpublished!");
-
-          publisher = newPublisher;
-
-          this.session.publish(publisher).then(() => {
-            console.log("New publisher published!");
-          });
-        });
-      }
-    });
-  }
 
   const fetchProductList = async (sessionName) => {
     try {
