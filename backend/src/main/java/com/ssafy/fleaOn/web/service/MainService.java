@@ -30,8 +30,9 @@ public class MainService {
     private final UserRegionRepository userRegionRepository;
 
     private final TradeRepository tradeRepository;
+    private final LiveScrapRepository liveScrapRepository;
 
-    public Slice<MainLiveResponse> getMainLiveListByRegionCode(List<UserRegion> findUserRegionList, LocalDateTime currentTime) {
+    public Slice<MainLiveResponse> getMainLiveListByRegionCode(int userId, List<UserRegion> findUserRegionList, LocalDateTime currentTime) {
         Pageable pageable = PageRequest.of(0, 10);
         List<MainLiveResponse> mainLiveResponseList = new ArrayList<>();
 
@@ -43,8 +44,13 @@ public class MainService {
 
             for (Live live : livePage) {
                 Optional<List<Product>> findProductList = productRepository.findByLive_LiveId(live.getLiveId());
+                Optional<LiveScrap> findLiveScrap = liveScrapRepository.findByUser_userIdAndLive_liveId(userId, live.getLiveId());
                 if (findProductList.isPresent()) {
-                    MainLiveResponse mainLiveResponse = MainLiveResponse.fromEntity(live, findProductList.get());
+                    boolean isScrap = false;
+                    if (findLiveScrap.isPresent()) {
+                        isScrap = true;
+                    }
+                    MainLiveResponse mainLiveResponse = MainLiveResponse.fromEntity(live, findProductList.get(), isScrap);
                     mainLiveResponseList.add(mainLiveResponse);
                 }
             }
