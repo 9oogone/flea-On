@@ -123,7 +123,7 @@ const OpenVideo = () => {
   const MakeSession = async (videoRef, dispatch, sessionName) => {
     session.current = OV.current.initSession();
 
-    session.on("streamCreated", (event) => {
+    session.current.on("streamCreated", (event) => {
       var subscriber = session.current.subscribe(event.stream, undefined);
       subscribers.push(subscriber);
       subscriber.addVideoElement(videoRef.current);
@@ -208,7 +208,7 @@ const OpenVideo = () => {
           mirror: isFrontCamera,
         });
 
-        setIsFrontCamera(isFrontCamera);
+        setIsFrontCamera(!isFrontCamera);
 
         session.current.unpublish(publisher.current).then(() => {
           console.log("Old publisher unpublished!");
