@@ -3,7 +3,7 @@ import { createTheme } from "@mui/material/styles";
 
 const theme = createTheme({
   typography: {
-    fontFamily: 'Noto Sans',
+    fontFamily: "Noto Sans",
   },
   allVariants: {
     fontFamily: "Noto Sans",

@@ -1,16 +1,16 @@
 import React from "react";
 import { useDispatch } from "react-redux";
-import { Box, Typography, Grid, Button } from "@mui/material";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
-import { FavoriteRounded } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { toggleScrap } from "../scrapSlice";
 import { switchTab } from "../../../features/home/contentSlice";
+import { Box, Typography, Grid, Button } from "@mui/material";
+import { FavoriteRounded, LocationOn } from "@mui/icons-material";
 import { formatPrice, extractDong } from "../../../utils/cssUtils";
+
 const ScrapShorts = ({ items }) => {
+  // console.log(items);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  console.log(items);
   const handleNavigateToShorts = () => {
     dispatch(switchTab("shorts"));
     navigate("/");
@@ -140,7 +140,7 @@ const ScrapShorts = ({ items }) => {
                             mr: 0.6,
                           }}
                         >
-                          <LocationOnIcon sx={{ fontSize: "8px" }} />
+                          <LocationOn sx={{ fontSize: "8px" }} />
                           {extractDong(item.tradePlace)}
                         </Typography>
                       </Box>
