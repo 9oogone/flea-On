@@ -110,7 +110,7 @@ const OpenVideo = () => {
       MakeSession(videoRef, dispatch, sessionName)
         .then((ss) => {
           console.log("MakeSession 성공");
-          session.current = ss;
+          //session.current = ss;
           fetchProductList(sessionName);
         })
         .catch((error) => {
@@ -121,15 +121,15 @@ const OpenVideo = () => {
   }, [sessionName]);
 
   const MakeSession = async (videoRef, dispatch, sessionName) => {
-    const session = OV.current.initSession();
+    session.current = OV.current.initSession();
 
     session.on("streamCreated", (event) => {
-      var subscriber = session.subscribe(event.stream, undefined);
+      var subscriber = session.current.subscribe(event.stream, undefined);
       subscribers.push(subscriber);
       subscriber.addVideoElement(videoRef.current);
     });
 
-    session.on("signal:chat", (event) => {
+    session.current.on("signal:chat", (event) => {
       const data = JSON.parse(event.data);
       const type = data.type;
       if (type === 1) {
@@ -149,7 +149,7 @@ const OpenVideo = () => {
     try {
       const resp = await getToken({ sessionName: sessionName });
       let token = resp[0];
-      await session.connect(token, { clientData: "example" });
+      await session.current.connect(token, { clientData: "example" });
 
       if (resp[1] === true) {
         setIsPublisher(true);
@@ -167,7 +167,7 @@ const OpenVideo = () => {
           },
           () => {
             publisher.current.addVideoElement(videoRef.current);
-            session.publish(publisher);
+            session.current.publish(publisher);
             dispatch(unSetLoading());
           },
           (error) => {
@@ -176,7 +176,7 @@ const OpenVideo = () => {
           }
         );
       }
-      return session;
+      return session.current;
     } catch (error) {
       console.error("세션 설정 중 오류 발생:", error);
       dispatch(unSetLoading());
