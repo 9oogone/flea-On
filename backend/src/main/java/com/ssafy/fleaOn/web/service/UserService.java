@@ -477,7 +477,7 @@ public class UserService {
     }
     public CommerceLiveExpectedResponse getUserCommerceLiveExpectedByUserId(int userId){
         LocalDateTime currentTime = LocalDateTime.now();
-        Optional<Live> findLive = liveRepository.findBySeller_userIdAndIsLiveAndLiveDateGreaterThanEqual(userId, 0, currentTime);
+        Optional<Live> findLive = liveRepository.findBySeller_userIdAndIsLiveAndLiveDateLessThanEqual(userId, 0, currentTime);
         if (findLive.isPresent()) {
             CommerceLiveExpectedResponse commerceLiveExpectedResponse = CommerceLiveExpectedResponse.builder()
                     .liveId(findLive.get().getLiveId())
