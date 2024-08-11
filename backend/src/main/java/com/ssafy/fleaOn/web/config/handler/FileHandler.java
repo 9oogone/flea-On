@@ -73,7 +73,7 @@ public class FileHandler {
         } else {
             System.out.println("파일이 없습니다.");
             // 파일이 없을 경우 null 반환
-            return null;
+            return "https://i11b202.p.ssafy.io/openvidu/recordings/live/sampleImage.png";
         }
     }
 }
