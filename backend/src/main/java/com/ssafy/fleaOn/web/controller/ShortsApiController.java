@@ -2,10 +2,12 @@ package com.ssafy.fleaOn.web.controller;
 
 import com.ssafy.fleaOn.web.config.jwt.JWTUtil;
 import com.ssafy.fleaOn.web.domain.Shorts;
+import com.ssafy.fleaOn.web.domain.ShortsChatting;
 import com.ssafy.fleaOn.web.domain.User;
-import com.ssafy.fleaOn.web.dto.ShortsChatRequest;
+import com.ssafy.fleaOn.web.dto.ShortsChatResponse;
 import com.ssafy.fleaOn.web.dto.ShortsRequest;
 import com.ssafy.fleaOn.web.dto.ShortsResponse;
+import com.ssafy.fleaOn.web.repository.ShortsChattingRepository;
 import com.ssafy.fleaOn.web.service.ShortsService;
 import com.ssafy.fleaOn.web.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,8 +18,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/fleaon/shorts")
@@ -26,11 +30,13 @@ public class ShortsApiController {
 
     private final ShortsService shortsService;
     private final UserService userService;
+    private final ShortsChattingRepository shortsChattingRepository;
 
     @Autowired
-    public ShortsApiController(ShortsService shortsService, UserService userService) {
+    public ShortsApiController(ShortsService shortsService, UserService userService, ShortsChattingRepository shortsChattingRepository) {
         this.shortsService = shortsService;
         this.userService = userService;
+        this.shortsChattingRepository = shortsChattingRepository;
     }
 
     @PostMapping("/save")
@@ -48,8 +54,22 @@ public class ShortsApiController {
     @GetMapping("/play/{shortsId}")
     @Operation(summary = "숏츠 정보 반환", description = "저장된 숏츠 정보를 반환합니다.")
     public ResponseEntity<ShortsResponse> playShorts(@PathVariable int shortsId) {
+        Optional<List<ShortsChatting>> shortsChattings = shortsChattingRepository.findByShorts_ShortsId(shortsId);
+        List<ShortsChatResponse> shortsChatResponseList = new ArrayList<>();
+        if (shortsChattings.isPresent()){
+            for (ShortsChatting shortsChatting : shortsChattings.get()) {
+                User writer = shortsChatting.getUser();
+                ShortsChatResponse shortsChatResponse = new ShortsChatResponse(
+                        writer.getProfilePicture(),
+                        writer.getNickname(),
+                        shortsChatting.getContent(),
+                        shortsChatting.getTime()
+                );
+                shortsChatResponseList.add(shortsChatResponse);
+            }
+        }
         return shortsService.getShorts(shortsId)
-                .map(shorts -> new ResponseEntity<>(new ShortsResponse(shorts), HttpStatus.OK))
+                .map(shorts -> new ResponseEntity<>(new ShortsResponse(shorts, shortsChatResponseList), HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 

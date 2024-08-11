@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -26,6 +27,7 @@ public class ShortsRequest {
     public Shorts toEntity(Product product, User seller){
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
         LocalTime parsedShortsLength = LocalTime.parse(length, timeFormatter);
+
 
         return Shorts.builder()
                 .shortsThumbnail(thumbnail)
