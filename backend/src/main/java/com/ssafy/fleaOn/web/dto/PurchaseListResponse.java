@@ -6,14 +6,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
-
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class SalesShortsListResponse {
-
-    List<SellingShortsResponse> sellingShortsResponses;
-    List<TradeDoneResponse> tradeDoneLists;
-
+public class PurchaseListResponse {
+    List<PurchaseResponse> purchases;
+    List<TradeDoneResponse> tradeDoneResponses;
 }
