@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Getter
 @Builder
@@ -27,6 +28,10 @@ public class MainShortsResponse {
 
     private String thumbnail;
 
+    private LocalTime length;
+
+    private int isLive;
+
     public static MainShortsResponse fromEntity(Shorts shorts, Product product, Live live) {
         return MainShortsResponse.builder()
                 .shortsId(shorts.getShortsId())
@@ -35,6 +40,8 @@ public class MainShortsResponse {
                 .productPrice(product.getPrice())
                 .tradePlace(live.getTradePlace())
                 .thumbnail(shorts.getShortsThumbnail())
+                .length(shorts.getLength())
+                .isLive(live.getIsLive())
                 .build();
     }
 }
