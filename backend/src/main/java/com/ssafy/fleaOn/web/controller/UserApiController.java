@@ -167,12 +167,12 @@ public class UserApiController {
     @GetMapping("/{email}/{tradeDate}/schedule")
     public ResponseEntity<?> getUserSchedule(@PathVariable("email") String email, @PathVariable("tradeDate") LocalDate tradeDate) {
         User user = userService.findByEmail(email);
-        Optional<List<Map<String, Object>>> userScheduleList = userService.getUserScheduleListByUserIdAndDate(user.getUserId(), tradeDate);
-
-        if (userScheduleList.isPresent()) {
-            return ResponseEntity.status(HttpStatus.OK).body(userScheduleList.get());
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } else {
+            List<DayTradeResponse> userScheduleList = userService.getUserScheduleListByUserIdAndDate(user.getUserId(), tradeDate);
+            return ResponseEntity.status(HttpStatus.OK).body(userScheduleList);
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     @Operation(summary = "구매 목록 조회", description = "회원의 구매목록을 조회할 때 사용합니다. ")
@@ -197,24 +197,27 @@ public class UserApiController {
     public ResponseEntity<?> getUserReservationList(@PathVariable("email") String email) {
         User user = userService.findByEmail(email);
         System.out.println("useId : " + user.getUserId());
-        Optional<List<Map<String, Object>>> userReservationList = userService.getUserReservationListByUserId(user.getUserId());
-
-        if (userReservationList.isPresent()) {
-                return ResponseEntity.status(HttpStatus.OK).body(userReservationList.get());
-            }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        if (user == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } else {
+            List<ReservationListResponse> userReservationList = userService.getUserReservationListByUserId(user.getUserId());
+            return ResponseEntity.status(HttpStatus.OK).body(userReservationList);
+        }
     }
 
     @Operation(summary = "라이브 목록 조회", description = "회원의 라이브 목록을 조회할 때 사용합니다. ")
     @GetMapping("/{email}/commerceLive")
     public ResponseEntity<?> getUserCommerceLive(@PathVariable("email") String email) {
-        User user = userService.findByEmail(email);
-        System.out.println(user);
-        Optional<List<Map<String, Object>>> userCommerceLiveList = userService.getUserCommerceLiveListByUserId(user.getUserId());
-        if (userCommerceLiveList.isPresent()) {
-            return ResponseEntity.status(HttpStatus.OK).body(userCommerceLiveList.get());
+        try {
+            User user = userService.findByEmail(email);
+            System.out.println(user);
+            List<LiveListResponse> userCommerceLiveList = userService.getUserCommerceLiveListByUserId(user.getUserId());
+            return ResponseEntity.status(HttpStatus.OK).body(userCommerceLiveList);
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        catch (Exception e){
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 
     @Operation(summary = "판매 내역 - 라이브 상세", description = "회원이 판매 예정인 라이브 상세 내용을 볼 때 사용합니다. ")
@@ -240,9 +243,9 @@ public class UserApiController {
         try {
             User user = userService.findByEmail(email);
 
-            Optional<List<Map<String, Object>>> userScrapLiveList = userService.getUserScrapLiveByUserId(user.getUserId());
-            if (userScrapLiveList.isPresent()) {
-                return ResponseEntity.status(HttpStatus.OK).body(userScrapLiveList.get());
+            List<ScrapLiveResponse> userScrapLiveList = userService.getUserScrapLiveByUserId(user.getUserId());
+            if (userScrapLiveList != null) {
+                return ResponseEntity.status(HttpStatus.OK).body(userScrapLiveList);
             }
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
