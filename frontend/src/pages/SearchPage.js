@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import { fetchSearchResults } from "../features/search/actions";
-import { Container, Typography, Grid, Button, Box, CircularProgress } from "@mui/material";
+import { Container, Typography, Grid, Button, Box } from "@mui/material";
 import UpcomingBroadcasts from "../components/UpcomingBroadcasts";
 import LiveBroadcasts from "../components/LiveBroadcasts";
 import Shorts from "../components/Shorts";
-// import Spinner from "../components/Spinner.js"
+import Spinner from "../components/Spinner.js"
 
 const useQuery = () => {
   return new URLSearchParams(useLocation().search);
@@ -35,14 +35,14 @@ const SearchPage = () => {
   }, [error]);
 
   useEffect(() => {
-    if (results) {
+    if (results && results.length > 0) {
       console.log("Results updated:", results);
-      setLive(results[0].live || []);
-      setShorts(results[0].shorts || []);
-      setUpcoming(results[0].upcoming || []);
-      console.log("Live:", results.live);
-      console.log("Shorts:", results.shorts);
-      console.log("Upcoming:", results.upcoming);
+      setLive(results[0]?.live || []);
+      setShorts(results[0]?.shorts || []);
+      setUpcoming(results[0]?.upcoming || []);
+      console.log("Live:", results[0]?.live);
+      console.log("Shorts:", results[0]?.shorts);
+      console.log("Upcoming:", results[0]?.upcoming);
     }
   }, [results]);
 
@@ -53,44 +53,70 @@ const SearchPage = () => {
     return `에러가 발생했습니다: ${error}`;
   };
 
+  const isEmptyResults = () => {
+    return (
+      (!results[0]?.upcoming || results[0]?.upcoming.length === 0) &&
+      (!results[0]?.live || results[0]?.live.length === 0) &&
+      (!results[0]?.shorts || results[0]?.shorts.length === 0)
+    );
+  };
+
   return (
     <Container sx={{ mt: 10 }}>
-      {loading && <CircularProgress />}
+      {loading && <Spinner />}
       {error && <Typography color="error">{getErrorMessage()}</Typography>}
       {!loading && !error && results && (
-        <Grid container spacing={3}>
-          <UpcomingBroadcasts items={upcoming} />
-          <Grid item xs={12}>
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <Typography variant="h5">쇼츠</Typography>
-              <Button onClick={() => navigate(`/search/shorts?query=${query}`)}>
-                모두보기
-              </Button>
-            </Box>
+        isEmptyResults() ? (
+          <Typography variant="h6" sx={{ mt: '100%', textAlign: 'center' }}>
+            {query}의 검색 결과가 없습니다!
+          </Typography>
+        ) : (
+          <Grid container spacing={3}>
+            {upcoming.length > 0 && <UpcomingBroadcasts items={upcoming} />}
+            {shorts.length > 0 && (
+              <>
+                <Grid item xs={12}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Typography variant="h5">쇼츠</Typography>
+                    {shorts.length > 2 && (
+                    <Button onClick={() => navigate(`/search/shorts?query=${query}`)}>
+                      모두보기
+                    </Button>
+                    )}
+                  </Box>
+                </Grid>
+                <Shorts items={shorts.slice(0, 2)} />
+              </>
+            )}
+            {live.length > 0 && (
+              <>
+                <Grid item xs={12}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Typography variant="h5">라이브</Typography>
+                    {live.length > 2 && (
+                    <Button onClick={() => navigate(`/search/live?query=${query}`)}>
+                      모두보기
+                    </Button>
+                    )}
+                  </Box>
+                </Grid>
+                <LiveBroadcasts items={live.slice(0, 2)} />
+              </>
+            )}
           </Grid>
-          <Shorts items={shorts.slice(0, 2)} />
-          <Grid item xs={12}>
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <Typography variant="h5">라이브</Typography>
-              <Button onClick={() => navigate(`/search/live?query=${query}`)}>
-                모두보기
-              </Button>
-            </Box>
-          </Grid>
-          <LiveBroadcasts items={live.slice(0, 2)} />
-        </Grid>
+        )
       )}
     </Container>
   );
