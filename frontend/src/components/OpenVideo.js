@@ -213,7 +213,7 @@ const OpenVideo = () => {
           mirror: isFrontCamera,
         });
 
-        setIsFrontCamera(!isFrontCamera);
+        
 
         session.current.unpublish(publisher.current).then(() => {
           console.log("Old publisher unpublished!");
@@ -221,6 +221,7 @@ const OpenVideo = () => {
           publisher.current = newPublisher;
           session.current.publish(publisher.current).then(() => {
             console.log("New publisher published!");
+            setIsFrontCamera(!isFrontCamera);
           });
         });
       }
