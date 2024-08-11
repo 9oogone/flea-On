@@ -200,11 +200,15 @@ const OpenVideo = () => {
 
       if (videoDevices && videoDevices.length > 1) {
         var newPublisher = OV.current.initPublisher("html-element-id", {
+          audioSource: undefined,
           videoSource: isFrontCamera
             ? videoDevices[1].deviceId
             : videoDevices[0].deviceId,
           publishAudio: true,
           publishVideo: true,
+          resolution: "405x1080",
+          insertMode: "APPEND",
+          frameRate: 30,
           mirror: isFrontCamera,
         });
 
@@ -214,7 +218,7 @@ const OpenVideo = () => {
           console.log("Old publisher unpublished!");
 
           publisher.current = newPublisher;
-
+          publisher.current.addVideoElement(videoRef.current)
           session.current.publish(publisher.current).then(() => {
             console.log("New publisher published!");
           });
