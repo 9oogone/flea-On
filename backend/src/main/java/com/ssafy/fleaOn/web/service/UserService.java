@@ -440,7 +440,8 @@ public class UserService {
                 Live findLive = liveRepository.findByLiveId(findProduct.getLive().getLiveId()).orElseThrow(()->new RuntimeException("Live not found for liveId: " + findProduct.getLive().getLiveId()));
                 Optional<TradeDone> findTradeDone = tradeDoneRepository.findByProductId(findProduct.getProductId());
                 boolean isDone = findTradeDone.isPresent();
-                ZonedDateTime zonedDateTime = findLive.getLiveDate().atZone(ZoneId.of("Asia/Seoul"));
+//                ZonedDateTime seoulDateTime = findLive.getLiveDate().atZone(ZoneId.of("UTC"))
+//                        .withZoneSameInstant(ZoneId.of("Asia/Seoul"));
 
                 SalesShortsListResponse salesShortsListResponse = SalesShortsListResponse.builder()
                         .shortsId(shorts.getShortsId())
@@ -450,8 +451,8 @@ public class UserService {
                         .length(shorts.getLength())
                         .videoAddress(shorts.getVideoAddress())
                         .userId(findUser.getUserId())
-                        .tradeTime(zonedDateTime.toLocalTime())
-                        .tradeDate(zonedDateTime.toLocalDate())
+                        .tradeTime(findLive.getLiveDate().toLocalTime())
+                        .tradeDate(findLive.getLiveDate().toLocalDate())
                         .isTradeDone(isDone)
                         .build();
                 return salesShortsListResponse;

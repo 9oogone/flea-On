@@ -7,6 +7,7 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 
 @Getter
 public class ShortsResponse {
@@ -17,8 +18,9 @@ public class ShortsResponse {
     private final LocalDateTime uploadDate;
     private final ProductResponse product;
     private final UserResponse user;
+    private final List<ShortsChatResponse> shortsChatResponseList;
 
-    public ShortsResponse(Shorts shorts) {
+    public ShortsResponse(Shorts shorts, List<ShortsChatResponse> shortsChatResponseList) {
         this.shortsId = shorts.getShortsId();
         this.shortsThumbnail = shorts.getShortsThumbnail();
         this.length = shorts.getLength();
@@ -26,6 +28,7 @@ public class ShortsResponse {
         this.uploadDate = shorts.getUploadDate();
         this.product = new ProductResponse(shorts.getProduct());
         this.user = new UserResponse(shorts.getProduct().getSeller());
+        this.shortsChatResponseList = shortsChatResponseList;
     }
 
     @Getter
