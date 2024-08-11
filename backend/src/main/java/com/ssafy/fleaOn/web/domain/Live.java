@@ -38,7 +38,7 @@ public class Live {
     private String tradePlace;
 
     @Column(name = "is_live", nullable = false)
-    private int isLive;
+    private int isLive; // 0: 방송 예정, 1: 방송 중, 2: 방송 종료
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seller_id", nullable = false)
