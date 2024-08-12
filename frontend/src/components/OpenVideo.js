@@ -215,13 +215,13 @@ const OpenVideo = () => {
 
         setIsFrontCamera(!isFrontCamera);
 
-        session.current.unpublish(publisher.current).then(() => {
+        session.current.unpublish(publisher).then(() => {
           console.log("Old publisher unpublished!");
 
-          publisher.current = newPublisher;
+          setPublisher(newPublisher);
 
           session.current.publish(newPublisher).then(() => {
-            publisher.current.addVideoElement(videoRef.current);
+            publisher.addVideoElement(videoRef.current);
             console.log("New publisher published!");
           });
         });
