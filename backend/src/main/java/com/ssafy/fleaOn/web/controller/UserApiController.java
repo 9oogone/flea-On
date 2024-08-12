@@ -194,7 +194,7 @@ public class UserApiController {
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } else {
-            List<DayTradeResponse> userScheduleList = userService.getUserScheduleListByUserIdAndDate(user.getUserId(), tradeDate);
+            ScheduleResponse userScheduleList = userService.getUserScheduleListByUserIdAndDate(user.getUserId(), tradeDate);
             return ResponseEntity.status(HttpStatus.OK).body(userScheduleList);
         }
     }

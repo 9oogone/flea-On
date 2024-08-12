@@ -20,9 +20,15 @@ public interface TradeDoneRepository extends JpaRepository<TradeDone, Integer> {
 
     Optional<TradeDone> findByProductId(int productId);
 
+    @Query("SELECT COUNT(td) FROM TradeDone td WHERE (td.buyer.userId = :userId OR td.seller.userId = :userId) AND td.tradeDate BETWEEN :startOfWeek AND :endOfWeek")
+    int countTradeDateBetween(int userId, LocalDate startOfWeek, LocalDate endOfWeek);
+
     @Query("SELECT COUNT(td) FROM TradeDone td WHERE (td.seller.userId = :userId) AND td.tradeDate BETWEEN :startOfWeek AND :endOfWeek")
     int countBySellerIdAndTradeDateBetween(int userId, LocalDate startOfWeek, LocalDate endOfWeek);
 
     @Query("SELECT COUNT(td) FROM TradeDone td WHERE (td.buyer.userId = :userId) AND td.tradeDate BETWEEN :startOfWeek AND :endOfWeek")
     int countByBuyerIdAndTradeDateBetween(int userId, LocalDate startOfWeek, LocalDate endOfWeek);
+
+    @Query("SELECT (td) FROM TradeDone td WHERE (td.buyer.userId = :userId OR td.seller.userId = :userId) AND td.tradeDate = :tradeDate")
+    Optional<List<TradeDone>> findByTradeDateAndBuyerIdOrSellerId(int userId, LocalDate tradeDate);
 }
