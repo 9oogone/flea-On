@@ -1,5 +1,6 @@
 package com.ssafy.fleaOn.web.controller;
 
+import com.ssafy.fleaOn.web.config.handler.FileHandler;
 import com.ssafy.fleaOn.web.config.jwt.JWTUtil;
 import com.ssafy.fleaOn.web.domain.Live;
 import com.ssafy.fleaOn.web.domain.User;
@@ -12,10 +13,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -26,9 +30,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @RequestMapping("/fleaon/users")
 @Tag(name = "users API", description = "users 관련 API")
+@Slf4j
 public class UserApiController {
 
     private final UserService userService;
+    private final FileHandler fileHandler;
 
 
     @Operation(summary = "회원가입", description = "회원가입을 할 떄 사용합니다. ")
@@ -141,14 +147,32 @@ public class UserApiController {
     }
 
     @Operation(summary = "회원 정보 수정", description = "회원 정보를 수정할 때 사용합니다. ")
-    @PutMapping("{email}/info")
-    public ResponseEntity<?> updateUserInfo(@PathVariable("email") String email, @RequestBody ExtraInfoRequest extraInfoRequest) {
-        User getUser = userService.findByEmail(email);
-        if (getUser == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } else {
-            User updateUser = userService.updateUserByEmail(email, extraInfoRequest);
+    @PutMapping(value = "{email}/info", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> updateUserInfo(@PathVariable("email") String email, @RequestPart(value = "photoFile", required = false) MultipartFile photoFile,
+                                            @RequestPart("data") ExtraInfoRequest extraInfoRequest) {
+        try {
+            User getUser = userService.findByEmail(email);
+            if (getUser == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+            String profilePicture = null;
+            try {
+                if (photoFile != null && !photoFile.isEmpty()) {
+                    System.out.println("파일 들어가요");
+                    profilePicture = fileHandler.parseFileInfo(photoFile);
+                }
+            }
+            catch (Exception e) {
+                log.error("파일 처리 중 오류 발생: {}", e.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body("파일 처리 중 오류가 발생했습니다: " + e.getMessage());
+            }
+            User updateUser = userService.updateUserByEmail(email, extraInfoRequest, profilePicture);
             return ResponseEntity.status(HttpStatus.OK).body(updateUser);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
@@ -178,15 +202,14 @@ public class UserApiController {
     @Operation(summary = "구매 목록 조회", description = "회원의 구매목록을 조회할 때 사용합니다. ")
     @GetMapping("/{email}/purchaseList")
     public ResponseEntity<?> getUserPurchaseList(@PathVariable("email") String email) {
-        try{
+        try {
             User user = userService.findByEmail(email);
             if (user == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
             PurchaseListResponse userPurchaseList = userService.getUserPurchaseListByUserId(user.getUserId());
             return ResponseEntity.status(HttpStatus.OK).body(userPurchaseList);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
@@ -197,7 +220,7 @@ public class UserApiController {
     public ResponseEntity<?> getUserReservationList(@PathVariable("email") String email) {
         User user = userService.findByEmail(email);
         System.out.println("useId : " + user.getUserId());
-        if (user == null){
+        if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } else {
             List<ReservationListResponse> userReservationList = userService.getUserReservationListByUserId(user.getUserId());
@@ -213,8 +236,7 @@ public class UserApiController {
             System.out.println(user);
             List<LiveListResponse> userCommerceLiveList = userService.getUserCommerceLiveListByUserId(user.getUserId());
             return ResponseEntity.status(HttpStatus.OK).body(userCommerceLiveList);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
@@ -225,13 +247,12 @@ public class UserApiController {
     public ResponseEntity<?> getCommerceLiveInfo(@PathVariable("email") String email, @PathVariable("liveId") int liveId) {
         try {
             User user = userService.findByEmail(email);
-            if(user != null){
+            if (user != null) {
                 Live liveDetails = userService.getUserCommerLiveDetails(user.getUserId(), liveId);
                 return ResponseEntity.status(HttpStatus.OK).body(liveDetails);
             }
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
@@ -248,8 +269,7 @@ public class UserApiController {
                 return ResponseEntity.status(HttpStatus.OK).body(userScrapLiveList);
             }
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
@@ -266,8 +286,7 @@ public class UserApiController {
                 return ResponseEntity.status(HttpStatus.OK).body(userScrapShortsList.get());
             }
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
@@ -319,14 +338,12 @@ public class UserApiController {
                     userService.addUserRegion(user.getUserId(), regionCode);
                     UserRegion userRegion = userService.getUserRegion(user.getUserId(), regionCode);
                     return ResponseEntity.status(HttpStatus.OK).body(userRegion);
-                }
-                else {
+                } else {
                     return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
                 }
             }
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Authorization 헤더가 없거나 형식이 올바르지 않습니다. ");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
@@ -368,16 +385,13 @@ public class UserApiController {
                 if (user != null) {
                     userService.addUserLiveScrap(user.getUserId(), liveId);
                     return ResponseEntity.status(HttpStatus.OK).body(user);
-                }
-                else {
+                } else {
                     return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
                 }
-            }
-            else {
+            } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Authorization 헤더가 없거나 형식이 올바르지 않습니다.");
             }
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
@@ -395,16 +409,13 @@ public class UserApiController {
                 if (user != null) {
                     userService.deleteUserLivewScrap(user.getUserId(), liveId);
                     return ResponseEntity.status(HttpStatus.OK).body(user);
-                }
-                else {
+                } else {
                     return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
                 }
-            }
-            else {
+            } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Authorization 헤더가 없거나 형식이 올바르지 않습니다.");
             }
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
@@ -419,12 +430,10 @@ public class UserApiController {
             if (user != null) {
                 SalesShortsListResponse userShortsList = userService.getUserShortsListByUserId(user.getUserId());
                 return ResponseEntity.status(HttpStatus.OK).body(userShortsList);
-            }
-            else {
+            } else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
@@ -437,16 +446,15 @@ public class UserApiController {
             Optional<List<Map<String, Object>>> liveScrapUserInfo = userService.getUserInfoByLiveId(liveId);
             if (liveScrapUserInfo.isPresent()) {
                 return ResponseEntity.status(HttpStatus.OK).body(liveScrapUserInfo.get());
-            }
-            else{
+            } else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
     @Operation(summary = "사용자가 판매자일 때 라이브 시작", description = "사용자가 판매자인 라이브 예정 방송을 조회할 때 사용합니다. ")
     @GetMapping("/commerceLive/expected")
     public ResponseEntity<?> getCommerceLiveExpected(HttpServletRequest request) {
@@ -463,13 +471,9 @@ public class UserApiController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("유요한 토큰 아님");
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
-
-//    @Operation(summary = "달력 날짜별 거래 조회", description = "달력에서 주간 이동을 통해서 거래 내역을 조회할 때 사용합니다. ")
-//    @GetMapping()
 }
