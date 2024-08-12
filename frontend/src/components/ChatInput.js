@@ -86,6 +86,7 @@ const ChatInput = ({
         onClose={() => setIsTradeDetailOpen(false)}
       />
       <ChangeTime
+        chatID={chatID}
         open={isChangeTimeOpen}
         handleClose={() => setIsChangeTimeOpen(false)}
       />

@@ -34,4 +34,21 @@ export async function getTradeDetail(chatId) {
   }
 }
 
+export async function changeTradeTime(chatId, tradeDate, tradeTime) {
+  try {
+      const res = await baseURL.put(
+          `/fleaon/chatbot/changetime/`,
+          {
+              chatId,
+              tradeDate,
+              tradeTime
+          }
+      );
+      console.log(res);
+      return res.data;
+  } catch (error) {
+      console.error("Error changing trade time:", error);
+      throw error;
+  }
+}
   
