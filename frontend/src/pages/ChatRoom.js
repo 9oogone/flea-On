@@ -186,10 +186,33 @@ const ChatRoom = () => {
   };
 
   const handleRejectTimeChange = async (messageId) => {
-    const message = `거래 시간 변경 거절`;
+    const message = `[System Message] 거래 시간 변경 요청이 거절되었습니다.`;
     try {
-      await sendMessageDB(chatID, message);
-      // 여기에 거래 취소 로직 추가
+      // 데이터베이스에 메시지 저장
+      await sendMessageDB(chatID, message, user.userId);
+      // 채팅방에 메시지 추가
+      setMessageList((prevMessages) => [
+        ...prevMessages,
+        {
+          chatContent: message,
+          writerId: user.userId,
+          isSent: true,
+          chatTime: new Date().toISOString(),
+        },
+      ]);
+
+      // OpenVidu 세션을 통해 다른 클라이언트에 메시지 전송
+      if (session.current) {
+        session.current.signal({
+          data: JSON.stringify({
+            message: message,
+            from: user.userId,
+            type: 1,
+            chatTime: new Date().toISOString(),
+          }),
+          type: "chat",
+        });
+      }
     } catch (error) {
       console.error("Error rejecting time change:", error);
     }

@@ -5,8 +5,8 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
 import styles from '../styles/ChangeTime.module.css';
 import { getTradeDetail, sendMessageDB } from "../features/chat/ChatApi";
-
-const ChangeTime = ({ open, handleClose, chatId }) => {
+import useDidMountEffect from "../utils/useDidMountEffect";
+const ChangeTime = ({ open, handleClose, chatID }) => {
     const [selectedDate, setSelectedDate] = useState(dayjs());
     const [currentTradeTime, setCurrentTradeTime] = useState(null);
 
@@ -14,26 +14,34 @@ const ChangeTime = ({ open, handleClose, chatId }) => {
         setSelectedDate(newDate);
     };
 
-    useEffect(() => {
-        const fetchTradeDetail = async () => {
-            try {
-                const tradeDetail = await getTradeDetail(chatId);
-                const tradeDateTime = dayjs(`${tradeDetail.TradeDate} ${tradeDetail.TradeTime}`);
-                setCurrentTradeTime(tradeDateTime);
-            } catch (error) {
-                console.error("Error fetching trade detail:", error);
-            }
-        };
+    // useEffect(() => {
+    //   console.log(111)
+    //     const fetchTradeDetail = async () => {
+    //         try {
+    //             const tradeDetail = await getTradeDetail(chatID).then((res)=>{
+    //               console.log(res.tradeDate)
+    //               const tradeDateTime = dayjs(`${res.TradeDate} ${res.TradeTime}`);
+    //               setCurrentTradeTime(tradeDateTime);
+    //             })
+    //         } catch (error) {
+    //             console.error("Error fetching trade detail:", error);
+    //         }
+    //     };
 
-        if (chatId) {
-            fetchTradeDetail();
-        }
-    }, [chatId]);
-
+    //     if (chatID!=undefined) {
+    //         fetchTradeDetail();
+    //     }
+    // }, [chatID]);
+// useDidMountEffect(()=>{
+//   getTradeDetail(chatID).then((res)=>{
+//     console.log(res)
+//     setCurrentTradeTime(dayjs(`${res.TradeDate} ${res.TradeTime}`));
+//   })
+// },[chatID]);
     const handleRequestChangeTime = async () => {
         const messageContent = `거래 시간 변경 요청: ${selectedDate.format('YYYY-MM-DD HH:mm')}`;
         try {
-            await sendMessageDB(chatId, messageContent);
+            await sendMessageDB(chatID, messageContent);
             handleClose(); // 모달 닫기
         } catch (error) {
             console.error("Error sending change time request:", error);
