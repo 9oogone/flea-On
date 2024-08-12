@@ -48,13 +48,10 @@ public class MainApiController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당하는 사용자가 없습니다. ");
             }
             List<UserRegion> findUerRegionList = mainService.getUserRegionByUserId(user.getUserId());
-            LocalDateTime currentTime = LocalDateTime.now();
             for (UserRegion userRegion : findUerRegionList) {
                 System.out.println(userRegion.getRegion().getRegionCode());
-                System.out.println("코드당");
             }
-            System.out.println(currentTime);
-            Slice<MainLiveResponse> mainLiveResponses = mainService.getMainLiveListByRegionCode(user.getUserId(), findUerRegionList, currentTime);
+            Slice<MainLiveResponse> mainLiveResponses = mainService.getMainLiveListByRegionCode(user.getUserId(), findUerRegionList);
             return ResponseEntity.status(HttpStatus.OK).body(mainLiveResponses);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());

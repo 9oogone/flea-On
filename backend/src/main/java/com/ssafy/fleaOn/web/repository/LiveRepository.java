@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -25,7 +26,10 @@ public interface LiveRepository extends JpaRepository<Live, Integer> {
 
     Optional<Live> findByLiveIdAndSeller_userId(int liveId, int userId);
 
-    Slice<Live> findByRegionInfo_RegionCodeAndLiveDateGreaterThanEqualOrderByLiveDateAsc(String regionCode, LocalDateTime currentTime, Pageable pageable);
+    @Query("SELECT l FROM Live l WHERE l.regionInfo.regionCode = :regionCode AND l.isLive IN (0, 1) " +
+            "ORDER BY l.isLive DESC, l.liveDate ASC")
+    Slice<Live> findByRegionCodeAndIsLiveOrderByIsLiveDescLiveDateAsc(@Param("regionCode") String regionCode, Pageable pageable);
+
 
     Optional<Live> findBySeller_userIdAndIsLiveAndLiveDateGreaterThanEqual(int userId, int isLive, LocalDateTime currentTime);
 
