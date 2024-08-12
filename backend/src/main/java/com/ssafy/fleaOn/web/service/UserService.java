@@ -59,7 +59,7 @@ public class UserService {
         userRepository.deleteByEmail(email);
     }
 
-    public User updateUserByEmail(String email, ExtraInfoRequest extraInfoRequest) {
+    public User updateUserByEmail(String email, ExtraInfoRequest extraInfoRequest, String profilePicture) {
         // 이메일로 사용자 검색
         Optional<User> optionalUser = userRepository.findByEmail(email);
 
@@ -78,7 +78,7 @@ public class UserService {
                 .name(existingUser.getName()) // 기존 이름 보존
                 .nickname(extraInfoRequest.getNickname() == null ? existingUser.getNickname() : extraInfoRequest.getNickname())// 닉네임 업데이트
                 .phone(extraInfoRequest.getPhone() == null ? existingUser.getPhone() : extraInfoRequest.getPhone()) // 전화번호 업데이트
-//                .profilePicture(extraInfoRequest.getProfilePicture() == null ? existingUser.getProfilePicture() : extraInfoRequest.getProfilePicture()) // 프로필 사진 보존
+                .profilePicture(profilePicture == null ? existingUser.getProfilePicture() : profilePicture) // 프로필 사진 보존
                 .level(existingUser.getLevel())
                 .role(existingUser.getRole())
                 .userIdentifier(existingUser.getUserIdentifier())// 레벨 보존
