@@ -8,6 +8,7 @@ import UpcomingFooter from "./UpcomingFooter";
 import UpcomingModal from "./UpcomingModal";
 
 const LiveBroadcasts = ({ items }) => {
+  console.log("LiveBroadcasts items:", items);
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [modalLiveDate, setModalLiveDate] = useState("");

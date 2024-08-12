@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { Box, Typography, Container, Button } from "@mui/material";
 import UpcomingModal from "./UpcomingModal"; // 모달 컴포넌트 임포트
+import { formatPrice } from "../utils/cssUtils";
 
 const UpcomingBroadcasts = ({ items = [] }) => {
+  console.log("UpcomingBroadcasts items:", items);
   const [open, setOpen] = useState(false);
   const [modalLiveDate, setModalLiveDate] = useState("");
 
@@ -21,7 +23,7 @@ const UpcomingBroadcasts = ({ items = [] }) => {
       <Box
         sx={{
           display: "flex",
-          overflow: "auto",
+          overflowX: "auto",
           whiteSpace: "nowrap",
           padding: "10px 0",
         }}
@@ -45,7 +47,7 @@ const UpcomingBroadcasts = ({ items = [] }) => {
               alignItems: "center",
               justifyContent: "space-between",
               flexWrap: "wrap",
-              flexShrink: 0,
+              flexShrink: 0, 
               mr: 3,
             }}
           >
@@ -54,7 +56,7 @@ const UpcomingBroadcasts = ({ items = [] }) => {
                 color: "#FF0B55",
               }}
             >
-              {item.live_date}
+              {item.liveDate}
             </Typography>
             <Typography
               sx={{
@@ -75,14 +77,14 @@ const UpcomingBroadcasts = ({ items = [] }) => {
                 whiteSpace: "nowrap",
               }}
             >
-              {item.name}
+              {item.productName}
             </Typography>
             <Typography
               sx={{
                 fontWeight: 300,
               }}
             >
-              {item.price}원
+              {formatPrice(item.productPrice)}
             </Typography>
           </Button>
         ))}

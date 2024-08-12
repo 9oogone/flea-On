@@ -62,11 +62,11 @@ const ProfileEdit = () => {
             )}
           </label>
         </div> */}
-        <div className={styles.field}>
+        <div className={styles.profileeditfield}>
           <label>이메일</label>
           <input type="email" value={user.email} readOnly />
         </div>
-        <div className={styles.field}>
+        <div className={styles.profileeditfield}>
           <label>닉네임</label>
           <input
             type="text"
@@ -74,7 +74,7 @@ const ProfileEdit = () => {
             onChange={(e) => setNickname(e.target.value)}
           />
         </div>
-        <div className={styles.field}>
+        <div className={styles.profileeditfield}>
           <label>전화번호</label>
           <input
             type="text"
@@ -82,7 +82,7 @@ const ProfileEdit = () => {
             onChange={(e) => setPhone(e.target.value)}
           />
         </div>
-        <button type="submit">수정하기</button>
+        <button type="submit" className='profileeditbutton'>수정하기</button>
       </form>
     </div>
   );
