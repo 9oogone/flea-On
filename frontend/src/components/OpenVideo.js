@@ -249,6 +249,7 @@ const OpenVideo = () => {
       setPlace(tradePlace);
       setLiveDate(live_date);
       const timeSlots = generateTimeSlots(liveTradeTimes);
+      console.log("timeSlots : ", timeSlots);
       setTimes(timeSlots);
     } catch (error) {
       console.error("상품 목록 가져오기 오류:", error);

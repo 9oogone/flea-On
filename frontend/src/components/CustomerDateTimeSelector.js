@@ -1,14 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Typography, Modal, Button, Grid } from "@mui/material";
-import {
-  format,
-  addDays,
-  isToday,
-  isPast,
-  parse,
-  isValid,
-  parseISO,
-} from "date-fns";
+import { format, addDays, isToday, isPast, parseISO, isValid } from "date-fns";
 import { PlaceOutlined } from "@mui/icons-material";
 
 const CustomerDateTimeSelector = ({
@@ -16,10 +8,16 @@ const CustomerDateTimeSelector = ({
   handleClose,
   place,
   liveDate,
-  times = [],
+  times,
 }) => {
   const [selectedDate, setSelectedDate] = useState(liveDate);
   const [selectedTime, setSelectedTime] = useState(null);
+
+  useEffect(() => {
+    if (times.length > 0) {
+      setSelectedDate(times[0].date);
+    }
+  }, [times]);
 
   const weekdayMap = {
     Sunday: "일",
@@ -34,7 +32,6 @@ const CustomerDateTimeSelector = ({
   const generateWeekDates = () => {
     const dates = [];
     const parsedLiveDate = parseISO(liveDate);
-    console.log(parsedLiveDate);
     if (!isValid(parsedLiveDate)) {
       console.error("Invalid liveDate:", liveDate);
       return dates;
@@ -127,7 +124,7 @@ const CustomerDateTimeSelector = ({
   };
 
   const formatTime = (time) => {
-    const parsedTime = parse(time, "HH:mm:ss", new Date());
+    const parsedTime = parseISO(`1970-01-01T${time}`);
 
     if (!isValid(parsedTime)) {
       console.error("Invalid time parsed:", time);
