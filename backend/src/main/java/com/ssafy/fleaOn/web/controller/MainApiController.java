@@ -33,7 +33,6 @@ public class MainApiController {
     private final MainService mainService;
     private final UserService userService;
 
-    @Operation(summary = "실시간 방송 목록 조회", description = "라이브 방송 목록을 조회할 때 사용합니다. ")
     @GetMapping("/mainLive")
     public ResponseEntity<?> getMainLive(HttpServletRequest request) {
         try {
@@ -45,18 +44,18 @@ public class MainApiController {
             String email = JWTUtil.getEmail(token);
             User user = userService.findByEmail(email);
             if (user == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당하는 사용자가 없습니다. ");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당하는 사용자가 없습니다.");
             }
+
             List<UserRegion> findUerRegionList = mainService.getUserRegionByUserId(user.getUserId());
-            for (UserRegion userRegion : findUerRegionList) {
-                System.out.println(userRegion.getRegion().getRegionCode());
-            }
             Slice<MainLiveResponse> mainLiveResponses = mainService.getMainLiveListByRegionCode(user.getUserId(), findUerRegionList);
+
             return ResponseEntity.status(HttpStatus.OK).body(mainLiveResponses);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
+
 
     @Operation(summary = "쇼츠 목록 조회", description = "쇼츠 목록을 조회할 때 사용합니다. ")
     @GetMapping("/mainShorts")
