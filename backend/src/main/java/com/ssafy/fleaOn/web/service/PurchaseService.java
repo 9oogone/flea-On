@@ -242,13 +242,6 @@ public class PurchaseService {
         Live live = liveRepository.findById(request.getLiveId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid live ID"));
 
-        Shorts shorts = shortsRepository.findByProduct_ProductId(request.getProductId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
-
-        System.out.println(product.getProductId());
-        System.out.println(live.getLiveId());
-        System.out.println(shorts.getShortsId());
-
         // Find or create chatting
         Optional<Chatting> optionalChatting = chattingRepository.findByBuyer_UserIdAndLive_LiveId(request.getBuyerId(), request.getLiveId());
         Chatting chatting;
@@ -268,10 +261,12 @@ public class PurchaseService {
                     .build();
             chatting = chattingRepository.save(chatting);
         }
-        System.out.println(chatting.getChattingId());
+
+
+        Optional<Shorts> shorts = shortsRepository.findByProduct_ProductId(request.getProductId());
 
         if (request.getBuyerId() == product.getCurrentBuyerId()) {
-            Trade trade = request.toEntity(live, product, chatting, shorts);
+            Trade trade = request.toEntity(live, product, chatting,shorts);
             tradeRepository.save(trade);
             productRepository.save(product);
 

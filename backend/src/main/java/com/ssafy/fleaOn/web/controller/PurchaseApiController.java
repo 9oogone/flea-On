@@ -47,7 +47,7 @@ public class PurchaseApiController {
 
             // 결과를 일정 시간 동안 폴링하여 조회
             int maxRetries = 10;  // 최대 10번 시도
-            int retryInterval = 500; // 1초 간격으로 시도
+            int retryInterval = 100; // 1초 간격으로 시도
 
             Integer result = null;
             for (int i = 0; i < maxRetries; i++) {
@@ -77,7 +77,7 @@ public class PurchaseApiController {
 
             // 결과를 일정 시간 동안 폴링하여 조회
             int maxRetries = 10;  // 최대 10번 시도
-            int retryInterval = 500; // 1초 간격으로 시도
+            int retryInterval = 100; // 1초 간격으로 시도
 
             PurchaseCancleResponse result = null;
             for (int i = 0; i < maxRetries; i++) {
@@ -110,7 +110,7 @@ public class PurchaseApiController {
 
             // 결과를 일정 시간 동안 폴링하여 조회
             int maxRetries = 10;  // 최대 10번 시도
-            int retryInterval = 500; // 1초 간격으로 시도
+            int retryInterval = 100; // 1초 간격으로 시도
 
             Integer result = null;
             for (int i = 0; i < maxRetries; i++) {
@@ -140,7 +140,7 @@ public class PurchaseApiController {
 
             // 결과를 일정 시간 동안 폴링하여 조회
             int maxRetries = 10;  // 최대 10번 시도
-            int retryInterval = 500; // 1초 간격으로 시도
+            int retryInterval = 100; // 1초 간격으로 시도
 
             Integer result = null;
             for (int i = 0; i < maxRetries; i++) {
@@ -170,7 +170,7 @@ public class PurchaseApiController {
 
             // 결과를 일정 시간 동안 폴링하여 조회
             int maxRetries = 10;  // 최대 10번 시도
-            int retryInterval = 500; // 1초 간격으로 시도
+            int retryInterval = 100; // 1초 간격으로 시도
 
             String result = null;
             for (int i = 0; i < maxRetries; i++) {
@@ -201,7 +201,7 @@ public class PurchaseApiController {
 
             // 결과를 일정 시간 동안 폴링하여 조회
             int maxRetries = 10;  // 최대 10번 시도
-            int retryInterval = 500; // 1초 간격으로 시도
+            int retryInterval = 100; // 1초 간격으로 시도
 
             String result = null;
             for (int i = 0; i < maxRetries; i++) {
@@ -240,7 +240,7 @@ public class PurchaseApiController {
 
             // 결과를 일정 시간 동안 폴링하여 조회
             int maxRetries = 10;  // 최대 10번 시도
-            int retryInterval = 500; // 1초 간격으로 시도
+            int retryInterval = 100; // 1초 간격으로 시도
 
             List<PurchaseCancleResponse> result = null;
             String redisKey = "breakTradeResult:" + chatId + ":" + user.getUserId(); // 정확한 Redis 키 설정

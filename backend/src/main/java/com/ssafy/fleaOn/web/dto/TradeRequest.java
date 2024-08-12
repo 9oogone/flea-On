@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 @Getter
 @NoArgsConstructor
@@ -22,7 +23,7 @@ public class TradeRequest {
     private String tradeTime;
     private LocalDate tradeDate;
 
-    public Trade toEntity(Live live, Product product, Chatting chatting, Shorts shorts) {
+    public Trade toEntity(Live live, Product product, Chatting chatting, Optional<Shorts> shorts) {
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
         LocalTime parsedTime = LocalTime.parse(this.tradeTime, timeFormatter);
         return Trade.builder()
@@ -34,7 +35,7 @@ public class TradeRequest {
                 .live(live)
                 .product(product)
                 .chatting(chatting)
-                .shorts(shorts)
+                .shorts(shorts.orElse(null))
                 .build();
     }
 }
