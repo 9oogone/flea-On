@@ -137,6 +137,8 @@ public class UserService {
             LocalDate endOfWeek = startOfWeek.plusDays(6);
 
             int totalTrade = tradeRepository.countByBuyerIdOrSellerIdAndTradeDateBetween(
+                    userOptional.getUserId(), startOfWeek, endOfWeek)
+                    + tradeDoneRepository.countTradeDateBetween(
                     userOptional.getUserId(), startOfWeek, endOfWeek);
             int saleCount = tradeRepository.countBySellerIdAndTradeDateBetween(
                     userOptional.getUserId(), startOfWeek, endOfWeek)
@@ -173,7 +175,7 @@ public class UserService {
         return null;
     }
 
-    public List<DayTradeResponse> getUserScheduleListByUserIdAndDate(int userId, LocalDate tradeDate) {
+    public ScheduleResponse getUserScheduleListByUserIdAndDate(int userId, LocalDate tradeDate) {
         Optional<List<Trade>> trades = tradeRepository.findByTradeDateAndBuyerIdOrSellerId(userId, tradeDate);
         List<DayTradeResponse> tradeList = new ArrayList<>();
 
@@ -193,7 +195,25 @@ public class UserService {
             }
         }
 
-        return tradeList;
+        Optional<List<TradeDone>> tradeDones = tradeDoneRepository.findByTradeDateAndBuyerIdOrSellerId(userId, tradeDate);
+        List<TradeDoneSchedule> tradeDoneSchedules = new ArrayList<>();
+        if (tradeDones.isPresent()) {
+            for (TradeDone tradeDone : tradeDones.get()) {
+                TradeDoneSchedule tradeDoneSchedule= TradeDoneSchedule.builder()
+                        .productId(tradeDone.getProductId())
+                        .productName(tradeDone.getProductName())
+                        .productPrice(tradeDone.getProductPrice())
+                        .buyerId(tradeDone.getBuyer().getUserId())
+                        .sellerId(tradeDone.getSeller().getUserId())
+                        .tradePlace(tradeDone.getTradePlace())
+                        .tradeTime(tradeDone.getTradeTime())
+                        .tradeDate(tradeDate)
+                        .build();
+                tradeDoneSchedules.add(tradeDoneSchedule);
+            }
+        }
+
+        return new ScheduleResponse(tradeList,tradeDoneSchedules);
     }
 
 
