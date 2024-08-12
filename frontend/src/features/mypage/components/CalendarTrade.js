@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Box, Typography } from "@mui/material";
-import { ShoppingCart, Sell, PlaceOutlined } from "@mui/icons-material";
+import {
+  ShoppingCart,
+  Sell,
+  PlaceOutlined,
+  PlaceRounded,
+} from "@mui/icons-material";
 import { formatTime, formatPrice } from "../../../utils/cssUtils";
 
 const CalendarTrade = ({ userId, dateTrade }) => {
   const [trade, setTrade] = useState([]);
   const [tradeDone, setTradeDone] = useState([]);
-  console.log(tradeDone[0]);
+
   useEffect(() => {
     setTrade(dateTrade?.dayTradeResponses || []);
     setTradeDone(dateTrade?.tradeDoneSchedules || []);
@@ -177,7 +182,7 @@ const CalendarTrade = ({ userId, dateTrade }) => {
               pb: 1,
             }}
           >
-            <PlaceOutlined />
+            <PlaceRounded />
             <Typography
               sx={{
                 color: "rgba(0, 0, 0, 0.90)",

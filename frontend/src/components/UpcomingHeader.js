@@ -12,7 +12,7 @@ const UpcomingHeader = ({ liveDate, isScrap }) => {
 
   // liveDate가 유효한지 확인하고 변환
   try {
-    console.log(liveDate);
+    // console.log(liveDate);
     date = parseISO(liveDate);
     if (isNaN(date)) throw new Error("Invalid date");
 
@@ -50,7 +50,7 @@ const UpcomingHeader = ({ liveDate, isScrap }) => {
             lineHeight: "8px",
           }}
         >
-          {`${formattedDate}, ${formattedTime}`.trim()}
+          {`${formattedDate}, ${formattedTime}`}
         </Typography>
       </Box>
       <Box

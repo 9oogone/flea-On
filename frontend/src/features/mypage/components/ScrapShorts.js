@@ -5,10 +5,10 @@ import { toggleScrap } from "../scrapSlice";
 import { switchTab } from "../../../features/home/contentSlice";
 import { Box, Typography, Grid, Button } from "@mui/material";
 import { FavoriteRounded, LocationOn } from "@mui/icons-material";
-import { formatPrice, extractDong } from "../../../utils/cssUtils";
+import { formatPrice } from "../../../utils/cssUtils";
 
 const ScrapShorts = ({ items }) => {
-  console.log(items);
+  // console.log(items);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const handleNavigateToShorts = () => {
