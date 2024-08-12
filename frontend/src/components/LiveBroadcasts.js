@@ -80,7 +80,7 @@ const LiveBroadcasts = ({ items }) => {
                   />
                 ) : (
                   <UpcomingFooter
-                    tradePlace={item.trade_place}
+                    tradePlace={item.tradePlace}
                     title={item.title}
                   />
                 )}

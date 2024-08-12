@@ -12,8 +12,8 @@ import {
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import "moment/locale/ko"; // 한국어 로케일을 사용합니다
-import { useSelector, useDispatch } from 'react-redux';
-import { fetchChats } from '../features/chat/chatSlice';
+import { useSelector, useDispatch } from "react-redux";
+import { fetchChats } from "../features/chat/chatSlice";
 
 moment.locale("ko"); // 로케일 설정
 
@@ -24,9 +24,10 @@ const ChatPage = () => {
 
   console.log(chats)
   useEffect(() => {
-    if (status === 'idle') {
+    if (status === "idle") {
       dispatch(fetchChats());
     }
+    console.log(chats);
   }, [status, dispatch]);
 
   const formatChatTitle = (chat) => {
@@ -37,14 +38,19 @@ const ChatPage = () => {
   };
 
   const handleChatClick = (chat) => {
-    console.log(chat)
+    console.log(chat);
     navigate(`/chat/${chat.chattingId}`, { state: chat });
   };
 
   return (
     <Container>
       <Box my={4}>
-        <Typography variant="h4" align="left" marginLeft="10px" fontWeight="bold">
+        <Typography
+          variant="h4"
+          align="left"
+          marginLeft="10px"
+          fontWeight="bold"
+        >
           채팅
         </Typography>
       </Box>
@@ -52,9 +58,9 @@ const ChatPage = () => {
       {status === 'failed' && <Typography>Error: {error}</Typography>}
       {status === 'succeeded' && noChats && <Typography>채팅방이 없습니다.</Typography>}
       <List>
-        {chats.map((chat,index) => (
+        {chats.map((chat, index) => (
           <ListItem
-            key={chat.id||index}
+            key={chat.id || index}
             button
             onClick={() => handleChatClick(chat)}
           >
@@ -71,9 +77,11 @@ const ChatPage = () => {
                     variant="caption"
                     sx={{
                       marginLeft: 1,
+                      color: chat.isBuyer ? "green" : "blue",
                       color: chat.isbuyer ? "green" : "blue",
                     }}
                   >
+                    {chat.isBuyer ? "구매자" : "판매자"}
                     {chat.isbuyer ? "판매자" : "구매자"}
                   </Typography>
                 </Box>
