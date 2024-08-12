@@ -3,6 +3,7 @@ import { Box, Typography } from "@mui/material";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import { format, parseISO, isToday, isTomorrow } from "date-fns";
+import { formatTime } from "../utils/cssUtils";
 
 const UpcomingHeader = ({ liveDate, isScrap }) => {
   let date;
@@ -11,7 +12,7 @@ const UpcomingHeader = ({ liveDate, isScrap }) => {
 
   // liveDate가 유효한지 확인하고 변환
   try {
-    console.log(liveDate);
+    // console.log(liveDate);
     date = parseISO(liveDate);
     if (isNaN(date)) throw new Error("Invalid date");
 

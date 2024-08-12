@@ -19,12 +19,12 @@ export const fetchCalendarWeek = createAsyncThunk(
 export const fetchCalendarDate = createAsyncThunk(
   "calendar/fetchCalendarDate",
   async ({ email, tradeDate }) => {
-    console.log(email, tradeDate);
+    // console.log(email, tradeDate);
     // email과 date를 객체로 받아옴
     const response = await baseAxios().get(
       `/fleaon/users/${email}/${tradeDate}/schedule`
     );
-    console.log(response.data);
+    // console.log(response.data);
     return response.data;
   }
 );

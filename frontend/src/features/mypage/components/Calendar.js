@@ -75,7 +75,7 @@ const Calendar = () => {
     setCurrentWeek(addWeeks(currentWeek, 1));
     setSelectedDate(null);
     dispatch(fetchCalendarWeek({ email: user.email, today: startDateStr }));
-    console.log(dateTrade);
+    // console.log(dateTrade);
   };
 
   const handleDateClick = async (event, date) => {
@@ -147,8 +147,8 @@ const Calendar = () => {
               >
                 <img
                   src={
-                    tradeCount?.totalTrades === 0 &&
-                    tradeCount?.completedTrades !== 0
+                    tradeCount?.totalTrades !== 0 &&
+                    tradeCount?.totalTrades === tradeCount?.completedTrades
                       ? TradeDone
                       : Trade
                   }
@@ -156,8 +156,8 @@ const Calendar = () => {
                 />
                 <Typography
                   className={
-                    tradeCount?.totalTrades === 0 &&
-                    tradeCount?.completedTrades !== 0
+                    tradeCount?.totalTrades !== 0 &&
+                    tradeCount?.totalTrades === tradeCount?.completedTrades
                       ? "trade-done-text"
                       : "trade-text"
                   }

@@ -65,3 +65,32 @@ export const formatTime = (time) => {
     return time; // 오류가 발생하면 원래 시간 문자열 반환
   }
 };
+
+// 날짜 시간 포맷팅
+// 예시 : "2024-10-31T14:30" => "2024년 10월 31일 오후 2시 30분"
+export const formatDateTime = (dateString) => {
+  try {
+    // 날짜 문자열을 Date 객체로 변환
+    const date = new Date(dateString);
+
+    // 날짜와 시간의 각 부분을 추출
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1; // 월은 0부터 시작
+    const day = date.getDate();
+    const hours24 = date.getHours();
+    const minutes = date.getMinutes();
+
+    // 오전/오후 및 12시간제 시간 변환
+    const period = hours24 >= 12 ? "오후" : "오전";
+    const hours12 = hours24 % 12 || 12; // 12시간제 시간, 0시의 경우 12시로 표시
+
+    // 포맷팅
+    const formattedDate = `${year}년 ${month}월 ${day}일`;
+    const formattedTime = `${period} ${hours12}시 ${minutes}분`;
+
+    return `${formattedDate} ${formattedTime}`;
+  } catch (error) {
+    console.error("Error formatting date:", error);
+    return dateString;
+  }
+};
