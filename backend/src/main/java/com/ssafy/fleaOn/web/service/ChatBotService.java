@@ -46,7 +46,7 @@ public class ChatBotService {
         for (Trade t : trades) {
             Product product = t.getProduct();
             buyProducts.add(new ChatbotProductResponse(
-                    product
+                    product, 0
             ));
         }
 
@@ -55,7 +55,7 @@ public class ChatBotService {
                 .orElseThrow(() -> new RuntimeException("Products not found"));
         for (Product product : otherLiveProducts) {
             otherProducts.add(new ChatbotProductResponse(
-                    product
+                    product, product.getReservationCount()+1
             ));
         }
 
