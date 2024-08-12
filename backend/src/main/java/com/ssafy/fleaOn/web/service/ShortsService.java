@@ -109,8 +109,6 @@ public class ShortsService {
         for (ShortsChatRequest shortsChatRequest : request) {
             Shorts shorts = shortsRepository.findById(shortsId).orElseThrow(() -> new IllegalArgumentException("Invalid shorts ID"));
             User user = userRepository.findById(shortsChatRequest.getUserId()).orElseThrow(() -> new IllegalArgumentException("Invalid user"));
-            System.out.println(shorts.getShortsId());
-            System.out.println(user.getUserId());
             ShortsChatting shortsChatting = shortsChatRequest.toEntity(shorts, user);
             shortsChattingRepository.save(shortsChatting);
         }

@@ -28,9 +28,7 @@ public class ShortsChatting {
     private String content;
 
     @Column(name = "time")
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    private LocalTime time;
+    private String time;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shorts_id", nullable = false)
@@ -41,7 +39,7 @@ public class ShortsChatting {
     private User user;
 
     @Builder
-    public ShortsChatting(String content, LocalTime time, Shorts shorts, User user) {
+    public ShortsChatting(String content, String time, Shorts shorts, User user) {
         this.content = content;
         this.time = time;
         this.shorts = shorts;

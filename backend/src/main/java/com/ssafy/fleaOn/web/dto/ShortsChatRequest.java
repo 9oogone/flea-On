@@ -22,12 +22,10 @@ public class ShortsChatRequest {
     private int userId;
 
     public ShortsChatting toEntity(Shorts shorts, User writer){
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-        LocalTime parsedShortsLength = LocalTime.parse(time, timeFormatter);
 
         return ShortsChatting.builder()
                 .content(content)
-                .time(parsedShortsLength)
+                .time(time)
                 .shorts(shorts)
                 .user(writer)
                 .build();
