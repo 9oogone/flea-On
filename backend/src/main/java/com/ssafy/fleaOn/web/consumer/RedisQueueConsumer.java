@@ -174,6 +174,7 @@ public class RedisQueueConsumer {
         Object data = redisTemplate.opsForList().leftPop(CONFIRM_PURCHASE_QUEUE);
         if (data != null) {
             TradeRequest request = objectMapper.convertValue(data, TradeRequest.class);
+            logger.info(String.valueOf(request.getProductId()));
             purchaseService.processConfirmPurchaseRequest(request);
             redisTemplate.opsForValue().set("confirPurchasemResult:" + request.getBuyerId() + ":" + request.getProductId(), "confirmed");
         }

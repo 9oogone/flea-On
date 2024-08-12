@@ -27,14 +27,16 @@ public class ShortsService {
     private final UserRepository userRepository;
     private final ShortsScrapRepository shortsScrapRepository;
     private final ShortsChattingRepository shortsChattingRepository;
+    private final TradeRepository tradeRepository;
 
     @Autowired
-    public ShortsService(ShortsRepository shortsRepository, ProductRepository productRepository, UserRepository userRepository, ShortsScrapRepository shortsScrapRepository, ShortsChattingRepository shortsChattingRepository) {
+    public ShortsService(ShortsRepository shortsRepository, ProductRepository productRepository, UserRepository userRepository, ShortsScrapRepository shortsScrapRepository, ShortsChattingRepository shortsChattingRepository, TradeRepository tradeRepository) {
         this.shortsRepository = shortsRepository;
         this.productRepository = productRepository;
         this.userRepository = userRepository;
         this.shortsScrapRepository = shortsScrapRepository;
         this.shortsChattingRepository = shortsChattingRepository;
+        this.tradeRepository = tradeRepository;
     }
 
     @Transactional
@@ -45,6 +47,8 @@ public class ShortsService {
         User seller = userRepository.findById(product.getSeller().getUserId()).orElseThrow(() -> new IllegalArgumentException("Invalid seller"));
         Shorts shorts = request.toEntity(product, seller);
         shortsRepository.save(shorts);
+        Optional<Trade> trade = tradeRepository.findByProduct_productId(shorts.getProduct().getProductId());
+        trade.ifPresent(value -> value.uploadShorts(shorts));
         saveShortsChatting(request.getShortsChatRequests(),shorts.getShortsId());
     }
 

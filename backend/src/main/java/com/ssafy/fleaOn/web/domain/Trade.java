@@ -63,4 +63,8 @@ public class Trade {
         this.chatting = chatting;
         this.shorts = shorts;
     }
+
+    public void uploadShorts(Shorts shorts){
+        this.shorts = shorts;
+    }
 }
