@@ -16,20 +16,28 @@ import java.time.LocalTime;
 @AllArgsConstructor
 public class MainShortsResponse {
 
+    @JsonProperty("shortsId")
     private int shortsId;
 
+    @JsonProperty("uploadDate")
     private LocalDateTime uploadDate;
 
+    @JsonProperty("productName")
     private String productName;
 
+    @JsonProperty("productPrice")
     private int productPrice;
 
+    @JsonProperty("tradePlace")
     private String tradePlace;
 
+    @JsonProperty("shortsThumbnail")
     private String thumbnail;
 
+    @JsonProperty("length")
     private LocalTime length;
 
+    @JsonProperty("isLive")
     private int isLive;
 
     public static MainShortsResponse fromEntity(Shorts shorts, Product product, Live live) {
