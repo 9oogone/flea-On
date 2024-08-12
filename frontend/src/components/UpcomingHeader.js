@@ -3,7 +3,7 @@ import { Box, Typography } from "@mui/material";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import { format, parseISO, isToday, isTomorrow } from "date-fns";
-import { formatTime } from "../utils/cssUtils";
+import { formatDateTimeDistance } from "../utils/cssUtils";
 
 const UpcomingHeader = ({ liveDate, isScrap }) => {
   let date;
@@ -12,7 +12,7 @@ const UpcomingHeader = ({ liveDate, isScrap }) => {
 
   // liveDate가 유효한지 확인하고 변환
   try {
-    // console.log(liveDate);
+    console.log(liveDate, "홈 라이브 시간입니다");
     date = parseISO(liveDate);
     if (isNaN(date)) throw new Error("Invalid date");
 
@@ -50,7 +50,7 @@ const UpcomingHeader = ({ liveDate, isScrap }) => {
             lineHeight: "8px",
           }}
         >
-          {`${formattedDate}, ${formattedTime}`}
+          {formatDateTimeDistance(liveDate)}
         </Typography>
       </Box>
       <Box

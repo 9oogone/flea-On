@@ -1,16 +1,18 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { toggleScrap } from "../features/mypage/scrapSlice";
-import { Box, Typography, Modal, List, ListItem } from "@mui/material";
+import { Box, Typography, Modal, List, ListItem, Button } from "@mui/material";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import styles from "../styles/UpcomingModal.module.css";
 import { formatDateTime, formatPrice } from "../utils/cssUtils";
+import { useNavigate } from "react-router-dom";
 
 const UpcomingModal = ({
   id,
   open,
   handleClose,
+  liveDetail,
   // liveDate,
   // productNames = [],
   // productPrices = [],
@@ -20,11 +22,13 @@ const UpcomingModal = ({
   // tradePlace,
 }) => {
   const dispatch = useDispatch();
-  const liveDetail = useSelector((state) => state.live.liveDetail);
+  const navigate = useNavigate();
 
-  if (!liveDetail) {
-    return null;
-  }
+  const auth = useSelector((state) => state.auth.user.userId);
+  const user = useSelector((state) => state.live.liveDetail.user.userId);
+  console.log(user, "사용자입니다");
+  console.log(auth, "판매자입니다.");
+
   //스크랩 일단 주석
   // const isScrap = useSelector((state) =>
   //   Array.isArray(state.scrap.live)
@@ -34,6 +38,11 @@ const UpcomingModal = ({
   const handleScrapToggle = () => {
     dispatch(toggleScrap({ id }));
   };
+
+  const handleEditLive = () => {
+    // navigate(`/edit-live/${liveDetail.liveId}`, { state: { liveDetail } });
+  };
+
   return (
     <Modal
       open={open}
@@ -68,7 +77,7 @@ const UpcomingModal = ({
                 component="p"
                 className={styles.author}
               >
-                {liveDetail.user.nickname}
+                {liveDetail?.user.nickname}
               </Typography>
               <Typography
                 variant="body2"
@@ -107,6 +116,32 @@ const UpcomingModal = ({
               ))}
             </List>
           </div>
+
+          {auth && auth === user && (
+            <Box
+              sx={{
+                width: "100%",
+                justifyContent: "center",
+                alignItems: "center",
+                display: "flex",
+                mt: 10,
+              }}
+            >
+              <Button
+                variant="contained"
+                onClick={handleEditLive}
+                sx={{
+                  width: "95%",
+                  backgroundColor: "#FF0B55",
+                  color: "white",
+                  fontSize: 16,
+                  borderRadius: 2,
+                }}
+              >
+                라이브 수정하기
+              </Button>
+            </Box>
+          )}
         </Box>
       </div>
     </Modal>

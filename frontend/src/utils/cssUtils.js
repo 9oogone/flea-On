@@ -1,4 +1,11 @@
-import { formatDistance, parseISO, parse, format } from "date-fns";
+import {
+  formatDistance,
+  parseISO,
+  parse,
+  format,
+  isToday,
+  isTomorrow,
+} from "date-fns";
 import { ko } from "date-fns/locale";
 
 // 가격 만원 단위로 1000만원은 안함
@@ -92,5 +99,34 @@ export const formatDateTime = (dateString) => {
   } catch (error) {
     console.error("Error formatting date:", error);
     return dateString;
+  }
+};
+
+export const formatDateTimeDistance = (dateTime) => {
+  try {
+    // 날짜와 시간을 Date 객체로 변환
+    const date = parseISO(dateTime);
+
+    if (isNaN(date)) throw new Error("Invalid date");
+
+    let formattedDate = "";
+    let formattedTime = "";
+
+    // 날짜 포맷팅
+    if (isToday(date)) {
+      formattedDate = "오늘";
+    } else if (isTomorrow(date)) {
+      formattedDate = "내일";
+    } else {
+      formattedDate = format(date, "MM/dd");
+    }
+
+    // 시간 포맷팅 (오전/오후 00시 00분)
+    formattedTime = format(date, "a hh시 mm분");
+
+    return `${formattedDate} ${formattedTime}`;
+  } catch (error) {
+    console.error("Invalid date format:", dateTime);
+    return "Invalid date";
   }
 };
