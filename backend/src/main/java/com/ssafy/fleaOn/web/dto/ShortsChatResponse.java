@@ -8,9 +8,9 @@ import java.time.LocalTime;
         private final String profilePic;
         private final String nickName;
         private final String content;
-        private final LocalTime time;
+        private final String time;
 
-        public ShortsChatResponse(String profilePic, String nickName, String content, LocalTime time) {
+        public ShortsChatResponse(String profilePic, String nickName, String content, String time) {
             this.profilePic = profilePic;
             this.nickName = nickName;
             this.content = content;
