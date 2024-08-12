@@ -142,8 +142,8 @@ const CustomerDateTimeSelector = ({
         {
           buyerId: userId,
           sellerId: sellerId,
-          productId: currentProductIndex,
-          liveId: liveId,
+          productId: Number(currentProductIndex),
+          liveId: Number(liveId),
           tradePlace: place,
           tradeTime: `${selectedTime}:00`,
           tradeDate: selectedDate,
@@ -157,8 +157,8 @@ const CustomerDateTimeSelector = ({
         console.log({
           buyerId: userId,
           sellerId: sellerId,
-          productId: currentProductIndex,
-          liveId: liveId,
+          productId: Number(currentProductIndex),
+          liveId: Number(liveId),
           tradePlace: place,
           tradeTime: `${selectedTime}:00`,
           tradeDate: selectedDate,

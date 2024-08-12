@@ -35,7 +35,7 @@ const OpenVideo = () => {
   const [currentProduct, setCurrentProduct] = useState(null);
   const [productList, setProductList] = useState([{ productId: 1 }]);
   const [currentProductIndex, setCurrentProductIndex] = useState(0);
-  const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태를 추가합니다.
+  //   const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태를 추가합니다.
   const [selectedProductId, setSelectedProductId] = useState(null); // 선택한 제품 ID 상태를 추가합니다.
   const dispatch = useDispatch();
   const { sessionName } = useParams();
@@ -56,6 +56,7 @@ const OpenVideo = () => {
   const navigate = useNavigate();
   const handleCustomerClick = () => {
     // 이미 가져온 데이터를 사용하여 상태 업데이트
+    console.log("모달이 열림");
     setOpen(true);
   };
 
@@ -418,7 +419,7 @@ const OpenVideo = () => {
     console.log(currentProduct);
     try {
       const response = await baseAxios().post("/fleaon/purchase/buy", {
-        productId: productId,
+        productId: productList[currentProductIndex].productId,
         userId: user.userId,
       });
 
@@ -426,11 +427,11 @@ const OpenVideo = () => {
       if (response.status === 200) {
         console.log("selectedProductId : ", selectedProductId);
         console.log({
-          productId: productId,
+          productId: productList[currentProductIndex].productId,
           userId: user.userId,
         });
         handleCustomerClick();
-        setIsModalOpen(true);
+        // setIsModalOpen(true);
       } else {
         // 요청이 성공하지 않았을 때의 처리를 여기에 추가하세요.
         console.error("Purchase failed:", response);
