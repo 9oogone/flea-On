@@ -32,3 +32,17 @@
   justify-content: center;
   margin-top: 20px;
 }
+
+.customButton {
+  background-color: #FF0B55;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.customButton:hover {
+  background-color: #D0094A;
+}

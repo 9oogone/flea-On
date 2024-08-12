@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateProfile } from '../features/mypage/profileEditSlice';
 import { useNavigate } from 'react-router-dom';
-import { Avatar, Button, TextField, Typography, Box, IconButton, Paper } from '@mui/material';
+import { Avatar, TextField, Typography, Box, IconButton, Paper } from '@mui/material';
 import { PhotoCamera } from '@mui/icons-material';
 import styles from '../styles/ProfileEdit.module.css';
 
@@ -49,7 +49,7 @@ const ProfileEdit = () => {
   return (
     <Box className={styles.profileEditContainer}>
       <Typography variant="h5" sx={{ marginBottom: 2 }}>내 정보 수정</Typography>
-      <Paper elevation={3} className={styles.formContainer}>
+      <Paper elevation={3} className={styles.formContainer} sx={{ boxShadow: 'none' }}>
         <form onSubmit={handleSubmit}>
           <Box className={styles.field}>
             <Typography variant="subtitle1">프로필 사진</Typography>
@@ -104,7 +104,7 @@ const ProfileEdit = () => {
             />
           </Box>
           <Box className={styles.buttonContainer}>
-            <Button type="submit" variant="contained" color="primary">수정하기</Button>
+            <button type="submit" className={styles.customButton}>수정하기</button>
           </Box>
         </form>
       </Paper>
