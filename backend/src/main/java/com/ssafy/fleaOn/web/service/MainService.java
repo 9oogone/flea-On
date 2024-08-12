@@ -38,9 +38,7 @@ public class MainService {
 
         for (UserRegion userRegion : findUserRegionList) {
             String regionCode = userRegion.getRegion().getRegionCode();
-            System.out.println("코드요 : " + regionCode);
-
-            Slice<Live> livePage = liveRepository.findByRegionInfo_RegionCodeAndLiveDateGreaterThanEqual(regionCode, currentTime, pageable);
+            Slice<Live> livePage = liveRepository.findByRegionInfo_RegionCodeAndLiveDateGreaterThanEqualOrderByLiveDateAsc(regionCode, currentTime, pageable);
 
             for (Live live : livePage) {
                 Optional<List<Product>> findProductList = productRepository.findByLive_LiveId(live.getLiveId());
