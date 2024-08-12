@@ -139,8 +139,12 @@ public class UserService {
             int totalTrade = tradeRepository.countByBuyerIdOrSellerIdAndTradeDateBetween(
                     userOptional.getUserId(), startOfWeek, endOfWeek);
             int saleCount = tradeRepository.countBySellerIdAndTradeDateBetween(
+                    userOptional.getUserId(), startOfWeek, endOfWeek)
+                    + tradeDoneRepository.countBySellerIdAndTradeDateBetween(
                     userOptional.getUserId(), startOfWeek, endOfWeek);
             int purchaseCount = tradeRepository.countByBuyerIdAndTradeDateBetween(
+                    userOptional.getUserId(), startOfWeek, endOfWeek)
+                    + tradeDoneRepository.countByBuyerIdAndTradeDateBetween(
                     userOptional.getUserId(), startOfWeek, endOfWeek);
             int completedTrades = tradeDoneRepository.countCompletedTrades(
                     userOptional.getUserId(), startOfWeek, endOfWeek);
