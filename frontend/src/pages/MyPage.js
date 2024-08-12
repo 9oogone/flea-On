@@ -2,6 +2,7 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUserInfo } from "../features/auth/actions";
+import { fetchCalendarWeek } from "../features/mypage/actions";
 import Profile from "../features/mypage/components/Profile";
 import Level from "../features/mypage/components/Level";
 import Calendar from "../features/mypage/components/Calendar";
