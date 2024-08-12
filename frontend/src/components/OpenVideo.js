@@ -412,11 +412,9 @@ const OpenVideo = () => {
     newProductList.splice(currentProductIndex + 1, 0, selectedProduct);
     setProductList(newProductList);
   };
-  console.log(currentProduct);
   const handleBuy = async (productId) => {
     setSelectedProductId(productId);
-    console.log("selectedProductId : ", selectedProductId);
-    console.log(currentProduct);
+
     try {
       const response = await baseAxios().post("/fleaon/purchase/buy", {
         productId: productList[currentProductIndex].productId,
@@ -425,11 +423,6 @@ const OpenVideo = () => {
 
       // 요청이 성공했을 때 모달을 엽니다.
       if (response.status === 200) {
-        console.log("selectedProductId : ", selectedProductId);
-        console.log({
-          productId: productList[currentProductIndex].productId,
-          userId: user.userId,
-        });
         handleCustomerClick();
         // setIsModalOpen(true);
       } else {
