@@ -13,16 +13,15 @@ public class ChatbotProductResponse {
     private int currentBuyerId;
     private int reservationCount;
     private ShortsDto shorts;
+    private int current;
 
-    public ChatbotProductResponse(Product product) {
+    public ChatbotProductResponse(Product product, int current) {
         this.productId = product.getProductId();
         this.name = product.getName();
         this.price = product.getPrice();
         this.currentBuyerId = product.getCurrentBuyerId();
         this.reservationCount = product.getReservationCount();
         this.shorts = new ShortsDto(product.getShorts());
-    }
-
-    public ChatbotProductResponse(int productId, String name, int price, int currentBuyerId, int reservationCount, Shorts shorts) {
+        this.current = current;
     }
 }
