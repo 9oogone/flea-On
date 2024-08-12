@@ -54,12 +54,14 @@ public class PurchaseService {
         logger.info("Processing purchase request for productId: {} and userId: {}", request.getProductId(), request.getUserId());
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
+        logger.info("2");
 
         // Check if the user is already the buyer
         if (product.getCurrentBuyerId() == request.getUserId()) {
             logger.warn("User {} is already the buyer for product {}", request.getUserId(), request.getProductId());
             return -2; // Already the buyer
         }
+        logger.info("3");
 
         // Check if the user is already in the reservation list
         Optional<Reservation> existingReservation = reservationRepository.findByProduct_ProductIdAndUser_UserId(request.getProductId(), request.getUserId());
@@ -67,19 +69,24 @@ public class PurchaseService {
             logger.warn("User {} is already reserved for product {}", request.getUserId(), request.getProductId());
             return -3; // Already reserved
         }
+        logger.info("4");
 
         if (product.getCurrentBuyerId() == 0) {
             product.setCurrentBuyerId(request.getUserId());
             productRepository.save(product);
+            logger.info("5-1");
             return 0; // 구매 예정자
         } else if (product.getReservationCount() < 5) {
             Reservation reservation = Reservation.builder()
                     .product(product)
                     .user(User.builder().userId(request.getUserId()).build())
                     .build();
+            logger.info("5-2");
             reservationRepository.save(reservation);
+            logger.info("6");
             product.setReservationCount(product.getReservationCount() + 1);
             productRepository.save(product);
+            logger.info("7");
             return product.getReservationCount(); // 예약자 순번 반환
         } else {
             return 6; // 예약 불가능
