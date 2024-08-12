@@ -38,16 +38,30 @@ export const getRelativeDate = (date) => {
 };
 
 // 시간 : 오전 0시 0분
+// 시간 문자열을 포맷팅하는 함수
 export const formatTime = (time) => {
-  const parsedTime = parse(time, "HH:mm:ss", new Date());
-  const isPM = format(parsedTime, "a") === "PM";
-  const hours = parsedTime.getHours();
-  const minutes = parsedTime.getMinutes();
+  // 입력값이 유효한지 확인
+  if (!time) {
+    return ""; // 유효하지 않은 입력일 경우 빈 문자열 반환
+  }
 
-  const formattedHours = hours % 12 === 0 ? 12 : hours % 12;
-  const period = isPM ? "오후" : "오전";
+  try {
+    // 문자열을 Date 객체로 변환
+    const parsedTime = parse(time, "HH:mm:ss", new Date());
 
-  const formattedMinutes = minutes === 0 ? "" : `${minutes}분`;
+    // 오전/오후 판별
+    const isPM = format(parsedTime, "a") === "PM";
+    const hours = parsedTime.getHours();
+    const minutes = parsedTime.getMinutes();
 
-  return `${period} ${formattedHours}시 ${formattedMinutes}`.trim();
+    // 포맷팅
+    const formattedHours = hours % 12 === 0 ? 12 : hours % 12;
+    const period = isPM ? "오후" : "오전";
+    const formattedMinutes = minutes === 0 ? "" : `${minutes}분`;
+
+    return `${period} ${formattedHours}시 ${formattedMinutes}`.trim();
+  } catch (error) {
+    console.error("Error formatting time:", error);
+    return time; // 오류가 발생하면 원래 시간 문자열 반환
+  }
 };

@@ -2,15 +2,22 @@
 
 import { createSlice } from "@reduxjs/toolkit";
 import { fetchCalendarWeek, fetchCalendarDate } from "./actions";
+
 const initialState = {
   week: {
     loading: false,
-    data: [],
+    tradeInfo: {
+      totalTrade: 0,
+      saleCount: 0,
+      purchaseCount: 0,
+      completedTrades: 0,
+    },
+    tradeList: [],
     error: null,
   },
   date: {
     loading: false,
-    data: [],
+    data: {},
     error: null,
   },
 };
@@ -25,7 +32,8 @@ const calendarSlice = createSlice({
       })
       .addCase(fetchCalendarWeek.fulfilled, (state, action) => {
         state.week.loading = false;
-        state.week.data = action.payload;
+        state.week.tradeInfo = action.payload.tradeInfo;
+        state.week.tradeList = action.payload.tradeList;
       })
       .addCase(fetchCalendarWeek.rejected, (state, action) => {
         state.week.loading = false;

@@ -1,6 +1,8 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import useDidMountEffect from "../../../utils/useDidMountEffect.js";
+
 import { fetchBuys, fetchWaits } from "../actions.js";
 import Switch from "../../../components/Switch";
 import Buys from "./Buys.js";
@@ -16,11 +18,13 @@ const BuyList = () => {
   const buys = useSelector((state) => state.buy.buys.data);
   const waits = useSelector((state) => state.buy.waits.data);
   const email = useSelector((state) => state.auth.user.email);
-
-  useEffect(() => {
+  useDidMountEffect(() => {
     dispatch(fetchBuys(email));
     dispatch(fetchWaits(email));
-  }, [dispatch, email]);
+  }, [dispatch]);
+  console.log(buys);
+  console.log(buys[0]);
+  console.log(buys[1]);
 
   const switchOptions = [
     { value: "buys", label: "구매" },

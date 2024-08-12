@@ -1,10 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { fetchBuys, fetchWaits } from "./actions";
+
 const initialState = {
   selectedTab: "buys",
   buys: {
     loading: false,
-    data: [],
+    data: {},
     error: null,
   },
   waits: {
