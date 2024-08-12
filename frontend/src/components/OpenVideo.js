@@ -202,30 +202,30 @@ const OpenVideo = () => {
       );
       console.log(videoDevices);
       // if (videoDevices.length > 1) {
-        const newPublisher = OV.current.initPublisher("htmlVideo", {
-          videoSource: isFrontCamera
-            ? videoDevices[0].deviceId
-            : videoDevices[0].deviceId,
-          publishAudio: true,
-          publishVideo: true,
-          mirror: isFrontCamera,
-          resolution: "405x1080",
-          frameRate: 30,
-          insertMode: "APPEND",
+      const newPublisher = OV.current.initPublisher("htmlVideo", {
+        videoSource: isFrontCamera
+          ? videoDevices[0].deviceId
+          : videoDevices[0].deviceId,
+        publishAudio: true,
+        publishVideo: true,
+        mirror: isFrontCamera,
+        resolution: "405x1080",
+        frameRate: 30,
+        insertMode: "APPEND",
+      });
+
+      setIsFrontCamera(!isFrontCamera);
+
+      session.current.unpublish(publisher).then(() => {
+        console.log("Old publisher unpublished!");
+
+        setPublisher(newPublisher);
+
+        session.current.publish(newPublisher).then(() => {
+          publisher.addVideoElement(videoRef.current);
+          console.log("New publisher published!");
         });
-
-        setIsFrontCamera(!isFrontCamera);
-
-        session.current.unpublish(publisher).then(() => {
-          console.log("Old publisher unpublished!");
-
-          setPublisher(newPublisher);
-
-          session.current.publish(newPublisher).then(() => {
-            publisher.addVideoElement(videoRef.current);
-            console.log("New publisher published!");
-          });
-        });
+      });
       // }
     });
   };
@@ -280,7 +280,6 @@ const OpenVideo = () => {
         });
       }, 5000);
       dispatch(setLoading());
-      setRecordStartTime(new Date()); // 녹화 시작 시간 설정
       startRecording({
         session: session.current.sessionId,
         outputMode: "COMPOSED_QUICK_START",
@@ -288,6 +287,7 @@ const OpenVideo = () => {
         hasVideo: true,
       })
         .then((res) => {
+          setRecordStartTime(new Date()); // 녹화 시작 시간 설정
           console.log(res.data.id);
           setCurrentRecordingId(res.data.id);
           setIsRecording(true);
