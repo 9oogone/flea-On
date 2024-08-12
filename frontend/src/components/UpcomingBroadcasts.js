@@ -1,15 +1,20 @@
 import React, { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { Box, Typography, Container, Button } from "@mui/material";
 import UpcomingModal from "./UpcomingModal"; // 모달 컴포넌트 임포트
-import { formatPrice } from "../utils/cssUtils";
+import { formatPrice, formatDateTimeDistance } from "../utils/cssUtils";
+import { fetchLiveDetail } from "../features/live/actions";
 
 const UpcomingBroadcasts = ({ items = [] }) => {
   console.log("UpcomingBroadcasts items:", items);
+  const dispatch = useDispatch();
+  const liveDetail = useSelector((state) => state.live.liveDetail);
   const [open, setOpen] = useState(false);
-  const [modalLiveDate, setModalLiveDate] = useState("");
+  // const [modalLiveDate, setModalLiveDate] = useState("");
 
-  const handleOpen = (liveDate) => {
-    setModalLiveDate(liveDate);
+  const handleOpen = (liveId) => {
+    dispatch(fetchLiveDetail(liveId));
+    // setModalLiveDate(liveDate);
     setOpen(true);
   };
 
@@ -17,7 +22,7 @@ const UpcomingBroadcasts = ({ items = [] }) => {
 
   return (
     <Container sx={{ margin: "8px" }}>
-      <Typography variant="h6" gutterBottom sx={{ marginTop: '12%' }}>
+      <Typography variant="h6" gutterBottom sx={{ marginTop: "12%" }}>
         방송예정상품
       </Typography>
       <Box
@@ -31,7 +36,7 @@ const UpcomingBroadcasts = ({ items = [] }) => {
         {items.map((item) => (
           <Button
             key={item.id}
-            onClick={() => handleOpen(item.live_date)}
+            onClick={() => handleOpen(item.liveId)}
             sx={{
               padding: 0,
               margin: 0,
@@ -47,7 +52,7 @@ const UpcomingBroadcasts = ({ items = [] }) => {
               alignItems: "center",
               justifyContent: "space-between",
               flexWrap: "wrap",
-              flexShrink: 0, 
+              flexShrink: 0,
               mr: 3,
             }}
           >
@@ -56,7 +61,7 @@ const UpcomingBroadcasts = ({ items = [] }) => {
                 color: "#FF0B55",
               }}
             >
-              {item.liveDate}
+              {formatDateTimeDistance(item.liveDate)}
             </Typography>
             <Typography
               sx={{
@@ -89,11 +94,14 @@ const UpcomingBroadcasts = ({ items = [] }) => {
           </Button>
         ))}
       </Box>
-      <UpcomingModal
-        open={open}
-        handleClose={handleClose}
-        liveDate={modalLiveDate}
-      />
+      {liveDetail.liveId && (
+        <UpcomingModal
+          open={open}
+          handleClose={handleClose}
+          liveDetail={liveDetail}
+          // liveDate={modalLiveDate}
+        />
+      )}
     </Container>
   );
 };

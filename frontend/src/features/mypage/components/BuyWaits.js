@@ -13,7 +13,10 @@ const Waits = ({ items }) => {
   return (
     <Box>
       {items.length === 0 ? (
-        <Typography variant="h6" sx={{ color: "grey.700" }}>
+        <Typography
+          variant="h6"
+          sx={{ color: "grey.700", textAlign: "center" }}
+        >
           아직 줄서기를 안했어요.
         </Typography>
       ) : (

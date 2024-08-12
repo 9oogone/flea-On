@@ -14,7 +14,8 @@ const ScrapLive = ({ items }) => {
   const navigate = useNavigate();
 
   const [open, setOpen] = useState(false);
-
+  const liveDetail = useSelector((state) => state.live.liveDetail);
+  console.log(liveDetail);
   // const [modalLiveDate, setModalLiveDate] = useState("");
   // const [modalTitle, setModalTitle] = useState("");
   // const [modalProducts, setModalProducts] = useState([]);
@@ -113,18 +114,21 @@ const ScrapLive = ({ items }) => {
                   />
                 </Box>
               </Button>
-              <UpcomingModal
-                id={index}
-                open={open}
-                handleClose={handleClose}
+              {liveDetail.liveId && (
+                <UpcomingModal
+                  id={index}
+                  open={open}
+                  handleClose={handleClose}
+                  liveDetail={liveDetail}
 
-                // liveDate={modalLiveDate}
-                // products={modalProducts}
-                // title={modalTitle}
-                // thumbnail={modalThumbnail}
-                // author={modalAuthor}
-                // tradePlace={modalTradePlace}
-              />
+                  // liveDate={modalLiveDate}
+                  // products={modalProducts}
+                  // title={modalTitle}
+                  // thumbnail={modalThumbnail}
+                  // author={modalAuthor}
+                  // tradePlace={modalTradePlace}
+                />
+              )}
             </Grid>
           ))
         )}
