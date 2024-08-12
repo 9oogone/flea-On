@@ -33,6 +33,7 @@ const ShortsPage = () => {
           `/fleaon/shorts/play/${shortsId}`
         );
         dispatch(setCurrentShort(response.data));
+        console.log(currentShort);
         setComments(response.data.shortsChatResponseList);
         setProduct(response.data.product);
       } catch (error) {

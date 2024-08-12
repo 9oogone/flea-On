@@ -73,7 +73,16 @@ const OpenVideo = () => {
           throw new Error("Invalid date format");
         }
 
-        while (start < end) {
+        // 시작 시간을 정각 또는 반으로 조정
+        const adjustToHalfHour = (date) => {
+          const minutes = date.getMinutes();
+          const adjustedMinutes = minutes < 30 ? 0 : 30;
+          date.setMinutes(adjustedMinutes, 0, 0);
+        };
+
+        adjustToHalfHour(start);
+
+        while (start <= end) {
           slots.push({
             time: start.toTimeString().slice(0, 5), // 'HH:MM' 형식으로 시간 추출
             date: time.date,
@@ -250,6 +259,7 @@ const OpenVideo = () => {
       setLiveDate(live_date);
       const timeSlots = generateTimeSlots(liveTradeTimes);
       console.log("timeSlots : ", timeSlots);
+      console.log("liveDate : ", liveDate);
       setTimes(timeSlots);
     } catch (error) {
       console.error("상품 목록 가져오기 오류:", error);
@@ -381,8 +391,8 @@ const OpenVideo = () => {
             });
 
           // 다음 상품 준비
+          setCurrentProductIndex(currentProductIndex + 1);
           if (currentProductIndex < productList.length - 1) {
-            setCurrentProductIndex(currentProductIndex + 1);
             setCurrentProduct(productList[currentProductIndex + 1]);
           }
         })
@@ -402,12 +412,28 @@ const OpenVideo = () => {
     setProductList(newProductList);
   };
 
-  const handleBuy = (productId) => {
+  const handleBuy = async (productId) => {
     setSelectedProductId(productId);
-    handleCustomerClick();
-    setIsModalOpen(true); // 모달을 엽니다.
-  };
+    console.log(selectedProductId);
+    try {
+      const response = await baseAxios().post("/fleaon/purchase/buy", {
+        productId: productId,
+        userId: user.userId,
+      });
 
+      // 요청이 성공했을 때 모달을 엽니다.
+      if (response.status === 200) {
+        handleCustomerClick();
+        setIsModalOpen(true);
+      } else {
+        // 요청이 성공하지 않았을 때의 처리를 여기에 추가하세요.
+        console.error("Purchase failed:", response);
+      }
+    } catch (error) {
+      // 요청이 실패했을 때의 처리를 여기에 추가하세요.
+      console.error("Error purchasing product:", error);
+    }
+  };
   const sendMessage = () => {
     if (session.current && newMessage.trim() !== "") {
       const messageData = {
@@ -430,7 +456,7 @@ const OpenVideo = () => {
   const endBroadcast = async () => {
     console.log("방송 종료");
     try {
-      await baseAxios().put(`/fleaOn/live/${sessionName}`);
+      await baseAxios().put(`/fleaOn/live/${sessionName}/off`);
       navigate("/");
     } catch (error) {
       console.error("방송 종료 실패", error);
@@ -458,26 +484,6 @@ const OpenVideo = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
-  const InputTextField = styled(TextField)({
-    "& label": {
-      // placeholder text color
-      color: "var(--sub-text)",
-    },
-    "& label.Mui-focused": {
-      // 해당 input focus 되었을 때 placeholder text color
-      // floatng label을 사용할 때 처리 필요하다
-      color: "var(--primary)",
-    },
-    "& label.Mui-error": {
-      color: "#d32f2f",
-    },
-    "& .MuiOutlinedInput-root": {
-      color: "var(--text)",
-      "& fieldset": {
-        borderColor: "var(--sub-text)",
-      },
-    },
-  });
 
   return (
     <div style={{ width: "100%", height: "100%" }}>
@@ -776,13 +782,17 @@ const OpenVideo = () => {
         </Slider>
       </Box>
 
-      {/* <CustomerDateTimeSelector
+      <CustomerDateTimeSelector
         open={open}
         handleClose={handleClose}
         place={place}
-        live_date={liveDate}
+        liveDate={liveDate}
         times={times}
-      /> */}
+        selectedProductId={selectedProductId}
+        userId={user.userId}
+        sellerId={seller.userId}
+        liveId={sessionName}
+      />
     </div>
   );
 };
