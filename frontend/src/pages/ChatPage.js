@@ -53,11 +53,9 @@ const ChatPage = () => {
           채팅
         </Typography>
       </Box>
-      {status === "loading" && <Typography>Loading...</Typography>}
-      {status === "failed" && <Typography>Error: {error}</Typography>}
-      {status === "succeeded" && noChats && (
-        <Typography>채팅방이 없습니다.</Typography>
-      )}
+      {/* {status === 'loading' && <Typography>Loading...</Typography>} */}
+      {status === 'failed' && <Typography>Error: {error}</Typography>}
+      {status === 'succeeded' && noChats && <Typography>채팅방이 없습니다.</Typography>}
       <List>
         {chats.map((chat, index) => (
           <ListItem

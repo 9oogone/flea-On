@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, createElement } from "react";
+import { useRef, useEffect, useState } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { OpenVidu } from "openvidu-browser";
@@ -12,6 +12,7 @@ import { getToken } from "../api/openViduAPI";
 import useDidMountEffect from "../utils/useDidMountEffect";
 import { setLoading, unSetLoading } from "../features/live/loadingSlice";
 import { sendMessageDB } from "../features/chat/ChatApi";
+import { Button } from "@mui/material";
 
 const isMobile = () => /Mobi|Android/i.test(navigator.userAgent);
 
@@ -20,6 +21,7 @@ const formatTime = (date) => {
   const minutes = date.getMinutes().toString().padStart(2, "0");
   return `${hours}:${minutes}`;
 };
+
 const ChatRoom = () => {
   const location = useLocation();
   const chat = location.state;
@@ -29,17 +31,16 @@ const ChatRoom = () => {
     (state) => state.chatRoom || {}
   );
   const userId = useSelector((state) => state.auth.user?.id);
-  const [messages, setMessages] = useState([]);
-  const [message, setMessage] = useState("");
   const [messageList, setMessageList] = useState([]);
+  const [newMessage, setNewMessage] = useState("");
   const [isChatNavOpen, setIsChatNavOpen] = useState(false);
   const messagesEndRef = useRef(null);
   const isFocusedRef = useRef(false);
-  const [newMessage, setNewMessage] = useState("");
   const user = useSelector((state) => state.auth.user);
   const [isBuyer, setIsBuyer] = useState(false);
   let publisher;
   const session = useRef();
+
   useDidMountEffect(() => {
     console.log(chat);
     dispatch(setLoading());
@@ -90,7 +91,7 @@ const ChatRoom = () => {
     session.on("signal:chat", (event) => {
       const data = JSON.parse(event.data);
       const type = data.type;
-      if (type == 1) {
+      if (type === 1) {
         const chatContent = data.message;
         const writerId = data.from;
         const isSent = data.from === user.userId;
@@ -112,6 +113,7 @@ const ChatRoom = () => {
       dispatch(unSetLoading());
     }
   };
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messageList]);
@@ -137,6 +139,7 @@ const ChatRoom = () => {
   //   }
   // };
 
+
   if (status === "loading") {
     return <div>Loading...</div>;
   }
@@ -152,14 +155,14 @@ const ChatRoom = () => {
       currentMessage.isSent !== nextMessage.isSent ||
       new Date(currentMessage.chatTime).toTimeString().slice(0, 5) !== new Date(nextMessage.chatTime).toTimeString().slice(0, 5)
     );
-  }; // 같은 시간이면서 같은 사람이 보낸 메시지에는 마지막 메시지에만 시간이 나타나도록 함
+  };  // 같은 시간이면서 같은 사람이 보낸 메시지에는 마지막 메시지에만 시간이 나타나도록 함
 
   const sendMessage = () => {
     if (session.current && newMessage.trim() !== "") {
       const messageData = {
         message: newMessage,
         from: user.userId,
-        profile: user.profilePictue,
+        profile: user.profilePicture,
         type: 1,
         chatTime: new Date().toISOString().slice(0, 19).replace("T", "T"),
       };
@@ -171,23 +174,28 @@ const ChatRoom = () => {
       setNewMessage("");
     }
   };
+
+  const handleAcceptTimeChange = async (messageId, newTime) => {
+    const message = `거래 시간 변경 수락: ${newTime}`;
+    try {
+      await sendMessageDB(chatID, message);
+      // 여기에 거래 시간 변경 로직 추가
+    } catch (error) {
+      console.error("Error accepting time change:", error);
+    }
+  };
+
+  const handleRejectTimeChange = async (messageId) => {
+    const message = `거래 시간 변경 거절`;
+    try {
+      await sendMessageDB(chatID, message);
+      // 여기에 거래 취소 로직 추가
+    } catch (error) {
+      console.error("Error rejecting time change:", error);
+    }
+  };
+
   return (
-    // <div className={styles.chatRoom}>
-    //   <ProfileHeader />
-    //   <ul className={styles.messageList}>
-    //     {messageList.map((message, index) => (
-    //       <li key={index} className={message.writerId === userId ? styles.sentMessage : styles.receivedMessage}>
-    //         <div>
-    //           <p><strong>Content:</strong> {message.chatContent}</p>
-    //           <p><strong>Time:</strong> {new Date(message.chatTime).toLocaleString()}</p>
-    //           <p><strong>Chatting List ID:</strong> {message.chattingListId}</p>
-    //           <p><strong>Writer ID:</strong> {message.writerId}</p>
-    //         </div>
-    //       </li>
-    //     ))}
-    //     <div ref={messagesEndRef} />
-    //   </ul>
-    // </div>
     <div className={styles.chatRoom}>
       <ProfileHeader chat={chat} />
       <ul className={styles.messageList}>
@@ -209,13 +217,17 @@ const ChatRoom = () => {
                 className={styles.msg}
                 dangerouslySetInnerHTML={{ __html: msg.chatContent }}
               />
-              {msg.button && (
-                <button
-                  className={styles.messageButton}
-                  onClick={msg.button.onClick}
-                >
-                  {msg.button.text}
-                </button>
+              {msg.chatContent.includes("거래 시간 변경 요청") && !msg.isSent && (
+                <div className={styles.timeChangeButtons}>
+                  <Button
+                    onClick={() => handleAcceptTimeChange(msg.id, msg.chatContent)}
+                  >
+                    수락
+                  </Button>
+                  <Button onClick={() => handleRejectTimeChange(msg.id)}>
+                    거절
+                  </Button>
+                </div>
               )}
               <img
                 className={styles.tailIcon}
@@ -229,10 +241,6 @@ const ChatRoom = () => {
               </div>
             )}
           </div>
-          //   {shouldShowTime(index, msg) && (
-          //     <div className={styles.time}>{new Date(msg.chatTime).toTimeString().slice(0, 5)}</div>
-          //   )}
-          // </div>
         ))}
         <div ref={messagesEndRef} />
       </ul>
@@ -245,8 +253,6 @@ const ChatRoom = () => {
         isChatNavOpen={isChatNavOpen}
         isBuyer={isBuyer}
         setIsChatNavOpen={setIsChatNavOpen}
-        // isSeller={isSeller}
-        // isBuyer={isBuyer}
       />
     </div>
   );
