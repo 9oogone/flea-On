@@ -20,4 +20,18 @@ export async function sendMessageDB(chatId, param) {
       throw error;
     }
 }
+
+export async function getTradeDetail(chatId) {
+  try {
+    const res = await baseURL.get(
+      `https://i11b202.p.ssafy.io/fleaon/chatbot/${chatId}/detail`
+    );
+    console.log(res.data);
+    return res.data;
+  } catch (error) {
+    console.error("Error fetching detail data:", error);
+    throw error;
+  }
+}
+
   

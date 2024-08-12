@@ -22,6 +22,7 @@ const ChatPage = () => {
   const dispatch = useDispatch();
   const { chats, status, error, noChats } = useSelector((state) => state.chat);
 
+  console.log(chats)
   useEffect(() => {
     if (status === 'idle') {
       dispatch(fetchChats());
@@ -47,7 +48,7 @@ const ChatPage = () => {
           채팅
         </Typography>
       </Box>
-      {status === 'loading' && <Typography>Loading...</Typography>}
+      {/* {status === 'loading' && <Typography>Loading...</Typography>} */}
       {status === 'failed' && <Typography>Error: {error}</Typography>}
       {status === 'succeeded' && noChats && <Typography>채팅방이 없습니다.</Typography>}
       <List>
@@ -70,10 +71,10 @@ const ChatPage = () => {
                     variant="caption"
                     sx={{
                       marginLeft: 1,
-                      color: chat.isSeller ? "green" : "blue",
+                      color: chat.isbuyer ? "green" : "blue",
                     }}
                   >
-                    {chat.isSeller ? "판매자" : "구매자"}
+                    {chat.isbuyer ? "판매자" : "구매자"}
                   </Typography>
                 </Box>
               }
