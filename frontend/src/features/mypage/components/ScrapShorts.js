@@ -8,7 +8,7 @@ import { FavoriteRounded, LocationOn } from "@mui/icons-material";
 import { formatPrice, extractDong } from "../../../utils/cssUtils";
 
 const ScrapShorts = ({ items }) => {
-  // console.log(items);
+  console.log(items);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const handleNavigateToShorts = () => {
@@ -50,8 +50,8 @@ const ScrapShorts = ({ items }) => {
             </Button>
           </Grid>
         ) : (
-          items.map((item) => (
-            <Grid key={item.shortsId} item xs={6} sx={{ textAlign: "center" }}>
+          items.map((item, index) => (
+            <Grid key={index} item xs={6} sx={{ textAlign: "center" }}>
               <Button
                 onClick={() => handleButtonClick(item.shortsId)}
                 sx={{ padding: 0, minWidth: 0 }}
@@ -141,7 +141,7 @@ const ScrapShorts = ({ items }) => {
                           }}
                         >
                           <LocationOn sx={{ fontSize: "8px" }} />
-                          {extractDong(item.tradePlace)}
+                          {item.dongName}
                         </Typography>
                       </Box>
                       <Box

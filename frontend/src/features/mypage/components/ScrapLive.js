@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { switchTab } from "../../../features/home/contentSlice";
 
 const ScrapLive = ({ items }) => {
-  // console.log(items);
+  console.log(items);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   // const [open, setOpen] = useState(false);
@@ -42,7 +42,7 @@ const ScrapLive = ({ items }) => {
           <Grid item xs={12} sx={{ textAlign: "center", mt: 4 }}>
             <Typography variant="h6" sx={{ color: "grey.700" }}>
               관심있는 라이브가 없어요. <br />
-              지금 라이브를 보러 가세용
+              지금 라이브를 보러 갈까요?
             </Typography>
             <Button
               onClick={handleNavigateToLive}
@@ -57,12 +57,12 @@ const ScrapLive = ({ items }) => {
                 fontWeight: "bold",
               }}
             >
-              라이브보러가기
+              라이브 보러 가기
             </Button>
           </Grid>
         ) : (
-          items.map((item) => (
-            <Grid key={item.live_id} item xs={6} sx={{ textAlign: "center" }}>
+          items.map((item, index) => (
+            <Grid key={index} item xs={6} sx={{ textAlign: "center" }}>
               <Button
                 // onClick={() => handleButtonClick(item)}
                 sx={{ padding: 0, minWidth: 0 }}
@@ -71,7 +71,7 @@ const ScrapLive = ({ items }) => {
                   sx={{
                     width: "16vh",
                     height: "28vh",
-                    backgroundImage: `url(${item.live_thumbnail})`,
+                    backgroundImage: `url(${item.thumbnail})`,
                     backgroundSize: "cover",
                     backgroundPosition: "center",
                     borderRadius: 2,
@@ -86,13 +86,10 @@ const ScrapLive = ({ items }) => {
                       height: "85%",
                     }}
                   >
-                    <UpcomingHeader
-                      liveDate={item.live_date}
-                      isScrap={item.is_scrap}
-                    />
+                    <UpcomingHeader liveDate={item.liveDate} isScrap={true} />
                   </Box>
                   <UpcomingFooter
-                    tradePlace={item.trade_place}
+                    tradePlace={item.dongName}
                     title={item.title}
                   />
                 </Box>

@@ -17,10 +17,10 @@ const Waits = ({ items }) => {
           아직 줄서기를 안했어요.
         </Typography>
       ) : (
-        items.map((item) => {
+        items.map((item, index) => {
           return (
             <Box
-              key={item.id}
+              key={item.index}
               sx={{
                 width: "100%",
                 height: "100%",
@@ -67,7 +67,7 @@ const Waits = ({ items }) => {
                         wordWrap: "break-word",
                       }}
                     >
-                      {item.name}
+                      {item.productName}
                     </Typography>
                     <Box
                       sx={{
@@ -88,8 +88,8 @@ const Waits = ({ items }) => {
                       wordWrap: "break-word",
                     }}
                   >
-                    {extractDong(item.trade_place)} ·{" "}
-                    {getRelativeDate(item.trade_date)}
+                    {item.dongName} · 날짜가 들어가면 좋을텐데..
+                    {/* {getRelativeDate(item.trade_date)} */}
                   </Typography>
                 </Box>
                 <Box
@@ -107,7 +107,7 @@ const Waits = ({ items }) => {
                       fontSize: 17,
                     }}
                   >
-                    {formatPrice(item.price)}
+                    {formatPrice(item.productPrice)}
                   </Typography>
                   <Box
                     sx={{
