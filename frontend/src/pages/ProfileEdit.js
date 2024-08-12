@@ -1,90 +1,114 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateProfile } from '../features/mypage/profileEditSlice';
+import { useNavigate } from 'react-router-dom';
+import { Avatar, Button, TextField, Typography, Box, IconButton, Paper } from '@mui/material';
+import { PhotoCamera } from '@mui/icons-material';
 import styles from '../styles/ProfileEdit.module.css';
 
 const ProfileEdit = () => {
   const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
+  const navigate = useNavigate(); // useNavigate 훅 추가
 
-  // const [profilePicture, setProfilePicture] = useState(user.profilePicture);
-  // const [profilePictureFile, setProfilePictureFile] = useState(null);
+  const [profilePicture, setProfilePicture] = useState(user.profilePicture);
+  const [profilePictureFile, setProfilePictureFile] = useState(null);
   const [nickname, setNickname] = useState(user.nickname);
   const [phone, setPhone] = useState(user.phone);
 
-  // const handleProfilePictureChange = (e) => {
-  //   const file = e.target.files[0];
-  //   if (file) {
-  //     setProfilePictureFile(file);
-  //     const reader = new FileReader();
-  //     reader.onloadend = () => {
-  //       setProfilePicture(reader.result);
-  //     };
-  //     reader.readAsDataURL(file);
-  //   }
-  // };
+  const handleProfilePictureChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setProfilePictureFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProfilePicture(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const formData = new FormData();
+    if (profilePictureFile) {
+      formData.append('photoFile', profilePictureFile);
+    }
     const profileData = {
-      // profile_picture: profilePicture,
       nickname,
       phone,
+      profile_picture: "" // 프로필 사진은 항상 빈 문자열로
     };
-    dispatch(updateProfile({ email: user.email, profileData }));
+    formData.append('data', new Blob([JSON.stringify(profileData)], { type: 'application/json' }));
+
+    await dispatch(updateProfile({ email: user.email, formData }));
+    navigate('/mypage'); // 프로필 업데이트 후 마이 페이지로 이동
   };
 
   return (
-    <div className={styles.profileEditContainer}>
-      <h2>프로필 수정</h2>
-      <form onSubmit={handleSubmit}>
-        {/* <div className={styles.field}>
-          <label>프로필 사진</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleProfilePictureChange}
-            className={styles.thumbnailInput}
-            style={{ display: 'none' }}
-            id="profile-picture-upload"
-          />
-          <label htmlFor="profile-picture-upload" style={{ cursor: 'pointer' }}>
-            {profilePicture ? (
-              <img
-                className={styles.thumbnailPreview}
-                src={profilePicture}
-                alt="Profile Preview"
-              />
-            ) : (
-              <div className={styles.noThumbnail}>
-                <span>프로필 사진 업로드</span>
-              </div>
-            )}
-          </label>
-        </div> */}
-        <div className={styles.profileeditfield}>
-          <label>이메일</label>
-          <input type="email" value={user.email} readOnly />
-        </div>
-        <div className={styles.profileeditfield}>
-          <label>닉네임</label>
-          <input
-            type="text"
-            value={nickname}
-            onChange={(e) => setNickname(e.target.value)}
-          />
-        </div>
-        <div className={styles.profileeditfield}>
-          <label>전화번호</label>
-          <input
-            type="text"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-          />
-        </div>
-        <button type="submit" className='profileeditbutton'>수정하기</button>
-      </form>
-    </div>
+    <Box className={styles.profileEditContainer}>
+      <Typography variant="h5" sx={{ marginBottom: 2 }}>내 정보 수정</Typography>
+      <Paper elevation={3} className={styles.formContainer}>
+        <form onSubmit={handleSubmit}>
+          <Box className={styles.field}>
+            <Typography variant="subtitle1">프로필 사진</Typography>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleProfilePictureChange}
+              style={{ display: 'none' }}
+              id="profile-picture-upload"
+            />
+            <label htmlFor="profile-picture-upload">
+              <IconButton color="primary" aria-label="upload picture" component="span">
+                {profilePicture ? (
+                  <Avatar src={profilePicture} className={styles.avatar} sx={{ width: 100, height: 100 }} />
+                ) : (
+                  <PhotoCamera />
+                )}
+              </IconButton>
+            </label>
+          </Box>
+          <Box className={styles.field}>
+            <TextField
+              label="이메일"
+              type="email"
+              value={user.email}
+              fullWidth
+              InputProps={{ readOnly: true }}
+              variant="outlined"
+              margin="normal"
+            />
+          </Box>
+          <Box className={styles.field}>
+            <TextField
+              label="닉네임"
+              type="text"
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value)}
+              fullWidth
+              variant="outlined"
+              margin="normal"
+            />
+          </Box>
+          <Box className={styles.field}>
+            <TextField
+              label="전화번호"
+              type="text"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              fullWidth
+              variant="outlined"
+              margin="normal"
+            />
+          </Box>
+          <Box className={styles.buttonContainer}>
+            <Button type="submit" variant="contained" color="primary">수정하기</Button>
+          </Box>
+        </form>
+      </Paper>
+    </Box>
   );
 };
 

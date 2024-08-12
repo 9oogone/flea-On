@@ -3,9 +3,13 @@ import baseAxios from '../../utils/httpCommons';
 
 export const updateProfile = createAsyncThunk(
   'profileEdit/updateProfile',
-  async ({ email, profileData }, { rejectWithValue }) => {
+  async ({ email, formData }, { rejectWithValue }) => {
     try {
-      const response = await baseAxios().put(`/fleaon/users/${email}/info`, profileData);
+      const response = await baseAxios().put(`/fleaon/users/${email}/info`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
       return response.data;
     } catch (err) {
       return rejectWithValue(err.response.data);
