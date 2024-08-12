@@ -99,50 +99,45 @@ public class MainService {
 
     public Slice<Map<String, Object>> getSearchResultByName(String name, int userId) {
         Pageable pageable = PageRequest.of(0, 10);
+
+        // 1. 이름에 따른 상품 검색 (상품명에 키워드가 포함된 경우)
         Slice<Product> findProductSlice = productRepository.findByNameIgnoreCaseContaining(name, pageable);
 
+        // 2. 카테고리 이름에 따른 상품 검색
+        Slice<Product> categoryProductSlice = productRepository.findByCategoryName(name, pageable);
+
+        // 3. 검색된 모든 상품을 합침
+        Set<Product> allProducts = new HashSet<>();
+        allProducts.addAll(findProductSlice.getContent());
+        allProducts.addAll(categoryProductSlice.getContent());
+
+        // 4. 각 상품에 대해 연관된 라이브와 쇼츠를 검색하여 결과를 구성
         List<ResultUpcomingResponse> upcomingResponseList = new ArrayList<>();
         List<ResultLiveResponse> liveResponseList = new ArrayList<>();
         List<ResultShortsResponse> shortsResponseList = new ArrayList<>();
 
-        for (Product product : findProductSlice) {
+        for (Product product : allProducts) {
             Live live = liveRepository.findByLiveId(product.getLive().getLiveId()).orElse(null);
             Shorts shorts = shortsRepository.findByProduct_ProductId(product.getProductId()).orElse(null);
 
-            if (live != null && shorts != null) {
+            // 관련 라이브와 쇼츠만 필터링하여 추가
+            if (live != null) {
                 if (live.getIsLive() == 0) {
                     ResultUpcomingResponse upcomingResponse = ResultUpcomingResponse.fromEntity(live, product);
                     upcomingResponseList.add(upcomingResponse);
-                } else if (live.getIsLive() == 1) {
+                } else if (live.getIsLive() == 1 || live.getIsLive() == 2) {
                     ResultLiveResponse liveResponse = ResultLiveResponse.fromEntity(live, product);
                     liveResponseList.add(liveResponse);
                 }
+            }
+
+            if (shorts != null) {
                 ResultShortsResponse shortsResponse = ResultShortsResponse.fromEntity(shorts, product, live);
                 shortsResponseList.add(shortsResponse);
             }
         }
 
-        Slice<Category> categorySlice = categoryRepository.findByFirstCategoryNameContainingOrSecondCategoryNameContaining(name, name, pageable);
-        for (Category category : categorySlice) {
-            Slice<Product> findCategoryProductSlice = productRepository.findByFirstCategoryIdOrSecondCategoryId(category.getFirstCategoryId(), category.getSecondCategoryId(), pageable);
-            for (Product product : findCategoryProductSlice) {
-                Live live = liveRepository.findByLiveId(product.getLive().getLiveId()).orElse(null);
-                Shorts shorts = shortsRepository.findByProduct_ProductId(product.getProductId()).orElse(null);
-
-                if (live != null && shorts != null) {
-                    if (live.getIsLive() == 0) {
-                        ResultUpcomingResponse upcomingResponse = ResultUpcomingResponse.fromEntity(live, product);
-                        upcomingResponseList.add(upcomingResponse);
-                    } else if (live.getIsLive() == 1) {
-                        ResultLiveResponse liveResponse = ResultLiveResponse.fromEntity(live, product);
-                        liveResponseList.add(liveResponse);
-                    }
-                    ResultShortsResponse shortsResponse = ResultShortsResponse.fromEntity(shorts, product, live);
-                    shortsResponseList.add(shortsResponse);
-                }
-            }
-        }
-
+        // 5. 결과를 맵에 담아 반환
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("upcoming", upcomingResponseList);
         resultMap.put("live", liveResponseList);
@@ -151,10 +146,10 @@ public class MainService {
         List<Map<String, Object>> resultList = new ArrayList<>();
         resultList.add(resultMap);
 
-        // Slice로 반환
-        return new SliceImpl<>(resultList, pageable, findProductSlice.hasNext() || categorySlice.hasNext());
+        // 6. Slice로 반환 (페이지네이션 고려)
+        boolean hasNext = findProductSlice.hasNext() || categoryProductSlice.hasNext();
+        return new SliceImpl<>(resultList, pageable, hasNext);
     }
-
 
 
     public List<SidoNameResponse> getSidoNameList() {

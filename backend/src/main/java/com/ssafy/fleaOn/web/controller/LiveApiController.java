@@ -53,7 +53,7 @@ public class LiveApiController {
     @PostMapping(value = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "라이브 생성", description = "라이브의 정보를 저장하여 새로운 라이브를 생성합니다.")
     public ResponseEntity<?> createLive(HttpServletRequest request,
-                                        @RequestPart("photoFile") MultipartFile photoFile,
+                                        @RequestPart(value = "photoFile", required = false) MultipartFile photoFile,
                                         @RequestPart("data") AddLiveRequest addLiveRequest) {
         String authorizationHeader = request.getHeader("Authorization");
 
@@ -69,9 +69,12 @@ public class LiveApiController {
                     String thumbnail = null;
                     // 파일 처리 중 예외가 발생할 수 있으므로 try-catch로 감싸서 처리
                     try {
-                        System.out.println("파일 들어가요");
-                        System.out.println(photoFile);
-                        thumbnail = fileHandler.parseFileInfo(photoFile);
+                        if (photoFile != null && !photoFile.isEmpty()) {
+                            System.out.println("파일 들어가요");
+                            thumbnail = fileHandler.parseFileInfo(photoFile);
+                        } else {
+                            thumbnail = "https://i11b202.p.ssafy.io/openvidu/recordings/live/sampleImage.png";
+                        }
                     } catch (Exception e) {
                         log.error("파일 처리 중 오류 발생: {}", e.getMessage());
                         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

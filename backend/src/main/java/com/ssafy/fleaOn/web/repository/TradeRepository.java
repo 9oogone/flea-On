@@ -23,7 +23,8 @@ public interface TradeRepository extends JpaRepository<Trade, Integer> {
 
      Optional<List<Trade>> findAllByTradeDateAndBuyerIdOrSellerId(LocalDate tradeDate, int buyerId, int sellerId);
 
-     Optional<Trade> findByTradeDateAndBuyerIdOrSellerId(LocalDate tradeDate, int buyerId, int sellerId);
+    @Query("SELECT (t) FROM Trade t WHERE (t.buyerId = :userId OR t.sellerId = :userId) AND t.tradeDate = :tradeDate")
+     Optional<List<Trade>> findByTradeDateAndBuyerIdOrSellerId(@Param("userId") int userId, @Param("tradeDate")LocalDate tradeDate);
 
      Optional<List<Trade>> findByChatting_ChattingId(int chattingId);
 
@@ -45,4 +46,11 @@ public interface TradeRepository extends JpaRepository<Trade, Integer> {
 
     int countByBuyerIdAndTradeDateBetween(int userId, LocalDate startOfWeek, LocalDate endOfWeek);
     boolean existsByBuyerIdAndSellerIdAndChatting_ChattingId(int buyerId, int sellerId, int chattingId);
+
+    @Query("SELECT COUNT(t) FROM Trade t WHERE (t.buyerId = :userId OR t.sellerId = :userId) AND t.tradeDate = :tradeDate")
+    int countTradesByUserAndDate(@Param("userId") int userId, @Param("tradeDate") LocalDate tradeDate);
+
+    @Query("SELECT t FROM Trade t WHERE t.product.productId = :productId")
+    Optional<Trade> findByProductId(int productId);
+
 }

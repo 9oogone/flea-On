@@ -13,10 +13,6 @@ import java.util.Map;
 @NoArgsConstructor
 @Builder
 public class MyPageResponse {
-    private String nickName;
-    private int level;
-    private String profilePicture;
-    private List<String> regionCode;
     private TradeCountResponse tradeInfo;
-
+    private List<WeeklyTrade> tradeList;
 }

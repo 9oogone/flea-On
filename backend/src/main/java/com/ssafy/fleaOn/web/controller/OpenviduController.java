@@ -274,19 +274,15 @@ public class OpenviduController {
         Recording.OutputMode outputMode = Recording.OutputMode.valueOf((String) params.get("outputMode"));
         boolean hasAudio = (boolean) params.get("hasAudio");
         boolean hasVideo = (boolean) params.get("hasVideo");
-        String name = (String) params.get("name");
 
-        RecordingProperties properties = new RecordingProperties.Builder().outputMode(outputMode).hasAudio(hasAudio).hasVideo(hasVideo).name(name).resolution("405x1080").build();
+        RecordingProperties properties = new RecordingProperties.Builder().resolution("1280x720").outputMode(outputMode).hasAudio(hasAudio).hasVideo(hasVideo).build();
 
         System.out.println("Starting recording for session " + sessionId + " with properties {outputMode=" + outputMode
-                + ", hasAudio=" + hasAudio + ", hasVideo=" + hasVideo + "recordingName="+name+"}");
+                + ", hasAudio=" + hasAudio + ", hasVideo=" + hasVideo+"}");
 
         try {
-            System.out.println("1");
             Recording recording = this.openVidu.startRecording(sessionId, properties);
-            System.out.println("2");
             this.sessionRecordings.put(sessionId, true);
-            System.out.println("3");
             return new ResponseEntity<>(recording, HttpStatus.OK);
         } catch (OpenViduJavaClientException | OpenViduHttpException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);

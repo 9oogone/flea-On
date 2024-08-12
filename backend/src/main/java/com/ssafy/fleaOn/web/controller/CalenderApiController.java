@@ -73,7 +73,7 @@ public class CalenderApiController {
                 if (user == null) {
                     return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
                 }
-              Trade findDayTrade = calenderService.getUserDayTrade(day, user.getUserId());
+                List<Trade> findDayTrade = calenderService.getUserDayTrade(day, user.getUserId());
                 if (findDayTrade == null) {
                     return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No trades found for the specified day");
                 }
