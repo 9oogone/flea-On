@@ -127,17 +127,19 @@ public class RedisQueueConsumer {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Scheduled(fixedDelay = 1000)
+    @Scheduled(fixedDelay = 500)
     public void handlePurchaseRequest() {
         Object data = redisTemplate.opsForList().leftPop(PURCHASE_QUEUE);
         if (data != null) {
             PurchaseRequest request = objectMapper.convertValue(data, PurchaseRequest.class);
+            logger.info("1");
             int result = purchaseService.processPurchaseRequest(request);
+            logger.info("8");
             redisTemplate.opsForValue().set("purchaseResult:" + request.getUserId() + ":" + request.getProductId(), result);
         }
     }
 
-    @Scheduled(fixedDelay = 1000)
+    @Scheduled(fixedDelay = 500)
     public void handleCancelPurchaseRequest() {
         Object data = redisTemplate.opsForList().leftPop(CANCEL_PURCHASE_QUEUE);
         if (data != null) {
@@ -147,7 +149,7 @@ public class RedisQueueConsumer {
         }
     }
 
-    @Scheduled(fixedDelay = 1000)
+    @Scheduled(fixedDelay = 500)
     public void handleReservationRequest() {
         Object data = redisTemplate.opsForList().leftPop(RESERVATION_QUEUE);
         if (data != null) {
@@ -157,7 +159,7 @@ public class RedisQueueConsumer {
         }
     }
 
-    @Scheduled(fixedDelay = 1000)
+    @Scheduled(fixedDelay = 500)
     public void handleCancelReservationRequest() {
         Object data = redisTemplate.opsForList().leftPop(CANCEL_RESERVATION_QUEUE);
         if (data != null) {
@@ -167,7 +169,7 @@ public class RedisQueueConsumer {
         }
     }
 
-    @Scheduled(fixedDelay = 1000)
+    @Scheduled(fixedDelay = 500)
     public void handleConfirmPurchaseRequest() {
         Object data = redisTemplate.opsForList().leftPop(CONFIRM_PURCHASE_QUEUE);
         if (data != null) {
@@ -177,7 +179,7 @@ public class RedisQueueConsumer {
         }
     }
 
-    @Scheduled(fixedDelay = 1000)
+    @Scheduled(fixedDelay = 500)
     public void handleConfirmTradeRequest() {
         Object data = redisTemplate.opsForList().leftPop(CONFIRM_TRADE_QUEUE);
         if (data != null) {
@@ -187,7 +189,7 @@ public class RedisQueueConsumer {
         }
     }
 
-    @Scheduled(fixedDelay = 1000)
+    @Scheduled(fixedDelay = 500)
     public void handleBreakTradeRequest() {
         Object data = redisTemplate.opsForList().leftPop(BREAK_TRADE_QUEUE);
 //        logger.info("Data popped from queue: {}", data);
