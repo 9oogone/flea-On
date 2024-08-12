@@ -44,17 +44,14 @@ public class MainService {
                 Optional<List<Product>> findProductList = productRepository.findByLive_LiveId(live.getLiveId());
                 Optional<LiveScrap> findLiveScrap = liveScrapRepository.findByUser_userIdAndLive_liveId(userId, live.getLiveId());
                 if (findProductList.isPresent()) {
-                    boolean isScrap = false;
-                    if (findLiveScrap.isPresent()) {
-                        isScrap = true;
-                    }
+                    boolean isScrap = findLiveScrap.isPresent();
                     MainLiveResponse mainLiveResponse = MainLiveResponse.fromEntity(live, findProductList.get(), isScrap);
                     mainLiveResponseList.add(mainLiveResponse);
-
                 }
             }
         }
 
+        // 페이지네이션 처리를 위한 로직
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), mainLiveResponseList.size());
         boolean hasNext = mainLiveResponseList.size() > end;
@@ -62,6 +59,7 @@ public class MainService {
 
         return new SliceImpl<>(content, pageable, hasNext);
     }
+
 
     public List<UserRegion> getUserRegionByUserId(int userId) {
         Optional<List<UserRegion>> userRegionList = userRegionRepository.findByUser_userId(userId);
