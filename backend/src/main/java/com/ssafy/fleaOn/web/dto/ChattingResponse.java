@@ -14,11 +14,17 @@ public class ChattingResponse {
     private final String recentMessage;
     private final LocalDateTime recentMessageTime;
     private final boolean view;
+    private final int liveId;
+    private final int isLive;
+    private final boolean isBuyer;
 
-    public ChattingResponse(Chatting chatting, String nickname, String profilePicture, ChattingList chattingList, boolean view) {
+    public ChattingResponse(Chatting chatting, String nickname, String profilePicture, ChattingList chattingList, boolean view, int liveId, int isLive, boolean isBuyer) {
         this.chattingId = chatting.getChattingId();
         this.userNickName = nickname;
         this.profile = profilePicture;
+        this.liveId = liveId;
+        this.isLive = isLive;
+        this.isBuyer = isBuyer;
         if (chattingList != null) {
             this.recentMessage = chattingList.getChatContent();
             this.recentMessageTime = chattingList.getChatTime();

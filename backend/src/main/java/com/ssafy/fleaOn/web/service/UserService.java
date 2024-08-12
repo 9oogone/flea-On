@@ -156,21 +156,20 @@ public class UserService {
             List<WeeklyTrade> weeklyTrades = new ArrayList<>();
             LocalDate currentDate = startOfWeek;
             while (!currentDate.isAfter(endOfWeek)) {
-                int dailyTotalTrades = tradeRepository.countTradesByUserAndDate(
-                        userOptional.getUserId(), currentDate);
                 int dailyCompletedTrades = tradeDoneRepository.countCompletedTrades(
                         userOptional.getUserId(), currentDate, currentDate);
+                int dailyTotalTrades = tradeRepository.countTradesByUserAndDate(
+                        userOptional.getUserId(), currentDate)
+                        + dailyCompletedTrades;
                 weeklyTrades.add(new WeeklyTrade(currentDate, dailyTotalTrades, dailyCompletedTrades));
                 currentDate = currentDate.plusDays(1);
             }
 
 
-            MyPageResponse myPageResponse = MyPageResponse.builder()
+            return MyPageResponse.builder()
                     .tradeInfo(new TradeCountResponse(totalTrade, saleCount, purchaseCount, completedTrades))
                     .tradeList(weeklyTrades)
                     .build();
-
-            return myPageResponse;
         }
         return null;
     }
