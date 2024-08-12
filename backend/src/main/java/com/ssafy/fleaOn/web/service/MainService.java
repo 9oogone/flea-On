@@ -74,7 +74,7 @@ public class MainService {
         List<MainShortsResponse> mainShortsResponseList = new ArrayList<>();
 
         // Shorts 데이터 가져오기 (Slice로)
-        Slice<Shorts> shortsSlice = shortsRepository.findAllByOrderByUploadDateAsc(pageable);
+        Slice<Shorts> shortsSlice = shortsRepository.findAllByOrderByUploadDateDesc(pageable);
         for (Shorts shorts : shortsSlice) {
             Optional<Product> product = productRepository.findByProductId(shorts.getProduct().getProductId());
             Optional<Live> live = liveRepository.findByLiveId(product.get().getLive().getLiveId());

@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,6 +25,7 @@ public class MainLiveResponse {
     private int isLive;
     private String liveThumbnail;
     private boolean isScrap;
+    private LocalDateTime liveDate;
 
 
 
@@ -37,6 +39,7 @@ public class MainLiveResponse {
                 .isLive(live.getIsLive())
                 .liveThumbnail(live.getLiveThumbnail())
                 .isScrap(isScrap)
+                .liveDate(live.getLiveDate())
                 .build();
     }
 }
