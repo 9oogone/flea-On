@@ -16,7 +16,7 @@ import java.time.LocalTime;
 @AllArgsConstructor
 public class MainShortsResponse {
 
-    @JsonProperty("shortsId")
+//    @JsonProperty("shortsId")
     private int shortsId;
 
     @JsonProperty("uploadDate")
