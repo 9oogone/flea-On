@@ -20,6 +20,7 @@ public class PurchaseResponse {
     private String productName;
     private int productPrice;
     private int liveId;
+    private String dongName;
     private String tradePlace;
     private LocalTime tradeTime;
     private LocalDate tradeDate;
