@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { setCurrentShort } from "../features/shorts/shortsSlice";
 import CustomVideoPlayer from "../components/CustomVideoPlayer";
 import baseAxios from "../utils/httpCommons";
+import { useSwipeable } from "react-swipeable";
 import {
   Container,
   Typography,
@@ -22,10 +23,12 @@ import ShareIcon from "@mui/icons-material/Share";
 const ShortsPage = () => {
   const { shortsId } = useParams();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const currentShort = useSelector((state) => state.shorts.currentShort);
   const [comments, setComments] = useState([]);
   const [videoTime, setVideoTime] = useState(0);
   const [product, setProduct] = useState({});
+
   useEffect(() => {
     const fetchShortData = async () => {
       try {
@@ -33,7 +36,6 @@ const ShortsPage = () => {
           `/fleaon/shorts/play/${shortsId}`
         );
         dispatch(setCurrentShort(response.data));
-        console.log(currentShort);
         setComments(response.data.shortsChatResponseList);
         setProduct(response.data.product);
       } catch (error) {
@@ -53,10 +55,32 @@ const ShortsPage = () => {
     return commentTime <= videoTime;
   });
 
+  const handleSwipe = (eventData) => {
+    if (eventData.dir === "Up") {
+      // 다음 비디오로 이동
+      const nextShortId = parseInt(shortsId) + 1;
+      navigate(`/shorts/${nextShortId}`);
+    } else if (eventData.dir === "Down") {
+      // 이전 비디오로 이동
+      const prevShortId = parseInt(shortsId) - 1;
+      if (prevShortId > 0) {
+        navigate(`/shorts/${prevShortId}`);
+      }
+    }
+  };
+
+  const handlers = useSwipeable({
+    onSwipedUp: handleSwipe,
+    onSwipedDown: handleSwipe,
+    preventDefaultTouchmoveEvent: true,
+    trackMouse: true,
+  });
+
   if (!currentShort) return <Typography>Loading...</Typography>;
 
   return (
     <Container
+      {...handlers}
       sx={{
         m: 0,
         p: 0,
@@ -72,7 +96,7 @@ const ShortsPage = () => {
         onTimeUpdate={handleTimeUpdate}
         style={{
           backgroundColor: "green",
-          width: "100px",
+          width: "100%",
           height: "100vh",
           position: "fixed",
           top: 0,

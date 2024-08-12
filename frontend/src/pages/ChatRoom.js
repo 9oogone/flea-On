@@ -77,7 +77,8 @@ const ChatRoom = () => {
           return {
             ...message,
             isSent: isSent,
-            isSystemMessage: message.chatContent.startsWith("[System Message]")
+            isSystemMessage: message.chatContent.startsWith("[System Message]"),
+            buttonsDisabled: false, // 버튼 비활성화 상태 추가
           };
         });
         setMessageList(updatedMessages);
@@ -100,7 +101,7 @@ const ChatRoom = () => {
         const isSystemMessage = chatContent.startsWith("[System Message]");
         setMessageList((prevMessages) => [
           ...prevMessages,
-          { chatContent, writerId, isSent, chatTime, isSystemMessage },
+          { chatContent, writerId, isSent, chatTime, isSystemMessage, buttonsDisabled: false },
         ]);
       }
     });
@@ -130,17 +131,6 @@ const ChatRoom = () => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-  // const handleSendMessage = () => {
-  //   if (message.trim() !== '') {
-  //     setMessages(prevMessages => {
-  //       const updatedMessages = [...prevMessages, { text: message.replace(/\n/g, '<br/>'), isSent: true, time: formatTime(new Date()) }];
-  //       return updatedMessages;
-  //     });
-  //     setMessage('');
-  //     isFocusedRef.current = false;
-  //   }
-  // };
-
 
   if (status === "loading") {
     return <div>Loading...</div>;
@@ -174,6 +164,12 @@ const ChatRoom = () => {
     try {
       await changeTradeTime(chatID, tradeDate, tradeTime); // API 호출
       await sendMessageDB(chatID, message); // 메시지 저장
+      setMessageList((prevMessages) =>
+        prevMessages.map((msg) =>
+          msg.id === messageId ? { ...msg, buttonsDisabled: true } : msg // 버튼 비활성화 설정
+        )
+      );
+
       setMessageList((prevMessages) => [
         ...prevMessages,
         {
@@ -181,7 +177,8 @@ const ChatRoom = () => {
           writerId: user.userId,
           isSent: true,
           chatTime: new Date().toISOString(),
-          isSystemMessage: true
+          isSystemMessage: true,
+          buttonsDisabled: false,
         },
       ]);
 
@@ -205,6 +202,12 @@ const ChatRoom = () => {
     const message = `[System Message] 거래 시간 변경 요청이 거절되었습니다.`;
     try {
       await sendMessageDB(chatID, message);
+      setMessageList((prevMessages) =>
+        prevMessages.map((msg) =>
+          msg.id === messageId ? { ...msg, buttonsDisabled: true } : msg // 버튼 비활성화 설정
+        )
+      );
+
       setMessageList((prevMessages) => [
         ...prevMessages,
         {
@@ -212,7 +215,8 @@ const ChatRoom = () => {
           writerId: user.userId,
           isSent: true,
           chatTime: new Date().toISOString(),
-          isSystemMessage: true
+          isSystemMessage: true,
+          buttonsDisabled: false,
         },
       ]);
 
@@ -267,7 +271,7 @@ const ChatRoom = () => {
               ) : (
                 <div className={styles.msg}>{msg.chatContent}</div>
               )}
-              {msg.chatContent.includes("거래 시간 변경 요청") && !msg.isSent && (
+              {msg.chatContent.includes("거래 시간 변경 요청") && !msg.isSent && !msg.buttonsDisabled && (
                 <div className={styles.timeChangeButtons}>
                   <Button
                     onClick={() => handleAcceptTimeChange(msg.id, msg.chatContent)}

@@ -54,6 +54,8 @@ const OpenVideo = () => {
   const [times, setTimes] = useState([]);
   const [isFrontCamera, setIsFrontCamera] = useState(false);
   const navigate = useNavigate();
+  const [isSold, setIsSold] = useState(false); // 추가
+  const [reserveCount, setReserveCount] = useState(0); // 추가
   const handleCustomerClick = () => {
     // 이미 가져온 데이터를 사용하여 상태 업데이트
     console.log("모달이 열림");
@@ -156,6 +158,10 @@ const OpenVideo = () => {
         ]);
       } else if (type === 2) {
         setIsRecording(data.isRecording);
+      } else if (type === 3) {
+        setIsSold(data.isSold);
+      } else if (type === 4) {
+        setReserveCount(data.reserveCount);
       }
     });
 
@@ -202,30 +208,30 @@ const OpenVideo = () => {
       );
       console.log(videoDevices);
       // if (videoDevices.length > 1) {
-        const newPublisher = OV.current.initPublisher("htmlVideo", {
-          videoSource: isFrontCamera
-            ? videoDevices[0].deviceId
-            : videoDevices[0].deviceId,
-          publishAudio: true,
-          publishVideo: true,
-          mirror: isFrontCamera,
-          resolution: "405x1080",
-          frameRate: 30,
-          insertMode: "APPEND",
+      const newPublisher = OV.current.initPublisher("htmlVideo", {
+        videoSource: isFrontCamera
+          ? videoDevices[0].deviceId
+          : videoDevices[0].deviceId,
+        publishAudio: true,
+        publishVideo: true,
+        mirror: isFrontCamera,
+        resolution: "405x1080",
+        frameRate: 30,
+        insertMode: "APPEND",
+      });
+
+      setIsFrontCamera(!isFrontCamera);
+
+      session.current.unpublish(publisher).then(() => {
+        console.log("Old publisher unpublished!");
+
+        setPublisher(newPublisher);
+
+        session.current.publish(newPublisher).then(() => {
+          publisher.addVideoElement(videoRef.current);
+          console.log("New publisher published!");
         });
-
-        setIsFrontCamera(!isFrontCamera);
-
-        session.current.unpublish(publisher).then(() => {
-          console.log("Old publisher unpublished!");
-
-          setPublisher(newPublisher);
-
-          session.current.publish(newPublisher).then(() => {
-            publisher.addVideoElement(videoRef.current);
-            console.log("New publisher published!");
-          });
-        });
+      });
       // }
     });
   };
@@ -280,7 +286,6 @@ const OpenVideo = () => {
         });
       }, 5000);
       dispatch(setLoading());
-      setRecordStartTime(new Date()); // 녹화 시작 시간 설정
       startRecording({
         session: session.current.sessionId,
         outputMode: "COMPOSED_QUICK_START",
@@ -288,6 +293,7 @@ const OpenVideo = () => {
         hasVideo: true,
       })
         .then((res) => {
+          setRecordStartTime(new Date()); // 녹화 시작 시간 설정
           console.log(res.data.id);
           setCurrentRecordingId(res.data.id);
           setIsRecording(true);
@@ -412,11 +418,9 @@ const OpenVideo = () => {
     newProductList.splice(currentProductIndex + 1, 0, selectedProduct);
     setProductList(newProductList);
   };
-  console.log(currentProduct);
   const handleBuy = async (productId) => {
     setSelectedProductId(productId);
-    console.log("selectedProductId : ", selectedProductId);
-    console.log(currentProduct);
+
     try {
       const response = await baseAxios().post("/fleaon/purchase/buy", {
         productId: productList[currentProductIndex].productId,
@@ -425,12 +429,16 @@ const OpenVideo = () => {
 
       // 요청이 성공했을 때 모달을 엽니다.
       if (response.status === 200) {
-        console.log("selectedProductId : ", selectedProductId);
-        console.log({
-          productId: productList[currentProductIndex].productId,
-          userId: user.userId,
-        });
         handleCustomerClick();
+        setIsSold(true); // 추가
+        const messageData = {
+          type: 3,
+          isSold: true,
+        };
+        session.current.signal({
+          data: JSON.stringify(messageData),
+          type: "chat",
+        });
         // setIsModalOpen(true);
       } else {
         // 요청이 성공하지 않았을 때의 처리를 여기에 추가하세요.
@@ -439,6 +447,29 @@ const OpenVideo = () => {
     } catch (error) {
       // 요청이 실패했을 때의 처리를 여기에 추가하세요.
       console.error("Error purchasing product:", error);
+    }
+  };
+  const handleReserve = async () => {
+    try {
+      const response = await baseAxios().post("fleaon/purchase/reserve", {
+        productId: productList[currentProductIndex].productId,
+        userId: user.userId,
+      });
+      if (response.status === 200) {
+        setReserveCount(reserveCount + 1); // 추가
+        const messageData = {
+          type: 4,
+          reserveCount: reserveCount + 1,
+        };
+        session.current.signal({
+          data: JSON.stringify(messageData),
+          type: "chat",
+        });
+      } else {
+        console.error("Reservation failed:", response);
+      }
+    } catch (error) {
+      console.error("Error reserving product:", error);
     }
   };
   const sendMessage = () => {
@@ -657,18 +688,26 @@ const OpenVideo = () => {
                     </Button>
                   )}
                 </Box>
+              ) : isSold ? (
+                <Button
+                  variant="contained"
+                  color="orange"
+                  onClick={handleReserve}
+                  disabled={reserveCount >= 5}
+                  sx={{ width: "60vw", height: "6vh" }}
+                >
+                  {reserveCount >= 5 ? "구매 불가" : "줄서기"}
+                </Button>
               ) : (
                 <Button
                   variant="contained"
                   color="secondary"
                   disabled={!isRecording}
-                  onClick={() => handleBuy(currentProduct.id)} // 구매 버튼 클릭 시 handleBuy 호출
-                  // onClick={handleCustomerClick}
+                  onClick={() => handleBuy(currentProduct.id)}
                   sx={{ width: "60vw", height: "6vh" }}
                 >
                   {isRecording ? "구매하기" : "상품 준비중"}
                 </Button>
-                /////////////////////////////////////////////얘다 달력 연결할 애임///////
               )}
             </Box>
 
