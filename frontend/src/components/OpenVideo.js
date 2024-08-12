@@ -201,11 +201,11 @@ const OpenVideo = () => {
         (device) => device.kind === "videoinput"
       );
       console.log(videoDevices);
-      if (videoDevices.length > 1) {
+      // if (videoDevices.length > 1) {
         const newPublisher = OV.current.initPublisher("htmlVideo", {
           videoSource: isFrontCamera
             ? videoDevices[0].deviceId
-            : videoDevices[2].deviceId,
+            : videoDevices[0].deviceId,
           publishAudio: true,
           publishVideo: true,
           mirror: isFrontCamera,
@@ -216,17 +216,17 @@ const OpenVideo = () => {
 
         setIsFrontCamera(!isFrontCamera);
 
-        session.current.unpublish(publisher.current).then(() => {
+        session.current.unpublish(publisher).then(() => {
           console.log("Old publisher unpublished!");
 
-          publisher.current = newPublisher;
+          setPublisher(newPublisher);
 
           session.current.publish(newPublisher).then(() => {
-            publisher.current.addVideoElement(videoRef.current);
+            publisher.addVideoElement(videoRef.current);
             console.log("New publisher published!");
           });
         });
-      }
+      // }
     });
   };
   const { listen, listening, stop } = useSpeechRecognition({
