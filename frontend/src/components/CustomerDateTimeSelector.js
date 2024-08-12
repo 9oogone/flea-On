@@ -1,29 +1,33 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Typography, Modal, Button, Grid } from "@mui/material";
-import {
-  format,
-  addDays,
-  isToday,
-  isPast,
-  parse,
-  isValid,
-  parseISO,
-} from "date-fns";
+import { format, addDays, isToday, isPast, parseISO, isValid } from "date-fns";
 import { PlaceOutlined } from "@mui/icons-material";
+import baseAxios from "../utils/httpCommons"; // baseAxios import
 
 const CustomerDateTimeSelector = ({
   open,
   handleClose,
   place,
   liveDate,
-  times = [],
+  times,
+  currentProductIndex,
+  userId,
+  sellerId,
+  liveId,
 }) => {
   const [selectedDate, setSelectedDate] = useState(liveDate);
   const [selectedTime, setSelectedTime] = useState(null);
+  const [isButtonVisible, setIsButtonVisible] = useState(false); // 버튼 가시성 상태 추가
+
+  useEffect(() => {
+    if (times.length > 0) {
+      setSelectedDate(times[0].date);
+    }
+  }, [times]);
 
   const weekdayMap = {
     Sunday: "일",
-    Monday: "월",
+    Monday: "화",
     Tuesday: "화",
     Wednesday: "수",
     Thursday: "목",
@@ -33,8 +37,12 @@ const CustomerDateTimeSelector = ({
 
   const generateWeekDates = () => {
     const dates = [];
+    if (!liveDate) {
+      console.error("liveDate is undefined");
+      return dates;
+    }
+
     const parsedLiveDate = parseISO(liveDate);
-    console.log(parsedLiveDate);
     if (!isValid(parsedLiveDate)) {
       console.error("Invalid liveDate:", liveDate);
       return dates;
@@ -120,14 +128,52 @@ const CustomerDateTimeSelector = ({
   const handleDateSelect = (date) => {
     setSelectedDate(date);
     setSelectedTime(null);
+    setIsButtonVisible(true); // 날짜 선택 시 버튼 표시
   };
 
   const handleTimeSelect = (time) => {
     setSelectedTime(time);
   };
 
+  const handleConfirm = async () => {
+    try {
+      const response = await baseAxios().post(
+        "/fleaon/purchase/confirmPurchase",
+        {
+          buyerId: userId,
+          sellerId: sellerId,
+          productId: Number(currentProductIndex),
+          liveId: Number(liveId),
+          tradePlace: place,
+          tradeTime: `${selectedTime}:00`,
+          tradeDate: selectedDate,
+        }
+      );
+
+      if (response.status === 200) {
+        // 요청 성공 시 처리
+        handleClose();
+        console.log(response);
+        console.log({
+          buyerId: userId,
+          sellerId: sellerId,
+          productId: Number(currentProductIndex),
+          liveId: Number(liveId),
+          tradePlace: place,
+          tradeTime: `${selectedTime}:00`,
+          tradeDate: selectedDate,
+        });
+      } else {
+        // 요청 실패 시 처리
+        console.error("Purchase confirmation failed:", response);
+      }
+    } catch (error) {
+      console.error("Error confirming purchase:", error);
+    }
+  };
+
   const formatTime = (time) => {
-    const parsedTime = parse(time, "HH:mm:ss", new Date());
+    const parsedTime = parseISO(`1970-01-01T${time}`);
 
     if (!isValid(parsedTime)) {
       console.error("Invalid time parsed:", time);
@@ -146,13 +192,15 @@ const CustomerDateTimeSelector = ({
     return { period, formattedTime: `${formattedHours}:${formattedMinutes}` };
   };
 
-  const currentMonth = format(parseISO(selectedDate), "M월");
+  const currentMonth = selectedDate
+    ? format(parseISO(selectedDate), "M월")
+    : "";
   const filteredTimes = times.filter((slot) => slot.date === selectedDate);
   const morningSlots = filteredTimes.filter(
-    (slot) => formatTime(slot.tradeStart).period === "오전"
+    (slot) => formatTime(slot.time).period === "오전"
   );
   const afternoonSlots = filteredTimes.filter(
-    (slot) => formatTime(slot.tradeStart).period === "오후"
+    (slot) => formatTime(slot.time).period === "오후"
   );
 
   return (
@@ -265,8 +313,8 @@ const CustomerDateTimeSelector = ({
 
                 <Grid container spacing={1}>
                   {morningSlots.map((slot, index) => {
-                    const { formattedTime } = formatTime(slot.tradeStart);
-                    const isSelected = selectedTime === slot.tradeStart;
+                    const { formattedTime } = formatTime(slot.time);
+                    const isSelected = selectedTime === slot.time;
                     return (
                       <Grid
                         item
@@ -275,7 +323,7 @@ const CustomerDateTimeSelector = ({
                         sx={{ display: "flex", justifyContent: "center" }}
                       >
                         <Button
-                          onClick={() => handleTimeSelect(slot.tradeStart)}
+                          onClick={() => handleTimeSelect(slot.time)}
                           sx={{
                             width: "100%",
                             border: "1px solid rgba(0, 0, 0, 0.20)",
@@ -303,8 +351,8 @@ const CustomerDateTimeSelector = ({
                 </Box>
                 <Grid container spacing={1}>
                   {afternoonSlots.map((slot, index) => {
-                    const { formattedTime } = formatTime(slot.tradeStart);
-                    const isSelected = selectedTime === slot.tradeStart;
+                    const { formattedTime } = formatTime(slot.time);
+                    const isSelected = selectedTime === slot.time;
                     return (
                       <Grid
                         item
@@ -313,7 +361,7 @@ const CustomerDateTimeSelector = ({
                         sx={{ display: "flex", justifyContent: "center" }}
                       >
                         <Button
-                          onClick={() => handleTimeSelect(slot.tradeStart)}
+                          onClick={() => handleTimeSelect(slot.time)}
                           sx={{
                             width: "100%",
                             border: "1px solid rgba(0, 0, 0, 0.20)",
@@ -345,6 +393,17 @@ const CustomerDateTimeSelector = ({
               </Typography>
             )}
           </Box>
+          {currentProductIndex}
+          {isButtonVisible && (
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={handleConfirm}
+              sx={{ mt: 2 }}
+            >
+              구매 확정
+            </Button>
+          )}
         </Box>
       </Box>
     </Modal>
