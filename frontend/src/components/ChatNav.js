@@ -5,7 +5,7 @@ import cancelicons from "../assets/images/navicon/cancelicons.svg";
 import detailicons from "../assets/images/navicon/detailicons.svg";
 import timeicons from "../assets/images/navicon/timeicons.svg";
 
-const ChatNav = ({ onClose, onCancelTrade, onTradeDetail, onChangeTime }) => {
+const ChatNav = ({ chatID, onClose, onCancelTrade, onTradeDetail, onChangeTime }) => {
   //네브 영역 밖에 선택하면 꺼지게 함
   const instanceParentRef = useRef();
 

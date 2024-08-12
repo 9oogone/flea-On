@@ -22,6 +22,7 @@ const ChatPage = () => {
   const dispatch = useDispatch();
   const { chats, status, error, noChats } = useSelector((state) => state.chat);
 
+  console.log(chats)
   useEffect(() => {
     if (status === "idle") {
       dispatch(fetchChats());
@@ -77,9 +78,11 @@ const ChatPage = () => {
                     sx={{
                       marginLeft: 1,
                       color: chat.isBuyer ? "green" : "blue",
+                      color: chat.isbuyer ? "green" : "blue",
                     }}
                   >
                     {chat.isBuyer ? "구매자" : "판매자"}
+                    {chat.isbuyer ? "판매자" : "구매자"}
                   </Typography>
                 </Box>
               }

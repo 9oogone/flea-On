@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { Box, Typography, Modal } from "@mui/material";
 import {
   ArrowBackIosNew,
@@ -6,274 +6,83 @@ import {
   PlaceOutlined,
   ShopOutlined,
 } from "@mui/icons-material";
+import { getTradeDetail } from "../features/chat/ChatApi";
+import useDidMountEffect from "../utils/useDidMountEffect";
 
-const ChatTradeDetail = ({ isOpen, onClose }) => {
-  const [products, setProducts] = useState([
-    {
-      id: 1,
-      name: "마리아상",
-      price: "6666만 6000원",
-      status: "상품취소",
-      statusColor: "#FF0B55",
-    },
-    {
-      id: 1,
-      name: "마리아상",
-      price: "6만원",
-      status: "상품취소",
-      statusColor: "#FF0B55",
-    },
-    {
-      id: 1,
-      name: "마리아상",
-      price: "6만원",
-      status: "상품취소",
-      statusColor: "#FF0B55",
-    },
-    {
-      id: 1,
-      name: "마리아상",
-      price: "6만원",
-      status: "상품취소",
-      statusColor: "#FF0B55",
-    },
-    {
-      id: 1,
-      name: "마리아상",
-      price: "6만원",
-      status: "상품취소",
-      statusColor: "#FF0B55",
-    },
-    {
-      id: 1,
-      name: "마리아상",
-      price: "6만원",
-      status: "상품취소",
-      statusColor: "#FF0B55",
-    },
-    {
-      id: 1,
-      name: "마리아상",
-      price: "6만원",
-      status: "상품취소",
-      statusColor: "#FF0B55",
-    },
-    {
-      id: 1,
-      name: "마리아상",
-      price: "6만원",
-      status: "상품취소",
-      statusColor: "#FF0B55",
-    },
-    {
-      id: 1,
-      name: "마리아상",
-      price: "6만원",
-      status: "상품취소",
-      statusColor: "#FF0B55",
-    },
-    {
-      id: 1,
-      name: "마리아상",
-      price: "6만원",
-      status: "상품취소",
-      statusColor: "#FF0B55",
-    },
-    {
-      id: 2,
-      name: "마리아상",
-      price: "6만원",
-      status: "상품추가",
-      statusColor: "#FF0B55",
-    },
-    {
-      id: 3,
-      name: "마리아상",
-      price: "6만원",
-      status: "줄 서기",
-      statusColor: "#FF5757",
-    },
-    {
-      id: 4,
-      name: "마리아상",
-      price: "6만원",
-      status: "줄 취소",
-      statusColor: "#FF5757",
-    },
-    {
-      id: 5,
-      name: "마리아상",
-      price: "6만원",
-      status: "출 마감",
-      statusColor: "#CCCCCC",
-    },
-    {
-      id: 3,
-      name: "마리아상",
-      price: "6만원",
-      status: "줄 서기",
-      statusColor: "#FF5757",
-    },
-    {
-      id: 4,
-      name: "마리아상",
-      price: "6만원",
-      status: "줄 취소",
-      statusColor: "#FF5757",
-    },
-    {
-      id: 5,
-      name: "마리아상",
-      price: "6만원",
-      status: "출 마감",
-      statusColor: "#CCCCCC",
-    },
-    {
-      id: 3,
-      name: "마리아상",
-      price: "6만원",
-      status: "줄 서기",
-      statusColor: "#FF5757",
-    },
-    {
-      id: 4,
-      name: "마리아상",
-      price: "6만원",
-      status: "줄 취소",
-      statusColor: "#FF5757",
-    },
-    {
-      id: 5,
-      name: "마리아상",
-      price: "6만원",
-      status: "출 마감",
-      statusColor: "#CCCCCC",
-    },
-    {
-      id: 3,
-      name: "마리아상",
-      price: "6만원",
-      status: "줄 서기",
-      statusColor: "#FF5757",
-    },
-    {
-      id: 4,
-      name: "마리아상",
-      price: "6만원",
-      status: "줄 취소",
-      statusColor: "#FF5757",
-    },
-    {
-      id: 5,
-      name: "마리아상",
-      price: "6만원",
-      status: "출 마감",
-      statusColor: "#CCCCCC",
-    },
-    {
-      id: 3,
-      name: "마리아상",
-      price: "6만원",
-      status: "줄 서기",
-      statusColor: "#FF5757",
-    },
-    {
-      id: 4,
-      name: "마리아상",
-      price: "6만원",
-      status: "줄 취소",
-      statusColor: "#FF5757",
-    },
-    {
-      id: 5,
-      name: "마리아상",
-      price: "6만원",
-      status: "출 마감",
-      statusColor: "#CCCCCC",
-    },
-    {
-      id: 3,
-      name: "마리아상",
-      price: "6만원",
-      status: "줄 서기",
-      statusColor: "#FF5757",
-    },
-    {
-      id: 4,
-      name: "마리아상",
-      price: "6만원",
-      status: "줄 취소",
-      statusColor: "#FF5757",
-    },
-    {
-      id: 5,
-      name: "마리아상",
-      price: "6만원",
-      status: "출 마감",
-      statusColor: "#CCCCCC",
-    },
-    {
-      id: 3,
-      name: "마리아상",
-      price: "6만원",
-      status: "줄 서기",
-      statusColor: "#FF5757",
-    },
-    {
-      id: 4,
-      name: "마리아상",
-      price: "6만원",
-      status: "줄 취소",
-      statusColor: "#FF5757",
-    },
-    {
-      id: 5,
-      name: "마리아상",
-      price: "6만원",
-      status: "출 마감",
-      statusColor: "#CCCCCC",
-    },
-  ]);
+const ChatTradeDetail = ({ chatID, isOpen, onClose }) => {
+  const [detail, setDetail] = useState({});
+  const [buyProducts, setBuyProducts] = useState([])
+  const [otherProducts, setOtherProducts] = useState([])
+  
+  useDidMountEffect(()=>{
+    getTradeDetail(chatID).then((res)=>{
+      setDetail(res);
+    })
+    // console.log(chatID)
+  },[chatID])
+  useDidMountEffect(()=>{
+    if(detail!=null){
+      console.log("ssss")
+    console.log(detail)
+    setBuyProducts(detail.buyProduct)
+    console.log(detail.buyProduct)
+    setOtherProducts(detail.otherProduct)
+    console.log(detail.otherProduct)
+  }
+  },[detail])
 
   if (!isOpen) return null;
 
   const handleBackButtonClick = () => {
     onClose(true);
   };
+  const handleTradeCancel = (id, reservationCount) => {
+    //구매취소 로직
+  }
+  const handleStatusClick = (id, reservationCount) => {
+    if(reservationCount==0){
+      //구매하기
+    }else if(reservationCount>5){
+      //줄 마감
+    }else if(reservationCount==-3){ 
+      //예약 취소
+    }else{
+      //예약 하기
+    }
 
-  const handleStatusClick = (id) => {
-    setProducts((prev) =>
-      prev.map((product) =>
-        product.id === id
-          ? {
-              ...product,
-              status:
-                product.status === "상품취소"
-                  ? "상품추가"
-                  : product.status === "상품추가"
-                  ? "상품취소"
-                  : product.status === "줄 서기"
-                  ? "줄 취소"
-                  : product.status === "줄 취소"
-                  ? "줄 서기"
-                  : product.status,
-              statusColor:
-                product.status === "상품취소"
-                  ? "#FF0B55"
-                  : product.status === "상품추가"
-                  ? "#FF0B55"
-                  : product.status === "줄 서기"
-                  ? "#FF5757"
-                  : product.status === "줄 취소"
-                  ? "#FF5757"
-                  : "#CCCCCC",
-            }
-          : product
-      )
-    );
+    // setProducts((prev) =>
+    //   prev.map((product) =>
+    //     product.id === id
+    //       ? {
+    //           ...product,
+    //           status:
+    //             product.status === "상품취소"
+    //               ? "상품추가"
+    //               : product.status === "상품추가"
+    //               ? "상품취소"
+    //               : product.status === "줄 서기"
+    //               ? "줄 취소"
+    //               : product.status === "줄 취소"
+    //               ? "줄 서기"
+    //               : product.status,
+    //           statusColor:
+    //             product.status === "상품취소"
+    //               ? "#FF0B55"
+    //               : product.status === "상품추가"
+    //               ? "#FF0B55"
+    //               : product.status === "줄 서기"
+    //               ? "#FF5757"
+    //               : product.status === "줄 취소"
+    //               ? "#FF5757"
+    //               : "#CCCCCC",
+    //         }
+    //       : product
+    //   )
+    // );
+
   };
 
-  const ProductItem = ({ product, onStatusClick }) => {
+  const ProductItem = ({ product,productStatus, onStatusClick }) => {
     return (
       <Box
         sx={{
@@ -322,7 +131,7 @@ const ChatTradeDetail = ({ isOpen, onClose }) => {
           }}
         >
           <Box
-            onClick={() => onStatusClick(product.id)}
+            onClick={() => onStatusClick(product.id, product.reservationCount)}
             sx={{
               width: "100%",
               backgroundColor: product.statusColor,
@@ -336,20 +145,20 @@ const ChatTradeDetail = ({ isOpen, onClose }) => {
               fontSize: 14,
             }}
           >
-            {product.status}
+            {productStatus}
           </Box>
         </Box>
       </Box>
     );
   };
 
-  const scheduledProducts = products.filter(
-    (product) => product.status === "상품취소"
-  );
+  // const scheduledProducts = products.filter(
+  //   (product) => product.status === "상품취소"
+  // );
 
-  const otherProducts = products.filter(
-    (product) => product.status !== "상품취소"
-  );
+  // const otherProducts = products.filter(
+  //   (product) => product.status !== "상품취소"
+  // );
 
   return (
     <Modal open={isOpen} onClose={onClose}>
@@ -405,18 +214,17 @@ const ChatTradeDetail = ({ isOpen, onClose }) => {
             <Box sx={{ display: "flex", gap: 1 }}>
               <AccessTime sx={{ fontSize: 24 }} />
               <Typography sx={{ fontSize: 18 }}>
-                2024년 7월 23일 목요일 오후 3시
+                {detail.tradeDate}{detail.tradeTime}
               </Typography>
             </Box>
             <Box sx={{ display: "flex", gap: 1 }}>
               <PlaceOutlined sx={{ fontSize: 24 }} />
               <Box>
                 <Typography sx={{ fontSize: 18 }}>
-                  대전광역시 유성구 덕명동
+                  {/* 대전광역시 유성구 덕명동 */}
+                  {detail.tradePlace}
                 </Typography>
-                <Typography sx={{ fontSize: 18 }}>
-                  한밭대학교 주차장1 에서
-                </Typography>
+                {/* <Typography sx={{ fontSize: 18 }}>한밭대학교 주차장1 에서 </Typography> */}
               </Box>
             </Box>
           </Box>
@@ -453,11 +261,12 @@ const ChatTradeDetail = ({ isOpen, onClose }) => {
                 overflowY: "auto",
               }}
             >
-              {scheduledProducts.map((product) => (
+              {buyProducts.map((product,index) => (
                 <ProductItem
                   key={product.id}
                   product={product}
-                  onStatusClick={handleStatusClick}
+                  productStatus = "거래 취소"
+                  onStatusClick={handleTradeCancel}
                 />
               ))}
             </Box>
@@ -492,6 +301,7 @@ const ChatTradeDetail = ({ isOpen, onClose }) => {
                 <ProductItem
                   key={product.id}
                   product={product}
+                  productStatus={product.reservationCount==0?"상품추가":product.reservationCount>5?"줄 마감":product.reservationCount==-3?"줄 취소":"줄 서기"}
                   onStatusClick={handleStatusClick}
                 />
               ))}
