@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Box, Typography, Grid, Button } from "@mui/material";
 import {
@@ -9,10 +9,12 @@ import {
 import { toggleScrap } from "../features/shorts/shortsSlice";
 import { useNavigate } from "react-router-dom"; // 최신 버전 React Router 사용
 
-const Shorts = ({ items = [] }) => {
+const Shorts = ({ items = [] }) => { 
   const dispatch = useDispatch();
-
   const navigate = useNavigate();
+
+  console.log("Shorts items:", items);
+
   if (!items || items.length === 0) {
     return <div>No shorts available.</div>;
   }
@@ -69,7 +71,7 @@ const Shorts = ({ items = [] }) => {
                       handleScrapToggle(item.id);
                     }}
                   >
-                    {item.is_scrap ? (
+                    {item.scrap ? (
                       <FavoriteRounded sx={{ color: "#FF0B55" }} />
                     ) : (
                       <FavoriteBorderRounded />
@@ -101,7 +103,7 @@ const Shorts = ({ items = [] }) => {
                           fontWeight: 600,
                         }}
                       >
-                        {item.name}
+                        {item.productName}
                       </Typography>
                       <Typography
                         sx={{
@@ -111,7 +113,7 @@ const Shorts = ({ items = [] }) => {
                         }}
                       >
                         <LocationOn sx={{ fontSize: "8px" }} />
-                        {item.trade_place}
+                        {item.tradePlace}
                       </Typography>
                     </Box>
                     <Box
@@ -129,7 +131,7 @@ const Shorts = ({ items = [] }) => {
                           fontWeight: 500,
                         }}
                       >
-                        {item.price}원
+                        {item.productPrice}원
                       </Typography>
                       <Typography
                         sx={{

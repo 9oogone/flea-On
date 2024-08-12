@@ -9,7 +9,7 @@ const extractDong = (address) => {
 };
 
 const UpcomingFooter = ({ name, tradePlace, title, price }) => {
-  const dongName = extractDong(tradePlace);
+  // const dongName = extractDong(tradePlace);
 
   return (
     <Box
@@ -28,7 +28,7 @@ const UpcomingFooter = ({ name, tradePlace, title, price }) => {
         }}
       >
         <LocationOnIcon sx={{ fontSize: "8px" }} />
-        {dongName}
+        {tradePlace}
       </Typography>
 
       <Typography

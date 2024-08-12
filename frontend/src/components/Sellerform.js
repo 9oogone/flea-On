@@ -325,7 +325,7 @@ const SellerformSelect = ({ onClose }) => {
               </LocalizationProvider>
             </div>
           </div>
-          <div className={styles.button}>
+          <div className={styles.sellerformbutton}>
             <Button
               color="primary"
               onClick={handleAddTransactionTime}
@@ -374,8 +374,8 @@ const SellerformSelect = ({ onClose }) => {
               <AddCircleOutlineIcon style={{ color: "gray", fontSize: "30" }} />
             </IconButton>
           </div>
-          <div className={styles.button}>
-            <button type="submit" className={styles.button1}>
+          <div className={styles.sellerformbutton}>
+            <button type="submit" className={styles.sellerformbutton1}>
               등록하기
             </button>
           </div>

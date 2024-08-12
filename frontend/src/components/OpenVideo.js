@@ -33,27 +33,30 @@ const OpenVideo = () => {
   const [newMessage, setNewMessage] = useState("");
   const [isPublisher, setIsPublisher] = useState(false);
   const [currentProduct, setCurrentProduct] = useState(null);
-  const [productList, setProductList] = useState([]);
+  const [productList, setProductList] = useState([{ productId: 1 }]);
   const [currentProductIndex, setCurrentProductIndex] = useState(0);
-  const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태를 추가합니다.
+  //   const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태를 추가합니다.
   const [selectedProductId, setSelectedProductId] = useState(null); // 선택한 제품 ID 상태를 추가합니다.
   const dispatch = useDispatch();
   const { sessionName } = useParams();
   const [currentVideoDevice, setCurrentVideoDevice] = useState(null);
   const [mainStreamManager, setMainStreamManager] = useState(undefined);
   const [sttValue, setSttValue] = useState("");
-  // const [publisher, setPublisher] = useState(undefined);
+  const [publisher, setPublisher] = useState(undefined);
   const [currentRecordingId, setCurrentRecordingId] = useState("");
   const [recordStartTime, setRecordStartTime] = useState(null);
-  const publisher = useRef();
+  const [title, setTitle] = useState("");
+  const [seller, setSeller] = useState({});
   //거래장소시간 선택 모달
   const [open, setOpen] = useState(false);
   const [place, setPlace] = useState("");
   const [liveDate, setLiveDate] = useState("");
   const [times, setTimes] = useState([]);
+  const [isFrontCamera, setIsFrontCamera] = useState(false);
   const navigate = useNavigate();
   const handleCustomerClick = () => {
     // 이미 가져온 데이터를 사용하여 상태 업데이트
+    console.log("모달이 열림");
     setOpen(true);
   };
 
@@ -71,7 +74,16 @@ const OpenVideo = () => {
           throw new Error("Invalid date format");
         }
 
-        while (start < end) {
+        // 시작 시간을 정각 또는 반으로 조정
+        const adjustToHalfHour = (date) => {
+          const minutes = date.getMinutes();
+          const adjustedMinutes = minutes < 30 ? 0 : 30;
+          date.setMinutes(adjustedMinutes, 0, 0);
+        };
+
+        adjustToHalfHour(start);
+
+        while (start <= end) {
           slots.push({
             time: start.toTimeString().slice(0, 5), // 'HH:MM' 형식으로 시간 추출
             date: time.date,
@@ -96,8 +108,8 @@ const OpenVideo = () => {
     if (session.current) {
       session.current.disconnect();
     }
-    if (publisher.current) {
-      publisher.current = null;
+    if (publisher) {
+      publisher = null;
     }
   };
 
@@ -110,7 +122,7 @@ const OpenVideo = () => {
       MakeSession(videoRef, dispatch, sessionName)
         .then((ss) => {
           console.log("MakeSession 성공");
-          //session.current = ss;
+          session.current = ss;
           fetchProductList(sessionName);
         })
         .catch((error) => {
@@ -121,15 +133,15 @@ const OpenVideo = () => {
   }, [sessionName]);
 
   const MakeSession = async (videoRef, dispatch, sessionName) => {
-    session.current = OV.current.initSession();
+    const session = OV.current.initSession();
 
-    session.current.on("streamCreated", (event) => {
-      var subscriber = session.current.subscribe(event.stream, undefined);
+    session.on("streamCreated", (event) => {
+      var subscriber = session.subscribe(event.stream, undefined);
       subscribers.push(subscriber);
       subscriber.addVideoElement(videoRef.current);
     });
 
-    session.current.on("signal:chat", (event) => {
+    session.on("signal:chat", (event) => {
       const data = JSON.parse(event.data);
       const type = data.type;
       if (type === 1) {
@@ -137,9 +149,10 @@ const OpenVideo = () => {
         const from = data.from;
         const profile = data.profile;
         const userId = data.userId;
+        const time = data.time;
         setMessages((prevMessages) => [
           ...prevMessages,
-          { from, message, profile, userId },
+          { from, message, profile, userId, time },
         ]);
       } else if (type === 2) {
         setIsRecording(data.isRecording);
@@ -149,11 +162,11 @@ const OpenVideo = () => {
     try {
       const resp = await getToken({ sessionName: sessionName });
       let token = resp[0];
-      await session.current.connect(token, { clientData: "example" });
+      await session.connect(token, { clientData: "example" });
 
       if (resp[1] === true) {
         setIsPublisher(true);
-        publisher.current = OV.current.initPublisher(
+        let publisher = OV.current.initPublisher(
           undefined,
           {
             audioSource: undefined,
@@ -166,8 +179,8 @@ const OpenVideo = () => {
             mirror: false,
           },
           () => {
-            publisher.current.addVideoElement(videoRef.current);
-            session.current.publish(publisher.current);
+            publisher.addVideoElement(videoRef.current);
+            session.publish(publisher);
             dispatch(unSetLoading());
           },
           (error) => {
@@ -176,13 +189,46 @@ const OpenVideo = () => {
           }
         );
       }
-      return session.current;
+      return session;
     } catch (error) {
       console.error("세션 설정 중 오류 발생:", error);
       dispatch(unSetLoading());
     }
   };
+  const switchCamera = () => {
+    OV.current.getDevices().then((devices) => {
+      const videoDevices = devices.filter(
+        (device) => device.kind === "videoinput"
+      );
+      console.log(videoDevices);
+      // if (videoDevices.length > 1) {
+        const newPublisher = OV.current.initPublisher("htmlVideo", {
+          videoSource: isFrontCamera
+            ? videoDevices[0].deviceId
+            : videoDevices[0].deviceId,
+          publishAudio: true,
+          publishVideo: true,
+          mirror: isFrontCamera,
+          resolution: "405x1080",
+          frameRate: 30,
+          insertMode: "APPEND",
+        });
 
+        setIsFrontCamera(!isFrontCamera);
+
+        session.current.unpublish(publisher).then(() => {
+          console.log("Old publisher unpublished!");
+
+          setPublisher(newPublisher);
+
+          session.current.publish(newPublisher).then(() => {
+            publisher.addVideoElement(videoRef.current);
+            console.log("New publisher published!");
+          });
+        });
+      // }
+    });
+  };
   const { listen, listening, stop } = useSpeechRecognition({
     onResult: (result) => {
       setSttValue(result);
@@ -191,49 +237,6 @@ const OpenVideo = () => {
       listen({ continuous: true });
     },
   });
-  const [isFrontCamera, setIsFrontCamera] = useState(false);
-  function switchCamera() {
-    OV.current.getDevices().then((devices) => {
-      var videoDevices = devices.filter(
-        (device) => device.kind === "videoinput"
-      );
-  
-      if (videoDevices && videoDevices.length > 1) {
-        const currentDeviceId = publisher.current.stream.getMediaStream().getVideoTracks()[0].getSettings().deviceId;
-        const newVideoDevice = videoDevices.find(
-          device => device.deviceId !== currentDeviceId
-        );
-  
-        if (newVideoDevice) {
-          const newPublisher = OV.current.initPublisher(undefined, {
-            audioSource: undefined,
-            videoSource: newVideoDevice.deviceId,
-            publishAudio: true,
-            publishVideo: true,
-            resolution: "405x1080",
-            insertMode: "APPEND",
-            frameRate: 30,
-            mirror: isFrontCamera,
-          });
-  
-          session.current.unpublish(publisher.current)
-            .then(() => {
-              publisher.current = newPublisher;
-              publisher.current.addVideoElement(videoRef.current);
-              return session.current.publish(publisher.current);
-            })
-            .then(() => {
-              console.log("New publisher published!");
-              setIsFrontCamera(!isFrontCamera);
-            })
-            .catch((error) => {
-              console.error("Error switching camera:", error);
-            });
-        }
-      }
-    });
-  }
-  
 
   const fetchProductList = async (sessionName) => {
     try {
@@ -241,17 +244,23 @@ const OpenVideo = () => {
         `/fleaOn/live/${sessionName}/detail`
       );
       const {
+        title,
         products,
         tradePlace,
         liveDate: live_date,
         liveTradeTimes,
+        user,
       } = response.data;
       console.log(response.data);
+      setTitle(title);
+      setSeller(user);
       setProductList(products);
       setCurrentProduct(products[0]); // 첫 번째 상품 설정
       setPlace(tradePlace);
       setLiveDate(live_date);
       const timeSlots = generateTimeSlots(liveTradeTimes);
+      console.log("timeSlots : ", timeSlots);
+      console.log("liveDate : ", liveDate);
       setTimes(timeSlots);
     } catch (error) {
       console.error("상품 목록 가져오기 오류:", error);
@@ -309,28 +318,67 @@ const OpenVideo = () => {
           // 녹화 종료 시간 설정
           const recordStopTime = new Date();
           const durationInMs = recordStopTime - recordStartTime;
+          console.log("durationInMs : ", durationInMs);
+          // 시간 차이를 정확하게 계산하여 HH:mm:ss 형식의 문자열로 변환
           const hours = Math.floor(durationInMs / 3600000)
             .toString()
             .padStart(2, "0");
+          console.log("hours : ", hours);
           const minutes = Math.floor((durationInMs % 3600000) / 60000)
             .toString()
             .padStart(2, "0");
+          console.log("minutes : ", minutes);
           const seconds = Math.floor((durationInMs % 60000) / 1000)
             .toString()
             .padStart(2, "0");
-
-          // 녹화 길이를 HH:mm:ss 형식의 문자열로 변환
+          console.log("seconds : ", seconds);
           const length = `${hours}:${minutes}:${seconds}`;
-
-          // 녹화 데이터를 서버로 전송
+          console.log(length);
+          // 녹화 데이터 및 채팅 메시지를 서버로 전송
           const videoAddress = `https://i11b202.p.ssafy.io/openvidu/recordings/${currentRecordingId}/${currentRecordingId}.mp4`;
           const thumbnail = `https://i11b202.p.ssafy.io/openvidu/recordings/${currentRecordingId}/${currentRecordingId}.jpg`;
 
+          // 채팅 메시지의 시간을 녹화 시작 시간과 종료 시간 기준으로 변환
+          const shortsChatRequests = messages
+            .filter((message) => {
+              const messageTime = new Date(message.time);
+              return (
+                messageTime >= recordStartTime && messageTime <= recordStopTime
+              );
+            })
+            .map((message) => {
+              const messageTime = new Date(message.time);
+              const timeDifferenceInMs = messageTime - recordStartTime;
+
+              const messageHours = Math.floor(timeDifferenceInMs / 3600000)
+                .toString()
+                .padStart(2, "0");
+              const messageMinutes = Math.floor(
+                (timeDifferenceInMs % 3600000) / 60000
+              )
+                .toString()
+                .padStart(2, "0");
+              const messageSeconds = Math.floor(
+                (timeDifferenceInMs % 60000) / 1000
+              )
+                .toString()
+                .padStart(2, "0");
+
+              const formattedTime = `${messageHours}:${messageMinutes}:${messageSeconds}`;
+
+              return {
+                content: message.message,
+                time: formattedTime,
+                userId: message.userId,
+              };
+            });
+
           const data = {
             thumbnail,
-            length: length,
+            length,
             videoAddress,
             productId: currentProduct.productId,
+            shortsChatRequests,
           };
 
           baseAxios()
@@ -339,13 +387,13 @@ const OpenVideo = () => {
               console.log("녹화 데이터 전송 성공:", response.data);
             })
             .catch((error) => {
-              console.log(data);
+              console.log(data, messages);
               console.error("녹화 데이터 전송 중 오류 발생:", error);
             });
 
           // 다음 상품 준비
+          setCurrentProductIndex(currentProductIndex + 1);
           if (currentProductIndex < productList.length - 1) {
-            setCurrentProductIndex(currentProductIndex + 1);
             setCurrentProduct(productList[currentProductIndex + 1]);
           }
         })
@@ -364,13 +412,35 @@ const OpenVideo = () => {
     newProductList.splice(currentProductIndex + 1, 0, selectedProduct);
     setProductList(newProductList);
   };
-
-  const handleBuy = (productId) => {
+  console.log(currentProduct);
+  const handleBuy = async (productId) => {
     setSelectedProductId(productId);
-    handleCustomerClick();
-    setIsModalOpen(true); // 모달을 엽니다.
-  };
+    console.log("selectedProductId : ", selectedProductId);
+    console.log(currentProduct);
+    try {
+      const response = await baseAxios().post("/fleaon/purchase/buy", {
+        productId: productList[currentProductIndex].productId,
+        userId: user.userId,
+      });
 
+      // 요청이 성공했을 때 모달을 엽니다.
+      if (response.status === 200) {
+        console.log("selectedProductId : ", selectedProductId);
+        console.log({
+          productId: productList[currentProductIndex].productId,
+          userId: user.userId,
+        });
+        handleCustomerClick();
+        // setIsModalOpen(true);
+      } else {
+        // 요청이 성공하지 않았을 때의 처리를 여기에 추가하세요.
+        console.error("Purchase failed:", response);
+      }
+    } catch (error) {
+      // 요청이 실패했을 때의 처리를 여기에 추가하세요.
+      console.error("Error purchasing product:", error);
+    }
+  };
   const sendMessage = () => {
     if (session.current && newMessage.trim() !== "") {
       const messageData = {
@@ -379,6 +449,7 @@ const OpenVideo = () => {
         message: newMessage,
         from: user.nickname,
         profile: user.profilePicture,
+        time: new Date(),
       };
 
       session.current.signal({
@@ -389,9 +460,15 @@ const OpenVideo = () => {
     }
   };
 
-  const endBroadcast = () => {
+  const endBroadcast = async () => {
     console.log("방송 종료");
-    // 방송 종료를 위한 로직 추가
+    try {
+      await baseAxios().put(`/fleaOn/live/${sessionName}/off`);
+      navigate("/");
+    } catch (error) {
+      console.error("방송 종료 실패", error);
+      // 오류 처리를 여기서 할 수 있습니다 (예: 사용자에게 오류 메시지 표시)
+    }
   };
 
   const sliderSettings = {
@@ -414,30 +491,11 @@ const OpenVideo = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
-  const InputTextField = styled(TextField)({
-    "& label": {
-      // placeholder text color
-      color: "var(--sub-text)",
-    },
-    "& label.Mui-focused": {
-      // 해당 input focus 되었을 때 placeholder text color
-      // floatng label을 사용할 때 처리 필요하다
-      color: "var(--primary)",
-    },
-    "& label.Mui-error": {
-      color: "#d32f2f",
-    },
-    "& .MuiOutlinedInput-root": {
-      color: "var(--text)",
-      "& fieldset": {
-        borderColor: "var(--sub-text)",
-      },
-    },
-  });
 
   return (
     <div style={{ width: "100%", height: "100%" }}>
       <video
+        id="htmlVideo"
         autoPlay={true}
         ref={videoRef}
         style={{
@@ -616,80 +674,132 @@ const OpenVideo = () => {
 
             {/* <Box>{sttValue} </Box> */}
           </Box>
-          {isPublisher ? (
+          <Box
+            sx={{
+              backgroundColor: "rgba(0, 0, 0, 0.12)",
+              height: "100vh",
+              backdropFilter: "blur(10px)",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "flex-start",
+              alignItems: "center",
+              pr: 5,
+              pl: 5,
+              pt: 15,
+            }}
+          >
             <Box
               sx={{
-                backgroundColor: "rgba(0, 0, 0, 0.12)",
-                height: "100vh",
-                backdropFilter: "blur(10px)",
+                display: "flex",
+                alignItems: "center",
+                marginBottom: 2,
               }}
             >
-              <Typography variant="h6">
-                판매자 - 다음에 판매할 상품 목록
-              </Typography>
-              {productList
-                .slice(currentProductIndex + 1)
-                .map((product, index) => (
-                  <Box
-                    key={index + currentProductIndex + 1}
-                    sx={{ marginBottom: 2 }}
+              <Avatar
+                src={seller.profilePicture}
+                alt={seller.nickname}
+                sx={{ marginRight: 2, width: 32, height: 32 }} // 깨끗한 외관을 위한 작은 아바타
+              />
+              <Box>
+                <Typography
+                  variant="body2"
+                  sx={{ fontWeight: "bold", color: "white" }}
+                >
+                  {seller.nickname}
+                </Typography>
+                <Typography variant="body1" sx={{ color: "white" }}>
+                  {title}
+                </Typography>
+              </Box>
+            </Box>
+
+            <Typography variant="h6" sx={{ color: "white", marginBottom: 5 }}>
+              상품 목록
+            </Typography>
+
+            {productList.map((product, index) => (
+              <Box
+                key={index}
+                sx={{
+                  marginBottom: 2,
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  width: "80%", // 전체 width 설정
+                }}
+              >
+                <Box>
+                  <Typography
+                    variant="body2"
+                    sx={{ fontWeight: "bold", color: "white" }}
                   >
-                    <Typography variant="subtitle1">{product.name}</Typography>
-                    <Typography variant="body1">
-                      가격: {product.price}원
-                    </Typography>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={() =>
-                        handlePrepareProduct(index + currentProductIndex + 1)
-                      }
-                      sx={{ width: "36vw" }}
-                    >
-                      이 상품 준비하기
-                    </Button>
-                  </Box>
-                ))}
-            </Box>
-          ) : (
-            <Box
-              sx={{
-                backgroundColor: "rgba(0, 0, 0, 0.12)",
-                height: "100vh",
-                backdropFilter: "blur(10px)",
-              }}
-            >
-              <Typography variant="h6">구매자 - 지나간 상품 목록</Typography>
-              {productList
-                .slice(0, currentProductIndex)
-                .map((product, index) => (
-                  <Box key={index} sx={{ marginBottom: 2 }}>
-                    <Typography variant="subtitle1">{product.name}</Typography>
-                    <Typography variant="body1">
-                      가격: {product.price}원
-                    </Typography>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={() => handleBuy(product.id)} // 지나간 상품에 대해서도 구매 버튼 클릭 시 handleBuy 호출
-                      sx={{ width: "36vw" }}
-                    >
-                      구매하기
-                    </Button>
-                  </Box>
-                ))}
-            </Box>
-          )}
+                    {product.name}
+                  </Typography>
+                  <Typography variant="body1" sx={{ color: "white" }}>
+                    가격: {product.price}원
+                  </Typography>
+                </Box>
+                {isPublisher ? (
+                  <Button
+                    variant="contained"
+                    color={
+                      index <= currentProductIndex ? "primary" : "secondary"
+                    }
+                    onClick={() =>
+                      handlePrepareProduct(index + currentProductIndex + 1)
+                    }
+                    disabled={index <= currentProductIndex}
+                    sx={{
+                      width: "36vw",
+                      color: "white",
+                      "&.Mui-disabled": {
+                        color: "white",
+                      },
+                    }}
+                  >
+                    {index < currentProductIndex
+                      ? "방송 종료"
+                      : index === currentProductIndex
+                      ? "방송 중"
+                      : "이 상품 준비하기"}
+                  </Button>
+                ) : (
+                  <Button
+                    variant="contained"
+                    color={
+                      index === currentProductIndex ? "secondary" : "primary"
+                    }
+                    disabled={index !== currentProductIndex}
+                    onClick={() => handleBuy(product.id)}
+                    sx={{
+                      width: "36vw",
+                      color: "white",
+                      "&.Mui-disabled": {
+                        color: "white",
+                      },
+                    }}
+                  >
+                    {index === currentProductIndex ? "구매하기" : "방송예정"}
+                  </Button>
+                )}
+              </Box>
+            ))}
+          </Box>
         </Slider>
       </Box>
 
-      {/* <CustomerDateTimeSelector
+      <CustomerDateTimeSelector
         open={open}
         handleClose={handleClose}
         place={place}
-        live_date={liveDate}
+        liveDate={liveDate}
         times={times}
-      /> */}
+        currentProductIndex={productList[currentProductIndex].productId}
+        userId={user.userId}
+        sellerId={seller.userId}
+        liveId={sessionName}
+      />
     </div>
   );
 };

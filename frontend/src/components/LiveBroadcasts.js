@@ -8,11 +8,13 @@ import UpcomingFooter from "./UpcomingFooter";
 import UpcomingModal from "./UpcomingModal";
 
 const LiveBroadcasts = ({ items }) => {
+  console.log("LiveBroadcasts items:", items);
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [modalLiveDate, setModalLiveDate] = useState("");
   const [modalTitle, setModalTitle] = useState("");
-  const [modalProducts, setModalProducts] = useState([]);
+  const [modalProductNames, setModalProductNames] = useState([]);
+  const [modalProductPrices, setModalProductPrices] = useState([]);
   const [modalThumbnail, setModalThumbnail] = useState("");
   const [modalAuthor, setModalAuthor] = useState("");
   const [modalTradePlace, setModalTradePlace] = useState("");
@@ -21,9 +23,11 @@ const LiveBroadcasts = ({ items }) => {
     if (item.is_live) {
       navigate(`/live/${item.id}`);
     } else {
+      console.log(item);
       setModalLiveDate(item.live_date);
       setModalTitle(item.title);
-      setModalProducts(item.products || []);
+      setModalProductNames(item.productNames || []);
+      setModalProductPrices(item.productPrices || []);
       setModalThumbnail(item.thumbnail);
       setModalAuthor(item.author);
       setModalTradePlace(item.trade_place);
@@ -46,7 +50,7 @@ const LiveBroadcasts = ({ items }) => {
                 sx={{
                   width: "16vh",
                   height: "28vh",
-                  backgroundImage: `url(${item.thumbnail})`,
+                  backgroundImage: `url(https://i11b202.p.ssafy.io/openvidu/${item.thumbnail})`,
                   backgroundSize: "cover",
                   backgroundPosition: "center",
                   borderRadius: 2,
@@ -76,7 +80,7 @@ const LiveBroadcasts = ({ items }) => {
                   />
                 ) : (
                   <UpcomingFooter
-                    tradePlace={item.trade_place}
+                    tradePlace={item.tradePlace}
                     title={item.title}
                   />
                 )}
@@ -87,7 +91,8 @@ const LiveBroadcasts = ({ items }) => {
               open={open}
               handleClose={handleClose}
               liveDate={modalLiveDate}
-              products={modalProducts}
+              productNames={modalProductNames}
+              productPrices={modalProductPrices}
               title={modalTitle}
               thumbnail={modalThumbnail}
               author={modalAuthor}

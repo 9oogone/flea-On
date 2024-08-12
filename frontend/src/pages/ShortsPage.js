@@ -1,8 +1,9 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { setCurrentShort } from "../features/shorts/shortsSlice";
 import CustomVideoPlayer from "../components/CustomVideoPlayer";
+import baseAxios from "../utils/httpCommons";
 import {
   Container,
   Typography,
@@ -18,30 +19,39 @@ import {
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ShareIcon from "@mui/icons-material/Share";
 
-const dummyVideoUrl =
-  "https://videos.pexels.com/video-files/8549588/8549588-hd_1080_1920_25fps.mp4";
-
-const dummyData = {
-  id: "1",
-  url: dummyVideoUrl,
-  name: "자전거",
-  price: "5만원",
-  comments: [
-    { id: 1, username: "cadetblue", text: "자전거 얼마나 쓰신 건가요" },
-    { id: 2, username: "borami", text: "고장난 데는 없나요?" },
-    { id: 3, username: "gimain", text: "멋진 자전거..." },
-  ],
-  likes: 8,
-};
-
 const ShortsPage = () => {
   const { shortsId } = useParams();
   const dispatch = useDispatch();
   const currentShort = useSelector((state) => state.shorts.currentShort);
-
+  const [comments, setComments] = useState([]);
+  const [videoTime, setVideoTime] = useState(0);
+  const [product, setProduct] = useState({});
   useEffect(() => {
-    dispatch(setCurrentShort(dummyData));
+    const fetchShortData = async () => {
+      try {
+        const response = await baseAxios().get(
+          `/fleaon/shorts/play/${shortsId}`
+        );
+        dispatch(setCurrentShort(response.data));
+        console.log(currentShort);
+        setComments(response.data.shortsChatResponseList);
+        setProduct(response.data.product);
+      } catch (error) {
+        console.error("Error fetching short data:", error);
+      }
+    };
+
+    fetchShortData();
   }, [shortsId, dispatch]);
+
+  const handleTimeUpdate = (event) => {
+    setVideoTime(event.target.currentTime);
+  };
+
+  const filteredComments = comments.filter((comment) => {
+    const commentTime = parseFloat(comment.time);
+    return commentTime <= videoTime;
+  });
 
   if (!currentShort) return <Typography>Loading...</Typography>;
 
@@ -55,10 +65,11 @@ const ShortsPage = () => {
       }}
     >
       <CustomVideoPlayer
-        src={currentShort.url}
+        src={currentShort.videoAddress}
         loop
         autoPlay
         muted
+        onTimeUpdate={handleTimeUpdate}
         style={{
           backgroundColor: "green",
           width: "100px",
@@ -86,7 +97,7 @@ const ShortsPage = () => {
             width: "100%",
           }}
         >
-          창고 대방출
+          {currentShort.liveTitle}
         </Typography>
         <IconButton
           color="inherit"
@@ -119,18 +130,17 @@ const ShortsPage = () => {
               paddingLeft: "4%",
               borderRadius: "10px",
               marginRight: "25%",
+              mb: 3,
             }}
           >
-            {currentShort.comments.map((comment) => (
-              <ListItem key={comment.id} sx={{ p: 0 }}>
+            {filteredComments.map((comment) => (
+              <ListItem key={comment.time} sx={{ p: 0 }}>
                 <ListItemAvatar>
-                  <Avatar sx={{ bgcolor: "#333" }}>
-                    {comment.username[0].toUpperCase()}
-                  </Avatar>
+                  <Avatar src={comment.profilePic} />
                 </ListItemAvatar>
                 <ListItemText
-                  primary={comment.username}
-                  secondary={comment.text}
+                  primary={comment.nickName}
+                  secondary={comment.content}
                   primaryTypographyProps={{ color: "white" }}
                   secondaryTypographyProps={{ color: "white" }}
                 />
@@ -147,22 +157,16 @@ const ShortsPage = () => {
           }}
         >
           <Box>
-            <Typography variant="h6">{currentShort.name}</Typography>
-            <Typography>{currentShort.price}</Typography>
+            <Typography variant="h6">{product.name}</Typography>
+            <Typography>{product.price}원</Typography>
           </Box>
           <Button
             variant="contained"
             sx={{
-              backgroundColor: "#FF0B55",
-              color: "white",
               height: "50px",
-              marginRight: "10%",
               width: "60%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              marginTop: "5%",
             }}
+            color="secondary"
           >
             구매하기
           </Button>

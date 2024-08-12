@@ -1,10 +1,11 @@
 import React, { useEffect } from "react";
-import { Container, Typography, CircularProgress } from "@mui/material";
+import { Container, Typography, Box } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import { fetchSearchResults } from "../features/search/actions";
 import LiveBroadcasts from "../components/LiveBroadcasts";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import Spinner from "../components/Spinner.js"
 
 const useQuery = () => {
   return new URLSearchParams(useLocation().search);
@@ -34,15 +35,18 @@ const SearchLive = () => {
 
   return (
     <Container>
-      <ArrowBackIosIcon sx={{ cursor: "pointer" }} onClick={handleIconClick} />
-      <Typography variant="h4" gutterBottom sx={{ display: "inline-block" }}>
-        {query}
-      </Typography>
+    <Box>
+    <ArrowBackIosIcon sx={{ cursor: "pointer", mt: "7%", mb: "7%" }} onClick={handleIconClick} />
+    </Box>
+    <Box>
+    <Typography gutterBottom sx={{ textAlign: "center", mb: "7%", fontSize: "30px", letterSpacing: "-2px" }}>
+      {query}의 Live 검색 결과
+    </Typography>
+    </Box>
 
-      {loading && <CircularProgress />}
-      {error && <Typography color="error">에러가 발생했습니다: {error === "500" ? "서버 에러가 발생했습니다. 잠시 후 다시 시도해 주세요." : error}</Typography>}
-
-      <LiveBroadcasts items={results.live ? results.live : []} />
+    {loading && <Spinner />}
+    {error && <Typography color="error">에러가 발생했습니다: {error}</Typography>}
+      <LiveBroadcasts items={results[0].live ? results[0].live : []} />
     </Container>
   );
 };
