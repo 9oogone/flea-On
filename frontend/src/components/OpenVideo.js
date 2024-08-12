@@ -688,18 +688,26 @@ const OpenVideo = () => {
                     </Button>
                   )}
                 </Box>
+              ) : isSold ? (
+                <Button
+                  variant="contained"
+                  color="orange"
+                  onClick={handleReserve}
+                  disabled={reserveCount >= 5}
+                  sx={{ width: "60vw", height: "6vh" }}
+                >
+                  {reserveCount >= 5 ? "구매 불가" : "줄서기"}
+                </Button>
               ) : (
                 <Button
                   variant="contained"
                   color="secondary"
                   disabled={!isRecording}
-                  onClick={() => handleBuy(currentProduct.id)} // 구매 버튼 클릭 시 handleBuy 호출
-                  // onClick={handleCustomerClick}
+                  onClick={() => handleBuy(currentProduct.id)}
                   sx={{ width: "60vw", height: "6vh" }}
                 >
                   {isRecording ? "구매하기" : "상품 준비중"}
                 </Button>
-                /////////////////////////////////////////////얘다 달력 연결할 애임///////
               )}
             </Box>
 

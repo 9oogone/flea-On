@@ -27,6 +27,9 @@ const theme = createTheme({
     google: {
       main: "#ffffff",
     },
+    orange: {
+      main: "#FF5757",
+    },
   },
 });
 
