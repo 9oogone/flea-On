@@ -132,7 +132,9 @@ public class RedisQueueConsumer {
         Object data = redisTemplate.opsForList().leftPop(PURCHASE_QUEUE);
         if (data != null) {
             PurchaseRequest request = objectMapper.convertValue(data, PurchaseRequest.class);
+            logger.info("1");
             int result = purchaseService.processPurchaseRequest(request);
+            logger.info("8");
             redisTemplate.opsForValue().set("purchaseResult:" + request.getUserId() + ":" + request.getProductId(), result);
         }
     }
