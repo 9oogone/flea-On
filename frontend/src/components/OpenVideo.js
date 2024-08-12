@@ -54,6 +54,8 @@ const OpenVideo = () => {
   const [times, setTimes] = useState([]);
   const [isFrontCamera, setIsFrontCamera] = useState(false);
   const navigate = useNavigate();
+  const [isSold, setIsSold] = useState(false); // 추가
+  const [reserveCount, setReserveCount] = useState(0); // 추가
   const handleCustomerClick = () => {
     // 이미 가져온 데이터를 사용하여 상태 업데이트
     console.log("모달이 열림");
@@ -156,6 +158,10 @@ const OpenVideo = () => {
         ]);
       } else if (type === 2) {
         setIsRecording(data.isRecording);
+      } else if (type === 3) {
+        setIsSold(data.isSold);
+      } else if (type === 4) {
+        setReserveCount(data.reserveCount);
       }
     });
 
@@ -424,6 +430,15 @@ const OpenVideo = () => {
       // 요청이 성공했을 때 모달을 엽니다.
       if (response.status === 200) {
         handleCustomerClick();
+        setIsSold(true); // 추가
+        const messageData = {
+          type: 3,
+          isSold: true,
+        };
+        session.current.signal({
+          data: JSON.stringify(messageData),
+          type: "chat",
+        });
         // setIsModalOpen(true);
       } else {
         // 요청이 성공하지 않았을 때의 처리를 여기에 추가하세요.
@@ -432,6 +447,29 @@ const OpenVideo = () => {
     } catch (error) {
       // 요청이 실패했을 때의 처리를 여기에 추가하세요.
       console.error("Error purchasing product:", error);
+    }
+  };
+  const handleReserve = async () => {
+    try {
+      const response = await baseAxios().post("fleaon/purchase/reserve", {
+        productId: productList[currentProductIndex].productId,
+        userId: user.userId,
+      });
+      if (response.status === 200) {
+        setReserveCount(reserveCount + 1); // 추가
+        const messageData = {
+          type: 4,
+          reserveCount: reserveCount + 1,
+        };
+        session.current.signal({
+          data: JSON.stringify(messageData),
+          type: "chat",
+        });
+      } else {
+        console.error("Reservation failed:", response);
+      }
+    } catch (error) {
+      console.error("Error reserving product:", error);
     }
   };
   const sendMessage = () => {
