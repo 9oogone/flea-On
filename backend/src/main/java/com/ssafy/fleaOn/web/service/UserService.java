@@ -187,6 +187,7 @@ public class UserService {
                         .price(product.getPrice())
                         .buyerId(trade.getBuyerId())
                         .sellerId(trade.getSellerId())
+                        .dongName(product.getLive().getRegionInfo().getEupmyeon())
                         .tradePlace(trade.getTradePlace())
                         .tradeTime(trade.getTradeTime())
                         .build();
