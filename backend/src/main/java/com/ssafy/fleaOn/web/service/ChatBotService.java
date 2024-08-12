@@ -54,8 +54,18 @@ public class ChatBotService {
         List<Product> otherLiveProducts = productRepository.findByLive_LiveIdAndProductIdNotIn(chatting.getLive().getLiveId(), buyProducts.stream().map(ChatbotProductResponse::getProductId).toList())
                 .orElseThrow(() -> new RuntimeException("Products not found"));
         for (Product product : otherLiveProducts) {
+            int current = 0; // 구매 가능
+            if (product.getCurrentBuyerId()==userId)
+                current = -2; // 이미 구매자
+            else if (product.getReservationCount()>=0&&product.getReservationCount()<5)
+                current = product.getReservationCount()+1; // 예약 가능
+            else if (product.getReservationCount()>=5) {
+                current = product.getReservationCount()+1; // 예약 불가능
+            } else if (reservationRepository.findByProduct_ProductIdAndUser_UserId(product.getProductId(), userId).isPresent()) {
+                current = -3;
+            }
             otherProducts.add(new ChatbotProductResponse(
-                    product, product.getReservationCount()+1
+                    product, current
             ));
         }
 
