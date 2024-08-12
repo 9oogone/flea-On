@@ -10,7 +10,7 @@ const CustomerDateTimeSelector = ({
   place,
   liveDate,
   times,
-  selectedProductId,
+  currentProductIndex,
   userId,
   sellerId,
   liveId,
@@ -142,7 +142,7 @@ const CustomerDateTimeSelector = ({
         {
           buyerId: userId,
           sellerId: sellerId,
-          productId: selectedProductId,
+          productId: currentProductIndex,
           liveId: liveId,
           tradePlace: place,
           tradeTime: `${selectedTime}:00`,
@@ -157,7 +157,7 @@ const CustomerDateTimeSelector = ({
         console.log({
           buyerId: userId,
           sellerId: sellerId,
-          productId: selectedProductId,
+          productId: currentProductIndex,
           liveId: liveId,
           tradePlace: place,
           tradeTime: `${selectedTime}:00`,
@@ -393,6 +393,7 @@ const CustomerDateTimeSelector = ({
               </Typography>
             )}
           </Box>
+          {currentProductIndex}
           {isButtonVisible && (
             <Button
               variant="contained"

@@ -33,7 +33,7 @@ const OpenVideo = () => {
   const [newMessage, setNewMessage] = useState("");
   const [isPublisher, setIsPublisher] = useState(false);
   const [currentProduct, setCurrentProduct] = useState(null);
-  const [productList, setProductList] = useState([]);
+  const [productList, setProductList] = useState([{ productId: 1 }]);
   const [currentProductIndex, setCurrentProductIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태를 추가합니다.
   const [selectedProductId, setSelectedProductId] = useState(null); // 선택한 제품 ID 상태를 추가합니다.
@@ -411,10 +411,11 @@ const OpenVideo = () => {
     newProductList.splice(currentProductIndex + 1, 0, selectedProduct);
     setProductList(newProductList);
   };
-
+  console.log(currentProduct);
   const handleBuy = async (productId) => {
     setSelectedProductId(productId);
-    console.log(selectedProductId);
+    console.log("selectedProductId : ", selectedProductId);
+    console.log(currentProduct);
     try {
       const response = await baseAxios().post("/fleaon/purchase/buy", {
         productId: productId,
@@ -423,6 +424,11 @@ const OpenVideo = () => {
 
       // 요청이 성공했을 때 모달을 엽니다.
       if (response.status === 200) {
+        console.log("selectedProductId : ", selectedProductId);
+        console.log({
+          productId: productId,
+          userId: user.userId,
+        });
         handleCustomerClick();
         setIsModalOpen(true);
       } else {
@@ -788,7 +794,7 @@ const OpenVideo = () => {
         place={place}
         liveDate={liveDate}
         times={times}
-        selectedProductId={selectedProductId}
+        currentProductIndex={productList[currentProductIndex].productId}
         userId={user.userId}
         sellerId={seller.userId}
         liveId={sessionName}
