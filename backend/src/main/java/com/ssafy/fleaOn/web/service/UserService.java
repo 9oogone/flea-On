@@ -234,6 +234,7 @@ public class UserService {
                         .productName(findProduct.get().getName())
                         .productPrice(findProduct.get().getPrice())
                         .liveId(trade.getLive().getLiveId())
+                        .dongName(trade.getLive().getRegionInfo().getEupmyeon())
                         .tradePlace(trade.getTradePlace())
                         .tradeTime(zonedDateTime.toLocalTime())
                         .tradeDate(zonedDateTime.toLocalDate())
