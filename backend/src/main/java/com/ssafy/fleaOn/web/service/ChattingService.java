@@ -46,12 +46,16 @@ public class ChattingService {
                 otherUser = userRepository.findByEmail(chat.getSeller().getEmail())
                         .orElseThrow(() -> new IllegalArgumentException("no user found for id: " + chat.getSeller().getUserId()));
             }
+
             responses.add(new ChattingResponse(
                     chat,
                     otherUser.getNickname(), // Assuming User entity has a nickname field
                     otherUser.getProfilePicture(), // Assuming User entity has a profile field
                     recentMessage,
-                    chat.getView()  // 추가된 view 필드를 반영
+                    chat.getView(),  // 추가된 view 필드를 반영
+                    chat.getLive().getLiveId(),
+                    chat.getLive().getIsLive(),
+                    chat.getBuyer().getUserId()==userId
             ));
         }
         // 리스트를 recentMessageTime에 따라 정렬
