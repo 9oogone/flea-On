@@ -114,7 +114,7 @@ const OpenVideo = () => {
       MakeSession(videoRef, dispatch, sessionName)
         .then((ss) => {
           session.current = ss;
-          // fetchProductList(sessionName);
+          fetchProductList(sessionName);
         })
         .catch((error) => {
           dispatch(unSetLoading());
@@ -236,34 +236,34 @@ const OpenVideo = () => {
     },
   });
 
-  // const fetchProductList = async (sessionName) => {
-  //   try {
-  //     const response = await baseAxios().get(
-  //       `/fleaOn/live/${sessionName}/detail`
-  //     );
-  //     const {
-  //       title,
-  //       products,
-  //       tradePlace,
-  //       liveDate: live_date,
-  //       liveTradeTimes,
-  //       user,
-  //     } = response.data;
-  //     console.log(response.data);
-  //     setTitle(title);
-  //     setSeller(user);
-  //     setProductList(products);
-  //     setCurrentProduct(products[0]); // 첫 번째 상품 설정
-  //     setPlace(tradePlace);
-  //     setLiveDate(live_date);
-  //     const timeSlots = generateTimeSlots(liveTradeTimes);
-  //     console.log("timeSlots : ", timeSlots);
-  //     console.log("liveDate : ", liveDate);
-  //     setTimes(timeSlots);
-  //   } catch (error) {
-  //     console.error("상품 목록 가져오기 오류:", error);
-  //   }
-  // };
+  const fetchProductList = async (sessionName) => {
+    try {
+      const response = await baseAxios().get(
+        `/fleaOn/live/${sessionName}/detail`
+      );
+      const {
+        title,
+        products,
+        tradePlace,
+        liveDate: live_date,
+        liveTradeTimes,
+        user,
+      } = response.data;
+      console.log(response.data);
+      setTitle(title);
+      setSeller(user);
+      setProductList(products);
+      setCurrentProduct(products[0]); // 첫 번째 상품 설정
+      setPlace(tradePlace);
+      setLiveDate(live_date);
+      const timeSlots = generateTimeSlots(liveTradeTimes);
+      console.log("timeSlots : ", timeSlots);
+      console.log("liveDate : ", liveDate);
+      setTimes(timeSlots);
+    } catch (error) {
+      console.error("상품 목록 가져오기 오류:", error);
+    }
+  };
 
   const handleRecordStart = () => {
     if (session.current && currentProductIndex < productList.length) {
@@ -395,7 +395,11 @@ const OpenVideo = () => {
         userId: user.userId,
       });
       if (response.status === 200) {
-        handleCustomerClick();
+        if (response.data===7){
+
+        }else{
+          handleCustomerClick();
+        }
         setIsSold(true);
         setIsPurchaseCompleted(true); // 추가
         const messageData = {

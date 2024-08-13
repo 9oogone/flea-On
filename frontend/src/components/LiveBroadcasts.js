@@ -15,14 +15,8 @@ const LiveBroadcasts = ({ items: initialItems }) => {
   const dispatch = useDispatch();
   const liveDetail = useSelector((state) => state.live.liveDetail);
   const [open, setOpen] = useState(false);
-  const [modalLiveDate, setModalLiveDate] = useState("");
-  const [modalTitle, setModalTitle] = useState("");
-  const [modalProductNames, setModalProductNames] = useState([]);
-  const [modalProductPrices, setModalProductPrices] = useState([]);
-  const [modalThumbnail, setModalThumbnail] = useState("");
-  const [modalAuthor, setModalAuthor] = useState("");
-  const [modalTradePlace, setModalTradePlace] = useState("");
-  const [modalScrap, setModalScrap] = useState(false);
+  const [modalScrap, setModalScrapOpen] = useState(false);
+
   const [items, setItems] = useState([]);
 
   useEffect(() => {
@@ -35,15 +29,8 @@ const LiveBroadcasts = ({ items: initialItems }) => {
     if (item.isLive) {
       navigate(`/live/${item.id}`);
     } else {
-      setModalLiveDate(item.liveDate);
-      setModalTitle(item.title);
-      setModalProductNames(item.productNames || []);
-      setModalProductPrices(item.productPrices || []);
-      setModalThumbnail(item.thumbnail);
-      setModalAuthor(item.author);
-      setModalTradePlace(item.tradePlace);
-      setModalScrap(item.scrap);
       dispatch(fetchLiveDetail(item.id));
+      setModalScrapOpen(item.scrap);
       setOpen(true);
     }
   };
@@ -128,13 +115,8 @@ const LiveBroadcasts = ({ items: initialItems }) => {
                 open={open}
                 handleClose={handleClose}
                 liveDetail={liveDetail}
-                liveDate={modalLiveDate}
-                productNames={modalProductNames}
-                productPrices={modalProductPrices}
-                title={modalTitle}
-                thumbnail={modalThumbnail}
-                author={modalAuthor}
-                tradePlace={modalTradePlace}
+                scrap={modalScrap}
+                setScrap={() => handleScrapToggle(item.id, item.scrap)}
               />
             </Grid>
           ))
