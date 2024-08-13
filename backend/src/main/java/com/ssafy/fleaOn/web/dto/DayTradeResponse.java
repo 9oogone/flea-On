@@ -15,6 +15,7 @@ public class DayTradeResponse {
     private int price;
     private int buyerId;
     private int sellerId;
+    private int productId;
     private String dongName;
     private String tradePlace;
     private LocalTime tradeTime;
