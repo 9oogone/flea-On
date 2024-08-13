@@ -86,10 +86,17 @@ const CategoryPage = () => {
                   color:
                     selectedCategoryId === firstCategoryId
                       ? "#FF0B55"
-                      : "black",
+                      : "#666666",
+                      // '#2E2E32'
                 }}
               >
-                <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                <Typography
+                 sx={{ 
+                  fontWeight: 600,
+                  fontSize: '18px',
+                  fontFamily: 'Noto Sans KR',
+                  letterSpacing: '-0.5px',
+                  }}>
                   {category.firstCategoryName}
                 </Typography>
               </Box>
@@ -108,7 +115,17 @@ const CategoryPage = () => {
                       textAlign="center"
                       sx={{ cursor: "pointer", mb: 1 }}
                     >
-                      <Typography variant="body1">
+                      <Typography
+                       sx={{
+                        fontSize: '16px',
+                        fontFamily: 'Noto Sans KR',
+                        letterSpacing: '-0.5px',
+                        mt: '10px',
+                        mb: '10px',
+                        color: '#666666',
+                        fontWeight: 400,
+
+                       }}>
                         {subcategory.name}
                       </Typography>
                     </Box>
