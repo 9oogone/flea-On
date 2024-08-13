@@ -19,4 +19,5 @@ public class DayTradeResponse {
     private String tradePlace;
     private LocalTime tradeTime;
     private int chattingId;
+    private int liveId;
 }
