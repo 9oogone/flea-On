@@ -66,8 +66,9 @@ const UpcomingBroadcasts = ({ items = [] }) => {
             <Typography
               sx={{
                 color: "#FF0B55",
-                fontSize: "15px",
-                letterSpacing: "-0.5px"
+                fontSize: "14px",
+                letterSpacing: "-0.5px",
+                fontWeight: "600"
               }}
             >
               {formatDateTimeDistance(item.liveDate)}
@@ -89,6 +90,9 @@ const UpcomingBroadcasts = ({ items = [] }) => {
                 textOverflow: "ellipsis",
                 overflow: "hidden",
                 whiteSpace: "nowrap",
+                letterSpacing: '-0.5px',
+                color: "rgba(44, 44, 46, 1)",
+                fontSize: '16px'
               }}
             >
               {item.productName}
@@ -96,6 +100,11 @@ const UpcomingBroadcasts = ({ items = [] }) => {
             <Typography
               sx={{
                 fontWeight: 300,
+                overflow: "hidden",
+                whiteSpace: "nowrap",
+                letterSpacing: '-0.5px',
+                color: "rgba(44, 44, 46, 1)",
+                fontSize: '13px'
               }}
             >
               {formatPrice(item.productPrice)}
