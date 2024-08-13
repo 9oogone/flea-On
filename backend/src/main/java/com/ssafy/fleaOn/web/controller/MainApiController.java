@@ -34,6 +34,7 @@ public class MainApiController {
     private final UserService userService;
 
     @GetMapping("/mainLive")
+    @Operation(summary = "라이브 목록 조회", description = "라이브 목록을 조회할 때 사용합니다. ")
     public ResponseEntity<?> getMainLive(HttpServletRequest request) {
         try {
             String authorizationToken = request.getHeader("Authorization");
