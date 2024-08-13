@@ -55,6 +55,8 @@
   cursor: pointer;
   width: 100%;
   max-width: 300px;
+  letter-spacing: -0.5px;
+  height: 46px;
 }
 
 .sellerformbutton1:hover {

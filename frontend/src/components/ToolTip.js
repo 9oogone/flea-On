@@ -14,9 +14,9 @@ const styles = {
   tooltipContainer: {
     zIndex: 10,
     display: 'inline-block',
-    position: 'absolute',  // 절대 위치로 변경
+    position: 'absolute',
     textAlign: 'center',
-    bottom: '45px',  // 버튼 위에 위치하도록 조정
+    bottom: '45px', 
     left: '15%',
     transform: 'translateX(-50%)',
   },
@@ -30,6 +30,7 @@ const styles = {
     fontWeight: 'medium',
     minWidth: '80px',
     boxShadow: '0px 2px 5px rgba(0,0,0,0.2)',
+    fontFamily: 'Noto Sans KR',
   },
   tooltipArrow: {
     zIndex: 10,
