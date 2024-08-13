@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setLoading, unSetLoading } from "../features/live/loadingSlice";
 import { getToken, startRecording, stopRecording } from "../api/openViduAPI";
 import { useParams, useNavigate } from "react-router-dom";
+import Filter from "badwords-ko";
 import {
   Button,
   IconButton,
@@ -27,6 +28,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { styled } from "@mui/system";
 import swipeLeftImage from "../assets/images/swipe_left.svg";
 const OpenVideo = () => {
+  const filter = new Filter();
   const videoRef = useRef(null);
   const [isRecording, setIsRecording] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -118,18 +120,20 @@ const OpenVideo = () => {
     OV.current = new OpenVidu();
     window.addEventListener("popstate", handlePopState);
     if (sessionName) {
+      if(session.current==null){
       dispatch(setLoading());
 
       MakeSession(videoRef, dispatch, sessionName)
         .then((ss) => {
           console.log("MakeSession 성공");
           session.current = ss;
-          // fetchProductList(sessionName);
+          fetchProductList(sessionName);
         })
         .catch((error) => {
           console.error("MakeSession 오류:", error);
           dispatch(unSetLoading());
         });
+      }
     }
   }, [sessionName]);
 
@@ -155,12 +159,14 @@ const OpenVideo = () => {
         const profile = data.profile;
         const userId = data.userId;
         const time = data.time;
+        console.log(111111)
         setMessages((prevMessages) => [
           ...prevMessages,
           { from, message, profile, userId, time },
         ]);
       } else if (type === 2) {
         setIsRecording(data.isRecording);
+        setCurrentProductIndex(data.currentIndex)
       } else if (type === 3) {
         setIsSold(data.isSold);
       } else if (type === 4) {
@@ -247,40 +253,41 @@ const OpenVideo = () => {
     },
   });
 
-  // const fetchProductList = async (sessionName) => {
-  //   try {
-  //     const response = await baseAxios().get(
-  //       `/fleaOn/live/${sessionName}/detail`
-  //     );
-  //     const {
-  //       title,
-  //       products,
-  //       tradePlace,
-  //       liveDate: live_date,
-  //       liveTradeTimes,
-  //       user,
-  //     } = response.data;
-  //     console.log(response.data);
-  //     setTitle(title);
-  //     setSeller(user);
-  //     setProductList(products);
-  //     setCurrentProduct(products[0]); // 첫 번째 상품 설정
-  //     setPlace(tradePlace);
-  //     setLiveDate(live_date);
-  //     const timeSlots = generateTimeSlots(liveTradeTimes);
-  //     console.log("timeSlots : ", timeSlots);
-  //     console.log("liveDate : ", liveDate);
-  //     setTimes(timeSlots);
-  //   } catch (error) {
-  //     console.error("상품 목록 가져오기 오류:", error);
-  //   }
-  // };
+  const fetchProductList = async (sessionName) => {
+    try {
+      const response = await baseAxios().get(
+        `/fleaOn/live/${sessionName}/detail`
+      );
+      const {
+        title,
+        products,
+        tradePlace,
+        liveDate: live_date,
+        liveTradeTimes,
+        user,
+      } = response.data;
+      console.log(response.data);
+      setTitle(title);
+      setSeller(user);
+      setProductList(products);
+      setCurrentProduct(products[0]); // 첫 번째 상품 설정
+      setPlace(tradePlace);
+      setLiveDate(live_date);
+      const timeSlots = generateTimeSlots(liveTradeTimes);
+      console.log("timeSlots : ", timeSlots);
+      console.log("liveDate : ", liveDate);
+      setTimes(timeSlots);
+    } catch (error) {
+      console.error("상품 목록 가져오기 오류:", error);
+    }
+  };
 
   const handleRecordStart = () => {
     if (session.current && currentProductIndex < productList.length) {
       const messageData = {
         type: 2,
         isRecording: true,
+        currentIndex : currentProductIndex
       };
       setTimeout(() => {
         session.current.signal({
@@ -346,7 +353,7 @@ const OpenVideo = () => {
           // 녹화 데이터 및 채팅 메시지를 서버로 전송
           const videoAddress = `https://i11b202.p.ssafy.io/openvidu/recordings/${currentRecordingId}/${currentRecordingId}.mp4`;
           const thumbnail = `https://i11b202.p.ssafy.io/openvidu/recordings/${currentRecordingId}/${currentRecordingId}.jpg`;
-
+          const ShortsTest = sttValue;
           // 채팅 메시지의 시간을 녹화 시작 시간과 종료 시간 기준으로 변환
           const shortsChatRequests = messages
             .filter((message) => {
@@ -368,10 +375,9 @@ const OpenVideo = () => {
                 .toString()
                 .padStart(2, "0");
               const messageSeconds = Math.floor(
-                (timeDifferenceInMs % 60000)
+                (timeDifferenceInMs / 1000)
               )
-                .toString()
-                .padStart(2, "0");
+                .toString();
 
                 // const formattedTime = `${messageHours}:${messageMinutes}:${messageSeconds}`;
                 const formattedTime = `${messageSeconds}`;
@@ -483,7 +489,7 @@ const OpenVideo = () => {
       const messageData = {
         type: 1,
         userId: user.userId,
-        message: newMessage,
+        message: filter.clean(newMessage),
         from: user.nickname,
         profile: user.profilePicture,
         time: new Date(),
@@ -500,8 +506,14 @@ const OpenVideo = () => {
   const endBroadcast = async () => {
     console.log("방송 종료");
     try {
+      if (session.current) {
+        session.current.disconnect();
+      }
+      if (publisher) {
+        publisher = null;
+      }
       await baseAxios().put(`/fleaOn/live/${sessionName}/off`);
-      navigate("/");
+      navigate(-1);
     } catch (error) {
       console.error("방송 종료 실패", error);
       // 오류 처리를 여기서 할 수 있습니다 (예: 사용자에게 오류 메시지 표시)

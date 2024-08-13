@@ -41,7 +41,7 @@ const ShortsPage = () => {
         console.log(response.data)
         console.log(currentShort);
         setSubList(response.data.shortsChatResponseList);
-        setComments(response.data.shortsChatResponseList);
+        // setComments(response.data.shortsChatResponseList);
         setProduct(response.data.product);
       } catch (error) {
         console.error("Error fetching short data:", error);
@@ -49,16 +49,21 @@ const ShortsPage = () => {
     };
     fetchShortData();
   }, [shortsId]);
-
   useEffect(() => {
     console.log(subList)
+    console.log(comments)
     const videoElement = videoRef.current;
     if (!videoElement) return
     const handleTimeUpdate = () => {
+      if (videoElement.currentTime < 0.1 && curChat !== 0) {
+        setCurChat(0);
+        setComments([]);
+      }
+
       const currentTime = videoElement.currentTime;
       if(curChat<subList.length && subList[curChat].time<=currentTime){
         console.log(curChat)
-        setComments((prevList) => [...prevList, subList[curChat].content]);
+        setComments((prevList) => [...prevList, subList[curChat]]);
         setCurChat(curChat+1);
       }
     };
@@ -66,7 +71,7 @@ const ShortsPage = () => {
     return () => {
       videoElement.removeEventListener("timeupdate", handleTimeUpdate);
     };
-  }, [comments]);
+  }, [comments,subList]);
 
   const handleTimeUpdate = (event) => {
     setVideoTime(event.target.currentTime);
@@ -90,7 +95,6 @@ const ShortsPage = () => {
       }
     }
   };
-
   const handlers = useSwipeable({
     onSwipedUp: handleSwipe,
     onSwipedDown: handleSwipe,
@@ -110,12 +114,12 @@ const ShortsPage = () => {
         height: "100vh",
       }}
     >
+      
       <CustomVideoPlayer
         src={currentShort.videoAddress}
         videoRef={videoRef}
         loop
         autoPlay
-        muted
         onTimeUpdate={handleTimeUpdate}
         style={{
           backgroundColor: "green",
@@ -171,6 +175,7 @@ const ShortsPage = () => {
         <div>
           <List
             sx={{
+              height:"200px",
               mt: 2,
               backgroundColor: "rgba(0, 0, 0, 0.25)",
               marginLeft: "-2%",
@@ -178,8 +183,10 @@ const ShortsPage = () => {
               borderRadius: "10px",
               marginRight: "25%",
               mb: 3,
+              overflow:'scroll',
             }}
           >
+            <div style={{margin:'3%'}}>채팅 다시보기</div>
             {comments.map((comment) => (
               <ListItem key={comment.time} sx={{ p: 0 }}>
                 <ListItemAvatar>
