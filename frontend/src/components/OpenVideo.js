@@ -31,7 +31,7 @@ const OpenVideo = () => {
   const [newMessage, setNewMessage] = useState("");
   const [isPublisher, setIsPublisher] = useState(false);
   const [currentProduct, setCurrentProduct] = useState(null);
-  const [productList, setProductList] = useState([]);
+  const [productList, setProductList] = useState([{ productId: 1 } * 5]);
   const [currentProductIndex, setCurrentProductIndex] = useState(0);
   const [selectedProductId, setSelectedProductId] = useState(null);
   const [isPurchaseCompleted, setIsPurchaseCompleted] = useState(false); // 추가
@@ -148,6 +148,9 @@ const OpenVideo = () => {
         ]);
       } else if (type === 2) {
         setIsRecording(data.isRecording);
+        setCurrentProductIndex(data.currentIndex);
+        setIsPurchaseCompleted(false);
+        setIsSold(false);
       } else if (type === 3) {
         setIsSold(data.isSold);
         setIsPurchaseCompleted(true); // 추가
@@ -270,6 +273,7 @@ const OpenVideo = () => {
       const messageData = {
         type: 2,
         isRecording: true,
+        currentIndex: currentProductIndex,
       };
       setTimeout(() => {
         session.current.signal({
@@ -285,6 +289,9 @@ const OpenVideo = () => {
         hasVideo: true,
       })
         .then((res) => {
+          baseAxios().put(
+            `/fleaon/shorts/${productList[currentProductIndex]?.productId}/Start`
+          );
           setRecordStartTime(new Date());
           setCurrentRecordingId(res.data.id);
           setIsRecording(true);
@@ -391,12 +398,12 @@ const OpenVideo = () => {
     console.log(currentProduct);
     try {
       const response = await baseAxios().post("/fleaon/purchase/buy", {
-        productId: productList[currentProductIndex].productId,
+        productId: productList[currentProductIndex]?.productId,
         userId: user.userId,
       });
       if (response.status === 200) {
-        if (response.data === 7) {
-        } else {
+        console.log(response);
+        if (response.data === 0) {
           handleCustomerClick();
         }
         setIsSold(true);
@@ -420,7 +427,7 @@ const OpenVideo = () => {
   const handleReserve = async () => {
     try {
       const response = await baseAxios().post("fleaon/purchase/reserve", {
-        productId: productList[currentProductIndex].productId,
+        productId: productList[currentProductIndex]?.productId,
         userId: user.userId,
       });
       if (response.status === 200) {
@@ -804,7 +811,7 @@ const OpenVideo = () => {
         place={place}
         liveDate={liveDate}
         times={times}
-        currentProductIndex={productList[currentProductIndex].productId}
+        currentProductIndex={productList[currentProductIndex]?.productId}
         userId={user.userId}
         sellerId={seller.userId}
         liveId={sessionName}
