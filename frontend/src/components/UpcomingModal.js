@@ -8,12 +8,18 @@ import {
   ListItem,
   IconButton,
   Button,
+  Badge,
+  SmallAvatar,
+  Avatar,
 } from "@mui/material";
+// import levelBaby from "../assets/images/level_baby.svg";
+// import levelSmall from "../assets/images/level_small.svg";
+// import levelMiddle from "../../../assets/images/level_middle.svg";
+// import levelBig from "../../../assets/images/level_big.svg";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import styles from "../styles/UpcomingModal.module.css";
-import { formatDateTime, formatPrice } from "../utils/cssUtils";
-
+import { formatDateTime, formatPrice, formatLevel } from "../utils/cssUtils";
 
 const UpcomingModal = ({
   id,
@@ -23,13 +29,11 @@ const UpcomingModal = ({
   setScrap,
   scrap,
 }) => {
-
-
   const auth = useSelector((state) => state.auth.user?.userId);
   const user = useSelector((state) => state.live.liveDetail?.user?.userId);
   console.log(user, "사용자입니다");
   console.log(auth, "판매자입니다.");
-
+  console.log(liveDetail);
   const handleEditLive = () => {
     // navigate(`/edit-live/${liveDetail.liveId}`, { state: { liveDetail } });
   };
@@ -67,6 +71,21 @@ const UpcomingModal = ({
                   )}
                 </IconButton>
               </Typography>
+              {/* <Badge
+                overlap="circular"
+                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                badgeContent={
+                  // <SmallAvatar
+                  // alt={formatLevel(liveDetail?.user.level).name}
+                  // src={formatLevel(liveDetail?.user.level).icon}
+              //     />
+              //   }
+              // >
+                <Avatar
+                  alt={liveDetail?.user.nickname}
+                  src={liveDetail?.user.profilePicture}
+                />
+              </Badge> */}
               <Typography
                 variant="body2"
                 component="p"

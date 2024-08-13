@@ -31,7 +31,7 @@ const OpenVideo = () => {
   const [newMessage, setNewMessage] = useState("");
   const [isPublisher, setIsPublisher] = useState(false);
   const [currentProduct, setCurrentProduct] = useState(null);
-  const [productList, setProductList] = useState([]);
+  const [productList, setProductList] = useState([{ productId: 1 } * 5]);
   const [currentProductIndex, setCurrentProductIndex] = useState(0);
   const [selectedProductId, setSelectedProductId] = useState(null);
   const [isPurchaseCompleted, setIsPurchaseCompleted] = useState(false); // 추가
@@ -395,8 +395,8 @@ const OpenVideo = () => {
         userId: user.userId,
       });
       if (response.status === 200) {
-        if (response.data === 7) {
-        } else {
+        console.log(response);
+        if (response.data === 0) {
           handleCustomerClick();
         }
         setIsSold(true);
