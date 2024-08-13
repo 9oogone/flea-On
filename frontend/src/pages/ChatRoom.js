@@ -13,16 +13,19 @@ import useDidMountEffect from "../utils/useDidMountEffect";
 import { setLoading, unSetLoading } from "../features/live/loadingSlice";
 import { sendMessageDB, changeTradeTime } from "../features/chat/ChatApi";
 import { Button } from "@mui/material";
+import Filter from "badwords-ko";
 
 const isMobile = () => /Mobi|Android/i.test(navigator.userAgent);
 
 const formatTime = (date) => {
+  
   const hours = date.getHours().toString().padStart(2, "0");
   const minutes = date.getMinutes().toString().padStart(2, "0");
   return `${hours}:${minutes}`;
 };
 
 const ChatRoom = () => {
+  const filter = new Filter();
   const location = useLocation();
   const chat = location.state;
   const { chatID } = useParams();
@@ -143,17 +146,18 @@ const ChatRoom = () => {
   const sendMessage = () => {
     if (session.current && newMessage.trim() !== "") {
       const messageData = {
-        message: newMessage,
+        message: filter.clean(newMessage),
         from: user.userId,
         profile: user.profilePicture,
         type: 1,
         chatTime: new Date().toISOString().slice(0, 19).replace("T", "T"),
       };
+      
       session.current.signal({
         data: JSON.stringify(messageData),
         type: "chat",
       });
-      sendMessageDB(chatID, newMessage);
+      sendMessageDB(chatID, filter.clean(newMessage));
       setNewMessage("");
     }
   };

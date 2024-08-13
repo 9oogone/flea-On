@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Container,
   Box,
@@ -8,27 +8,36 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
+  Button,
+  Modal
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import "moment/locale/ko"; // 한국어 로케일을 사용합니다
 import { useSelector, useDispatch } from "react-redux";
 import { fetchChats } from "../features/chat/chatSlice";
+import warningIcon from '../assets/images/warning.svg';
 
 moment.locale("ko"); // 로케일 설정
 
 const ChatPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [liveModalOpen, setLiveModalOpen] = useState(false);
+  const [liveId, setLiveId] = useState();
   const { chats, status, error, noChats } = useSelector((state) => state.chat);
 
-  console.log(chats)
   useEffect(() => {
-    if (status === "idle") {
-      dispatch(fetchChats());
-    }
-    console.log(chats);
+    const intervalId = setInterval(() => {
+        dispatch(fetchChats());
+    }, 1000);
+    return () => clearInterval(intervalId);
   }, [status, dispatch]);
+
+  const toggleLiveModal = (liveId) => {
+    setLiveId(liveId)
+    setLiveModalOpen(prevState => !prevState);
+  };
 
   const formatChatTitle = (chat) => {
     // if (names.length > 1) {
@@ -38,12 +47,56 @@ const ChatPage = () => {
   };
 
   const handleChatClick = (chat) => {
+    if(chat.isLive==1){
+      toggleLiveModal(chat.liveId)
+      // navigate(`/live/${chat.liveId}`)
+    }else{
     console.log(chat);
     navigate(`/chat/${chat.chattingId}`, { state: chat });
+  }
   };
 
   return (
     <Container>
+      <Modal
+        open={liveModalOpen}
+        onClose={toggleLiveModal}
+        aria-labelledby="modal-title"
+        aria-describedby="modal-description"
+      >
+        <Box 
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: 300,
+            bgcolor: 'background.paper',
+            borderRadius: 2,
+            boxShadow: 24,
+            p: 4,
+            textAlign: 'center',
+            border: '1px solid lightGray',
+          }}
+        >
+          <Typography id="modal-header" variant="h3" component="div">
+            <img src={warningIcon} alt="" />
+          </Typography>
+          <Typography id="modal-title" variant="h6" component="h2" sx={{ mt: 2 }}>
+          </Typography>
+          <Typography id="modal-description" sx={{ mt: 2, color: '#777' }}>
+            현재 방송중인 채팅방입니다
+          </Typography>
+          <Button 
+            variant="contained" 
+            color="primary" 
+            sx={{ mt: 3, width: '100%', backgroundColor:"#FF0B55"}} 
+            onClick={()=>navigate(`/live/${liveId}`)}
+          >
+            방송으로 이동하기
+          </Button>
+        </Box>
+      </Modal>
       <Box my={4}>
         <Typography
           variant="h4"
@@ -77,12 +130,10 @@ const ChatPage = () => {
                     variant="caption"
                     sx={{
                       marginLeft: 1,
-                      color: chat.isBuyer ? "green" : "blue",
-                      color: chat.isbuyer ? "green" : "blue",
+                      color: chat.isLive==1? 'red' : chat.buyer ? "green" : "blue",
                     }}
                   >
-                    {chat.isBuyer ? "구매자" : "판매자"}
-                    {chat.isbuyer ? "판매자" : "구매자"}
+                    {chat.isLive==1? "방송중" : chat.buyer ? "구매자" : "판매자"}
                   </Typography>
                 </Box>
               }
