@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import UserRegionInput from "../../auth/components/UserRegionInput";
-import { Box, Typography, Modal, Slide } from "@mui/material";
+import { Box, Typography, Modal, Slide, Button } from "@mui/material";
 import {
   ShoppingCartOutlined,
   Sell,
@@ -35,9 +35,9 @@ const FleaOn = () => {
   return (
     <Box
       sx={{
+        pt: 2,
         px: 2.5,
         mb: 5,
-
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
@@ -54,7 +54,7 @@ const FleaOn = () => {
           display: "flex",
         }}
       >
-        <Typography variant="h5" fontWeight={800} color="#303030">
+        <Typography sx={{ fontSize: 20 }} fontWeight={800} color="#2E2E32">
           나의 플리:온
         </Typography>
       </Box>
@@ -73,9 +73,7 @@ const FleaOn = () => {
         onClick={handleBuyListClick}
       >
         <ShoppingCartOutlined />
-        <Typography variant="h5" fontWeight={400} color="#303030">
-          구매내역
-        </Typography>
+        <Typography sx={{ fontSize: 20 }}>구매내역</Typography>
       </Box>
 
       <Box
@@ -92,9 +90,7 @@ const FleaOn = () => {
         onClick={handleSellListClick}
       >
         <Sell />
-        <Typography variant="h5" fontWeight={400} color="black">
-          판매내역
-        </Typography>
+        <Typography sx={{ fontSize: 20 }}>판매내역</Typography>
       </Box>
 
       <Box
@@ -111,9 +107,7 @@ const FleaOn = () => {
         onClick={handleScrapListClick}
       >
         <BookmarkBorderOutlined />
-        <Typography variant="h5" fontWeight={400} color="black">
-          관심목록
-        </Typography>
+        <Typography sx={{ fontSize: 20 }}>관심목록</Typography>
       </Box>
 
       <Box
@@ -127,7 +121,7 @@ const FleaOn = () => {
           display: "flex",
         }}
       >
-        <Typography variant="h5" fontWeight={800} color="black">
+        <Typography sx={{ fontSize: 20 }} fontWeight={800}>
           기타
         </Typography>
       </Box>
@@ -146,11 +140,8 @@ const FleaOn = () => {
         onClick={handleRegionClick}
       >
         <PinDropOutlined />
-        <Typography variant="h5" fontWeight={400} color="black">
-          선호 지역 설정
-        </Typography>
+        <Typography sx={{ fontSize: 20 }}>선호 지역 설정</Typography>
       </Box>
-      {/* 모달 */}
 
       {/* 모달 */}
       <Modal
@@ -172,11 +163,23 @@ const FleaOn = () => {
               borderTopLeftRadius: 16,
               borderTopRightRadius: 16,
               boxShadow: 24,
-              p: 2,
+              px: 3,
               pb: 4,
             }}
           >
             <UserRegionInput />
+            <Button
+              sx={{
+                bgcolor: "#FF0B55",
+                mt: 2,
+                width: "100%",
+                color: "#ffffff",
+                borderRadius: 2,
+              }}
+              onClick={handleCloseRegionModal}
+            >
+              변경하기
+            </Button>
           </Box>
         </Slide>
       </Modal>

@@ -24,28 +24,50 @@
 
 .modalContent {
   background-color: white;
-  padding: 50px 20px 20px 20px;
+
   border-radius: 8px 8px 0 0;
-  width: 90%;
-  max-width: 500px;
+  width: 100%;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   position: relative;
-  height: 80%;
+  height: 81%;
   overflow-y: auto;
   animation: fadeIn 0.35s ease;
 }
 
+.thumbnailContainer {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+}
+
+.thumbnailImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.5); /* 이미지 어둡게 */
+}
+
+.titleOverlay {
+  position: absolute;
+  bottom: 10px;
+  left: 20px;
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+  z-index: 1;
+}
+
 .closeButton {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  font-size: 24px;
+  top: 20px;
+  right: 20px;
   cursor: pointer;
 }
 
 .modalHeader {
   display: flex;
-  flex-direction: row;
+  justify-content: space-between;
   align-items: center;
 }
 
@@ -57,22 +79,6 @@
   padding-bottom: 10px;
   margin-bottom: 20px;
   margin-top: 5px;
-}
-
-.thumbnailImage {
-  width: 100px;
-  height: 100px;
-  object-fit: cover;
-  margin-right: 10px;
-}
-
-.textContainer {
-  flex-grow: 1;
-}
-
-.title {
-  margin: 0;
-  font-weight: bold;
 }
 
 .author,
@@ -98,6 +104,16 @@
   padding: 10px 0;
 }
 
+.productName {
+  display: flex;
+  justify-content: flex-start;
+  padding-left: 5%;
+}
+.productPrice {
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 10%;
+}
 .productName,
 .productPrice {
   flex: 1;
@@ -116,11 +132,18 @@
   margin-bottom: 15px;
   font-weight: bold;
 }
-
+.liveDate {
+  font-weight: bold;
+  margin-top: 10px;
+  margin-bottom: 5px;
+}
 .tradeplacetext {
   font-weight: bold;
   margin-top: 10px;
   margin-bottom: 5px;
+}
+.author {
+  font-weight: bold;
 }
 
 .bookmarkIcon {
