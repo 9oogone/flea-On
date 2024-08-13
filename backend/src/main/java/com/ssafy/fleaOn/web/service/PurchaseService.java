@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -54,39 +55,52 @@ public class PurchaseService {
         logger.info("Processing purchase request for productId: {} and userId: {}", request.getProductId(), request.getUserId());
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
-        logger.info("2");
 
-        // Check if the user is already the buyer
         if (product.getCurrentBuyerId() == request.getUserId()) {
             logger.warn("User {} is already the buyer for product {}", request.getUserId(), request.getProductId());
             return -2; // Already the buyer
         }
-        logger.info("3");
 
-        // Check if the user is already in the reservation list
         Optional<Reservation> existingReservation = reservationRepository.findByProduct_ProductIdAndUser_UserId(request.getProductId(), request.getUserId());
         if (existingReservation.isPresent()) {
             logger.warn("User {} is already reserved for product {}", request.getUserId(), request.getProductId());
             return -3; // Already reserved
         }
-        logger.info("4");
 
         if (product.getCurrentBuyerId() == 0) {
             product.setCurrentBuyerId(request.getUserId());
             productRepository.save(product);
-            logger.info("5-1");
+
+            Optional<List<Trade>> trades = tradeRepository.findByBuyerIdAndSellerId(request.getUserId(), product.getSeller().getUserId());
+            logger.info("Trades found: {}", trades.isPresent() && !trades.get().isEmpty());
+
+            if (trades.isPresent() && !trades.get().isEmpty()) {
+                Trade trade = trades.get().get(0);
+                logger.info("Processing confirm for tradeId: {}", trade.getTradeId());
+
+                TradeRequest tradeRequest = TradeRequest.builder()
+                        .buyerId(request.getUserId())
+                        .sellerId(product.getSeller().getUserId())
+                        .productId(request.getProductId())
+                        .liveId(trade.getLive().getLiveId())
+                        .tradeDate(trade.getTradeDate())
+                        .tradeTime(String.valueOf(trade.getTradeTime()))
+                        .tradePlace(trade.getTradePlace())
+                        .build();
+
+                processConfirmPurchaseRequest(tradeRequest);
+                logger.info("Purchase confirmed automatically for userId: {}", request.getUserId());
+                return 7;
+            }
             return 0; // 구매 예정자
         } else if (product.getReservationCount() < 5) {
             Reservation reservation = Reservation.builder()
                     .product(product)
                     .user(User.builder().userId(request.getUserId()).build())
                     .build();
-            logger.info("5-2");
             reservationRepository.save(reservation);
-            logger.info("6");
             product.setReservationCount(product.getReservationCount() + 1);
             productRepository.save(product);
-            logger.info("7");
             return product.getReservationCount(); // 예약자 순번 반환
         } else {
             return 6; // 예약 불가능

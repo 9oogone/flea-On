@@ -176,8 +176,8 @@ public class LiveApiController {
                 return new ResponseEntity<>("사용자를 찾을 수 없습니다.", HttpStatus.UNAUTHORIZED);
             }
 
-            LiveDetailResponse offLive = liveService.offLive(liveID); // 서비스를 통해 Live 정보를 업데이트
-            return ResponseEntity.ok(offLive); // 업데이트된 Live 정보 반환
+            liveService.offLive(liveID); // 서비스를 통해 Live 정보를 업데이트
+            return ResponseEntity.ok("방송종료"); // 업데이트된 Live 정보 반환
         } catch (Exception ex) {
             ex.printStackTrace();
             return new ResponseEntity<>("종료할 라이브를 찾을 수 없습니다: " + ex.getMessage(), HttpStatus.BAD_REQUEST);

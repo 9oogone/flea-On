@@ -458,7 +458,7 @@ public class UserApiController {
     @Operation(summary = "사용자가 판매자일 때 라이브 시작", description = "사용자가 판매자인 라이브 예정 방송을 조회할 때 사용합니다. ")
     @GetMapping("/commerceLive/expected")
     public ResponseEntity<?> getCommerceLiveExpected(HttpServletRequest request) {
-        try {
+        try { // 시간이 지난 방송 여러개중 하나만 (가장 오래된것)
             String authorizationHeader = request.getHeader("Authorization");
             if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
                 String jwtToken = authorizationHeader.substring(7).trim();
