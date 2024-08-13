@@ -66,9 +66,12 @@ const Buys = ({ items }) => {
                         sx={{
                           color: "black",
                           fontSize: 18,
+<<<<<<< HEAD
+=======
                           fontFamily: "Noto Sans KR",
                           fontWeight: 400,
                           lineHeight: "22px",
+>>>>>>> a1a2701719d250f07eaea61c6b724be6d5b39ab2
                           wordWrap: "break-word",
                         }}
                       >
@@ -147,6 +150,8 @@ const Buys = ({ items }) => {
               </Box>
             );
           })}
+
+          {/* 거래완료 구매내역 */}
           {buyDone?.map((item, index) => {
             return (
               <Box
@@ -189,9 +194,6 @@ const Buys = ({ items }) => {
                         sx={{
                           color: "black",
                           fontSize: 18,
-                          fontFamily: "Noto Sans KR",
-                          fontWeight: 400,
-                          lineHeight: "22px",
                           wordWrap: "break-word",
                         }}
                       >
@@ -241,7 +243,6 @@ const Buys = ({ items }) => {
                   >
                     <Typography
                       sx={{
-                        pr: 2,
                         fontSize: 17,
                       }}
                     >
