@@ -52,6 +52,11 @@ public class TradeService {
         User seller = userRepository.findById(trade.getSellerId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid seller ID"));
 
+        buyer.updateLevel();
+        seller.updateLevel();
+        userRepository.save(buyer);
+        userRepository.save(seller);
+
         TradeDone tradeDone = TradeDone.builder()
                 .buyer(buyer)
                 .seller(seller)

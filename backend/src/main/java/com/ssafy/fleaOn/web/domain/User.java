@@ -51,4 +51,8 @@ public class User {
     public void updateFcm(String fcm) {
         this.fcm = fcm;
     }
+
+    public void updateLevel() {
+        this.level++;
+    }
 }
