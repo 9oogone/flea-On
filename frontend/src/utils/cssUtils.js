@@ -7,7 +7,10 @@ import {
   isTomorrow,
 } from "date-fns";
 import { ko } from "date-fns/locale";
-
+import levelBaby from "../assets/images/level_baby.svg";
+import levelSmall from "../assets/images/level_small.svg";
+import levelMiddle from "../assets/images/level_middle.svg";
+import levelBig from "../assets/images/level_big.svg";
 // 가격 만원 단위로 1000만원은 안함
 export const formatPrice = (price) => {
   if (price === 0) {
@@ -128,5 +131,48 @@ export const formatDateTimeDistance = (dateTime) => {
   } catch (error) {
     console.error("Invalid date format:", dateTime);
     return "Invalid date";
+  }
+};
+
+export const formatLevel = (level) => {
+  const levels = [
+    {
+      name: "아기손",
+      minSales: 0,
+      maxSales: 1,
+      icon: levelBaby,
+    },
+    {
+      name: "작은손",
+      minSales: 2,
+      maxSales: 5,
+      icon: levelSmall,
+    },
+    {
+      name: "중간손",
+      minSales: 7,
+      maxSales: 25,
+      icon: levelMiddle,
+    },
+    {
+      name: "큰손",
+      minSales: 26,
+      maxSales: "MAX",
+      icon: levelBig,
+    },
+  ];
+  for (let i = 0; i < levels.length; i++) {
+    const { name, minSales, maxSales, icon } = levels[i];
+
+    // MAX는 숫자가 아니라 특별히 처리
+    if (maxSales === "MAX") {
+      if (level >= minSales) {
+        return { name, icon };
+      }
+    } else {
+      if (level >= minSales && level <= maxSales) {
+        return { name, icon };
+      }
+    }
   }
 };
