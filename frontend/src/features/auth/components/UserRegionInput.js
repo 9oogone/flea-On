@@ -13,7 +13,9 @@ import {
   ListItemButton,
   ListItemText,
 } from "@mui/material";
+import ClearIcon from '@mui/icons-material/Clear';  // ClearIcon 임포트
 import baseAxios from "../../../utils/httpCommons";
+
 const UserRegionInput = () => {
   const dispatch = useDispatch();
   const userRegion = {
@@ -84,8 +86,16 @@ const UserRegionInput = () => {
 
   return (
     <Box sx={{ mt: 4 }}>
-      <Typography variant="h6" sx={{ mb: 2 }}>
-        선호 지역을 알려주세요 (최대 3개)
+      <Typography 
+      sx={{ 
+        mb: 1, 
+        fontSize: "1.14rem",
+        fontFamily: "Noto Sans KR",
+        letterSpacing: "-1px",
+        // color: "rgba(44, 44, 46, 3)",
+        color: "gray",
+         }}>
+        선호 지역을 알려주세요. (최대 3개)
       </Typography>
       <Box
         sx={{
@@ -119,7 +129,7 @@ const UserRegionInput = () => {
                               color: "#ffffff",
                               backgroundColor: "#FF0B55",
                             }
-                          : { color: "" }
+                          : { backgroundColor: "transparent" }
                       }
                       disablePadding
                     >
@@ -145,7 +155,7 @@ const UserRegionInput = () => {
               >
                 <List>
                   {selectedSido &&
-                    regions.guguns[selectedSido]?.map((gugun) => (
+                    regions.guguns[selectedSido]?.slice(1).map((gugun) => (
                       <ListItem
                         sx={
                           selectedGugun === gugun.gugunName
@@ -153,7 +163,7 @@ const UserRegionInput = () => {
                                 color: "#FF0B55",
                                 backgroundColor: "pink",
                               }
-                            : { color: "" }
+                            : { backgroundColor: "transparent" }
                         }
                         key={gugun.gugunName}
                         disablePadding
@@ -208,7 +218,16 @@ const UserRegionInput = () => {
               key={region}
               label={region}
               onDelete={() => handleRemoveRegion(region, regionCode)}
-              color="secondary"
+              deleteIcon={<ClearIcon sx={{ fontSize: "3px" }}/>}  // ClearIcon을 사용하여 커스텀 삭제 아이콘 설정
+              sx={{
+                borderRadius: 5,
+                border: "1px solid #FF0B55",
+                backgroundColor: "transparent",
+                color: "#FF0B55",
+                "& .MuiChip-deleteIcon": {
+                  color: "#FF0B55",
+                },
+              }}
             />
           );
         })}
