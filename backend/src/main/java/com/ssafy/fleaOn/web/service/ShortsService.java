@@ -77,26 +77,15 @@ public class ShortsService {
     }
 
     public void addUserShortsScrap(int userId, int shortsId) {
-        try {
-            Optional<User> findUser = userRepository.findById(userId);
-            if (findUser.isPresent()) {
-                Optional<Shorts> findShorts = shortsRepository.findById(shortsId);
-                if (findShorts.isPresent()) {
-                    ShortsScrap shortsScrap = ShortsScrap.builder()
-                            .shorts(findShorts.get())
-                            .user(findUser.get())
-                            .build();
-                    shortsScrapRepository.save(shortsScrap);
-                } else {
-                    throw new IllegalArgumentException("Cannot find shorts");
-                }
-            } else {
-                throw new IllegalArgumentException("Cannot find user");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
+        User findUser = userRepository.findById(userId).orElseThrow(()->new IllegalArgumentException("Cannot found user"));
+        Shorts findShorts = shortsRepository.findById(shortsId).orElseThrow(()-> new IllegalArgumentException("Cannot found shorts"));
+        if (userId==findShorts.getUser().getUserId())
+            new IllegalArgumentException("Cannot add shorts to user");
+        ShortsScrap shortsScrap = ShortsScrap.builder()
+                .shorts(findShorts)
+                .user(findUser)
+                .build();
+        shortsScrapRepository.save(shortsScrap);
     }
     public void deleteUserShortsScrap(int userId, int shortsId) {
         try {
