@@ -192,6 +192,7 @@ public class UserService {
                         .tradeTime(trade.getTradeTime())
                         .liveId(trade.getLive().getLiveId())
                         .chattingId(trade.getChatting().getChattingId())
+                        .productId(product.getProductId())
                         .build();
                 tradeList.add(dayTradeResponse);
             }
