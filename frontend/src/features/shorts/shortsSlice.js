@@ -1,9 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchShorts } from "./actions";
+import { fetchShortList } from "./actions";
 
 const initialState = {
   currentShort: null,
   shorts: [],
+  loading: false,
+  error: null,
 };
 
 const shortsSlice = createSlice({
@@ -21,20 +23,20 @@ const shortsSlice = createSlice({
     toggleScrap: (state, action) => {
       const { shortsId } = action.payload;
       state.shorts = state.shorts.map((short) =>
-        short.id === shortsId ? { ...short, is_scrap: !short.is_scrap } : short
+        short.id === shortsId ? { ...short, isScrap: !short.isScrap } : short
       );
     },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchShorts.pending, (state) => {
+      .addCase(fetchShortList.pending, (state) => {
         state.loading = true;
       })
-      .addCase(fetchShorts.fulfilled, (state, action) => {
+      .addCase(fetchShortList.fulfilled, (state, action) => {
         state.loading = false;
         state.shorts = action.payload;
       })
-      .addCase(fetchShorts.rejected, (state, action) => {
+      .addCase(fetchShortList.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
       });

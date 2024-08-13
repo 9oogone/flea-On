@@ -22,7 +22,7 @@ const LiveHeader = () => (
         LIVE
       </Typography>
     </Box>
-    <Box
+    {/* <Box
       sx={{
         padding: "3px",
         left: 15,
@@ -43,7 +43,7 @@ const LiveHeader = () => (
       >
         3명 시청 중
       </Typography>
-    </Box>
+    </Box> */}
   </>
 );
 

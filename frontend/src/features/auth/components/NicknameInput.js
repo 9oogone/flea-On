@@ -37,6 +37,12 @@ const NicknameInput = ({ onNext }) => {
         color={isButtonEnabled ? "secondary" : "primary"}
         disabled={!isButtonEnabled}
         fullWidth
+        sx = {{
+          boxShadow: "none",
+          width: "100%",
+          height: "46px",
+          letterSpacing: "-0.5px"
+        }} 
       >
         계속하기
       </Button>
