@@ -134,15 +134,12 @@ public class LiveService {
     }
 
     @Transactional
-    public LiveDetailResponse offLive(int liveId) {
+    public void offLive(int liveId) {
         Live live = liveRepository.findById(liveId)
                 .orElseThrow(() -> new IllegalArgumentException("not found : " + liveId));
         authorizeArticleAuthor(live);
         live.off();
-        List<Product> products = productRepository.findByLive_LiveId(liveId).orElseThrow(() -> new IllegalArgumentException("no products found for live id: " + liveId));
-        List<LiveTradeTime> liveTradeTimes = liveTradeTimeRepository.findByLive_LiveId(liveId).orElseThrow(() -> new IllegalArgumentException("no teade times found for live id: " + liveId));
-        User user = userRepository.findById(live.getSeller().getUserId()).orElseThrow(() -> new IllegalArgumentException("no sellers found for live id: " + liveId));
-        return new LiveDetailResponse(live, products, liveTradeTimes,user);
+        liveRepository.save(live);
     }
 
     private static void authorizeArticleAuthor(Live live) {

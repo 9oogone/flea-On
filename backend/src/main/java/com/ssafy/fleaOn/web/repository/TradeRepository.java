@@ -53,4 +53,6 @@ public interface TradeRepository extends JpaRepository<Trade, Integer> {
     @Query("SELECT t FROM Trade t WHERE t.product.productId = :productId")
     Optional<Trade> findByProductId(int productId);
 
+    @Query("SELECT t FROM Trade t WHERE (t.buyerId = :buyerId AND t.sellerId = :sellerId)")
+    Optional<List<Trade>> findByBuyerIdAndSellerId(int buyerId, int sellerId);
 }
