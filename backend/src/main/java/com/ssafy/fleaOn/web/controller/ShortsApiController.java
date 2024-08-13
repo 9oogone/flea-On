@@ -2,11 +2,10 @@ package com.ssafy.fleaOn.web.controller;
 
 import com.ssafy.fleaOn.web.config.jwt.JWTUtil;
 import com.ssafy.fleaOn.web.domain.*;
-import com.ssafy.fleaOn.web.dto.ShortsChatResponse;
-import com.ssafy.fleaOn.web.dto.ShortsRequest;
-import com.ssafy.fleaOn.web.dto.ShortsResponse;
+import com.ssafy.fleaOn.web.dto.*;
 import com.ssafy.fleaOn.web.repository.ShortsChattingRepository;
 import com.ssafy.fleaOn.web.service.ShortsService;
+import com.ssafy.fleaOn.web.service.SummarizeService;
 import com.ssafy.fleaOn.web.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -14,6 +13,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -28,11 +29,34 @@ public class ShortsApiController {
 
     private final ShortsService shortsService;
     private final UserService userService;
+    private final SummarizeService summarizeService;
 
     @Autowired
-    public ShortsApiController(ShortsService shortsService, UserService userService, ShortsChattingRepository shortsChattingRepository) {
+    public ShortsApiController(ShortsService shortsService, UserService userService, ShortsChattingRepository shortsChattingRepository, SummarizeService summarizeService) {
         this.shortsService = shortsService;
         this.userService = userService;
+        this.summarizeService = summarizeService;
+    }
+
+    @PutMapping("/{productId}/Start")
+    @Operation(summary = "라이브 물건 판매 시작 겸 쇼츠 저장", description = "물건 판매 시작과 동시에 쇼츠 녹화를 시작합니다.")
+    public ResponseEntity<?> startProductLive(@PathVariable int productId) {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
+            String userEmail = oAuth2User.getEmail(); // 현재 인증된 사용자의 이메일 가져오기
+
+            User user = userService.findByEmail(userEmail); // 이메일로 사용자 정보를 가져옴
+            if (user == null) {
+                return new ResponseEntity<>("사용자를 찾을 수 없습니다.", HttpStatus.UNAUTHORIZED);
+            }
+
+            shortsService.startSell(productId);
+            return ResponseEntity.ok("녹화 시작"); // 업데이트된 Live 정보 반환
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new ResponseEntity<>("라이브를 찾을 수 없습니다: " + ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PostMapping("/save")
@@ -40,7 +64,8 @@ public class ShortsApiController {
     public ResponseEntity<?> saveShorts(@RequestBody ShortsRequest request) {
         try {
             shortsService.saveShorts(request);
-            return new ResponseEntity<>("생성완료", HttpStatus.CREATED);
+            ShortsContent summaryResponse = summarizeService.summarize(request.getInputText().getText(), request.getInputText().getShortsId());
+            return ResponseEntity.status(HttpStatus.OK).body(summaryResponse);
         } catch (Exception ex) {
             ex.printStackTrace();
             return new ResponseEntity<>("숏츠 생성 중 오류가 발생하였습니다: " + ex.getMessage(), HttpStatus.BAD_REQUEST);
@@ -122,4 +147,5 @@ public class ShortsApiController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
 }

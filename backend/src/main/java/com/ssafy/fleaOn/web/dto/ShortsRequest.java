@@ -23,6 +23,7 @@ public class ShortsRequest {
     private String videoAddress;
     private int productId;
     private List<ShortsChatRequest> shortsChatRequests;
+    private InputTextDto inputText;
 
     public Shorts toEntity(Product product, User seller){
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");

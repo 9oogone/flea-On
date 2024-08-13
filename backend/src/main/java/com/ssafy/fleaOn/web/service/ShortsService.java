@@ -4,15 +4,14 @@ import com.ssafy.fleaOn.web.domain.*;
 import com.ssafy.fleaOn.web.domain.Product;
 import com.ssafy.fleaOn.web.domain.Shorts;
 import com.ssafy.fleaOn.web.domain.User;
-import com.ssafy.fleaOn.web.dto.ShortsChatRequest;
-import com.ssafy.fleaOn.web.dto.ShortsChatResponse;
-import com.ssafy.fleaOn.web.dto.ShortsRequest;
-import com.ssafy.fleaOn.web.dto.ShortsResponse;
+import com.ssafy.fleaOn.web.dto.*;
 import com.ssafy.fleaOn.web.repository.*;
 import com.ssafy.fleaOn.web.repository.ProductRepository;
 import com.ssafy.fleaOn.web.repository.ShortsRepository;
 import com.ssafy.fleaOn.web.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,6 +45,10 @@ public class ShortsService {
         User seller = userRepository.findById(product.getSeller().getUserId()).orElseThrow(() -> new IllegalArgumentException("Invalid seller"));
         Shorts shorts = request.toEntity(product, seller);
         shortsRepository.save(shorts);
+
+        product.sellEnd();
+        productRepository.save(product);
+
         Optional<Trade> trade = tradeRepository.findByProduct_productId(shorts.getProduct().getProductId());
         trade.ifPresent(value -> value.uploadShorts(shorts));
         saveShortsChatting(request.getShortsChatRequests(),shorts.getShortsId());
@@ -120,6 +123,24 @@ public class ShortsService {
             User user = userRepository.findById(shortsChatRequest.getUserId()).orElseThrow(() -> new IllegalArgumentException("Invalid user"));
             ShortsChatting shortsChatting = shortsChatRequest.toEntity(shorts, user);
             shortsChattingRepository.save(shortsChatting);
+        }
+    }
+
+    @Transactional
+    public void startSell(int productId) {
+        Product product = productRepository.findByProductId(productId).orElseThrow(() -> new IllegalArgumentException("no product found for product id: " + productId));
+        Live live = product.getLive();
+        authorizeArticleAuthor(live);
+        product.sellStart();
+        productRepository.save(product);
+    }
+
+    private static void authorizeArticleAuthor(Live live) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
+        String userEmail = oAuth2User.getEmail();
+        if (!live.getSeller().getEmail().equals(userEmail)) {
+            throw new IllegalArgumentException("not authorized");
         }
     }
 }
