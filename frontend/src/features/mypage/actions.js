@@ -29,6 +29,20 @@ export const fetchCalendarDate = createAsyncThunk(
   }
 );
 
+// 캘린더 거래 확정 포스트
+export const confirmTrade = createAsyncThunk(
+  "trade/confirmTrade",
+  async (tradeData) => {
+    console.log(tradeData, "거래 확정 데이터 입니다.");
+    const response = await baseAxios().post(
+      "/fleaon/purchase/confirmTrade",
+      tradeData
+    );
+    console.log(response.data);
+    return response.data;
+  }
+);
+
 // 구매 목록 조회
 export const fetchBuys = createAsyncThunk("buy/fetchBuys", async (email) => {
   const response = await baseAxios().get(`/fleaon/users/${email}/purchaseList`);
