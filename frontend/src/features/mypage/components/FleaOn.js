@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, Typography } from "@mui/material";
+import UserRegionInput from "../../auth/components/UserRegionInput";
+import { Box, Typography, Modal, Slide } from "@mui/material";
 import {
   ShoppingCartOutlined,
   Sell,
@@ -10,6 +11,7 @@ import {
 
 const FleaOn = () => {
   const navigate = useNavigate();
+  const [openRegionModal, setOpenRegionModal] = useState(false);
 
   const handleBuyListClick = () => {
     navigate("/mypage/buy-list");
@@ -23,6 +25,13 @@ const FleaOn = () => {
     navigate("/mypage/scrap-list");
   };
 
+  const handleRegionClick = () => {
+    setOpenRegionModal(true);
+  };
+
+  const handleCloseRegionModal = () => {
+    setOpenRegionModal(false);
+  };
   return (
     <Box
       sx={{
@@ -134,12 +143,43 @@ const FleaOn = () => {
           gap: 1,
           display: "flex",
         }}
+        onClick={handleRegionClick}
       >
         <PinDropOutlined />
         <Typography variant="h5" fontWeight={400} color="black">
           선호 지역 설정
         </Typography>
       </Box>
+      {/* 모달 */}
+
+      {/* 모달 */}
+      <Modal
+        open={openRegionModal}
+        onClose={handleCloseRegionModal}
+        closeAfterTransition
+        sx={{
+          display: "flex",
+          alignItems: "flex-end",
+          justifyContent: "center",
+        }}
+      >
+        <Slide direction="up" in={openRegionModal} mountOnEnter unmountOnExit>
+          <Box
+            sx={{
+              width: "100%",
+              maxWidth: "500px",
+              bgcolor: "background.paper",
+              borderTopLeftRadius: 16,
+              borderTopRightRadius: 16,
+              boxShadow: 24,
+              p: 2,
+              pb: 4,
+            }}
+          >
+            <UserRegionInput />
+          </Box>
+        </Slide>
+      </Modal>
     </Box>
   );
 };

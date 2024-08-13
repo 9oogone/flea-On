@@ -10,8 +10,8 @@ const Buys = ({ items }) => {
     setBuy(items.purchases);
     setBuyDone(items.tradeDoneResponses);
   }, [items]);
-  console.log(buy, "거래예정입니다.");
-  console.log(buyDone, "거래완료입니다.");
+  // console.log(buy, "거래예정입니다.");
+  // console.log(buyDone, "거래완료입니다.");
 
   return (
     <Box>
@@ -29,8 +29,6 @@ const Buys = ({ items }) => {
               <Box
                 key={index}
                 sx={{
-                  width: "100%",
-                  height: "100%",
                   py: 2,
                   borderBottom: "0.33px solid rgba(84, 84, 86, 0.34)",
                   justifyContent: "center",
@@ -44,7 +42,7 @@ const Buys = ({ items }) => {
                     justifyContent: "space-between",
                     alignItems: "center",
                     display: "flex",
-                    width: "100%",
+                    width: "90%",
                   }}
                 >
                   <Box
@@ -140,9 +138,9 @@ const Buys = ({ items }) => {
                           letterSpacing: "0.1px",
                         }}
                       >
-                        상세보기
+                        {/* 상세보기 */}
                       </Typography>
-                      <ChevronRight />
+                      {/* <ChevronRight /> */}
                     </Box>
                   </Box>
                 </Box>
@@ -154,8 +152,6 @@ const Buys = ({ items }) => {
               <Box
                 key={index}
                 sx={{
-                  width: "100%",
-                  height: "100%",
                   py: 2,
                   borderBottom: "0.33px solid rgba(84, 84, 86, 0.34)",
                   justifyContent: "center",
@@ -169,7 +165,7 @@ const Buys = ({ items }) => {
                     justifyContent: "space-between",
                     alignItems: "center",
                     display: "flex",
-                    width: "100%",
+                    width: "90%",
                   }}
                 >
                   <Box
@@ -265,9 +261,9 @@ const Buys = ({ items }) => {
                           letterSpacing: "0.1px",
                         }}
                       >
-                        상세보기
+                        {/* 상세보기 */}
                       </Typography>
-                      <ChevronRight />
+                      {/* <ChevronRight /> */}
                     </Box>
                   </Box>
                 </Box>

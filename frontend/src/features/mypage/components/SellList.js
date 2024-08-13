@@ -34,7 +34,7 @@ const SellList = () => {
   };
 
   return (
-    <Container sx={{ py: 8 }}>
+    <Container sx={{ pt: 4 }}>
       <Box
         sx={{
           display: "flex",
