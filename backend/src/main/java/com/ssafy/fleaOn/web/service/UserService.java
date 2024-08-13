@@ -531,9 +531,13 @@ public class UserService {
             throw new IllegalArgumentException("Cannot find live scrap");
         }
     }
-    public CommerceLiveExpectedResponse getUserCommerceLiveExpectedByUserId(int userId){
+    
+    public CommerceLiveExpectedResponse getUserCommerceLiveExpectedByUserId(int userId) {
         LocalDateTime currentTime = LocalDateTime.now();
-        Optional<Live> findLive = liveRepository.findBySeller_userIdAndIsLiveAndLiveDateGreaterThanEqual(userId, 0, currentTime);
+
+        // 가장 오래된 방송을 조회
+        Optional<Live> findLive = liveRepository.findFirstBySeller_userIdAndIsLiveAndLiveDateLessThanOrderByLiveDateAsc(userId, 0, currentTime);
+
         if (findLive.isPresent()) {
             CommerceLiveExpectedResponse commerceLiveExpectedResponse = CommerceLiveExpectedResponse.builder()
                     .liveId(findLive.get().getLiveId())
@@ -541,6 +545,8 @@ public class UserService {
                     .build();
             return commerceLiveExpectedResponse;
         }
+
+        // 찾지 못한 경우
         CommerceLiveExpectedResponse commerceLiveExpectedResponse = CommerceLiveExpectedResponse.builder()
                 .liveId(0)
                 .isExist(false)
