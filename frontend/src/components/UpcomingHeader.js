@@ -11,7 +11,7 @@ const UpcomingHeader = ({ liveDate, scrap, setScrap }) => {
   let formattedTime;
 
   try {
-    console.log(liveDate, "홈 라이브 시간입니다");
+    // console.log(liveDate, "홈 라이브 시간입니다");
     date = parseISO(liveDate);
     if (isNaN(date)) throw new Error("Invalid date");
 

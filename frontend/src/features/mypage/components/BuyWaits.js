@@ -64,7 +64,7 @@ const Waits = ({ items }) => {
                       sx={{
                         color: "black",
                         fontSize: 18,
-                        fontFamily: "Noto Sans",
+                        fontFamily: "Noto Sans KR",
                         fontWeight: 400,
                         lineHeight: "22px",
                         wordWrap: "break-word",

@@ -30,11 +30,11 @@ export const createLiveBroadcast = createAsyncThunk(
 
 // 라이브 상세 조회
 export const fetchLiveDetail = createAsyncThunk(
-  "live/fetchLiveDetail",
-  async (liveID) => {
-    const response = await baseAxios().get(`/fleaOn/live/${liveID}/detail`);
-    // console.log("액시오스 입니다");
-    // console.log(response.data);
+  "liveDetail/fetchLiveDetail",
+  async (sessionName) => {
+    const response = await baseAxios().get(
+      `/fleaOn/live/${sessionName}/detail`
+    );
     return response.data;
   }
 );

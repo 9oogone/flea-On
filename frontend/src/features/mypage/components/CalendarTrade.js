@@ -159,7 +159,7 @@ const CalendarTrade = ({ userId, selectedDate, dateTrade }) => {
                 sx={{
                   color: "rgba(0, 0, 0, 0.90)",
                   fontSize: 16,
-                  fontFamily: "Noto Sans",
+                  fontFamily: "Noto Sans KR",
                   fontWeight: "900",
                   lineHeight: "22.40px",
                 }}
@@ -226,7 +226,7 @@ const CalendarTrade = ({ userId, selectedDate, dateTrade }) => {
                         sx={{
                           color: "rgba(0, 0, 0, 0.90)",
                           fontSize: 14,
-                          fontFamily: "Noto Sans",
+                          fontFamily: "Noto Sans KR",
                           fontWeight: "400",
                         }}
                       >
@@ -236,7 +236,7 @@ const CalendarTrade = ({ userId, selectedDate, dateTrade }) => {
                         sx={{
                           color: "rgba(0, 0, 0, 0.90)",
                           fontSize: 10,
-                          fontFamily: "Noto Sans",
+                          fontFamily: "Noto Sans KR",
                           fontWeight: "400",
                         }}
                       >
@@ -258,7 +258,7 @@ const CalendarTrade = ({ userId, selectedDate, dateTrade }) => {
                           textAlign: "center",
                           color: "rgba(0, 0, 0, 0.90)",
                           fontSize: 14,
-                          fontFamily: "Noto Sans",
+                          fontFamily: "Noto Sans KR",
                           fontWeight: "400",
                         }}
                       >
@@ -379,7 +379,7 @@ const CalendarTrade = ({ userId, selectedDate, dateTrade }) => {
               sx={{
                 color: "rgba(0, 0, 0, 0.90)",
                 fontSize: 16,
-                fontFamily: "Noto Sans",
+                fontFamily: "Noto Sans KR",
                 fontWeight: "900",
                 lineHeight: "22.40px",
               }}
@@ -445,7 +445,7 @@ const CalendarTrade = ({ userId, selectedDate, dateTrade }) => {
                       sx={{
                         color: "rgba(0, 0, 0, 0.90)",
                         fontSize: 14,
-                        fontFamily: "Noto Sans",
+                        fontFamily: "Noto Sans KR",
                         fontWeight: "400",
                       }}
                     >
@@ -455,7 +455,7 @@ const CalendarTrade = ({ userId, selectedDate, dateTrade }) => {
                       sx={{
                         color: "rgba(0, 0, 0, 0.90)",
                         fontSize: 10,
-                        fontFamily: "Noto Sans",
+                        fontFamily: "Noto Sans KR",
                         fontWeight: "400",
                       }}
                     >
@@ -477,7 +477,7 @@ const CalendarTrade = ({ userId, selectedDate, dateTrade }) => {
                         textAlign: "center",
                         color: "rgba(0, 0, 0, 0.90)",
                         fontSize: 14,
-                        fontFamily: "Noto Sans",
+                        fontFamily: "Noto Sans KR",
                         fontWeight: "400",
                       }}
                     >
