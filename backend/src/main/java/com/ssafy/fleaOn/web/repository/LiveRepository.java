@@ -31,6 +31,5 @@ public interface LiveRepository extends JpaRepository<Live, Integer> {
     Slice<Live> findByRegionCodeAndIsLiveOrderByIsLiveDescLiveDateAsc(@Param("regionCode") String regionCode, Pageable pageable);
 
 
-    Optional<Live> findBySeller_userIdAndIsLiveAndLiveDateGreaterThanEqual(int userId, int isLive, LocalDateTime currentTime);
-
+    Optional<Live> findFirstBySeller_userIdAndIsLiveAndLiveDateLessThanOrderByLiveDateAsc(int userId, int isLive, LocalDateTime currentTime);
 }
