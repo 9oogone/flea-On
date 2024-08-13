@@ -3,13 +3,11 @@ package com.ssafy.fleaOn.web.service;
 import com.ssafy.fleaOn.web.domain.*;
 import com.ssafy.fleaOn.web.dto.*;
 import com.ssafy.fleaOn.web.repository.*;
-import com.sun.tools.javac.Main;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -31,6 +29,7 @@ public class MainService {
 
     private final TradeRepository tradeRepository;
     private final LiveScrapRepository liveScrapRepository;
+    private final ShortsScrapRepository shortsScrapRepository;
 
     public Slice<MainLiveResponse> getMainLiveListByRegionCode(int userId, List<UserRegion> findUserRegionList) {
         Pageable pageable = PageRequest.of(0, 10);
@@ -66,7 +65,7 @@ public class MainService {
         return Optional.ofNullable(userRegionList.get()).orElse(Collections.emptyList());
     }
 
-    public Slice<MainShortsResponse> getMainShortsListByUploadDate() {
+    public Slice<MainShortsResponse> getMainShortsListByUploadDate(int userId) {
         Pageable pageable = PageRequest.of(0, 10);
         List<MainShortsResponse> mainShortsResponseList = new ArrayList<>();
 
@@ -75,9 +74,10 @@ public class MainService {
         for (Shorts shorts : shortsSlice) {
             Optional<Product> product = productRepository.findByProductId(shorts.getProduct().getProductId());
             Optional<Live> live = liveRepository.findByLiveId(product.get().getLive().getLiveId());
+            boolean isScrap = shortsScrapRepository.findByUser_userIdAndShorts_shortsId(userId, shorts.getShortsId()).isPresent();
 
             if (product.isPresent() && live.isPresent()) {
-                MainShortsResponse mainShortsResponse = MainShortsResponse.fromEntity(shorts, product.get(), live.get());
+                MainShortsResponse mainShortsResponse = MainShortsResponse.fromEntity(shorts, product.get(), live.get(), isScrap);
                 mainShortsResponseList.add(mainShortsResponse);
             }
         }

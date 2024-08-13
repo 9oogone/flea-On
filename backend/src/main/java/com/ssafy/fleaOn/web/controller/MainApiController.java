@@ -72,7 +72,7 @@ public class MainApiController {
             if (user == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당하는 사용자를 찾을 수 없습니다 .");
             }
-            Slice<MainShortsResponse> shortsSlice = mainService.getMainShortsListByUploadDate();
+            Slice<MainShortsResponse> shortsSlice = mainService.getMainShortsListByUploadDate(user.getUserId());
             if (shortsSlice.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No short data found");
             }
