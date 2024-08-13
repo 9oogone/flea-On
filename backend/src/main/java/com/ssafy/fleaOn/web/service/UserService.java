@@ -190,6 +190,8 @@ public class UserService {
                         .dongName(product.getLive().getRegionInfo().getEupmyeon())
                         .tradePlace(trade.getTradePlace())
                         .tradeTime(trade.getTradeTime())
+                        .liveId(trade.getLive().getLiveId())
+                        .chattingId(trade.getChatting().getChattingId())
                         .build();
                 tradeList.add(dayTradeResponse);
             }
