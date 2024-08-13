@@ -42,6 +42,7 @@ const Switch = ({ options, type }) => {
       variant="contained"
       sx={{
         backgroundColor: "white",
+        zIndex: 10,
         height: 36,
         p: 0.3,
         borderRadius: "100px",

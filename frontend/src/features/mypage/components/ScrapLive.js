@@ -1,17 +1,21 @@
 import React, { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { Box, Grid, Button, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { fetchLiveDetail } from "../../live/actions";
+import { switchTab } from "../../../features/home/contentSlice";
 import UpcomingHeader from "../../../components/UpcomingHeader";
 import UpcomingFooter from "../../../components/UpcomingFooter";
 import UpcomingModal from "../../../components/UpcomingModal";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { switchTab } from "../../../features/home/contentSlice";
 
 const ScrapLive = ({ items }) => {
   // console.log(items);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  // const [open, setOpen] = useState(false);
+
+  const [open, setOpen] = useState(false);
+  const liveDetail = useSelector((state) => state.live.liveDetail);
+  console.log(liveDetail);
   // const [modalLiveDate, setModalLiveDate] = useState("");
   // const [modalTitle, setModalTitle] = useState("");
   // const [modalProducts, setModalProducts] = useState([]);
@@ -20,21 +24,37 @@ const ScrapLive = ({ items }) => {
   // const [modalTradePlace, setModalTradePlace] = useState("");
 
   // const handleButtonClick = (item) => {
-  //   setModalLiveDate(item.live_date);
-  //   setModalTitle(item.title);
-  //   setModalProducts(item.products || []);
-  //   setModalThumbnail(item.thumbnail);
-  //   setModalAuthor(item.author);
-  //   setModalTradePlace(item.trade_place);
+  //   console.log("111111");
+
+  //   dispatch(fetchLiveDetail(item.liveId));
+  //   console.log("22222222222");
+  //   console.log(liveDetail);
+
   //   setOpen(true);
+
+  //   // setModalLiveDate(item.liveDate);
+  //   // setModalTitle(item.title);
+  //   // setModalProducts(item.products || []);
+  //   // setModalThumbnail(item.liveThumbnail);
+  //   // setModalAuthor(item.user.nickname);
+  //   // setModalTradePlace(item.tradePlace);
   // };
 
-  // const handleClose = () => setOpen(false);
+  const handleButtonClick = async (item) => {
+    try {
+      await dispatch(fetchLiveDetail(item.liveId));
+      setOpen(true);
+    } catch (error) {
+      console.error("Live detail fetch error:", error);
+    }
+  };
+  const handleClose = () => setOpen(false);
 
   const handleNavigateToLive = () => {
     dispatch(switchTab("live"));
     navigate("/");
   };
+
   return (
     <Grid item xs={12}>
       <Grid container>
@@ -42,7 +62,7 @@ const ScrapLive = ({ items }) => {
           <Grid item xs={12} sx={{ textAlign: "center", mt: 4 }}>
             <Typography variant="h6" sx={{ color: "grey.700" }}>
               관심있는 라이브가 없어요. <br />
-              지금 라이브를 보러 가세용
+              지금 라이브를 보러 갈까요?
             </Typography>
             <Button
               onClick={handleNavigateToLive}
@@ -57,21 +77,21 @@ const ScrapLive = ({ items }) => {
                 fontWeight: "bold",
               }}
             >
-              라이브보러가기
+              라이브 보러 가기
             </Button>
           </Grid>
         ) : (
-          items.map((item) => (
-            <Grid key={item.live_id} item xs={6} sx={{ textAlign: "center" }}>
+          items.map((item, index) => (
+            <Grid key={index} item xs={6} sx={{ textAlign: "center" }}>
               <Button
-                // onClick={() => handleButtonClick(item)}
+                onClick={() => handleButtonClick(item)}
                 sx={{ padding: 0, minWidth: 0 }}
               >
                 <Box
                   sx={{
                     width: "16vh",
                     height: "28vh",
-                    backgroundImage: `url(${item.live_thumbnail})`,
+                    backgroundImage: `url(${item.thumbnail})`,
                     backgroundSize: "cover",
                     backgroundPosition: "center",
                     borderRadius: 2,
@@ -86,28 +106,29 @@ const ScrapLive = ({ items }) => {
                       height: "85%",
                     }}
                   >
-                    <UpcomingHeader
-                      liveDate={item.live_date}
-                      isScrap={item.is_scrap}
-                    />
+                    <UpcomingHeader liveDate={item.liveDate} isScrap={true} />
                   </Box>
                   <UpcomingFooter
-                    tradePlace={item.trade_place}
+                    tradePlace={item.dongName}
                     title={item.title}
                   />
                 </Box>
               </Button>
-              {/* <UpcomingModal
-                id={item.id}
-                open={open}
-                handleClose={handleClose}
-                liveDate={modalLiveDate}
-                products={modalProducts}
-                title={modalTitle}
-                thumbnail={modalThumbnail}
-                author={modalAuthor}
-                tradePlace={modalTradePlace}
-              /> */}
+              {liveDetail.liveId && (
+                <UpcomingModal
+                  id={index}
+                  open={open}
+                  handleClose={handleClose}
+                  liveDetail={liveDetail}
+
+                  // liveDate={modalLiveDate}
+                  // products={modalProducts}
+                  // title={modalTitle}
+                  // thumbnail={modalThumbnail}
+                  // author={modalAuthor}
+                  // tradePlace={modalTradePlace}
+                />
+              )}
             </Grid>
           ))
         )}

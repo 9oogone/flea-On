@@ -1,12 +1,17 @@
 // src/features/live/liveSlice.js
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchCategories, createLiveBroadcast } from "./actions";
+import {
+  fetchCategories,
+  createLiveBroadcast,
+  fetchLiveDetail,
+} from "./actions";
 
 const liveSlice = createSlice({
   name: "live",
   initialState: {
     categories: [],
     liveBroadcast: null,
+    liveDetail: {},
     status: "idle",
     error: null,
   },
@@ -26,6 +31,17 @@ const liveSlice = createSlice({
         state.liveBroadcast = action.payload;
       })
       .addCase(createLiveBroadcast.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message;
+      })
+      .addCase(fetchLiveDetail.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(fetchLiveDetail.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.liveDetail = action.payload;
+      })
+      .addCase(fetchLiveDetail.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
       });
