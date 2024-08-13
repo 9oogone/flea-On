@@ -1,7 +1,14 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { toggleScrap } from "../features/mypage/scrapSlice";
-import { Box, Typography, Modal, List, ListItem, Button } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Modal,
+  List,
+  ListItem,
+  IconButton,
+} from "@mui/material";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import styles from "../styles/UpcomingModal.module.css";
@@ -12,29 +19,17 @@ const UpcomingModal = ({
   id,
   open,
   handleClose,
-  liveDetail,
-  // liveDate,
-  // productNames = [],
-  // productPrices = [],
-  // title,
-  // thumbnail,
-  // author,
-  // tradePlace,
+  liveDate,
+  productNames = [],
+  productPrices = [],
+  title,
+  thumbnail,
+  author,
+  tradePlace,
+  scrap,
 }) => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
-  const auth = useSelector((state) => state.auth.user.userId);
-  const user = useSelector((state) => state.live.liveDetail.user.userId);
-  console.log(user, "사용자입니다");
-  console.log(auth, "판매자입니다.");
-
-  //스크랩 일단 주석
-  // const isScrap = useSelector((state) =>
-  //   Array.isArray(state.scrap.live)
-  //     ? state.scrap.live.find((item) => item.id === id)?.is_scrap
-  //     : false
-  // );
   const handleScrapToggle = () => {
     dispatch(toggleScrap({ id }));
   };
@@ -63,14 +58,14 @@ const UpcomingModal = ({
             />
             <div className={styles.textContainer}>
               <Typography variant="h6" component="h2" className={styles.title}>
-                <span className={styles.titleText}>{liveDetail.title}</span>
-                <Box onClick={handleScrapToggle}>
-                  {/* {isScrap ? (
+                <span className={styles.titleText}>{title}</span>
+                <IconButton onClick={handleScrapToggle}>
+                  {scrap ? (
                     <BookmarkIcon className={styles.bookmarkIcon} />
                   ) : (
                     <BookmarkBorderIcon className={styles.bookmarkIcon} />
-                  )} */}
-                </Box>
+                  )}
+                </IconButton>
               </Typography>
               <Typography
                 variant="body2"

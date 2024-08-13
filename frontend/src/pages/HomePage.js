@@ -1,4 +1,3 @@
-// HomePage.js
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import Switch from "../components/Switch";
@@ -8,10 +7,9 @@ import { Grid, Box, Button, Container } from "@mui/material";
 import baseAxios from "../utils/httpCommons";
 import { useNavigate } from "react-router-dom";
 import { fetchUserInfo } from "../features/auth/actions";
-import { fetchShorts } from "../features/shorts/actions";
+import { fetchShortList } from "../features/shorts/actions";
 const HomePage = () => {
   const selectedTab = useSelector((state) => state.content.selectedTab);
-  // const contents = useSelector((state) => state.content.contents);
   const [hasLive, setHasLive] = useState(false);
   const [liveId, setLiveId] = useState(null);
   const [shorts, setShorts] = useState([]);
@@ -35,6 +33,7 @@ const HomePage = () => {
 
     checkLiveExistence();
   }, []);
+
   const startLiveBroadcast = async (liveId) => {
     try {
       await baseAxios().put(`/fleaOn/live/${liveId}/on`);
@@ -49,13 +48,13 @@ const HomePage = () => {
       const response = await baseAxios().get("/fleaon/mainShorts");
       const shortsData = response.data.content.map((short) => ({
         id: short.shortsId,
-        name: short.productName,
-        price: short.productPrice,
+        productName: short.productName,
+        productPrice: short.productPrice,
         trade_place: short.tradePlace,
-        length: short.length, // 서버 데이터에 길이가 포함되어 있지 않아서 임시로 00:00으로 설정
-        is_scrap: short.is_scrap, // 기본값으로 설정
-        thumbnail: short.thumbnail,
-        shorts_id: short.shortsId,
+        length: short.length,
+        isScrap: short.isScrap,
+        shortsThumbnail: short.shortsThumbnail,
+        shortsId: short.shortsId,
       }));
 
       setShorts(shortsData);
@@ -66,6 +65,7 @@ const HomePage = () => {
       setLoading(false);
     }
   };
+
   const fetchLiveData = async () => {
     try {
       const response = await baseAxios().get("/fleaon/mainLive");
@@ -74,13 +74,15 @@ const HomePage = () => {
         title: liveItem.liveTitle,
         productNames: liveItem.productNames,
         productPrices: liveItem.productPrices,
-        tradePlace: liveItem.tradePlace,
+        tradePlace: liveItem.dongName,
         isLive: liveItem.isLive,
         thumbnail: liveItem.liveThumbnail,
         scrap: liveItem.scrap,
+        liveDate: liveItem.liveDate,
       }));
 
       setLive(liveData);
+      console.log(liveData);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching live data:", error);
@@ -91,8 +93,9 @@ const HomePage = () => {
 
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(fetchUserInfo()); // 사용자 정보 가져오기
-    fetchShorts(); // 숏츠 데이터 가져오기
+    dispatch(fetchUserInfo());
+    dispatch(fetchShortList());
+    fetchShorts();
     fetchLiveData();
   }, [dispatch]);
 
@@ -100,6 +103,7 @@ const HomePage = () => {
     live: live,
     shorts: shorts,
   };
+
   const switchOptions = [
     { value: "live", label: "Live" },
     { value: "shorts", label: "Shorts" },
