@@ -836,7 +836,7 @@ const OpenVideo = () => {
         place={place}
         liveDate={liveDate}
         times={times}
-        selectedProductId={selectedProductId}
+        currentProductIndex={productList[currentProductIndex]?.productId}
         userId={user.userId}
         sellerId={seller.userId}
         liveId={sessionName}
