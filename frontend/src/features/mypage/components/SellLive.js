@@ -1,13 +1,13 @@
 import React from "react";
 import { Box, Typography, Button } from "@mui/material";
-import { formatDistance, parseISO } from "date-fns";
+import { format } from "date-fns";
 import { ko } from "date-fns/locale";
 import { extractDong, getRelativeDate } from "../../../utils/cssUtils";
 
 const Live = ({ items }) => {
   console.log(items);
-  const upcomingItems = items.filter((item) => item.is_live === 0);
-  const completedItems = items.filter((item) => item.is_live === 2);
+  const upcomingItems = items.filter((item) => item.isLive === 0);
+  const completedItems = items.filter((item) => item.isLive === 2);
 
   return (
     <Box>
@@ -24,9 +24,9 @@ const Live = ({ items }) => {
               예정된 라이브
             </Typography>
           </Box>
-          {upcomingItems.map((item) => (
+          {upcomingItems.map((item, index) => (
             <Box
-              key={item.id}
+              key={index}
               sx={{
                 py: 2,
                 borderTop: "0.33px solid rgba(84, 84, 86, 0.34)",
@@ -67,8 +67,8 @@ const Live = ({ items }) => {
                       wordWrap: "break-word",
                     }}
                   >
-                    {extractDong(item.trade_place)} ·{" "}
-                    {/* {getRelativeDate(item.date)} */}
+                    {item.dongName} ·
+                    {getRelativeDate(format(item.liveDate, "yyyy-MM-dd"))}
                   </Typography>
                 </Box>
 
@@ -103,9 +103,9 @@ const Live = ({ items }) => {
               종료된 라이브
             </Typography>
           </Box>
-          {completedItems.map((item) => (
+          {completedItems.map((item, index) => (
             <Box
-              key={item.id}
+              key={index}
               sx={{
                 width: "100%",
                 height: "100%",
@@ -148,8 +148,8 @@ const Live = ({ items }) => {
                       wordWrap: "break-word",
                     }}
                   >
-                    {extractDong(item.trade_place)} ·{" "}
-                    {/* {getRelativeDate(item.date)} */}
+                    {item.dongName} ·
+                    {getRelativeDate(format(item.liveDate, "yyyy-MM-dd"))}
                   </Typography>
                 </Box>
 

@@ -6,19 +6,21 @@ import UpcomingHeader from "./UpcomingHeader";
 import LiveFooter from "./LiveFooter";
 import UpcomingFooter from "./UpcomingFooter";
 import UpcomingModal from "./UpcomingModal";
+
 import baseAxios from "../utils/httpCommons";
 
-const LiveBroadcasts = ({ items: initialItems }) => {
+
+import { useDispatch, useSelector } from "react-redux";
+import { fetchLiveDetail } from "../features/live/actions";
+
+const LiveBroadcasts = ({ items }) => {
+  console.log("LiveBroadcasts items:", items, "홈 프롭스 아이템입니다.");
+  const dispatch = useDispatch();
+
   const navigate = useNavigate();
+  const liveDetail = useSelector((state) => state.live.liveDetail);
   const [open, setOpen] = useState(false);
-  const [modalLiveDate, setModalLiveDate] = useState("");
-  const [modalTitle, setModalTitle] = useState("");
-  const [modalProductNames, setModalProductNames] = useState([]);
-  const [modalProductPrices, setModalProductPrices] = useState([]);
-  const [modalThumbnail, setModalThumbnail] = useState("");
-  const [modalAuthor, setModalAuthor] = useState("");
-  const [modalTradePlace, setModalTradePlace] = useState("");
-  const [modalScrap, setModalScrap] = useState(false);
+
   const [items, setItems] = useState([]);
 
   useEffect(() => {
@@ -26,6 +28,15 @@ const LiveBroadcasts = ({ items: initialItems }) => {
       setItems(initialItems);
     }
   }, [initialItems]);
+
+  // const [modalLiveDate, setModalLiveDate] = useState("");
+  // const [modalTitle, setModalTitle] = useState("");
+  // const [modalProductNames, setModalProductNames] = useState([]);
+  // const [modalProductPrices, setModalProductPrices] = useState([]);
+  // const [modalThumbnail, setModalThumbnail] = useState("");
+  // const [modalAuthor, setModalAuthor] = useState("");
+  // const [modalTradePlace, setModalTradePlace] = useState("");
+
 
   const handleButtonClick = (item) => {
     if (item.isLive) {
@@ -39,8 +50,20 @@ const LiveBroadcasts = ({ items: initialItems }) => {
       setModalAuthor(item.author);
       setModalTradePlace(item.tradePlace);
       setModalScrap(item.scrap);
+      console.log(item, "홈 모달클릭 아이템입니다.");
+
+      dispatch(fetchLiveDetail(item.id));
+>>>>>>> frontend/src/components/LiveBroadcasts.js
       setOpen(true);
     }
+    // setModalLiveDate(item.live_date);
+    // setModalTitle(item.title);
+    // setModalProductNames(item.productNames || []);
+    // setModalProductPrices(item.productPrices || []);
+    // setModalThumbnail(item.thumbnail);
+    // setModalAuthor(item.author);
+    // setModalTradePlace(item.trade_place);
+    // setOpen(true);
   };
 
   const handleScrapToggle = async (id, currentScrap) => {
@@ -86,6 +109,7 @@ const LiveBroadcasts = ({ items: initialItems }) => {
                     p: 1,
                   }}
                 >
+
                   <Box
                     sx={{
                       position: "relative",
@@ -118,25 +142,28 @@ const LiveBroadcasts = ({ items: initialItems }) => {
                   )}
                 </Box>
               </Button>
+
+            {liveDetail.liveId && (
               <UpcomingModal
                 id={item.id}
                 open={open}
                 handleClose={handleClose}
-                liveDate={modalLiveDate}
-                productNames={modalProductNames}
-                productPrices={modalProductPrices}
-                title={modalTitle}
-                thumbnail={modalThumbnail}
-                author={modalAuthor}
-                tradePlace={modalTradePlace}
-                scrap={modalScrap}
-                setScrap={() => handleScrapToggle(item.id, modalScrap)}
+
+                liveDetail={liveDetail}
+
+                // liveDate={modalLiveDate}
+                // productNames={modalProductNames}
+                // productPrices={modalProductPrices}
+                // title={modalTitle}
+                // thumbnail={modalThumbnail}
+                // author={modalAuthor}
+                // tradePlace={modalTradePlace}
               />
-            </Grid>
-          ))
-        ) : (
-          <Box>No live broadcasts available.</Box>
-        )}
+            )}
+          </Grid>
+        ))
+        }
+
       </Grid>
     </Grid>
   );

@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 
-const CustomVideoPlayer = ({ src }) => {
-    const videoRef = useRef(null);
+const CustomVideoPlayer = ({ src,videoRef }) => {
+    // const videoRef = useRef(null);
     const [isPlaying, setIsPlaying] = useState(true);
     const [progress, setProgress] = useState(0);
 

@@ -12,6 +12,8 @@ import {
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import styles from "../styles/UpcomingModal.module.css";
+import { formatDateTime, formatPrice } from "../utils/cssUtils";
+import { useNavigate } from "react-router-dom";
 
 const UpcomingModal = ({
   id,
@@ -31,6 +33,11 @@ const UpcomingModal = ({
   const handleScrapToggle = () => {
     dispatch(toggleScrap({ id }));
   };
+
+  const handleEditLive = () => {
+    // navigate(`/edit-live/${liveDetail.liveId}`, { state: { liveDetail } });
+  };
+
   return (
     <Modal
       open={open}
@@ -45,7 +52,7 @@ const UpcomingModal = ({
         <Box className={styles.modalContent}>
           <div className={styles.modalHeader}>
             <img
-              src={thumbnail}
+              src={liveDetail.liveThumbnail}
               alt="thumbnail"
               className={styles.thumbnailImage}
             />
@@ -65,14 +72,14 @@ const UpcomingModal = ({
                 component="p"
                 className={styles.author}
               >
-                {author}
+                {liveDetail?.user.nickname}
               </Typography>
               <Typography
                 variant="body2"
                 component="p"
                 className={styles.liveDate}
               >
-                방송 시간 {liveDate}
+                방송 시간 {formatDateTime(liveDetail.liveDate)}
               </Typography>
             </div>
             <span className={styles.closeButton} onClick={handleClose}>
@@ -87,23 +94,49 @@ const UpcomingModal = ({
                 className={styles.tradePlace}
               >
                 <div className={styles.tradeplacetext}>거래 장소</div>
-                <div>{tradePlace}</div>
+                <div>{liveDetail.tradePlace}</div>
               </Typography>
             </div>
           </div>
           <div className={styles.modalBody}>
             <div className={styles.listtitle}>판매 상품 목록</div>
             <List className={styles.productList}>
-              {productNames.map((product, index) => (
+              {liveDetail.products.map((product, index) => (
                 <ListItem key={index} className={styles.productItem}>
-                  <div className={styles.productName}>{product}</div>
-                  <div
-                    className={styles.productPrice}
-                  >{`${productPrices[index]}원`}</div>
+                  <div className={styles.productName}>{product.name}</div>
+                  <div className={styles.productPrice}>
+                    {formatPrice(product.price)}
+                  </div>
                 </ListItem>
               ))}
             </List>
           </div>
+
+          {auth && auth === user && (
+            <Box
+              sx={{
+                width: "100%",
+                justifyContent: "center",
+                alignItems: "center",
+                display: "flex",
+                mt: 10,
+              }}
+            >
+              <Button
+                variant="contained"
+                onClick={handleEditLive}
+                sx={{
+                  width: "95%",
+                  backgroundColor: "#FF0B55",
+                  color: "white",
+                  fontSize: 16,
+                  borderRadius: 2,
+                }}
+              >
+                라이브 수정하기
+              </Button>
+            </Box>
+          )}
         </Box>
       </div>
     </Modal>
