@@ -1,25 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { Box, Grid, Button } from "@mui/material";
+import { Box, Grid, Button, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import LiveHeader from "./LiveHeader";
 import UpcomingHeader from "./UpcomingHeader";
 import LiveFooter from "./LiveFooter";
 import UpcomingFooter from "./UpcomingFooter";
 import UpcomingModal from "./UpcomingModal";
-
 import baseAxios from "../utils/httpCommons";
-
-
 import { useDispatch, useSelector } from "react-redux";
 import { fetchLiveDetail } from "../features/live/actions";
 
-const LiveBroadcasts = ({ items }) => {
-  console.log("LiveBroadcasts items:", items, "홈 프롭스 아이템입니다.");
-  const dispatch = useDispatch();
-
+const LiveBroadcasts = ({ items: initialItems }) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const liveDetail = useSelector((state) => state.live.liveDetail);
   const [open, setOpen] = useState(false);
+  const [modalScrap, setModalScrapOpen] = useState(false);
 
   const [items, setItems] = useState([]);
 
@@ -29,41 +25,14 @@ const LiveBroadcasts = ({ items }) => {
     }
   }, [initialItems]);
 
-  // const [modalLiveDate, setModalLiveDate] = useState("");
-  // const [modalTitle, setModalTitle] = useState("");
-  // const [modalProductNames, setModalProductNames] = useState([]);
-  // const [modalProductPrices, setModalProductPrices] = useState([]);
-  // const [modalThumbnail, setModalThumbnail] = useState("");
-  // const [modalAuthor, setModalAuthor] = useState("");
-  // const [modalTradePlace, setModalTradePlace] = useState("");
-
-
   const handleButtonClick = (item) => {
     if (item.isLive) {
       navigate(`/live/${item.id}`);
     } else {
-      setModalLiveDate(item.liveDate);
-      setModalTitle(item.title);
-      setModalProductNames(item.productNames || []);
-      setModalProductPrices(item.productPrices || []);
-      setModalThumbnail(item.thumbnail);
-      setModalAuthor(item.author);
-      setModalTradePlace(item.tradePlace);
-      setModalScrap(item.scrap);
-      console.log(item, "홈 모달클릭 아이템입니다.");
-
       dispatch(fetchLiveDetail(item.id));
->>>>>>> frontend/src/components/LiveBroadcasts.js
+      setModalScrapOpen(item.scrap);
       setOpen(true);
     }
-    // setModalLiveDate(item.live_date);
-    // setModalTitle(item.title);
-    // setModalProductNames(item.productNames || []);
-    // setModalProductPrices(item.productPrices || []);
-    // setModalThumbnail(item.thumbnail);
-    // setModalAuthor(item.author);
-    // setModalTradePlace(item.trade_place);
-    // setOpen(true);
   };
 
   const handleScrapToggle = async (id, currentScrap) => {
@@ -109,7 +78,6 @@ const LiveBroadcasts = ({ items }) => {
                     p: 1,
                   }}
                 >
-
                   <Box
                     sx={{
                       position: "relative",
@@ -142,28 +110,21 @@ const LiveBroadcasts = ({ items }) => {
                   )}
                 </Box>
               </Button>
-
-            {liveDetail.liveId && (
               <UpcomingModal
                 id={item.id}
                 open={open}
                 handleClose={handleClose}
-
                 liveDetail={liveDetail}
-
-                // liveDate={modalLiveDate}
-                // productNames={modalProductNames}
-                // productPrices={modalProductPrices}
-                // title={modalTitle}
-                // thumbnail={modalThumbnail}
-                // author={modalAuthor}
-                // tradePlace={modalTradePlace}
+                scrap={modalScrap}
+                setScrap={() => handleScrapToggle(item.id, item.scrap)}
               />
-            )}
+            </Grid>
+          ))
+        ) : (
+          <Grid item xs={12} sx={{ textAlign: "center", mt: 4 }}>
+            <Typography variant="h6">No broadcasts available</Typography>
           </Grid>
-        ))
-        }
-
+        )}
       </Grid>
     </Grid>
   );
