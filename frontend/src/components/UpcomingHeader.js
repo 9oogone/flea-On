@@ -1,30 +1,26 @@
 import React from "react";
-import { Box, Typography } from "@mui/material";
+import { Box, IconButton, Typography } from "@mui/material";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import { format, parseISO, isToday, isTomorrow } from "date-fns";
 
-const UpcomingHeader = ({ liveDate, isScrap }) => {
+const UpcomingHeader = ({ liveDate, scrap, setScrap }) => {
   let date;
   let formattedDate;
   let formattedTime;
 
-  // liveDate가 유효한지 확인하고 변환
   try {
-    console.log(liveDate);
     date = parseISO(liveDate);
     if (isNaN(date)) throw new Error("Invalid date");
 
-    // 현재 날짜와 비교하여 형식 결정
     if (isToday(date)) {
       formattedDate = "오늘";
     } else if (isTomorrow(date)) {
       formattedDate = "내일";
     } else {
-      formattedDate = format(date, "MM/dd"); // 예: 11/30
+      formattedDate = format(date, "MM/dd");
     }
 
-    // 시간 포맷 설정 (오전/오후 00시 00분)
     formattedTime = format(date, "a hh시 mm분");
   } catch (error) {
     console.error("Invalid date format:", liveDate);
@@ -52,18 +48,21 @@ const UpcomingHeader = ({ liveDate, isScrap }) => {
           {`${formattedDate}, ${formattedTime}`}
         </Typography>
       </Box>
-      <Box
+      <IconButton
         sx={{
-          textAlign: "end",
+          display: "flex",
+          justifyContent: "flex-end",
           color: "white",
+          width: "100%",
+          p: 0,
         }}
-        // onClick={(e) => {
-        //   e.stopPropagation();
-        //   handleScrapToggle();
-        // }}
+        onClick={(e) => {
+          e.stopPropagation();
+          setScrap();
+        }}
       >
-        {isScrap ? <BookmarkIcon /> : <BookmarkBorderIcon />}
-      </Box>
+        {scrap ? <BookmarkIcon /> : <BookmarkBorderIcon />}
+      </IconButton>
     </Box>
   );
 };

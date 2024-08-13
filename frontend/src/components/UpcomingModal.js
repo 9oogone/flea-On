@@ -1,7 +1,14 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { toggleScrap } from "../features/mypage/scrapSlice";
-import { Box, Typography, Modal, List, ListItem } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Modal,
+  List,
+  ListItem,
+  IconButton,
+} from "@mui/material";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import styles from "../styles/UpcomingModal.module.css";
@@ -17,13 +24,10 @@ const UpcomingModal = ({
   thumbnail,
   author,
   tradePlace,
+  scrap,
 }) => {
   const dispatch = useDispatch();
-  const isScrap = useSelector((state) =>
-    Array.isArray(state.scrap.live)
-      ? state.scrap.live.find((item) => item.id === id)?.is_scrap
-      : false
-  );
+
   const handleScrapToggle = () => {
     dispatch(toggleScrap({ id }));
   };
@@ -48,13 +52,13 @@ const UpcomingModal = ({
             <div className={styles.textContainer}>
               <Typography variant="h6" component="h2" className={styles.title}>
                 <span className={styles.titleText}>{title}</span>
-                <Box onClick={handleScrapToggle}>
-                  {isScrap ? (
+                <IconButton onClick={handleScrapToggle}>
+                  {scrap ? (
                     <BookmarkIcon className={styles.bookmarkIcon} />
                   ) : (
                     <BookmarkBorderIcon className={styles.bookmarkIcon} />
                   )}
-                </Box>
+                </IconButton>
               </Typography>
               <Typography
                 variant="body2"
