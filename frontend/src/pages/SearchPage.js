@@ -6,7 +6,8 @@ import { Container, Typography, Grid, Button, Box } from "@mui/material";
 import UpcomingBroadcasts from "../components/UpcomingBroadcasts";
 import LiveBroadcasts from "../components/LiveBroadcasts";
 import Shorts from "../components/Shorts";
-import Spinner from "../components/Spinner.js"
+import Spinner from "../components/Spinner.js";
+// import Question from "../assets/images/question.svg";
 
 const useQuery = () => {
   return new URLSearchParams(useLocation().search);
@@ -67,9 +68,17 @@ const SearchPage = () => {
       {error && <Typography color="error">{getErrorMessage()}</Typography>}
       {!loading && !error && results && (
         isEmptyResults() ? (
-          <Typography variant="h6" sx={{ mt: '100%', textAlign: 'center' }}>
-            {query}의 검색 결과가 없습니다!
-          </Typography>
+          <Box sx={{ mt: '100%', textAlign: 'center' }}>
+            {/* <img src={Question} alt="No results" style={{ width: '100px', height: '100px' }} /> */}
+            <Typography 
+            sx={{ 
+              color: "gray",
+              fontSize: "20px",
+              letterSpacing: "-0.5px"
+              }}>
+              {query}의 검색 결과가 없습니다!
+            </Typography>
+          </Box>
         ) : (
           <Grid container spacing={3}>
             {upcoming.length > 0 && <UpcomingBroadcasts items={upcoming} />}
