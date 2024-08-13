@@ -391,13 +391,12 @@ const OpenVideo = () => {
     console.log(currentProduct);
     try {
       const response = await baseAxios().post("/fleaon/purchase/buy", {
-        productId: productId,
+        productId: productList[currentProductIndex].productId,
         userId: user.userId,
       });
       if (response.status === 200) {
-        if (response.data===7){
-
-        }else{
+        if (response.data === 7) {
+        } else {
           handleCustomerClick();
         }
         setIsSold(true);
@@ -805,7 +804,7 @@ const OpenVideo = () => {
         place={place}
         liveDate={liveDate}
         times={times}
-        selectedProductId={selectedProductId}
+        currentProductIndex={productList[currentProductIndex].productId}
         userId={user.userId}
         sellerId={seller.userId}
         liveId={sessionName}
