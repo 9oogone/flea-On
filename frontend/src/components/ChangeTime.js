@@ -81,10 +81,11 @@ const ChangeTime = ({ open, handleClose, chatID }) => {
           <Typography
             gutterBottom
             sx={{
-              fontSize: "25px",
+              fontSize: "20px",
               fontWeight: "bold",
               marginBottom: "20px",
               marginTop: "50px",
+              letterSpacing: "-0.5px"
             }}
           >
             거래 시간 변경 요청
@@ -93,9 +94,10 @@ const ChangeTime = ({ open, handleClose, chatID }) => {
             variant="body1"
             gutterBottom
             sx={{
-              fontSize: "14px",
-              marginBottom: "20px",
+              fontSize: "17px",
+              marginBottom: "23px",
               lineHeight: 1.5,
+              letterSpacing: "-0.5px"
             }}
           >
             현재 약속 시간
@@ -108,36 +110,51 @@ const ChangeTime = ({ open, handleClose, chatID }) => {
             variant="body2"
             gutterBottom
             sx={{
-              marginBottom: "20px",
+              marginBottom: "12px",
+              fontSize: "19px",
+              lineHeight: 1.5,
+              letterSpacing: "-0.5px",
             }}
           >
             변경 희망 시간
           </Typography>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DateTimePicker
-              value={selectedDate}
-              onChange={handleDateChange}
-              slots={{
-                textField: (params) => (
-                  <TextField
-                    {...params}
-                    fullWidth
-                    sx={{ marginBottom: "1px" }}
-                  />
-                ),
-              }}
-            />
-          </LocalizationProvider>
+  <Box sx={{ width: '72%', ml: 7 }}>
+    <DateTimePicker
+      value={selectedDate}
+      onChange={handleDateChange}
+      slots={{
+        textField: (params) => (
+          <TextField
+            {...params}
+            fullWidth
+            sx={{ marginBottom: "1px" }}
+            InputProps={{
+              sx: { 
+                '& input': { 
+                  textAlign: 'center' 
+                }
+              }
+            }}
+          />
+        ),
+      }}
+    />
+  </Box>
+</LocalizationProvider>
+
+
           <Typography
             variant="body2"
             gutterBottom
             color="textSecondary"
             sx={{
-              fontSize: "12px",
+              fontSize: "14px",
               color: "#777",
               marginBottom: "20px",
               marginTop: "10px",
               lineHeight: 1.5,
+              letterSpacing: "-0.5px"
             }}
           >
             상대방이 거절할 경우 거래가 취소될 수 있습니다.

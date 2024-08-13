@@ -103,8 +103,12 @@ const ChatPage = () => {
           align="left"
           marginLeft="10px"
           fontWeight="bold"
+          sx={{
+            letterSpacing: '-0.5px',
+            color: "#2E2E32"
+          }}
         >
-          채팅
+          Chat
         </Typography>
       </Box>
       {/* {status === 'loading' && <Typography>Loading...</Typography>} */}

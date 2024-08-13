@@ -36,13 +36,13 @@ const SearchShorts = () => {
 
   return (
     <Container>
-      <Box>
-      <ArrowBackIosIcon sx={{ cursor: "pointer", mt: "7%", mb: "7%" }} onClick={handleIconClick} />
-      </Box>
-      <Box>
-      <Typography gutterBottom sx={{ textAlign: "center", mb: "7%", fontSize: "30px", letterSpacing: "-2px" }}>
-        {query}의 Shorts 검색 결과
-      </Typography>
+      <Box display="flex" alignItems="center" mb="7%">
+        <ArrowBackIosIcon sx={{ ml: 2, cursor: "pointer", mt: "7%", color: "rgba(44, 44, 46, 1)", fontSize: "18px" }} onClick={handleIconClick} />
+        <Typography gutterBottom sx={{ 
+          mt: "7%", fontSize: "18px", letterSpacing: "-2px", color: "rgba(44, 44, 46, 1)", pt: 0.5,
+          fontWeight: 500 }}>
+          {query}의 SHORTS 검색 결과
+        </Typography>
       </Box>
 
       {loading && <Spinner />}

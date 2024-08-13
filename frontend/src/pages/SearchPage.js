@@ -95,7 +95,7 @@ const SearchPage = () => {
                   >
                     <Typography
                     sx={{ 
-                      mt: upcoming.length === 0 ? "10px" : 0,
+                      mt: upcoming.length === 0 ? "4%" : 0,
                       fontSize: "20px",
                       fontWeight: "600",
                       letterSpacing: "-0.5px",
@@ -120,10 +120,11 @@ const SearchPage = () => {
                       display: "flex",
                       justifyContent: "space-between",
                       alignItems: "center",
+                       mt: "10px"
                     }}
                   >
                     <Typography sx={{ 
-                      mt: upcoming.length && shorts.length === 0 ? "10px" : 0,
+                      mt: upcoming.length && shorts.length === 0 ? "4%" : 0,
                       fontSize: "20px",
                       fontWeight: "600",
                       letterSpacing: "-0.5px",
