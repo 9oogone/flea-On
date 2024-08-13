@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { OpenVidu } from "openvidu-browser";
@@ -11,7 +11,7 @@ import ProfileHeader from "../components/ProfileHeader";
 import { getToken } from "../api/openViduAPI";
 import useDidMountEffect from "../utils/useDidMountEffect";
 import { setLoading, unSetLoading } from "../features/live/loadingSlice";
-import { sendMessageDB } from "../features/chat/ChatApi";
+import { sendMessageDB, changeTradeTime } from "../features/chat/ChatApi";
 import { Button } from "@mui/material";
 
 const isMobile = () => /Mobi|Android/i.test(navigator.userAgent);
@@ -77,6 +77,8 @@ const ChatRoom = () => {
           return {
             ...message,
             isSent: isSent,
+            isSystemMessage: message.chatContent.startsWith("[System Message]"),
+            buttonsDisabled: false, // 버튼 비활성화 상태 추가
           };
         });
         setMessageList(updatedMessages);
@@ -84,7 +86,7 @@ const ChatRoom = () => {
     });
   }, [chatID, dispatch, userId]);
 
-  const MakeSession = async (videoRef, dispatch, chatID) => {
+  const MakeSession = async (dispatch, chatID) => {
     const OV = new OpenVidu();
     const session = OV.initSession();
 
@@ -96,9 +98,10 @@ const ChatRoom = () => {
         const writerId = data.from;
         const isSent = data.from === user.userId;
         const chatTime = data.chatTime;
+        const isSystemMessage = chatContent.startsWith("[System Message]");
         setMessageList((prevMessages) => [
           ...prevMessages,
-          { chatContent, writerId, isSent, chatTime },
+          { chatContent, writerId, isSent, chatTime, isSystemMessage, buttonsDisabled: false },
         ]);
       }
     });
@@ -128,17 +131,6 @@ const ChatRoom = () => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-  // const handleSendMessage = () => {
-  //   if (message.trim() !== '') {
-  //     setMessages(prevMessages => {
-  //       const updatedMessages = [...prevMessages, { text: message.replace(/\n/g, '<br/>'), isSent: true, time: formatTime(new Date()) }];
-  //       return updatedMessages;
-  //     });
-  //     setMessage('');
-  //     isFocusedRef.current = false;
-  //   }
-  // };
-
 
   if (status === "loading") {
     return <div>Loading...</div>;
@@ -147,15 +139,6 @@ const ChatRoom = () => {
   if (status === "failed") {
     return <div>Error: {error}</div>;
   }
-
-  const shouldShowTime = (currentIndex, currentMessage) => {
-    if (currentIndex === messageList.length - 1) return true;
-    const nextMessage = messageList[currentIndex + 1];
-    return (
-      currentMessage.isSent !== nextMessage.isSent ||
-      new Date(currentMessage.chatTime).toTimeString().slice(0, 5) !== new Date(nextMessage.chatTime).toTimeString().slice(0, 5)
-    );
-  };  // 같은 시간이면서 같은 사람이 보낸 메시지에는 마지막 메시지에만 시간이 나타나도록 함
 
   const sendMessage = () => {
     if (session.current && newMessage.trim() !== "") {
@@ -176,24 +159,91 @@ const ChatRoom = () => {
   };
 
   const handleAcceptTimeChange = async (messageId, newTime) => {
+    const [tradeDate, tradeTime] = newTime.split(" "); // 날짜와 시간을 분리
     const message = `거래 시간 변경 수락: ${newTime}`;
     try {
-      await sendMessageDB(chatID, message);
-      // 여기에 거래 시간 변경 로직 추가
+      await changeTradeTime(chatID, tradeDate, tradeTime); // API 호출
+      await sendMessageDB(chatID, message); // 메시지 저장
+      setMessageList((prevMessages) =>
+        prevMessages.map((msg) =>
+          msg.id === messageId ? { ...msg, buttonsDisabled: true } : msg // 버튼 비활성화 설정
+        )
+      );
+
+      setMessageList((prevMessages) => [
+        ...prevMessages,
+        {
+          chatContent: message,
+          writerId: user.userId,
+          isSent: true,
+          chatTime: new Date().toISOString(),
+          isSystemMessage: true,
+          buttonsDisabled: false,
+        },
+      ]);
+
+      if (session.current) {
+        session.current.signal({
+          data: JSON.stringify({
+            message: message,
+            from: user.userId,
+            type: 1,
+            chatTime: new Date().toISOString(),
+          }),
+          type: "chat",
+        });
+      }
     } catch (error) {
       console.error("Error accepting time change:", error);
     }
   };
 
   const handleRejectTimeChange = async (messageId) => {
-    const message = `거래 시간 변경 거절`;
+    const message = `[System Message] 거래 시간 변경 요청이 거절되었습니다.`;
     try {
       await sendMessageDB(chatID, message);
-      // 여기에 거래 취소 로직 추가
+      setMessageList((prevMessages) =>
+        prevMessages.map((msg) =>
+          msg.id === messageId ? { ...msg, buttonsDisabled: true } : msg // 버튼 비활성화 설정
+        )
+      );
+
+      setMessageList((prevMessages) => [
+        ...prevMessages,
+        {
+          chatContent: message,
+          writerId: user.userId,
+          isSent: true,
+          chatTime: new Date().toISOString(),
+          isSystemMessage: true,
+          buttonsDisabled: false,
+        },
+      ]);
+
+      if (session.current) {
+        session.current.signal({
+          data: JSON.stringify({
+            message: message,
+            from: user.userId,
+            type: 1,
+            chatTime: new Date().toISOString(),
+          }),
+          type: "chat",
+        });
+      }
     } catch (error) {
       console.error("Error rejecting time change:", error);
     }
   };
+
+  const shouldShowTime = (currentIndex, currentMessage) => {
+    if (currentIndex === messageList.length - 1) return true;
+    const nextMessage = messageList[currentIndex + 1];
+    return (
+      currentMessage.isSent !== nextMessage.isSent ||
+      new Date(currentMessage.chatTime).toTimeString().slice(0, 5) !== new Date(nextMessage.chatTime).toTimeString().slice(0, 5)
+    );
+  }; // 같은 시간이면서 같은 사람이 보낸 메시지에는 마지막 메시지에만 시간이 나타나도록 함
 
   return (
     <div className={styles.chatRoom}>
@@ -213,11 +263,15 @@ const ChatRoom = () => {
                 msg.isSent ? styles.defaultbaloon : styles.receivedbaloon
               }
             >
-              <div
-                className={styles.msg}
-                dangerouslySetInnerHTML={{ __html: msg.chatContent }}
-              />
-              {msg.chatContent.includes("거래 시간 변경 요청") && !msg.isSent && (
+              {msg.isSystemMessage ? (
+                <div
+                  className={`${styles.msg} ${styles.systemMessage}`}
+                  dangerouslySetInnerHTML={{ __html: msg.chatContent }}
+                />
+              ) : (
+                <div className={styles.msg}>{msg.chatContent}</div>
+              )}
+              {msg.chatContent.includes("거래 시간 변경 요청") && !msg.isSent && !msg.buttonsDisabled && (
                 <div className={styles.timeChangeButtons}>
                   <Button
                     onClick={() => handleAcceptTimeChange(msg.id, msg.chatContent)}

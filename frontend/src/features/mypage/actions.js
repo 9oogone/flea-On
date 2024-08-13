@@ -2,15 +2,15 @@
 
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import baseAxios from "../../utils/httpCommons";
+import FormControlContext from "@mui/material/FormControl/FormControlContext";
 
-// 캘린더 주별 거래 조회..아직 없음...
+// 캘린더 주별 거래 조회
 export const fetchCalendarWeek = createAsyncThunk(
   "calendar/fetchCalendarWeek",
-  async ({ email, date }) => {
-    // email과 date를 객체로 받아옴
-    const response = await baseAxios().get(
-      `/fleaon/users/${email}/${date}/aaaaaaaa`
-    );
+  async ({ email, today }) => {
+    const response = await baseAxios().get(`/fleaon/users/${email}/mypage`, {
+      params: { today: today },
+    });
     return response.data;
   }
 );
@@ -18,11 +18,13 @@ export const fetchCalendarWeek = createAsyncThunk(
 // 캘린더 일별 거래 조회
 export const fetchCalendarDate = createAsyncThunk(
   "calendar/fetchCalendarDate",
-  async ({ email, date }) => {
+  async ({ email, tradeDate }) => {
+    // console.log(email, tradeDate);
     // email과 date를 객체로 받아옴
     const response = await baseAxios().get(
-      `/fleaon/users/${email}/${date}/schedule`
+      `/fleaon/users/${email}/${tradeDate}/schedule`
     );
+    // console.log(response.data);
     return response.data;
   }
 );

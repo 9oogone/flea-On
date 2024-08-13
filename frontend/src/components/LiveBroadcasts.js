@@ -6,33 +6,40 @@ import UpcomingHeader from "./UpcomingHeader";
 import LiveFooter from "./LiveFooter";
 import UpcomingFooter from "./UpcomingFooter";
 import UpcomingModal from "./UpcomingModal";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchLiveDetail } from "../features/live/actions";
 
 const LiveBroadcasts = ({ items }) => {
-  console.log("LiveBroadcasts items:", items);
+  console.log("LiveBroadcasts items:", items, "홈 프롭스 아이템입니다.");
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const liveDetail = useSelector((state) => state.live.liveDetail);
   const [open, setOpen] = useState(false);
-  const [modalLiveDate, setModalLiveDate] = useState("");
-  const [modalTitle, setModalTitle] = useState("");
-  const [modalProductNames, setModalProductNames] = useState([]);
-  const [modalProductPrices, setModalProductPrices] = useState([]);
-  const [modalThumbnail, setModalThumbnail] = useState("");
-  const [modalAuthor, setModalAuthor] = useState("");
-  const [modalTradePlace, setModalTradePlace] = useState("");
+  // const [modalLiveDate, setModalLiveDate] = useState("");
+  // const [modalTitle, setModalTitle] = useState("");
+  // const [modalProductNames, setModalProductNames] = useState([]);
+  // const [modalProductPrices, setModalProductPrices] = useState([]);
+  // const [modalThumbnail, setModalThumbnail] = useState("");
+  // const [modalAuthor, setModalAuthor] = useState("");
+  // const [modalTradePlace, setModalTradePlace] = useState("");
 
   const handleButtonClick = (item) => {
-    if (item.is_live) {
+    if (item.isLive) {
       navigate(`/live/${item.id}`);
     } else {
-      console.log(item);
-      setModalLiveDate(item.live_date);
-      setModalTitle(item.title);
-      setModalProductNames(item.productNames || []);
-      setModalProductPrices(item.productPrices || []);
-      setModalThumbnail(item.thumbnail);
-      setModalAuthor(item.author);
-      setModalTradePlace(item.trade_place);
+      console.log(item, "홈 모달클릭 아이템입니다.");
+
+      dispatch(fetchLiveDetail(item.id));
       setOpen(true);
     }
+    // setModalLiveDate(item.live_date);
+    // setModalTitle(item.title);
+    // setModalProductNames(item.productNames || []);
+    // setModalProductPrices(item.productPrices || []);
+    // setModalThumbnail(item.thumbnail);
+    // setModalAuthor(item.author);
+    // setModalTradePlace(item.trade_place);
+    // setOpen(true);
   };
 
   const handleClose = () => setOpen(false);
@@ -65,39 +72,46 @@ const LiveBroadcasts = ({ items }) => {
                     height: "85%",
                   }}
                 >
-                  {item.is_live ? (
+                  {item.isLive ? (
                     <LiveHeader />
                   ) : (
-                    <UpcomingHeader id={item.id} liveDate={item.live_date} />
+                    <UpcomingHeader
+                      id={item.id}
+                      liveDate={liveDetail.liveDate} ////item에 날짜 없음....
+                    />
                   )}
                 </Box>
-                {item.is_live ? (
-                  <LiveFooter
+                {item.isLive ? (
+                  <LiveFooter ///궁금한점 라이브 방송하고 있는 시점의 물건을 띄워야하는데,,,,?
                     name={item.name}
-                    tradePlace={item.trade_place}
+                    tradePlace={item.tradePlace}
                     title={item.title}
                     price={item.price}
                   />
                 ) : (
                   <UpcomingFooter
-                    tradePlace={item.tradePlace}
+                    tradePlace={item.tradePlace} ///동이름 없음.,,,
                     title={item.title}
                   />
                 )}
               </Box>
             </Button>
-            <UpcomingModal
-              id={item.id}
-              open={open}
-              handleClose={handleClose}
-              liveDate={modalLiveDate}
-              productNames={modalProductNames}
-              productPrices={modalProductPrices}
-              title={modalTitle}
-              thumbnail={modalThumbnail}
-              author={modalAuthor}
-              tradePlace={modalTradePlace}
-            />
+            {liveDetail.liveId && (
+              <UpcomingModal
+                id={item.id}
+                open={open}
+                handleClose={handleClose}
+                liveDetail={liveDetail}
+
+                // liveDate={modalLiveDate}
+                // productNames={modalProductNames}
+                // productPrices={modalProductPrices}
+                // title={modalTitle}
+                // thumbnail={modalThumbnail}
+                // author={modalAuthor}
+                // tradePlace={modalTradePlace}
+              />
+            )}
           </Grid>
         ))}
       </Grid>

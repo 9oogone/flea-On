@@ -2,23 +2,23 @@ import baseAxios from "../../utils/httpCommons";
 const baseURL = baseAxios();
 
 export async function sendMessageDB(chatId, param) {
-    try {
-      console.log(chatId, param)
-      const res = await baseURL.post(
-        `/fleaon/chat/${chatId}/messages`,
-        {},
-        {
-          params: {
-            chatContent: param
-          }
-        }
-      );
-      console.log(res);
-      return res.data;
-    } catch (error) {
-      console.error("Error fetching token:", error);
-      throw error;
-    }
+  try {
+    console.log(chatId, param);
+    const res = await baseURL.post(
+      `/fleaon/chat/${chatId}/messages`,
+      {},
+      {
+        params: {
+          chatContent: param,
+        },
+      }
+    );
+    console.log(res);
+    return res.data;
+  } catch (error) {
+    console.error("Error fetching token:", error);
+    throw error;
+  }
 }
 
 export async function getTradeDetail(chatId) {
@@ -26,7 +26,7 @@ export async function getTradeDetail(chatId) {
     const res = await baseURL.get(
       `https://i11b202.p.ssafy.io/fleaon/chatbot/${chatId}/detail`
     );
-    console.log(res.data);
+    console.log("거래일자 여기서 봄 : ", res.data);
     return res.data;
   } catch (error) {
     console.error("Error fetching detail data:", error);
@@ -34,4 +34,21 @@ export async function getTradeDetail(chatId) {
   }
 }
 
+export async function changeTradeTime(chatId, tradeDate, tradeTime) {
+  try {
+      const res = await baseURL.put(
+          `/fleaon/chatbot/changetime/`,
+          {
+              chatId,
+              tradeDate,
+              tradeTime
+          }
+      );
+      console.log(res);
+      return res.data;
+  } catch (error) {
+      console.error("Error changing trade time:", error);
+      throw error;
+  }
+}
   

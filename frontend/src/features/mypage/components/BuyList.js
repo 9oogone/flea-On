@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+
 import { fetchBuys, fetchWaits } from "../actions.js";
 import Switch from "../../../components/Switch";
 import Buys from "./Buys.js";
@@ -20,7 +21,7 @@ const BuyList = () => {
   useEffect(() => {
     dispatch(fetchBuys(email));
     dispatch(fetchWaits(email));
-  }, [dispatch, email]);
+  }, [dispatch]);
 
   const switchOptions = [
     { value: "buys", label: "구매" },
