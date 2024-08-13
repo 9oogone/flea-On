@@ -33,9 +33,9 @@ const OpenVideo = () => {
   const [newMessage, setNewMessage] = useState("");
   const [isPublisher, setIsPublisher] = useState(false);
   const [currentProduct, setCurrentProduct] = useState(null);
-  const [productList, setProductList] = useState([{ productId: 1 }]);
+  const [productList, setProductList] = useState([]);
   const [currentProductIndex, setCurrentProductIndex] = useState(0);
-  //   const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태를 추가합니다.
+  const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태를 추가합니다.
   const [selectedProductId, setSelectedProductId] = useState(null); // 선택한 제품 ID 상태를 추가합니다.
   const dispatch = useDispatch();
   const { sessionName } = useParams();
@@ -56,7 +56,6 @@ const OpenVideo = () => {
   const navigate = useNavigate();
   const handleCustomerClick = () => {
     // 이미 가져온 데이터를 사용하여 상태 업데이트
-    console.log("모달이 열림");
     setOpen(true);
   };
 
@@ -123,7 +122,7 @@ const OpenVideo = () => {
         .then((ss) => {
           console.log("MakeSession 성공");
           session.current = ss;
-          fetchProductList(sessionName);
+          // fetchProductList(sessionName);
         })
         .catch((error) => {
           console.error("MakeSession 오류:", error);
@@ -136,8 +135,12 @@ const OpenVideo = () => {
     const session = OV.current.initSession();
 
     session.on("streamCreated", (event) => {
-      var subscriber = session.subscribe(event.stream, undefined);
-      subscribers.push(subscriber);
+      var subscriber = session.subscribe(event.stream, undefined,{
+        resolution:"405x1080",
+        frameRate:15
+      });
+      console.log("Stream created: ", event.stream);
+      // subscribers.push(subscriber);
       subscriber.addVideoElement(videoRef.current);
     });
 
@@ -201,11 +204,11 @@ const OpenVideo = () => {
         (device) => device.kind === "videoinput"
       );
       console.log(videoDevices);
-      // if (videoDevices.length > 1) {
+      if (videoDevices.length > 1) {
         const newPublisher = OV.current.initPublisher("htmlVideo", {
           videoSource: isFrontCamera
             ? videoDevices[0].deviceId
-            : videoDevices[0].deviceId,
+            : videoDevices[2].deviceId,
           publishAudio: true,
           publishVideo: true,
           mirror: isFrontCamera,
@@ -216,17 +219,17 @@ const OpenVideo = () => {
 
         setIsFrontCamera(!isFrontCamera);
 
-        session.current.unpublish(publisher).then(() => {
+        session.current.unpublish(publisher.current).then(() => {
           console.log("Old publisher unpublished!");
 
-          setPublisher(newPublisher);
+          publisher.current = newPublisher;
 
           session.current.publish(newPublisher).then(() => {
-            publisher.addVideoElement(videoRef.current);
+            publisher.current.addVideoElement(videoRef.current);
             console.log("New publisher published!");
           });
         });
-      // }
+      }
     });
   };
   const { listen, listening, stop } = useSpeechRecognition({
@@ -238,34 +241,34 @@ const OpenVideo = () => {
     },
   });
 
-  const fetchProductList = async (sessionName) => {
-    try {
-      const response = await baseAxios().get(
-        `/fleaOn/live/${sessionName}/detail`
-      );
-      const {
-        title,
-        products,
-        tradePlace,
-        liveDate: live_date,
-        liveTradeTimes,
-        user,
-      } = response.data;
-      console.log(response.data);
-      setTitle(title);
-      setSeller(user);
-      setProductList(products);
-      setCurrentProduct(products[0]); // 첫 번째 상품 설정
-      setPlace(tradePlace);
-      setLiveDate(live_date);
-      const timeSlots = generateTimeSlots(liveTradeTimes);
-      console.log("timeSlots : ", timeSlots);
-      console.log("liveDate : ", liveDate);
-      setTimes(timeSlots);
-    } catch (error) {
-      console.error("상품 목록 가져오기 오류:", error);
-    }
-  };
+  // const fetchProductList = async (sessionName) => {
+  //   try {
+  //     const response = await baseAxios().get(
+  //       `/fleaOn/live/${sessionName}/detail`
+  //     );
+  //     const {
+  //       title,
+  //       products,
+  //       tradePlace,
+  //       liveDate: live_date,
+  //       liveTradeTimes,
+  //       user,
+  //     } = response.data;
+  //     console.log(response.data);
+  //     setTitle(title);
+  //     setSeller(user);
+  //     setProductList(products);
+  //     setCurrentProduct(products[0]); // 첫 번째 상품 설정
+  //     setPlace(tradePlace);
+  //     setLiveDate(live_date);
+  //     const timeSlots = generateTimeSlots(liveTradeTimes);
+  //     console.log("timeSlots : ", timeSlots);
+  //     console.log("liveDate : ", liveDate);
+  //     setTimes(timeSlots);
+  //   } catch (error) {
+  //     console.error("상품 목록 가져오기 오류:", error);
+  //   }
+  // };
 
   const handleRecordStart = () => {
     if (session.current && currentProductIndex < productList.length) {
@@ -359,13 +362,14 @@ const OpenVideo = () => {
                 .toString()
                 .padStart(2, "0");
               const messageSeconds = Math.floor(
-                (timeDifferenceInMs % 60000) / 1000
+                (timeDifferenceInMs % 60000)
               )
                 .toString()
                 .padStart(2, "0");
 
-              const formattedTime = `${messageHours}:${messageMinutes}:${messageSeconds}`;
-
+                // const formattedTime = `${messageHours}:${messageMinutes}:${messageSeconds}`;
+                const formattedTime = `${messageSeconds}`;
+                
               return {
                 content: message.message,
                 time: formattedTime,
@@ -412,26 +416,20 @@ const OpenVideo = () => {
     newProductList.splice(currentProductIndex + 1, 0, selectedProduct);
     setProductList(newProductList);
   };
-  console.log(currentProduct);
+
   const handleBuy = async (productId) => {
     setSelectedProductId(productId);
-    console.log("selectedProductId : ", selectedProductId);
-    console.log(currentProduct);
+    console.log(selectedProductId);
     try {
       const response = await baseAxios().post("/fleaon/purchase/buy", {
-        productId: productList[currentProductIndex].productId,
+        productId: productId,
         userId: user.userId,
       });
 
       // 요청이 성공했을 때 모달을 엽니다.
       if (response.status === 200) {
-        console.log("selectedProductId : ", selectedProductId);
-        console.log({
-          productId: productList[currentProductIndex].productId,
-          userId: user.userId,
-        });
         handleCustomerClick();
-        // setIsModalOpen(true);
+        setIsModalOpen(true);
       } else {
         // 요청이 성공하지 않았을 때의 처리를 여기에 추가하세요.
         console.error("Purchase failed:", response);
@@ -795,7 +793,7 @@ const OpenVideo = () => {
         place={place}
         liveDate={liveDate}
         times={times}
-        currentProductIndex={productList[currentProductIndex].productId}
+        selectedProductId={selectedProductId}
         userId={user.userId}
         sellerId={seller.userId}
         liveId={sessionName}
