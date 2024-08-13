@@ -36,6 +36,7 @@ const OpenVideo = () => {
   const [selectedProductId, setSelectedProductId] = useState(null);
   const [isPurchaseCompleted, setIsPurchaseCompleted] = useState(false); // 추가
   const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태를 추가합니다.
+
   const dispatch = useDispatch();
   const { sessionName } = useParams();
   const [currentVideoDevice, setCurrentVideoDevice] = useState(null);
@@ -57,6 +58,7 @@ const OpenVideo = () => {
 
   const handleCustomerClick = () => {
     // 이미 가져온 데이터를 사용하여 상태 업데이트
+
     setOpen(true);
   };
 
@@ -123,9 +125,9 @@ const OpenVideo = () => {
   const MakeSession = async (videoRef, dispatch, sessionName) => {
     const session = OV.current.initSession();
     session.on("streamCreated", (event) => {
-      var subscriber = session.subscribe(event.stream, undefined,{
-        resolution:"405x1080",
-        frameRate:15
+      var subscriber = session.subscribe(event.stream, undefined, {
+        resolution: "405x1080",
+        frameRate: 15,
       });
       console.log("Stream created: ", event.stream);
       // subscribers.push(subscriber);
@@ -194,6 +196,7 @@ const OpenVideo = () => {
       const videoDevices = devices.filter(
         (device) => device.kind === "videoinput"
       );
+
       console.log(videoDevices);
       if (videoDevices.length > 1) {
         const newPublisher = OV.current.initPublisher("htmlVideo", {
@@ -208,7 +211,7 @@ const OpenVideo = () => {
           insertMode: "APPEND",
         });
 
-      setIsFrontCamera(!isFrontCamera);
+        setIsFrontCamera(!isFrontCamera);
 
         session.current.unpublish(publisher.current).then(() => {
           console.log("Old publisher unpublished!");
@@ -338,15 +341,13 @@ const OpenVideo = () => {
               )
                 .toString()
                 .padStart(2, "0");
-              const messageSeconds = Math.floor(
-                (timeDifferenceInMs % 60000)
-              )
+              const messageSeconds = Math.floor(timeDifferenceInMs % 60000)
                 .toString()
                 .padStart(2, "0");
 
-                // const formattedTime = `${messageHours}:${messageMinutes}:${messageSeconds}`;
-                const formattedTime = `${messageSeconds}`;
-                
+              // const formattedTime = `${messageHours}:${messageMinutes}:${messageSeconds}`;
+              const formattedTime = `${messageSeconds}`;
+
               return {
                 content: message.message,
                 time: formattedTime,
