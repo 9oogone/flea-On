@@ -71,7 +71,7 @@ public class PurchaseService {
             product.setCurrentBuyerId(request.getUserId());
             productRepository.save(product);
 
-            Optional<List<Trade>> trades = tradeRepository.findByBuyerIdAndSellerId(request.getUserId(), product.getSeller().getUserId());
+            Optional<List<Trade>> trades = tradeRepository.findByBuyerIdAndSellerIdAndLiveId(request.getUserId(), product.getSeller().getUserId(), product.getLive().getLiveId());
             logger.info("Trades found: {}", trades.isPresent() && !trades.get().isEmpty());
 
             if (trades.isPresent() && !trades.get().isEmpty()) {
@@ -82,7 +82,7 @@ public class PurchaseService {
                         .buyerId(request.getUserId())
                         .sellerId(product.getSeller().getUserId())
                         .productId(request.getProductId())
-                        .liveId(trade.getLive().getLiveId())
+                        .liveId(product.getLive().getLiveId())
                         .tradeDate(trade.getTradeDate())
                         .tradeTime(String.valueOf(trade.getTradeTime()))
                         .tradePlace(trade.getTradePlace())
