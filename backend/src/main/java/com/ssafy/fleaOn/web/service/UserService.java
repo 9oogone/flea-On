@@ -424,26 +424,15 @@ public class UserService {
     }
 
     public void addUserLiveScrap(int userId, int liveId) {
-        try {
-            Optional<User> findUser = userRepository.findById(userId);
-            if (findUser.isPresent()) {
-                Optional<Live> findLive = liveRepository.findById(liveId);
-                if (findLive.isPresent()) {
-                    LiveScrap liveScrap = LiveScrap.builder()
-                            .user(findUser.get())
-                            .live(findLive.get())
-                            .build();
-                    liveScrapRepository.save(liveScrap);
-                } else {
-                    throw new IllegalArgumentException("Cannot find live");
-                }
-            } else {
-                throw new IllegalArgumentException("Cannot find user");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
+        User findUser = userRepository.findById(userId).orElseThrow(()->new IllegalArgumentException("User not found"));
+        Live findLive = liveRepository.findById(liveId).orElseThrow(()->new IllegalArgumentException("Live not found"));
+        if (userId == findLive.getSeller().getUserId())
+            new IllegalArgumentException("User already exists");
+        LiveScrap liveScrap = LiveScrap.builder()
+                .user(findUser)
+                .live(findLive)
+                .build();
+        liveScrapRepository.save(liveScrap);
     }
 
     public void deleteUserLivewScrap(int userId, int liveId) {
