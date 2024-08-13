@@ -63,13 +63,7 @@ const Waits = ({ items }) => {
                     <Typography
                       sx={{
                         fontSize: 18,
-<<<<<<< HEAD
                         color: "black",
-=======
-                        fontFamily: "Noto Sans KR",
-                        fontWeight: 400,
-                        lineHeight: "22px",
->>>>>>> a1a2701719d250f07eaea61c6b724be6d5b39ab2
                         wordWrap: "break-word",
                       }}
                     >
