@@ -37,10 +37,10 @@ public class MainShortsResponse {
     @JsonProperty("length")
     private LocalTime length;
 
-    @JsonProperty("isLive")
-    private int isLive;
+    @JsonProperty("isScrap")
+    private boolean isScrap;
 
-    public static MainShortsResponse fromEntity(Shorts shorts, Product product, Live live) {
+    public static MainShortsResponse fromEntity(Shorts shorts, Product product, Live live, boolean isScrap) {
         return MainShortsResponse.builder()
                 .shortsId(shorts.getShortsId())
                 .uploadDate(shorts.getUploadDate())
@@ -49,7 +49,7 @@ public class MainShortsResponse {
                 .tradePlace(live.getTradePlace())
                 .thumbnail(shorts.getShortsThumbnail())
                 .length(shorts.getLength())
-                .isLive(live.getIsLive())
+                .isScrap(isScrap)
                 .build();
     }
 }
