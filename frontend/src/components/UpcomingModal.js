@@ -31,9 +31,9 @@ const UpcomingModal = ({
 }) => {
   const auth = useSelector((state) => state.auth.user?.userId);
   const user = useSelector((state) => state.live.liveDetail?.user?.userId);
-  console.log(user, "사용자입니다");
-  console.log(auth, "판매자입니다.");
-  console.log(liveDetail);
+  // console.log(user, "사용자입니다");
+  // console.log(auth, "판매자입니다.");
+  // console.log(liveDetail);
   const handleEditLive = () => {
     // navigate(`/edit-live/${liveDetail.liveId}`, { state: { liveDetail } });
   };
