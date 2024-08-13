@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Grid, Button } from "@mui/material";
+import { Box, Grid, Button, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import LiveHeader from "./LiveHeader";
 import UpcomingHeader from "./UpcomingHeader";
@@ -7,9 +7,13 @@ import LiveFooter from "./LiveFooter";
 import UpcomingFooter from "./UpcomingFooter";
 import UpcomingModal from "./UpcomingModal";
 import baseAxios from "../utils/httpCommons";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchLiveDetail } from "../features/live/actions";
 
 const LiveBroadcasts = ({ items: initialItems }) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const liveDetail = useSelector((state) => state.live.liveDetail);
   const [open, setOpen] = useState(false);
   const [modalLiveDate, setModalLiveDate] = useState("");
   const [modalTitle, setModalTitle] = useState("");
@@ -39,6 +43,7 @@ const LiveBroadcasts = ({ items: initialItems }) => {
       setModalAuthor(item.author);
       setModalTradePlace(item.tradePlace);
       setModalScrap(item.scrap);
+      dispatch(fetchLiveDetail(item.id));
       setOpen(true);
     }
   };
@@ -122,6 +127,7 @@ const LiveBroadcasts = ({ items: initialItems }) => {
                 id={item.id}
                 open={open}
                 handleClose={handleClose}
+                liveDetail={liveDetail}
                 liveDate={modalLiveDate}
                 productNames={modalProductNames}
                 productPrices={modalProductPrices}
@@ -129,13 +135,13 @@ const LiveBroadcasts = ({ items: initialItems }) => {
                 thumbnail={modalThumbnail}
                 author={modalAuthor}
                 tradePlace={modalTradePlace}
-                scrap={modalScrap}
-                setScrap={() => handleScrapToggle(item.id, modalScrap)}
               />
             </Grid>
           ))
         ) : (
-          <Box>No live broadcasts available.</Box>
+          <Grid item xs={12} sx={{ textAlign: "center", mt: 4 }}>
+            <Typography variant="h6">No broadcasts available</Typography>
+          </Grid>
         )}
       </Grid>
     </Grid>

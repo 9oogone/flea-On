@@ -27,3 +27,14 @@ export const createLiveBroadcast = createAsyncThunk(
     return response.data;
   }
 );
+
+// 라이브 상세 조회
+export const fetchLiveDetail = createAsyncThunk(
+  "live/fetchLiveDetail",
+  async (liveID) => {
+    const response = await baseAxios().get(`/fleaOn/live/${liveID}/detail`);
+    // console.log("액시오스 입니다");
+    // console.log(response.data);
+    return response.data;
+  }
+);

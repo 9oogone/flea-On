@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 import { setCurrentShort } from "../features/shorts/shortsSlice";
@@ -19,7 +19,7 @@ import {
 } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ShareIcon from "@mui/icons-material/Share";
-
+import useDidMountEffect from "../utils/useDidMountEffect";
 const ShortsPage = () => {
   const { shortsId } = useParams();
   const dispatch = useDispatch();
@@ -28,32 +28,54 @@ const ShortsPage = () => {
   const [comments, setComments] = useState([]);
   const [videoTime, setVideoTime] = useState(0);
   const [product, setProduct] = useState({});
-
-  useEffect(() => {
+  const [curChat, setCurChat] = useState(0);
+  const [subList, setSubList] = useState([]);
+  const videoRef = useRef(null);
+  useDidMountEffect(() => {
     const fetchShortData = async () => {
       try {
         const response = await baseAxios().get(
           `/fleaon/shorts/play/${shortsId}`
         );
         dispatch(setCurrentShort(response.data));
+        console.log(response.data)
+        console.log(currentShort);
+        setSubList(response.data.shortsChatResponseList);
         setComments(response.data.shortsChatResponseList);
         setProduct(response.data.product);
       } catch (error) {
         console.error("Error fetching short data:", error);
       }
     };
-
     fetchShortData();
-  }, [shortsId, dispatch]);
+  }, [shortsId]);
+
+  useEffect(() => {
+    console.log(subList)
+    const videoElement = videoRef.current;
+    if (!videoElement) return
+    const handleTimeUpdate = () => {
+      const currentTime = videoElement.currentTime;
+      if(curChat<subList.length && subList[curChat].time<=currentTime){
+        console.log(curChat)
+        setComments((prevList) => [...prevList, subList[curChat].content]);
+        setCurChat(curChat+1);
+      }
+    };
+    videoElement.addEventListener("timeupdate", handleTimeUpdate);
+    return () => {
+      videoElement.removeEventListener("timeupdate", handleTimeUpdate);
+    };
+  }, [comments]);
 
   const handleTimeUpdate = (event) => {
     setVideoTime(event.target.currentTime);
   };
 
-  const filteredComments = comments.filter((comment) => {
-    const commentTime = parseFloat(comment.time);
-    return commentTime <= videoTime;
-  });
+  // const filteredComments = comments.filter((comment) => {
+  //   const commentTime = parseFloat(comment.time);
+  //   return commentTime <= videoTime;
+  // });
 
   const handleSwipe = (eventData) => {
     if (eventData.dir === "Up") {
@@ -90,6 +112,7 @@ const ShortsPage = () => {
     >
       <CustomVideoPlayer
         src={currentShort.videoAddress}
+        videoRef={videoRef}
         loop
         autoPlay
         muted
@@ -157,7 +180,7 @@ const ShortsPage = () => {
               mb: 3,
             }}
           >
-            {filteredComments.map((comment) => (
+            {comments.map((comment) => (
               <ListItem key={comment.time} sx={{ p: 0 }}>
                 <ListItemAvatar>
                   <Avatar src={comment.profilePic} />
