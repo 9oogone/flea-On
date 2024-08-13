@@ -21,7 +21,7 @@ public class MainLiveResponse {
     private String liveTitle;
     private List<String> productNames;
     private List<Integer> productPrices;
-    private String tradePlace;
+    private String dongName;
     private int isLive;
     private String liveThumbnail;
     private boolean isScrap;
@@ -35,7 +35,7 @@ public class MainLiveResponse {
                 .liveTitle(live.getTitle())
                 .productNames(products.stream().map(Product::getName).collect(Collectors.toList()))
                 .productPrices(products.stream().map(Product::getPrice).collect(Collectors.toList()))
-                .tradePlace(live.getTradePlace())
+                .dongName(live.getRegionInfo().getEupmyeon())
                 .isLive(live.getIsLive())
                 .liveThumbnail(live.getLiveThumbnail())
                 .isScrap(isScrap)

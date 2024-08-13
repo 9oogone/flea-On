@@ -3,8 +3,11 @@ package com.ssafy.fleaOn.web.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.sql.Timestamp;
+
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "alarm")
 public class Alarm {
@@ -18,20 +21,15 @@ public class Alarm {
     private String content;
 
     @Column(name = "date")
-    private java.sql.Timestamp date;
+    private Timestamp date;
 
     @Column(name = "profile_pic")
     private String profilePic;
 
+    @Column(name = "is_read")
+    private boolean isRead;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private User user;
-
-    @Builder
-    public Alarm(User user, String content, java.sql.Timestamp date, String profilePic) {
-        this.user = user;
-        this.content = content;
-        this.date = date;
-        this.profilePic = profilePic;
-    }
 }
