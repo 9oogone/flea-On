@@ -31,5 +31,9 @@ public interface LiveRepository extends JpaRepository<Live, Integer> {
     Slice<Live> findByRegionCodeAndIsLiveOrderByIsLiveDescLiveDateAsc(@Param("regionCode") String regionCode, Pageable pageable);
 
 
-    Optional<Live> findFirstBySeller_userIdAndIsLiveAndLiveDateLessThanOrderByLiveDateAsc(int userId, int isLive, LocalDateTime currentTime);
+    @Query("SELECT l FROM Live l WHERE l.seller.userId = :userId AND l.isLive = :isLive AND l.liveDate < now() ORDER BY l.liveDate ASC LIMIT 1")
+    Optional<Live> findFirstLiveBySellerAndIsLiveAndPastDate(
+            @Param("userId") int userId,
+            @Param("isLive") int isLive);
+
 }
