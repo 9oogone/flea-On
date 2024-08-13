@@ -28,13 +28,11 @@ public class ShortsApiController {
 
     private final ShortsService shortsService;
     private final UserService userService;
-    private final ShortsChattingRepository shortsChattingRepository;
 
     @Autowired
     public ShortsApiController(ShortsService shortsService, UserService userService, ShortsChattingRepository shortsChattingRepository) {
         this.shortsService = shortsService;
         this.userService = userService;
-        this.shortsChattingRepository = shortsChattingRepository;
     }
 
     @PostMapping("/save")
@@ -51,29 +49,14 @@ public class ShortsApiController {
 
     @GetMapping("/play/{shortsId}")
     @Operation(summary = "숏츠 정보 반환", description = "저장된 숏츠 정보를 반환합니다.")
-    public ResponseEntity<ShortsResponse> playShorts(@PathVariable int shortsId) {
-        Optional<List<ShortsChatting>> shortsChattings = shortsChattingRepository.findByShorts_ShortsId(shortsId);
-        List<ShortsChatResponse> shortsChatResponseList = new ArrayList<>();
-        String liveTitle;
-        if (shortsChattings.isPresent()){
-            Product product = shortsChattings.get().get(0).getShorts().getProduct();;
-            liveTitle = product.getLive().getTitle();
-            for (ShortsChatting shortsChatting : shortsChattings.get()) {
-                User writer = shortsChatting.getUser();
-                ShortsChatResponse shortsChatResponse = new ShortsChatResponse(
-                        writer.getProfilePicture(),
-                        writer.getNickname(),
-                        shortsChatting.getContent(),
-                        shortsChatting.getTime()
-                );
-                shortsChatResponseList.add(shortsChatResponse);
-            }
-        } else {
-            liveTitle = "";
+    public ResponseEntity<?> playShorts(@PathVariable int shortsId) {
+        try {
+            ShortsResponse shortsResponse = shortsService.getShorts(shortsId);
+            return ResponseEntity.status(HttpStatus.OK).body(shortsResponse);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new ResponseEntity<>("숏츠 조회 중 오류가 발생하였습니다: " + ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
-        return shortsService.getShorts(shortsId)
-                .map(shorts -> new ResponseEntity<>(new ShortsResponse(shorts, liveTitle, shortsChatResponseList), HttpStatus.OK))
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @Operation(summary = "스크랩한 쇼츠 추가", description = "회원이 쇼츠를 스크랩할 때 사용합니다. ")

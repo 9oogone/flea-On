@@ -5,7 +5,9 @@ import com.ssafy.fleaOn.web.domain.Product;
 import com.ssafy.fleaOn.web.domain.Shorts;
 import com.ssafy.fleaOn.web.domain.User;
 import com.ssafy.fleaOn.web.dto.ShortsChatRequest;
+import com.ssafy.fleaOn.web.dto.ShortsChatResponse;
 import com.ssafy.fleaOn.web.dto.ShortsRequest;
+import com.ssafy.fleaOn.web.dto.ShortsResponse;
 import com.ssafy.fleaOn.web.repository.*;
 import com.ssafy.fleaOn.web.repository.ProductRepository;
 import com.ssafy.fleaOn.web.repository.ShortsRepository;
@@ -14,10 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class ShortsService {
@@ -52,8 +51,29 @@ public class ShortsService {
         saveShortsChatting(request.getShortsChatRequests(),shorts.getShortsId());
     }
 
-    public Optional<Shorts> getShorts(int shortsId) {
-        return shortsRepository.findById(shortsId);
+    public ShortsResponse getShorts(int shortsId) {
+        Shorts shorts = shortsRepository.findById(shortsId).orElseThrow(()->new IllegalArgumentException("Cannot found shorts"));
+        Optional<List<ShortsChatting>> shortsChattings = shortsChattingRepository.findByShorts_ShortsId(shortsId);
+        List<ShortsChatResponse> shortsChatResponseList = new ArrayList<>();
+        String liveTitle;
+        if (shortsChattings.isPresent()){
+            Product product = shorts.getProduct();
+            liveTitle = product.getLive().getTitle();
+            for (ShortsChatting shortsChatting : shortsChattings.get()) {
+                User writer = shortsChatting.getUser();
+                ShortsChatResponse shortsChatResponse = new ShortsChatResponse(
+                        writer.getProfilePicture(),
+                        writer.getNickname(),
+                        shortsChatting.getContent(),
+                        shortsChatting.getTime()
+                );
+                shortsChatResponseList.add(shortsChatResponse);
+            }
+        } else {
+            liveTitle = "";
+        }
+
+        return new ShortsResponse(shorts, liveTitle, shortsChatResponseList);
     }
 
     public void addUserShortsScrap(int userId, int shortsId) {
