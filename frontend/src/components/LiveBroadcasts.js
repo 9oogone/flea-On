@@ -15,13 +15,6 @@ const LiveBroadcasts = ({ items }) => {
   const navigate = useNavigate();
   const liveDetail = useSelector((state) => state.live.liveDetail);
   const [open, setOpen] = useState(false);
-  // const [modalLiveDate, setModalLiveDate] = useState("");
-  // const [modalTitle, setModalTitle] = useState("");
-  // const [modalProductNames, setModalProductNames] = useState([]);
-  // const [modalProductPrices, setModalProductPrices] = useState([]);
-  // const [modalThumbnail, setModalThumbnail] = useState("");
-  // const [modalAuthor, setModalAuthor] = useState("");
-  // const [modalTradePlace, setModalTradePlace] = useState("");
 
   const handleButtonClick = (item) => {
     if (item.isLive) {
@@ -32,14 +25,6 @@ const LiveBroadcasts = ({ items }) => {
       dispatch(fetchLiveDetail(item.id));
       setOpen(true);
     }
-    // setModalLiveDate(item.live_date);
-    // setModalTitle(item.title);
-    // setModalProductNames(item.productNames || []);
-    // setModalProductPrices(item.productPrices || []);
-    // setModalThumbnail(item.thumbnail);
-    // setModalAuthor(item.author);
-    // setModalTradePlace(item.trade_place);
-    // setOpen(true);
   };
 
   const handleClose = () => setOpen(false);
@@ -102,14 +87,6 @@ const LiveBroadcasts = ({ items }) => {
                 open={open}
                 handleClose={handleClose}
                 liveDetail={liveDetail}
-
-                // liveDate={modalLiveDate}
-                // productNames={modalProductNames}
-                // productPrices={modalProductPrices}
-                // title={modalTitle}
-                // thumbnail={modalThumbnail}
-                // author={modalAuthor}
-                // tradePlace={modalTradePlace}
               />
             )}
           </Grid>

@@ -16,29 +16,6 @@ const ScrapLive = ({ items }) => {
   const [open, setOpen] = useState(false);
   const liveDetail = useSelector((state) => state.live.liveDetail);
   console.log(liveDetail);
-  // const [modalLiveDate, setModalLiveDate] = useState("");
-  // const [modalTitle, setModalTitle] = useState("");
-  // const [modalProducts, setModalProducts] = useState([]);
-  // const [modalThumbnail, setModalThumbnail] = useState("");
-  // const [modalAuthor, setModalAuthor] = useState("");
-  // const [modalTradePlace, setModalTradePlace] = useState("");
-
-  // const handleButtonClick = (item) => {
-  //   console.log("111111");
-
-  //   dispatch(fetchLiveDetail(item.liveId));
-  //   console.log("22222222222");
-  //   console.log(liveDetail);
-
-  //   setOpen(true);
-
-  //   // setModalLiveDate(item.liveDate);
-  //   // setModalTitle(item.title);
-  //   // setModalProducts(item.products || []);
-  //   // setModalThumbnail(item.liveThumbnail);
-  //   // setModalAuthor(item.user.nickname);
-  //   // setModalTradePlace(item.tradePlace);
-  // };
 
   const handleButtonClick = async (item) => {
     try {
@@ -120,13 +97,6 @@ const ScrapLive = ({ items }) => {
                   open={open}
                   handleClose={handleClose}
                   liveDetail={liveDetail}
-
-                  // liveDate={modalLiveDate}
-                  // products={modalProducts}
-                  // title={modalTitle}
-                  // thumbnail={modalThumbnail}
-                  // author={modalAuthor}
-                  // tradePlace={modalTradePlace}
                 />
               )}
             </Grid>

@@ -173,7 +173,9 @@ const Live = ({ items }) => {
       )}
       {upcomingItems.length === 0 && completedItems.length === 0 && (
         <Box>
-          <Typography>아직 라이브를 하지 않았어요.</Typography>
+          <Typography sx={{ textAlign: "center" }}>
+            아직 라이브를 하지 않았어요.
+          </Typography>
         </Box>
       )}
     </Box>
