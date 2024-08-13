@@ -22,8 +22,15 @@ const UpcomingBroadcasts = ({ items = [] }) => {
 
   return (
     <Container sx={{ margin: "8px" }}>
-      <Typography variant="h6" gutterBottom sx={{ marginTop: "12%" }}>
-        방송예정상품
+      <Typography gutterBottom sx={{
+         marginTop: "12%",
+         fontSize: "20px",
+         fontWeight: "600",
+         letterSpacing: "-0.5px",
+         color: "#2E2E32",
+         fontFamily: "Noto Sans KR" }}
+      >
+        UPCOMING LIVE!
       </Typography>
       <Box
         sx={{
@@ -59,6 +66,8 @@ const UpcomingBroadcasts = ({ items = [] }) => {
             <Typography
               sx={{
                 color: "#FF0B55",
+                fontSize: "15px",
+                letterSpacing: "-0.5px"
               }}
             >
               {formatDateTimeDistance(item.liveDate)}
@@ -72,7 +81,7 @@ const UpcomingBroadcasts = ({ items = [] }) => {
                 whiteSpace: "nowrap",
               }}
             >
-              {item.title}
+              {/* {item.title} */}
             </Typography>
             <Typography
               sx={{
