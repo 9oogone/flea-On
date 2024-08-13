@@ -17,7 +17,7 @@ import profileeditReducer from "../features/mypage/profileEditSlice";
 import searchReducer from "../features/search/searchSlice";
 import "../styles/global.css";
 import calendarSlice from "../features/mypage/calendarSlice";
-
+import liveDetailReducer from "../features/live/liveDetailSlice";
 const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -36,6 +36,7 @@ const store = configureStore({
     chatroom: chatroomReducer,
     profileedit: profileeditReducer,
     search: searchReducer,
+    liveDetail: liveDetailReducer,
   },
 });
 
