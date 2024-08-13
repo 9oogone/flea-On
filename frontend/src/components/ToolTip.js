@@ -1,6 +1,5 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
-import zIndex from '@mui/material/styles/zIndex';
 
 const Tooltip = () => {
   return (
@@ -13,34 +12,37 @@ const Tooltip = () => {
 
 const styles = {
   tooltipContainer: {
-    zIndex:10,
+    zIndex: 10,
     display: 'inline-block',
-    position: 'relative',
+    position: 'absolute',  // 절대 위치로 변경
     textAlign: 'center',
+    bottom: '45px',  // 버튼 위에 위치하도록 조정
+    left: '15%',
+    transform: 'translateX(-50%)',
   },
   tooltipText: {
-    zIndex:10,
-    backgroundColor: '#1E1E22',
-    color: 'white',
-    padding: '6px 12px',  
-    borderRadius: '8px',  
-    fontSize: '14px',    
-    fontWeight: 'bold',
-    minWidth: '80px',     
-    boxShadow: '0px 2px 5px rgba(0,0,0,0.2)', 
+    zIndex: 10,
+    backgroundColor: '#2E2E32',
+    color: '#F5F5F5',
+    padding: '6px 12px',
+    borderRadius: '1px',
+    fontSize: '14px',
+    fontWeight: 'medium',
+    minWidth: '80px',
+    boxShadow: '0px 2px 5px rgba(0,0,0,0.2)',
   },
   tooltipArrow: {
-    zIndex:10,
+    zIndex: 10,
     width: 0,
     height: 0,
-    borderLeft: '8px solid transparent',  
-    borderRight: '8px solid transparent', 
-    borderTop: '8px solid #1E1E22',       
+    borderLeft: '8px solid transparent',
+    borderRight: '8px solid transparent',
+    borderTop: '8px solid #2E2E32',
     position: 'absolute',
     left: '50%',
     transform: 'translateX(-50%)',
-    bottom: '-7px',
-  }
+    top: '100%',
+  },
 };
 
 export default Tooltip;
