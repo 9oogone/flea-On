@@ -35,7 +35,7 @@ const OpenVideo = () => {
   const [newMessage, setNewMessage] = useState("");
   const [isPublisher, setIsPublisher] = useState(false);
   const [currentProduct, setCurrentProduct] = useState(null);
-  const [productList, setProductList] = useState([{ productId: 1 } * 5]);
+  const [productList, setProductList] = useState([]);
   const [currentProductIndex, setCurrentProductIndex] = useState(0);
   const [selectedProductId, setSelectedProductId] = useState(null);
   const [isPurchaseCompleted, setIsPurchaseCompleted] = useState(false); // 추가
@@ -170,7 +170,10 @@ const OpenVideo = () => {
         ]);
       } else if (type === 2) {
         setIsRecording(data.isRecording);
-        setCurrentProductIndex(data.currentIndex)
+        setCurrentProductIndex(data.currentIndex);
+        setCurrentProduct(productList[data.currentIndex]);
+        setIsPurchaseCompleted(false);
+        setIsSold(false);
       } else if (type === 3) {
         setIsSold(data.isSold);
         setIsPurchaseCompleted(true); // 추가
@@ -295,7 +298,7 @@ const OpenVideo = () => {
       const messageData = {
         type: 2,
         isRecording: true,
-        currentIndex : currentProductIndex
+        currentIndex: currentProductIndex,
       };
       setTimeout(() => {
         session.current.signal({
@@ -311,8 +314,10 @@ const OpenVideo = () => {
         hasVideo: true,
       })
         .then((res) => {
-          setRecordStartTime(new Date()); // 녹화 시작 시간 설정
-          console.log(res.data.id);
+          baseAxios().put(
+            `/fleaon/shorts/${productList[currentProductIndex]?.productId}/Start`
+          );
+          setRecordStartTime(new Date());
           setCurrentRecordingId(res.data.id);
           setIsRecording(true);
           dispatch(unSetLoading());
@@ -435,7 +440,7 @@ const OpenVideo = () => {
     console.log(currentProduct);
     try {
       const response = await baseAxios().post("/fleaon/purchase/buy", {
-        productId: productList[currentProductIndex].productId,
+        productId: productList[currentProductIndex]?.productId,
         userId: user.userId,
       });
 
@@ -468,7 +473,7 @@ const OpenVideo = () => {
   const handleReserve = async () => {
     try {
       const response = await baseAxios().post("fleaon/purchase/reserve", {
-        productId: productList[currentProductIndex].productId,
+        productId: productList[currentProductIndex]?.productId,
         userId: user.userId,
       });
       if (response.status === 200) {
@@ -721,26 +726,40 @@ const OpenVideo = () => {
                   {reserveCount >= 5 ? "구매 불가" : "줄서기"}
                 </Button>
               ) : (
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  disabled={!isRecording}
-                  onClick={() => handleBuy(currentProduct.id)}
-                  sx={{ width: "60vw", height: "6vh" }}
-                >
-                  {isRecording ? "구매하기" : "상품 준비중"}
-                </Button>
-              )}
-              {!isPublisher && isSold && !isPurchaseCompleted && (
-                <Button
-                  variant="contained"
-                  color="orange"
-                  onClick={handleReserve}
-                  disabled={reserveCount >= 5}
-                  sx={{ width: "60vw", height: "6vh" }}
-                >
-                  {reserveCount >= 5 ? "구매 불가" : "줄서기"}
-                </Button>
+                <Box>
+                  {isSold ? (
+                    !isPurchaseCompleted ? (
+                      <Button
+                        variant="contained"
+                        color="orange"
+                        onClick={handleReserve}
+                        disabled={reserveCount >= 5}
+                        sx={{ width: "60vw", height: "6vh" }}
+                      >
+                        {reserveCount >= 5 ? "구매 불가" : "줄서기"}
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="contained"
+                        color="orange"
+                        disabled
+                        sx={{ width: "60vw", height: "6vh" }}
+                      >
+                        구매 종료
+                      </Button>
+                    )
+                  ) : (
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      disabled={!isRecording}
+                      onClick={() => handleBuy(currentProduct.id)}
+                      sx={{ width: "60vw", height: "6vh" }}
+                    >
+                      {isRecording ? "구매하기" : "상품 준비중"}
+                    </Button>
+                  )}
+                </Box>
               )}
             </Box>
 
@@ -866,7 +885,7 @@ const OpenVideo = () => {
         place={place}
         liveDate={liveDate}
         times={times}
-        currentProductIndex={productList[currentProductIndex].productId}
+        currentProductIndex={productList[currentProductIndex]?.productId}
         userId={user.userId}
         sellerId={seller.userId}
         liveId={sessionName}

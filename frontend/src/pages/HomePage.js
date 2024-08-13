@@ -24,8 +24,11 @@ const HomePage = () => {
         const response = await baseAxios().get(
           "/fleaon/users/commerceLive/expected"
         );
-        setHasLive(response.data.exist);
+        // setHasLive(response.data.exist);
         setLiveId(response.data.liveId);
+        if (response.data.liveId !== 0) {
+          setHasLive(true);
+        }
       } catch (error) {
         console.error("Error checking live existence", error);
       }
