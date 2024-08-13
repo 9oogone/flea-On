@@ -180,7 +180,9 @@ public class LiveApiController {
             return ResponseEntity.ok(offLive); // 업데이트된 Live 정보 반환
         } catch (Exception ex) {
             ex.printStackTrace();
-            return new ResponseEntity<>("시작할 라이브를 찾을 수 없습니다: " + ex.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("종료할 라이브를 찾을 수 없습니다: " + ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+
+
 }

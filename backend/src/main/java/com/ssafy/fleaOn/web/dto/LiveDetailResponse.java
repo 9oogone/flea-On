@@ -45,13 +45,33 @@ public class LiveDetailResponse {
         private final int price;
         private final int firstCategoryId;
         private final int secondCategoryId;
+        private final int sellStatus;
+        private final int buyStatus;
+
 
         public ProductResponse(Product product) {
+            int sellStatus; // 0: 방송 전 , 1: 방송 중, 2: 방송 후
+            int buyStatus; // 0: 구매 가능, 1: 예약 가능, 2: 둘다 불가능
+
+            if ((product.isStart() && product.isEnd())) {
+                sellStatus = 2;
+            } else if (product.isStart()) {
+                sellStatus = 1;
+            } else sellStatus = 0;
+
+            if (product.getCurrentBuyerId()==0)
+                buyStatus = 0;
+            else if (product.getReservationCount()<5)
+                buyStatus = 1;
+            else buyStatus = 2;
+
             this.productId = product.getProductId();
             this.name = product.getName();
             this.price = product.getPrice();
             this.firstCategoryId = product.getFirstCategoryId();
             this.secondCategoryId = product.getSecondCategoryId();
+            this.sellStatus = sellStatus;
+            this.buyStatus = buyStatus;
         }
     }
 

@@ -37,6 +37,12 @@ public class Product {
     @Column(name = "reservation_count", nullable = false)
     private int reservationCount;
 
+    @Column(name = "start", nullable = false)
+    private boolean start;
+
+    @Column(name = "end", nullable = false)
+    private boolean end;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "live_id", nullable = false)
     private Live live;
@@ -54,6 +60,8 @@ public class Product {
         this.secondCategoryId = secondCategoryId;
         this.currentBuyerId = 0;
         this.reservationCount = 0;
+        this.start = false;
+        this.end = false;
     }
 
     public void update(String name, int price, int firstCategoryId, int secondCategoryId) {
@@ -61,5 +69,13 @@ public class Product {
         this.price = price;
         this.firstCategoryId = firstCategoryId;
         this.secondCategoryId = secondCategoryId;
+    }
+
+    public void sellStart(){
+        this.start = true;
+    }
+
+    public void sellEnd(){
+        this.end = true;
     }
 }
