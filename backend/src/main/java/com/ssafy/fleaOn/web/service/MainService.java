@@ -65,8 +65,8 @@ public class MainService {
         return Optional.ofNullable(userRegionList.get()).orElse(Collections.emptyList());
     }
 
-    public Slice<MainShortsResponse> getMainShortsListByUploadDate(int userId) {
-        Pageable pageable = PageRequest.of(0, 10);
+    public Slice<MainShortsResponse> getMainShortsListByUploadDate(int userId, int page) {
+        Pageable pageable = PageRequest.of(page, 10);
         List<MainShortsResponse> mainShortsResponseList = new ArrayList<>();
 
         // Shorts 데이터 가져오기 (Slice로)
