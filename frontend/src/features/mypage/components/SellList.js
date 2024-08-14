@@ -35,7 +35,7 @@ const SellList = () => {
 
   return (
     <Box sx={{ mb: 18 }}>
-      <Grid
+      <Box
         sx={{
           display: "flex",
           alignItems: "center",
@@ -68,8 +68,8 @@ const SellList = () => {
         >
           판매내역
         </Typography>
-      </Grid>
-      <Grid container sx={{ paddingTop: "12vh" }}>
+      </Box>
+      <Box container sx={{ paddingTop: "12vh" }}>
         {selectedTab === "live" && <Live items={live} />}
         {selectedTab === "shorts" && <Shorts items={shorts} />}
         <Grid
@@ -82,7 +82,7 @@ const SellList = () => {
         >
           <Switch options={switchOptions} type="sell" />
         </Grid>
-      </Grid>
+      </Box>
     </Box>
   );
 };

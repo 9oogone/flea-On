@@ -37,7 +37,7 @@ const BuyList = () => {
 
   return (
     <Box sx={{ mb: 18 }}>
-      <Grid
+      <Box
         sx={{
           display: "flex",
           alignItems: "center",
@@ -70,9 +70,9 @@ const BuyList = () => {
         >
           구매내역
         </Typography>
-      </Grid>
+      </Box>
 
-      <Grid container sx={{ paddingTop: "12vh" }}>
+      <Box container sx={{ paddingTop: "12vh" }}>
         {selectedTab === "buys" && <Buys items={buys} />}
         {selectedTab === "waits" && <Waits items={waits} />}
         <Box
@@ -85,7 +85,7 @@ const BuyList = () => {
         >
           <Switch options={switchOptions} type="buy" />
         </Box>
-      </Grid>
+      </Box>
     </Box>
   );
 };

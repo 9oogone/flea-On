@@ -60,19 +60,10 @@ const Buys = ({ items }) => {
                       sx={{
                         justifyContent: "center",
                         alignItems: "center",
-                        gap: 0.6,
+                        gap: 1.2,
                         display: "flex",
                       }}
                     >
-                      <Typography
-                        sx={{
-                          color: "black",
-                          fontSize: 18,
-                          wordWrap: "break-word",
-                        }}
-                      >
-                        {item.productName}
-                      </Typography>
                       <Box
                         sx={{
                           width: 60,
@@ -94,6 +85,15 @@ const Buys = ({ items }) => {
                           거래예정
                         </Typography>
                       </Box>
+                      <Typography
+                        sx={{
+                          color: "black",
+                          fontSize: 18,
+                          wordWrap: "break-word",
+                        }}
+                      >
+                        {item.productName}
+                      </Typography>
                     </Box>
                     <Typography
                       sx={{

@@ -45,6 +45,9 @@ const Shorts = ({ items }) => {
                 pb: 1,
                 borderBottom: "1px solid rgba(84, 84, 86, 0.34)",
                 backgroundColor: "white",
+                position: "sticky",
+                top: "109px",
+                zIndex: 100,
               }}
             >
               <Typography sx={{ fontSize: 16, fontWeight: "600", px: 1 }}>
@@ -58,7 +61,7 @@ const Shorts = ({ items }) => {
                   sx={{
                     width: "100%",
                     height: "100%",
-                    px: 2,
+                    // px: 2,
                     py: 2,
                     borderTop: "0.33px solid rgba(84, 84, 86, 0.34)",
                     justifyContent: "center",
@@ -89,19 +92,10 @@ const Shorts = ({ items }) => {
                         sx={{
                           justifyContent: "center",
                           alignItems: "center",
-                          gap: 0.6,
+                          gap: 1.2,
                           display: "flex",
                         }}
                       >
-                        <Typography
-                          sx={{
-                            color: "black",
-                            fontSize: 18,
-                            wordWrap: "break-word",
-                          }}
-                        >
-                          {item.productName}
-                        </Typography>
                         <Box
                           sx={{
                             width: 60,
@@ -110,7 +104,6 @@ const Shorts = ({ items }) => {
                             justifyContent: "center",
                             alignItems: "center",
                             display: "flex",
-                            bgcolor: "#FF0B55",
                             backgroundColor: item.tradeNow
                               ? "#FF5757"
                               : "#FF0B55",
@@ -126,6 +119,15 @@ const Shorts = ({ items }) => {
                             {item.tradeNow ? "거래예정" : "판매 중"}
                           </Typography>
                         </Box>
+                        <Typography
+                          sx={{
+                            color: "black",
+                            fontSize: 18,
+                            wordWrap: "break-word",
+                          }}
+                        >
+                          {item.productName}
+                        </Typography>
                       </Box>
                       <Typography
                         sx={{
@@ -188,8 +190,12 @@ const Shorts = ({ items }) => {
                   sx={{
                     width: "100%",
                     height: "100%",
+                    // px: 2,
                     py: 2,
                     borderTop: "0.33px solid rgba(84, 84, 86, 0.34)",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    display: "flex",
                     flexDirection: "column",
                   }}
                 >
@@ -198,7 +204,7 @@ const Shorts = ({ items }) => {
                       justifyContent: "space-between",
                       alignItems: "center",
                       display: "flex",
-                      width: "100%",
+                      width: "90%",
                       gap: 1,
                     }}
                   >
@@ -215,18 +221,10 @@ const Shorts = ({ items }) => {
                         sx={{
                           justifyContent: "center",
                           alignItems: "center",
-                          gap: 0.6,
+                          gap: 1.2,
                           display: "flex",
                         }}
                       >
-                        <Typography
-                          sx={{
-                            color: "black",
-                            fontSize: 18,
-                          }}
-                        >
-                          {item.productName}
-                        </Typography>
                         <Box
                           sx={{
                             width: 60,
@@ -249,6 +247,14 @@ const Shorts = ({ items }) => {
                             거래완료
                           </Typography>
                         </Box>
+                        <Typography
+                          sx={{
+                            color: "black",
+                            fontSize: 18,
+                          }}
+                        >
+                          {item.productName}
+                        </Typography>
                       </Box>
                       <Typography
                         sx={{
@@ -258,7 +264,7 @@ const Shorts = ({ items }) => {
                           wordWrap: "break-word",
                         }}
                       >
-                        {item.productName} ·{getRelativeDate(item.tradeDate)}
+                        {getRelativeDate(item.tradeDate)}
                       </Typography>
                     </Box>
                     <Box
