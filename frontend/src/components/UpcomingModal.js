@@ -27,8 +27,8 @@ const UpcomingModal = ({
   setScrap,
   scrap,
 }) => {
-  const auth = useSelector((state) => state.auth.user?.userId);
-  const user = useSelector((state) => state.live.liveDetail?.user?.userId);
+  const authId = useSelector((state) => state.auth.user?.userId);
+  const userId = useSelector((state) => state.live.liveDetail?.user?.userId);
   // console.log(user, "사용자입니다");
   // console.log(auth, "판매자입니다.");
   // console.log(liveDetail);
@@ -93,7 +93,7 @@ const UpcomingModal = ({
                   {liveDetail?.user?.nickname}
                 </Typography>
               </Box>
-              {auth && auth === user ? (
+              {authId && authId === userId ? (
                 <Button
                   onClick={handleEditLive}
                   sx={{

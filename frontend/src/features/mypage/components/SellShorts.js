@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Box, Typography } from "@mui/material";
 import { ChevronRight } from "@mui/icons-material";
-import {
-  formatPrice,
-  extractDong,
-  getRelativeDate,
-} from "../../../utils/cssUtils";
+import { formatPrice, getRelativeDate } from "../../../utils/cssUtils";
 import { format } from "date-fns";
 
 const Shorts = ({ items }) => {
   console.log(items);
+  const navigate = useNavigate();
   const [sell, setSell] = useState();
   const [sellDone, setSellDone] = useState();
   useEffect(() => {
@@ -17,9 +15,13 @@ const Shorts = ({ items }) => {
     setSellDone(items.tradeDoneLists);
   }, [items]);
 
+  const handleButtonClick = (shortsId) => {
+    navigate(`/shorts/${shortsId}`);
+  };
+
   return (
     <Box>
-      <Box sx={{ pb: 4, px: 0 }}>
+      <Box sx={{ pb: 4 }}>
         {sell?.length === 0 && sellDone?.length === 0 ? (
           <Box
             sx={{
@@ -160,6 +162,7 @@ const Shorts = ({ items }) => {
                           alignItems: "center",
                           display: "flex",
                         }}
+                        onClick={() => handleButtonClick(item.shortsId)}
                       >
                         <Typography
                           sx={{
