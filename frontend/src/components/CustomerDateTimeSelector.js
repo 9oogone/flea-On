@@ -11,8 +11,8 @@ const CustomerDateTimeSelector = ({
   liveDate,
   times,
   selectedProductId,
-  userId,
-  sellerId,
+  user,
+  seller,
   liveId,
 }) => {
   const [selectedDate, setSelectedDate] = useState(liveDate);
@@ -141,8 +141,8 @@ const CustomerDateTimeSelector = ({
       const response = await baseAxios().post(
         "/fleaon/purchase/confirmPurchase",
         {
-          buyerId: userId,
-          sellerId: sellerId,
+          buyerId: user.userId,
+          sellerId: seller.userId,
           productId: Number(selectedProductId),
           liveId: Number(liveId),
           tradePlace: place,
@@ -153,11 +153,23 @@ const CustomerDateTimeSelector = ({
 
       if (response.status === 200) {
         // 요청 성공 시 처리
+        const data = {
+          chattingId: response.data,
+          contents: `안녕하세요 ${user.nickname}님!<br/>
+        ${seller.nickname}의 마켓에 오신 것을 환영해요.<br/><br/>
+          ✨ 거래 안내 <br/>
+          거래 시간 :  ${selectedDate} ${selectedTime}<br/>
+          거래 장소 :  ${place}<br/>
+          거래 예정입니다!<br/>
+          늦지 않게 약속된 장소에서 만나요~`,
+          bot: true,
+        };
+        await baseAxios().post("/fleaon/chat/messages", data);
         handleClose();
         console.log(response);
         console.log({
-          buyerId: userId,
-          sellerId: sellerId,
+          buyerId: user.userId,
+          sellerId: seller.userId,
           productId: Number(selectedProductId),
           liveId: Number(liveId),
           tradePlace: place,
