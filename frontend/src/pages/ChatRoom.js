@@ -165,13 +165,8 @@ const ChatRoom = () => {
     const message = `거래 시간 변경 수락: ${newTime}`;
     try {
       await changeTradeTime(chatID, tradeDate, tradeTime); // API 호출
-      await sendMessageDB(chatID, message); // 메시지 저장
-      setMessageList((prevMessages) =>
-        prevMessages.map((msg) =>
-          msg.id === messageId ? { ...msg, buttonsDisabled: true } : msg // 버튼 비활성화 설정
-        )
-      );
 
+      // 성공적으로 변경되면 메시지 목록에 바로 추가
       setMessageList((prevMessages) => [
         ...prevMessages,
         {
@@ -183,6 +178,13 @@ const ChatRoom = () => {
           buttonsDisabled: false,
         },
       ]);
+
+      await sendMessageDB(chatID, message); // 메시지 저장
+      setMessageList((prevMessages) =>
+        prevMessages.map((msg) =>
+          msg.id === messageId ? { ...msg, buttonsDisabled: true } : msg // 버튼 비활성화 설정
+        )
+      );
 
       if (session.current) {
         session.current.signal({
@@ -201,15 +203,11 @@ const ChatRoom = () => {
   };
 
   const handleRejectTimeChange = async (messageId) => {
-    const message = `[System Message] 거래 시간 변경 요청이 거절되었습니다.`;
+    const message = `[System Message] 거래 시간 변경이 거절되었습니다.`;
     try {
       await sendMessageDB(chatID, message);
-      setMessageList((prevMessages) =>
-        prevMessages.map((msg) =>
-          msg.id === messageId ? { ...msg, buttonsDisabled: true } : msg // 버튼 비활성화 설정
-        )
-      );
 
+      // 성공적으로 거절되면 메시지 목록에 바로 추가
       setMessageList((prevMessages) => [
         ...prevMessages,
         {
@@ -221,6 +219,12 @@ const ChatRoom = () => {
           buttonsDisabled: false,
         },
       ]);
+
+      setMessageList((prevMessages) =>
+        prevMessages.map((msg) =>
+          msg.id === messageId ? { ...msg, buttonsDisabled: true } : msg // 버튼 비활성화 설정
+        )
+      );
 
       if (session.current) {
         session.current.signal({

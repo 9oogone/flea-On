@@ -666,7 +666,7 @@ const OpenVideo = () => {
                 </Box>
               ) : (
                 <Box>
-                   {currentProduct.status>99?
+                   {currentProduct?.status>99?
                     (
                       <Button
                       variant="contained"
@@ -678,7 +678,7 @@ const OpenVideo = () => {
                       구매완료
                     </Button>
                     ):
-                    currentProduct.status>49?
+                    currentProduct?.status>49?
                     (
                       <Button
                       variant="contained"
