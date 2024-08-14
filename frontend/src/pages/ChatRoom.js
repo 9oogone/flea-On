@@ -70,7 +70,7 @@ const ChatRoom = () => {
 
   useEffect(() => {
     dispatch(fetchChatRoom(chatID)).then((data) => {
-      console.log(11)
+      console.log(11);
       console.log(data);
       if (data.payload && data.payload.messageResponses) {
         const updatedMessages = data.payload.messageResponses.map((message) => {
@@ -102,7 +102,14 @@ const ChatRoom = () => {
         const isSystemMessage = chatContent.startsWith("[System Message]");
         setMessageList((prevMessages) => [
           ...prevMessages,
-          { chatContent, writerId, isSent, chatTime, isSystemMessage, buttonsDisabled: false },
+          {
+            chatContent,
+            writerId,
+            isSent,
+            chatTime,
+            isSystemMessage,
+            buttonsDisabled: false,
+          },
         ]);
       }
     });
@@ -247,7 +254,8 @@ const ChatRoom = () => {
     const nextMessage = messageList[currentIndex + 1];
     return (
       currentMessage.isSent !== nextMessage.isSent ||
-      new Date(currentMessage.chatTime).toTimeString().slice(0, 5) !== new Date(nextMessage.chatTime).toTimeString().slice(0, 5)
+      new Date(currentMessage.chatTime).toTimeString().slice(0, 5) !==
+        new Date(nextMessage.chatTime).toTimeString().slice(0, 5)
     );
   }; // 같은 시간이면서 같은 사람이 보낸 메시지에는 마지막 메시지에만 시간이 나타나도록 함
 
@@ -277,18 +285,22 @@ const ChatRoom = () => {
               ) : (
                 <div className={styles.msg}>{msg.chatContent}</div>
               )}
-              {msg.chatContent.includes("거래 시간 변경 요청") && !msg.isSent && !msg.buttonsDisabled && (
-                <div className={styles.timeChangeButtons}>
-                  <Button
-                    onClick={() => handleAcceptTimeChange(msg.id, msg.chatContent)}
-                  >
-                    수락
-                  </Button>
-                  <Button onClick={() => handleRejectTimeChange(msg.id)}>
-                    거절
-                  </Button>
-                </div>
-              )}
+              {msg.chatContent.includes("거래 시간 변경 요청") &&
+                !msg.isSent &&
+                !msg.buttonsDisabled && (
+                  <div className={styles.timeChangeButtons}>
+                    <Button
+                      onClick={() =>
+                        handleAcceptTimeChange(msg.id, msg.chatContent)
+                      }
+                    >
+                      수락
+                    </Button>
+                    <Button onClick={() => handleRejectTimeChange(msg.id)}>
+                      거절
+                    </Button>
+                  </div>
+                )}
               <img
                 className={styles.tailIcon}
                 alt=""
