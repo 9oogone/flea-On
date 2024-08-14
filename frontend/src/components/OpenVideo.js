@@ -64,9 +64,6 @@ const OpenVideo = () => {
     // 이미 가져온 데이터를 사용하여 상태 업데이트
     setOpen(true);
   };
-  useEffect(()=>{
-
-  })
   const handleClose = () => setOpen(false);
   const generateTimeSlots = (tradeTimes) => {
     const slots = [];
