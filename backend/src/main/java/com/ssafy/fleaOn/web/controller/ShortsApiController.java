@@ -64,8 +64,8 @@ public class ShortsApiController {
     public ResponseEntity<?> saveShorts(@RequestBody ShortsRequest request) {
         try {
             shortsService.saveShorts(request);
-            ShortsContent summaryResponse = summarizeService.summarize(request.getInputText().getText(), request.getInputText().getShortsId());
-            return ResponseEntity.status(HttpStatus.OK).body(summaryResponse);
+            int result = summarizeService.summarize(request.getInputText().getText(), request.getInputText().getShortsId());
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         } catch (Exception ex) {
             ex.printStackTrace();
             return new ResponseEntity<>("숏츠 생성 중 오류가 발생하였습니다: " + ex.getMessage(), HttpStatus.BAD_REQUEST);
