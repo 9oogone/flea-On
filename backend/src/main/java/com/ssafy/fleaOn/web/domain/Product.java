@@ -80,6 +80,6 @@ public class Product {
     }
 
     public void discount(){
-        this.price *= (int) 0.9;
+        this.price = (int)(this.price*0.9);
     }
 }
