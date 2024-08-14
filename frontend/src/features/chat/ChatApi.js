@@ -41,7 +41,7 @@ export async function changeTradeTime(chatId, tradeDate, tradeTime) {
     const tradeTimeWithSeconds = `${tradeTime}:00`;
 
     const res = await baseURL.put(
-      `/fleaon/chatbot/changeTime`,
+      `/fleaon/chatbot/changeTime/`,
       {
         chatId,
         tradeDate,
