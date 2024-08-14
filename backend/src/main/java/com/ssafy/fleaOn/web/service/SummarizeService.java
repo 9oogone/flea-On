@@ -30,7 +30,7 @@ public class SummarizeService {
 
     private final ShortsRepository shortsRepository;
 
-    public ShortsContent summarize(String text, int shortsId) {
+    public int summarize(String text, int shortsId) {
         String systemInstruction = "assistant는 user의 입력을 다음 형식으로 요약해준다:\n"
                 + "COMMEND: 상품에 대한 칭찬(50자 내외로 요약)\n"
                 + "DESCRIPTION: 사진에 대한 요약적인 설명(50자 내외로 요약)\n"
@@ -75,7 +75,7 @@ public class SummarizeService {
 
                 ShortsContent summaryResponse =  parseSummaryContent(summaryContent, shortsId);
                 shortsContentRepository.save(summaryResponse);
-                return summaryResponse;
+                return shortsId;
             } else {
                 // 에러 처리
                 System.err.println("Error: " + response.getStatusCode() + " - " + response.getBody());
@@ -88,7 +88,7 @@ public class SummarizeService {
                         .status("")
                         .build();
 
-                return summaryResult;
+                return 0;
             }
         } catch (Exception e) {
             e.printStackTrace();

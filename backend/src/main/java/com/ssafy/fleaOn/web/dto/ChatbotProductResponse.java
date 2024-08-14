@@ -7,13 +7,13 @@ import lombok.Getter;
 // ChatbotProductResponse.java
 @Getter
 public class ChatbotProductResponse {
-    private int productId;
-    private String name;
-    private int price;
-    private int currentBuyerId;
-    private int reservationCount;
-    private ShortsDto shorts;
-    private int current;
+    private final int productId;
+    private final String name;
+    private final int price;
+    private final int currentBuyerId;
+    private final int reservationCount;
+    private final ShortsDto shorts;
+    private final int current;
 
     public ChatbotProductResponse(Product product, int current) {
         this.productId = product.getProductId();
