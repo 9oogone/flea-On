@@ -4,10 +4,7 @@ import com.ssafy.fleaOn.web.config.jwt.JWTUtil;
 import com.ssafy.fleaOn.web.domain.Chatting;
 import com.ssafy.fleaOn.web.domain.ChattingList;
 import com.ssafy.fleaOn.web.domain.User;
-import com.ssafy.fleaOn.web.dto.ChattingMessageResponse;
-import com.ssafy.fleaOn.web.dto.ChattingResponse;
-import com.ssafy.fleaOn.web.dto.CustomOAuth2User;
-import com.ssafy.fleaOn.web.dto.MessageResponse;
+import com.ssafy.fleaOn.web.dto.*;
 import com.ssafy.fleaOn.web.service.ChattingService;
 import com.ssafy.fleaOn.web.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -59,9 +56,9 @@ public class ChattingApiController {
         }
     }
 
-    @GetMapping("/{chattingId}/messages")
+    @GetMapping("/messages")
     @Operation(summary = "채팅 메시지 목록", description = "특정 채팅방의 메시지들을 모두 불러옵니다.")
-    public ResponseEntity<?> getMessagesByChattingId(@AuthenticationPrincipal CustomOAuth2User principal, @PathVariable int chattingId) {
+    public ResponseEntity<?> getMessagesByChattingId(@AuthenticationPrincipal CustomOAuth2User principal, @RequestParam int chattingId) {
         if (principal == null) {
             return new ResponseEntity<>("인증된 사용자가 없습니다.", HttpStatus.UNAUTHORIZED);
         }
@@ -81,9 +78,9 @@ public class ChattingApiController {
         }
     }
 
-    @PostMapping("/{chattingId}/messages")
+    @PostMapping("/messages")
     @Operation(summary = "메시지 생성", description = "특정 채팅방에 메시지를 생성합니다.")
-    public ResponseEntity<?> createMessage(@AuthenticationPrincipal CustomOAuth2User principal, @PathVariable int chattingId, @RequestParam String chatContent) {
+    public ResponseEntity<?> createMessage(@AuthenticationPrincipal CustomOAuth2User principal, @RequestBody ChattingMessageRequest chattingMessageRequest) {
         if (principal == null) {
             return new ResponseEntity<>("인증된 사용자가 없습니다.", HttpStatus.UNAUTHORIZED);
         }
@@ -95,8 +92,8 @@ public class ChattingApiController {
                 return new ResponseEntity<>("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
             }
 
-            Chatting chatting = chattingService.getChatByChattingId(chattingId);
-            ChattingList message = chattingService.createMessage(chatting, user.getUserId(), chatContent);
+            Chatting chatting = chattingService.getChatByChattingId(chattingMessageRequest.getChattingId());
+            ChattingList message = chattingService.createMessage(chatting, user.getUserId(), chattingMessageRequest);
             return ResponseEntity.status(HttpStatus.CREATED).body(message);
         } catch (Exception ex) {
             log.error("메시지 생성 중 오류가 발생하였습니다: ", ex);

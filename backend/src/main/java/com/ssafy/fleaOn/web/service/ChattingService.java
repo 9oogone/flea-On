@@ -3,23 +3,19 @@ package com.ssafy.fleaOn.web.service;
 import com.ssafy.fleaOn.web.domain.Chatting;
 import com.ssafy.fleaOn.web.domain.ChattingList;
 import com.ssafy.fleaOn.web.domain.User;
-import com.ssafy.fleaOn.web.domain.Product;
 import com.ssafy.fleaOn.web.domain.Trade;
 import com.ssafy.fleaOn.web.dto.*;
 import com.ssafy.fleaOn.web.repository.ChattingListRepository;
 import com.ssafy.fleaOn.web.repository.ChattingRepository;
-import com.ssafy.fleaOn.web.repository.ProductRepository;
 import com.ssafy.fleaOn.web.repository.TradeRepository;
 import com.ssafy.fleaOn.web.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +25,7 @@ public class ChattingService {
     private final ChattingListRepository chattingListRepository;
     private final UserRepository userRepository;
     private final TradeRepository tradeRepository;
+    private final ChatBotService chatBotService;
 
     public List<ChattingResponse> getChattingByUserId(int userId) {
         List<Chatting> chatList = chattingRepository.findChattingByBuyerOrSellerWithView(userId);
@@ -96,14 +93,19 @@ public class ChattingService {
                 .orElseThrow(() -> new RuntimeException("Chatting not found"));
     }
 
-    public ChattingList createMessage(Chatting chatting, int writerId, String chatContent) {
+    public ChattingList createMessage(Chatting chatting, int writerId, ChattingMessageRequest chatContent) {
+        System.out.println("here");
         ChattingList message = ChattingList.builder()
                 .chatting(chatting)
                 .writerId(writerId)
-                .chatContent(chatContent)
+                .chatContent(chatContent.getContents())
                 .chatTime(LocalDateTime.now())
-                .isBot(false)  // 기본값으로 isBot을 false로 설정
+                .isBot(chatContent.isBot())
                 .build();
+        System.out.println("here2");
+        if (!chatting.getView()&&chatContent.isBot()){
+            chatBotService.startWithSellerChat(chatContent.getChattingId());
+        }
         return chattingListRepository.save(message);
     }
 }
