@@ -10,7 +10,7 @@ const CustomerDateTimeSelector = ({
   place,
   liveDate,
   times,
-  currentProductIndex,
+  selectedProductId,
   userId,
   sellerId,
   liveId,
@@ -128,11 +128,12 @@ const CustomerDateTimeSelector = ({
   const handleDateSelect = (date) => {
     setSelectedDate(date);
     setSelectedTime(null);
-    setIsButtonVisible(true); // 날짜 선택 시 버튼 표시
+    setIsButtonVisible(false);
   };
 
   const handleTimeSelect = (time) => {
     setSelectedTime(time);
+    setIsButtonVisible(true);
   };
 
   const handleConfirm = async () => {
@@ -142,7 +143,7 @@ const CustomerDateTimeSelector = ({
         {
           buyerId: userId,
           sellerId: sellerId,
-          productId: Number(currentProductIndex),
+          productId: Number(selectedProductId),
           liveId: Number(liveId),
           tradePlace: place,
           tradeTime: `${selectedTime}:00`,
@@ -157,7 +158,7 @@ const CustomerDateTimeSelector = ({
         console.log({
           buyerId: userId,
           sellerId: sellerId,
-          productId: Number(currentProductIndex),
+          productId: Number(selectedProductId),
           liveId: Number(liveId),
           tradePlace: place,
           tradeTime: `${selectedTime}:00`,
@@ -393,13 +394,14 @@ const CustomerDateTimeSelector = ({
               </Typography>
             )}
           </Box>
-          {currentProductIndex}
+
           {isButtonVisible && (
             <Button
               variant="contained"
               color="secondary"
               onClick={handleConfirm}
-              sx={{ mt: 2 }}
+              sx={{ mt: 3 }}
+              fullWidth
             >
               구매 확정
             </Button>
