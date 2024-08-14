@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Typography, Modal } from "@mui/material";
 import {
   ArrowBackIosNew,
@@ -11,14 +11,13 @@ import useDidMountEffect from "../utils/useDidMountEffect";
 import baseAxios from "../utils/httpCommons";
 import { useSelector } from "react-redux";
 
-
 const ChatTradeDetail = ({ chatID, isOpen, onClose }) => {
   const user = useSelector((state) => state.auth.user);
   const [detail, setDetail] = useState({});
-  const [buyProducts, setBuyProducts] = useState([])
-  const [otherProducts, setOtherProducts] = useState([])
+  const [buyProducts, setBuyProducts] = useState([]);
+  const [otherProducts, setOtherProducts] = useState([]);
   const [reload, setReload] = useState(false);
-  
+
   useEffect(() => {
     const fetchDetail = () => {
       getTradeDetail(chatID).then((res) => {
@@ -36,24 +35,24 @@ const ChatTradeDetail = ({ chatID, isOpen, onClose }) => {
     // return () => clearInterval(intervalId);
   }, [chatID]);
 
-  useDidMountEffect(()=>{
-    if(detail!=null){
-      console.log("ssss")
-    console.log(detail)
-    setBuyProducts(detail.buyProduct)
-    console.log(detail.buyProduct)
-    setOtherProducts(detail.otherProduct)
-    console.log(detail.otherProduct)
-  }
-  },[detail])
+  useDidMountEffect(() => {
+    if (detail != null) {
+      console.log("ssss");
+      console.log(detail);
+      setBuyProducts(detail.buyProduct);
+      console.log(detail.buyProduct);
+      setOtherProducts(detail.otherProduct);
+      console.log(detail.otherProduct);
+    }
+  }, [detail]);
 
   if (!isOpen) return null;
 
   const handleBuy = async (productId) => {
-    console.log("productId")
-    console.log(productId)
+    console.log("productId");
+    console.log(productId);
     try {
-      const response = await baseAxios().post("/fleaon/purchase/buy",{
+      const response = await baseAxios().post("/fleaon/purchase/buy", {
         productId: productId,
         userId: user.userId,
       });
@@ -70,20 +69,20 @@ const ChatTradeDetail = ({ chatID, isOpen, onClose }) => {
     }
   };
   const handleReserve = async (productId) => {
-      const response = await baseAxios().post("/fleaon/purchase/reserve", {
-        productId: productId,
-        userId: user.userId,
-      });
+    const response = await baseAxios().post("/fleaon/purchase/reserve", {
+      productId: productId,
+      userId: user.userId,
+    });
   };
   const handleCancelReserve = async (productId) => {
-    console.log(productId)
+    console.log(productId);
     const response = await baseAxios().delete("/fleaon/purchase/reserve", {
       data: {
         productId: productId,
         userId: user.userId,
       },
-    })
-    console.log(response)
+    });
+    console.log(response);
   };
 
   const handleBackButtonClick = () => {
@@ -97,24 +96,29 @@ const ChatTradeDetail = ({ chatID, isOpen, onClose }) => {
         userId: user.userId,
       },
     });
-  }
+  };
 
-  const handleStatusClick = async(id, reservationCount, currentBuyerId, current) => {
-   if(currentBuyerId==0){
+  const handleStatusClick = async (
+    id,
+    reservationCount,
+    currentBuyerId,
+    current
+  ) => {
+    if (currentBuyerId == 0) {
       //구매하기
       await handleBuy(id);
-    }else if(reservationCount>5){
+    } else if (reservationCount > 5) {
       //줄 마감
-    }else if(current==-3){ 
+    } else if (current == -3) {
       //예약 취소
-      await handleCancelReserve(id)
-    }else{
+      await handleCancelReserve(id);
+    } else {
       //예약 하기
-      await handleReserve(id)
+      await handleReserve(id);
     }
   };
 
-  const ProductItem = ({ product,productStatus, onStatusClick }) => {
+  const ProductItem = ({ product, productStatus, onStatusClick }) => {
     return (
       <Box
         sx={{
@@ -163,10 +167,19 @@ const ChatTradeDetail = ({ chatID, isOpen, onClose }) => {
           }}
         >
           <Box
-            onClick={() => onStatusClick(product.productId, product.reservationCount)}
+            onClick={() =>
+              onStatusClick(product.productId, product.reservationCount)
+            }
             sx={{
               width: "100%",
-              backgroundColor: product.currentBuyerId==0?'#FF0B55':product.reservationCount>5?'gray':product.current==-3?'red':'#FF5757',
+              backgroundColor:
+                product.currentBuyerId == 0
+                  ? "#FF0B55"
+                  : product.reservationCount > 5
+                  ? "gray"
+                  : product.current == -3
+                  ? "red"
+                  : "#FF5757",
               borderRadius: 2,
               justifyContent: "center",
               alignItems: "center",
@@ -293,12 +306,12 @@ const ChatTradeDetail = ({ chatID, isOpen, onClose }) => {
                 overflowY: "auto",
               }}
             >
-              {buyProducts.map((product,index) => (
+              {buyProducts.map((product, index) => (
                 <ProductItem
                   key={product.productId}
                   product={product}
-                  productStatus = "거래 취소"
-                  onStatusClick={()=>handleTradeCancel(product.productId)}
+                  productStatus="거래 취소"
+                  onStatusClick={() => handleTradeCancel(product.productId)}
                 />
               ))}
             </Box>
@@ -306,7 +319,7 @@ const ChatTradeDetail = ({ chatID, isOpen, onClose }) => {
 
           <Box
             sx={{
-              display: "flex", 
+              display: "flex",
               flexDirection: "column",
               gap: 2,
               flexGrow: 1,
@@ -329,12 +342,27 @@ const ChatTradeDetail = ({ chatID, isOpen, onClose }) => {
                 overflowY: "auto",
               }}
             >
-              {otherProducts.map((product,index) => (
+              {otherProducts.map((product, index) => (
                 <ProductItem
                   key={product.productId || `p${index}`}
                   product={product}
-                  productStatus={product.currentBuyerId==0?"상품추가":product.reservationCount>5?"줄 마감":product.current==-3?"줄 취소":"줄 서기"}
-                  onStatusClick={()=>handleStatusClick(product.productId,product.reservationCount, product.currentBuyerId, product.current)}
+                  productStatus={
+                    product.currentBuyerId == 0
+                      ? "상품추가"
+                      : product.reservationCount > 5
+                      ? "줄 마감"
+                      : product.current == -3
+                      ? "줄 취소"
+                      : "줄 서기"
+                  }
+                  onStatusClick={() =>
+                    handleStatusClick(
+                      product.productId,
+                      product.reservationCount,
+                      product.currentBuyerId,
+                      product.current
+                    )
+                  }
                 />
               ))}
             </Box>

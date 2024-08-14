@@ -61,12 +61,10 @@ const LiveBroadcasts = ({ items: initialItems }) => {
         {items && items.length > 0 ? (
           items.map((item) => (
             <Grid key={item.id} item xs={6} sx={{ textAlign: "center" }}>
-              <Button
-                onClick={() => handleButtonClick(item)}
-                sx={{ padding: 0, minWidth: 0 }}
-              >
+              <Button onClick={() => handleButtonClick(item)}>
                 <Box
                   sx={{
+                    cursor: "pointer",
                     width: "16vh",
                     height: "28vh",
                     backgroundImage: `url(${item.thumbnail})`,

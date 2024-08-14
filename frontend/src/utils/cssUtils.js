@@ -102,6 +102,8 @@ export const formatDateTime = (dateString) => {
   }
 };
 
+// 날짜 시간 포맷팅
+// 예시 : "2024-10-31T14:30" => 내일, 오후 2시 30분
 export const formatDateTimeDistance = (dateTime) => {
   try {
     // 날짜와 시간을 Date 객체로 변환
@@ -122,9 +124,16 @@ export const formatDateTimeDistance = (dateTime) => {
     }
 
     // 시간 포맷팅 (AM/PM 00시 00분)
-    formattedTime = format(date, "a hh시 mm분");
+    const hours24 = date.getHours();
+    const minutes = date.getMinutes();
 
-    return `${formattedDate} ${formattedTime}`;
+    // 오전/오후 및 12시간제 시간 변환
+    const period = hours24 >= 12 ? "오후" : "오전";
+    const hours12 = hours24 % 12 || 12; // 12시간제 시간, 0시의 경우 12시로 표시
+
+    formattedTime = `${period} ${hours12}시 ${minutes}분`;
+
+    return `${formattedDate}, ${formattedTime}`;
   } catch (error) {
     console.error("Invalid date format:", dateTime);
     return "Invalid date";

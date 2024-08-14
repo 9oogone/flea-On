@@ -174,7 +174,7 @@ const ChatRoom = () => {
     // 날짜와 시간을 분리
     const [tradeDate, tradeTime] = dateTimeString.split(" ");
 
-    const message = `거래 시간 변경 수락: ${newTime}`;
+    const message = `거래 시간 변경 수락: ${dateTimeString}`;
     try {
       await changeTradeTime(chatID, tradeDate, tradeTime); // API 호출
 
