@@ -11,6 +11,7 @@ import com.ssafy.fleaOn.web.repository.TradeRepository;
 import com.ssafy.fleaOn.web.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -93,19 +94,27 @@ public class ChattingService {
                 .orElseThrow(() -> new RuntimeException("Chatting not found"));
     }
 
+    @Transactional  // 트랜잭션 추가
     public ChattingList createMessage(Chatting chatting, int writerId, ChattingMessageRequest chatContent) {
-        System.out.println("here");
-        ChattingList message = ChattingList.builder()
-                .chatting(chatting)
-                .writerId(writerId)
-                .chatContent(chatContent.getContents())
-                .chatTime(LocalDateTime.now())
-                .isBot(chatContent.isBot())
-                .build();
-        System.out.println("here2");
-        if (!chatting.getView()&&chatContent.isBot()){
+        System.out.println(LocalDateTime.now());
+
+        // 직접 쿼리 실행
+        chattingListRepository.saveWithoutTime(
+                chatting.getChattingId(),
+                writerId,
+                chatContent.getContents(),
+                chatContent.isBot()
+        );
+
+        // 보통 JPA에서는 insert나 update 시 바로 엔티티를 반환하지 않지만,
+        // 필요하다면 쿼리 실행 후 해당 엔티티를 다시 조회할 수 있습니다.
+        List<ChattingList> savedMessages = chattingListRepository.findByChatting_ChattingId(chatting.getChattingId()).orElseThrow(()->new RuntimeException("Chatting not found"));
+        ChattingList savedMessage = savedMessages.get(savedMessages.size() - 1);
+        if (!chatting.getView() && chatContent.isBot()) {
             chatBotService.startWithSellerChat(chatContent.getChattingId());
         }
-        return chattingListRepository.save(message);
+
+        return savedMessage;
     }
+
 }

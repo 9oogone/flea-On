@@ -38,7 +38,7 @@ public class ShortsService {
     }
 
     @Transactional
-    public void saveShorts(ShortsRequest request) {
+    public int saveShorts(ShortsRequest request) {
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
 
@@ -52,6 +52,8 @@ public class ShortsService {
         Optional<Trade> trade = tradeRepository.findByProduct_productId(shorts.getProduct().getProductId());
         trade.ifPresent(value -> value.uploadShorts(shorts));
         saveShortsChatting(request.getShortsChatRequests(),shorts.getShortsId());
+
+        return shorts.getShortsId();
     }
 
     public ShortsResponse getShorts(int shortsId) {

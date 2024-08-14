@@ -63,8 +63,8 @@ public class ShortsApiController {
     @Operation(summary = "숏츠 정보 저장", description = "숏츠 정보를 받아 저장합니다.")
     public ResponseEntity<?> saveShorts(@RequestBody ShortsRequest request) {
         try {
-            shortsService.saveShorts(request);
-            int result = summarizeService.summarize(request.getInputText().getText(), request.getInputText().getShortsId());
+            int id = shortsService.saveShorts(request);
+            int result = summarizeService.summarize(request.getInputText().getText(), id);
             return ResponseEntity.status(HttpStatus.OK).body(result);
         } catch (Exception ex) {
             ex.printStackTrace();
