@@ -993,7 +993,6 @@ const OpenVideo = () => {
         liveDate={liveDate}
         times={times}
         selectedProductId={selectedProductId}
-        product={selectedProduct}
         user={user}
         seller={seller}
         liveId={sessionName}

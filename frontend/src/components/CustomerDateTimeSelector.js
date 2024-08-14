@@ -14,7 +14,6 @@ const CustomerDateTimeSelector = ({
   user,
   seller,
   liveId,
-  product,
 }) => {
   const [selectedDate, setSelectedDate] = useState(liveDate);
   const [selectedTime, setSelectedTime] = useState(null);
@@ -161,8 +160,6 @@ const CustomerDateTimeSelector = ({
           ✨ 거래 안내 <br/>
           거래 시간 :  ${selectedDate} ${selectedTime}<br/>
           거래 장소 :  ${place}<br/>
-          거래 상품 :  ${product.name}<br/>
-          거래 금액 : ${product.price}<br/><br/>
           거래 예정입니다!<br/>
           늦지 않게 약속된 장소에서 만나요~`,
           bot: true,

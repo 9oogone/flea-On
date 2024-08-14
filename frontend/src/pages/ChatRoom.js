@@ -168,7 +168,12 @@ const ChatRoom = () => {
   };
 
   const handleAcceptTimeChange = async (messageId, newTime) => {
-    const [tradeDate, tradeTime] = newTime.split(" "); // 날짜와 시간을 분리
+    // 문자열에서 날짜와 시간 부분 추출
+    const dateTimeString = newTime.split(": ")[1];
+
+    // 날짜와 시간을 분리
+    const [tradeDate, tradeTime] = dateTimeString.split(" ");
+
     const message = `거래 시간 변경 수락: ${newTime}`;
     try {
       await changeTradeTime(chatID, tradeDate, tradeTime); // API 호출
