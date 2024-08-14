@@ -35,7 +35,7 @@ public class MainApiController {
 
     @GetMapping("/mainLive")
     @Operation(summary = "라이브 목록 조회", description = "라이브 목록을 조회할 때 사용합니다. ")
-    public ResponseEntity<?> getMainLive(HttpServletRequest request) {
+    public ResponseEntity<?> getMainLive(HttpServletRequest request, @RequestParam("page") int page) {
         try {
             String authorizationToken = request.getHeader("Authorization");
             if (authorizationToken.isEmpty() || !authorizationToken.startsWith("Bearer ")) {
@@ -49,7 +49,7 @@ public class MainApiController {
             }
 
             List<UserRegion> findUerRegionList = mainService.getUserRegionByUserId(user.getUserId());
-            Slice<MainLiveResponse> mainLiveResponses = mainService.getMainLiveListByRegionCode(user.getUserId(), findUerRegionList);
+            Slice<MainLiveResponse> mainLiveResponses = mainService.getMainLiveListByRegionCode(user.getUserId(), findUerRegionList, page);
 
             return ResponseEntity.status(HttpStatus.OK).body(mainLiveResponses);
         } catch (Exception e) {
