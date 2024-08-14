@@ -517,6 +517,7 @@ public class UserService {
 
     public Optional<List<Map<String, Object>>> getUserInfoByLiveId(int liveId){
         Optional<List<LiveScrap>> findLiveScrapList = liveScrapRepository.findByLive_liveId(liveId);
+        System.out.println(findLiveScrapList);
         List<Map<String , Object>> userInfoList = new ArrayList<>();
         if (findLiveScrapList.isPresent()) {
             for (LiveScrap liveScrap : findLiveScrapList.get()) {
@@ -531,6 +532,25 @@ public class UserService {
         }
         else {
             throw new IllegalArgumentException("Cannot find live scrap");
+        }
+    }
+
+    public List<UserFcmResponse> getUserFcmByLiveId(int liveId){
+        Optional<List<LiveScrap>> findLiveScrapList = liveScrapRepository.findByLive_liveId(liveId);
+        if (findLiveScrapList.isPresent()) {
+            List<UserFcmResponse> userFcmResponseList = new ArrayList<>();
+            for (LiveScrap liveScrap : findLiveScrapList.get()) {
+                UserFcmResponse userFcmResponse = UserFcmResponse.builder()
+                        .fcmToken(liveScrap.getUser().getFcm())
+                        .userId(liveScrap.getUser().getUserId())
+                        .build();
+
+                userFcmResponseList.add(userFcmResponse);
+            }
+            return userFcmResponseList;
+        }
+        else {
+            return null;
         }
     }
 
