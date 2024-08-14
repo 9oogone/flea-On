@@ -114,7 +114,7 @@ const HomePage = () => {
 
   return (
     <Container>
-      <Grid container sx={{ marginTop: "12vh" }}>
+      <Grid container sx={{ marginTop: "12vh", marginBottom: "12vh" }}>
         {hasLive ? (
           <Grid
             item
