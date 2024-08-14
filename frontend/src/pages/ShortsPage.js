@@ -57,6 +57,7 @@ const ShortsPage = () => {
         setSubList(response.data.shortsChatResponseList);
         // setComments(response.data.shortsChatResponseList);
         setProduct(response.data.product);
+        setTradeNow();
       } catch (error) {
         console.error("Error fetching short data:", error);
       }
@@ -116,6 +117,23 @@ const ShortsPage = () => {
     trackMouse: true,
   });
 
+  // useDidMountEffect(() => {
+  //   const handleBoostProduct = async (productId) => {
+  //     try {
+  //       const response = await baseAxios().put(`/fleaon/purchase/reUpload`, {
+  //         params: { productId: productId },
+  //       });
+  //       console.log("끌어올리기 성공:", response.data);
+  //       return response.data;
+  //     } catch (error) {
+  //       console.error("끌어올리기 실패:", error);
+  //     }
+  //   };
+  //   if (product.productId) {
+  //     handleBoostProduct(product.productId);
+  //   }
+  // }, [product.productId]);
+
   // 끌어올리기 모달
   const handelBoostShorts = () => {
     setIsBoostModalOpen(true);
@@ -125,8 +143,19 @@ const ShortsPage = () => {
     setIsBoostModalOpen(false);
   };
 
-  const handleConfirmBoost = () => {
+  const handleConfirmBoost = async () => {
     setIsBoostModalOpen(false);
+    if (product.productId) {
+      console.log(product.pro);
+      try {
+        const response = await baseAxios().put(
+          `/fleaon/purchase/reUpload?productId=${product.productId}`
+        );
+        console.log("끌어올리기 성공:", response.data);
+      } catch (error) {
+        console.error("끌어올리기 실패:", error);
+      }
+    }
   };
   if (!currentShort) return <Typography>Loading...</Typography>;
 
