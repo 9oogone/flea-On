@@ -139,9 +139,10 @@ const OpenVideo = () => {
           { from, message, profile, userId, time },
         ]);
       } else if (type === 2) {
+        setIsFirst(false);
         setIsRecording(data.isRecording);
       } else if (type === 3) {
-        productList[data.index].status += 1;
+        productList[data.productIndex].status += 1;
       }
     });
     try {
@@ -371,7 +372,6 @@ const OpenVideo = () => {
         }
         return newIndex;
       });
-      setIsFirst(false);
     }
   }, [isRecording, productList, isFirst]);
 
