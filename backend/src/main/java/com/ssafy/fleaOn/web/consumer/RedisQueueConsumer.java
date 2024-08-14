@@ -142,8 +142,15 @@ public class RedisQueueConsumer {
         Object data = redisTemplate.opsForList().leftPop(CANCEL_PURCHASE_QUEUE);
         if (data != null) {
             PurchaseRequest request = objectMapper.convertValue(data, PurchaseRequest.class);
+            logger.info("user id: {}", request.getUserId());
             PurchaseCancleResponse result = purchaseService.cancelPurchaseProduct(request);
-            redisTemplate.opsForValue().set("cancelPurchaseResult:" + request.getUserId() + ":" + request.getProductId(), result);
+            logger.info("result: {}", result);
+//            response instanceof PurchaseCancleResponse
+            logger.info("is instanceof PCR? : {}", result instanceof PurchaseCancleResponse);
+
+            String redisKey = "cancelPurchaseResult:" + request.getUserId() + ":" + request.getProductId();
+            logger.info("redisKey : {}", redisKey);
+            redisTemplate.opsForValue().set(redisKey, result);
         }
     }
 

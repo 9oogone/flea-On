@@ -51,7 +51,7 @@ public class PurchaseService {
     }
 
     @Transactional
-    public int processPurchaseRequest(PurchaseRequest request) {
+    public int processPurchaseRequest(PurchaseRequest request) { // 구매하기
         logger.info("Processing purchase request for productId: {} and userId: {}", request.getProductId(), request.getUserId());
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
@@ -108,11 +108,12 @@ public class PurchaseService {
     }
 
     @Transactional
-    public PurchaseCancleResponse cancelPurchaseProduct(PurchaseRequest request) {
+    public PurchaseCancleResponse cancelPurchaseProduct(PurchaseRequest request) { // 구매 취소
         boolean chatExit = true;
         int next = 0;
         boolean isBuyer = false;
 
+        logger.info(request.getProductId()+" "+request.getUserId());
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
 
@@ -120,6 +121,7 @@ public class PurchaseService {
             isBuyer = true;
             product.setCurrentBuyerId(0);
             productRepository.save(product);
+            logger.info("change product status");
 
             Optional<Reservation> nextReservation = reservationRepository.findFirstByProduct_ProductIdOrderByReservationTimeAsc(request.getProductId());
             if (nextReservation.isPresent()) {
@@ -129,14 +131,17 @@ public class PurchaseService {
                 productRepository.save(product);
                 next = product.getCurrentBuyerId();
             }
+            logger.info("다음 예약 처리");
 
             int cid = tradeRepository.findByProduct_productId(request.getProductId()).orElseThrow(() -> new IllegalArgumentException("Invalid product ID")).getChatting().getChattingId();
             logger.info("chatting id: {}", cid);
             // 현재 구매자가 없는 경우 거래 취소
             tradeRepository.deleteByProduct_ProductId(request.getProductId());
+            logger.info("거래 취소");
 
             // 해당 채팅방의 모든 거래 내역 확인
             List<Trade> remainingTrades = tradeRepository.findByChatting_ChattingId(cid).orElse(new ArrayList<>());
+            logger.info("거래 내역");
 
             if (remainingTrades.isEmpty()) {
                 // 채팅 내역 삭제
@@ -160,7 +165,7 @@ public class PurchaseService {
 
     // 거래 파기 메서드
     @Transactional
-    public List<PurchaseCancleResponse> breakTrade(int chatId, int userId) {
+    public List<PurchaseCancleResponse> breakTrade(int chatId, int userId) { // 거래 파기
         Chatting chatting = chattingRepository.findById(chatId).orElseThrow(() -> new IllegalArgumentException("Invalid chat ID"));
         int liveId = chatting.getLive().getLiveId();
         System.out.println("라이브 아이디: "+liveId);
@@ -197,7 +202,7 @@ public class PurchaseService {
     }
 
     @Transactional
-    public int processReservationRequest(PurchaseRequest request) {
+    public int processReservationRequest(PurchaseRequest request) { // 예약하기
         logger.info("Processing reservation request for productId: {} and userId: {}", request.getProductId(), request.getUserId());
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
@@ -229,7 +234,7 @@ public class PurchaseService {
     }
 
     @Transactional
-    public int processCancelReservationRequest(PurchaseRequest request) {
+    public int processCancelReservationRequest(PurchaseRequest request) { // 예약 취소
         logger.info("Processing cancel reservation request for productId: {} and userId: {}", request.getProductId(), request.getUserId());
         Optional<Reservation> reservation = reservationRepository.findByProduct_ProductIdAndUser_UserId(request.getProductId(), request.getUserId());
         if (reservation.isPresent()) {
@@ -244,7 +249,7 @@ public class PurchaseService {
     }
 
     @Transactional
-    public void processConfirmPurchaseRequest(TradeRequest request) {
+    public void processConfirmPurchaseRequest(TradeRequest request) { // 구매 확정
         logger.info("Processing confirm purchase request for productId: {} and buyerId: {}", request.getProductId(), request.getBuyerId());
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> {
@@ -293,7 +298,7 @@ public class PurchaseService {
     }
 
     @Transactional
-    public void processConfirmTradeRequest(TradeRequest request) {
+    public void processConfirmTradeRequest(TradeRequest request) { // 거래 완료 확정
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
 
