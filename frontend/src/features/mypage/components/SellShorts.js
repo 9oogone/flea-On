@@ -20,22 +20,31 @@ const Shorts = ({ items }) => {
   return (
     <Box>
       <Box sx={{ pb: 4, px: 0 }}>
-        <Box
-          sx={{
-            pb: 1,
-            borderBottom: "1px solid rgba(84, 84, 86, 0.34)",
-          }}
-        >
-          <Typography sx={{ fontSize: 16, fontWeight: "600", px: 1 }}>
-            판매 쇼츠
-          </Typography>
-        </Box>
         {sell?.length === 0 && sellDone?.length === 0 ? (
-          <Typography variant="h6" sx={{ color: "grey.700" }}>
-            아직 판매 쇼츠가 없어요.
-          </Typography>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "60vh",
+            }}
+          >
+            <Typography sx={{ textAlign: "center" }}>
+              아직 판매 쇼츠가 없어요.
+            </Typography>
+          </Box>
         ) : (
           <Box>
+            <Box
+              sx={{
+                pb: 1,
+                borderBottom: "1px solid rgba(84, 84, 86, 0.34)",
+              }}
+            >
+              <Typography sx={{ fontSize: 16, fontWeight: "600", px: 1 }}>
+                판매 쇼츠
+              </Typography>
+            </Box>
             {sell?.map((item, index) => {
               return (
                 <Box

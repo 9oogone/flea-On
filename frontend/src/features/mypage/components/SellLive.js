@@ -172,9 +172,16 @@ const Live = ({ items }) => {
         </Box>
       )}
       {upcomingItems.length === 0 && completedItems.length === 0 && (
-        <Box>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "60vh",
+          }}
+        >
           <Typography sx={{ textAlign: "center" }}>
-            아직 라이브를 하지 않았어요.
+            아직 라이브를 한 적이 없어요.
           </Typography>
         </Box>
       )}

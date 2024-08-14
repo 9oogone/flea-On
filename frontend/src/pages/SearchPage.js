@@ -63,7 +63,7 @@ const SearchPage = () => {
   };
 
   return (
-    <Container sx={{ mt: 10 }}>
+    <Container sx={{ mt: 10, mb: 10 }}>
       {loading && <Spinner />}
       {error && <Typography color="error">{getErrorMessage()}</Typography>}
       {!loading && !error && results && (
@@ -90,9 +90,18 @@ const SearchPage = () => {
                       display: "flex",
                       justifyContent: "space-between",
                       alignItems: "center",
+                      mt: "10px"
                     }}
                   >
-                    <Typography variant="h5">쇼츠</Typography>
+                    <Typography
+                    sx={{ 
+                      mt: upcoming.length === 0 ? "4%" : 0,
+                      fontSize: "20px",
+                      fontWeight: "600",
+                      letterSpacing: "-0.5px",
+                      color: "#2E2E32",
+                      fontFamily: "Noto Sans KR"
+                      }}>SHORTS</Typography>
                     {shorts.length > 2 && (
                     <Button onClick={() => navigate(`/search/shorts?query=${query}`)}>
                       모두보기
@@ -111,9 +120,16 @@ const SearchPage = () => {
                       display: "flex",
                       justifyContent: "space-between",
                       alignItems: "center",
+                       mt: "10px"
                     }}
                   >
-                    <Typography variant="h5">라이브</Typography>
+                    <Typography sx={{ 
+                      mt: upcoming.length && shorts.length === 0 ? "4%" : 0,
+                      fontSize: "20px",
+                      fontWeight: "600",
+                      letterSpacing: "-0.5px",
+                      color: "#2E2E32"
+                      }}>LIVE</Typography>
                     {live.length > 2 && (
                     <Button onClick={() => navigate(`/search/live?query=${query}`)}>
                       모두보기

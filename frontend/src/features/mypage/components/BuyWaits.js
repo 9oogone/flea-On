@@ -9,7 +9,7 @@ import {
 } from "../../../utils/cssUtils";
 
 const Waits = ({ items }) => {
-  console.log(items);
+  // console.log(items);
   return (
     <Box>
       {items.length === 0 ? (
@@ -40,7 +40,7 @@ const Waits = ({ items }) => {
                   justifyContent: "space-between",
                   alignItems: "center",
                   display: "flex",
-                  width: "100%",
+                  width: "90%",
                 }}
               >
                 <Box
@@ -62,11 +62,8 @@ const Waits = ({ items }) => {
                   >
                     <Typography
                       sx={{
-                        color: "black",
                         fontSize: 18,
-                        fontFamily: "Noto Sans",
-                        fontWeight: 400,
-                        lineHeight: "22px",
+                        color: "black",
                         wordWrap: "break-word",
                       }}
                     >
@@ -91,7 +88,7 @@ const Waits = ({ items }) => {
                       wordWrap: "break-word",
                     }}
                   >
-                    {item.dongName} · 날짜가 들어가면 좋을텐데..
+                    {item.dongName}
                     {/* {getRelativeDate(item.trade_date)} */}
                   </Typography>
                 </Box>
@@ -106,7 +103,6 @@ const Waits = ({ items }) => {
                 >
                   <Typography
                     sx={{
-                      pr: 2,
                       fontSize: 17,
                     }}
                   >
@@ -126,9 +122,9 @@ const Waits = ({ items }) => {
                         letterSpacing: "0.1px",
                       }}
                     >
-                      상세보기
+                      {/* 쇼츠보기 */}
                     </Typography>
-                    <ChevronRight />
+                    {/* <ChevronRight /> */}
                   </Box>
                 </Box>
               </Box>

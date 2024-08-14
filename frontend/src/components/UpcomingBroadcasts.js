@@ -22,8 +22,15 @@ const UpcomingBroadcasts = ({ items = [] }) => {
 
   return (
     <Container sx={{ margin: "8px" }}>
-      <Typography variant="h6" gutterBottom sx={{ marginTop: "12%" }}>
-        방송예정상품
+      <Typography gutterBottom sx={{
+         marginTop: "12%",
+         fontSize: "20px",
+         fontWeight: "600",
+         letterSpacing: "-0.5px",
+         color: "#2E2E32",
+         fontFamily: "Noto Sans KR" }}
+      >
+        UPCOMING LIVE!
       </Typography>
       <Box
         sx={{
@@ -59,6 +66,9 @@ const UpcomingBroadcasts = ({ items = [] }) => {
             <Typography
               sx={{
                 color: "#FF0B55",
+                fontSize: "14px",
+                letterSpacing: "-0.5px",
+                fontWeight: "600"
               }}
             >
               {formatDateTimeDistance(item.liveDate)}
@@ -72,7 +82,7 @@ const UpcomingBroadcasts = ({ items = [] }) => {
                 whiteSpace: "nowrap",
               }}
             >
-              {item.title}
+              {/* {item.title} */}
             </Typography>
             <Typography
               sx={{
@@ -80,6 +90,9 @@ const UpcomingBroadcasts = ({ items = [] }) => {
                 textOverflow: "ellipsis",
                 overflow: "hidden",
                 whiteSpace: "nowrap",
+                letterSpacing: '-0.5px',
+                color: "rgba(44, 44, 46, 1)",
+                fontSize: '16px'
               }}
             >
               {item.productName}
@@ -87,6 +100,11 @@ const UpcomingBroadcasts = ({ items = [] }) => {
             <Typography
               sx={{
                 fontWeight: 300,
+                overflow: "hidden",
+                whiteSpace: "nowrap",
+                letterSpacing: '-0.5px',
+                color: "rgba(44, 44, 46, 1)",
+                fontSize: '13px'
               }}
             >
               {formatPrice(item.productPrice)}
