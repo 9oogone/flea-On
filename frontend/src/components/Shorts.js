@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Typography, Grid } from "@mui/material";
+import { Box, Typography, Grid, Button } from "@mui/material";
 import {
   LocationOn,
   FavoriteBorderRounded,
@@ -7,7 +7,7 @@ import {
 } from "@mui/icons-material";
 import baseAxios from "../utils/httpCommons";
 import { useNavigate } from "react-router-dom";
-
+import { formatPrice } from "../utils/cssUtils";
 const Shorts = ({ items: initialItems }) => {
   const navigate = useNavigate();
   const [items, setItems] = useState([]);
@@ -45,130 +45,172 @@ const Shorts = ({ items: initialItems }) => {
   };
 
   if (!items || items.length === 0) {
-    return <div>No shorts available.</div>;
+    return <div> 숏츠가 없습니다.</div>;
   }
 
   return (
     <Grid item xs={12}>
       <Grid container>
-        {items.map((item) => (
-          <Grid key={item.id} item xs={6} sx={{ textAlign: "center" }}>
-            <Box
-              onClick={() => handleButtonClick(item.id)}
+        {items && items.length > 0 ? (
+          items.map((item) => (
+            <Grid
+              key={item.id}
+              item
+              xs={6}
               sx={{
-                padding: 0,
-                minWidth: 0,
-                cursor: "pointer",
-                width: "16vh",
-                height: "28vh",
-                backgroundImage: `url(${item.shortsThumbnail})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                borderRadius: 2,
-                boxShadow: "0px -40px 20px rgba(0, 0, 0, 0.25) inset",
-                mb: 2,
-                p: 1,
+                textAlign: "center",
+                display: "flex",
+                justifyContent: "center",
               }}
             >
-              <Box
-                sx={{
-                  position: "relative",
-                  height: "85%",
-                  textAlign: "end",
-                  color: "white",
-                }}
-              >
+              <Button onClick={() => handleButtonClick(item.id)}>
                 <Box
                   sx={{
-                    position: "absolute",
-                    top: 0,
-                    right: 0,
-                    p: 1,
                     cursor: "pointer",
-                    zIndex: 1,
-                  }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleScrapToggle(item.id, item.isScrap);
+                    width: "16vh",
+                    height: "28vh",
+                    backgroundImage: `url(${item.shortsThumbnail})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    borderRadius: 2,
+                    boxShadow: "0px -40px 20px rgba(0, 0, 0, 0.25) inset",
+                    mb: 2,
+                    p: 1,
                   }}
                 >
-                  {item.isScrap ? (
-                    <FavoriteRounded sx={{ color: "#FF0B55" }} />
-                  ) : (
-                    <FavoriteBorderRounded />
-                  )}
-                </Box>
-              </Box>
-              <Box
-                sx={{
-                  top: 206,
-                  left: "7.50px",
-                  width: "100%",
-                  display: "flex",
-                  flexDirection: "column",
-                }}
-              >
-                <Box>
                   <Box
                     sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      width: "100%",
+                      position: "relative",
+                      height: "85%",
                     }}
                   >
-                    <Typography
+                    <Box
                       sx={{
-                        color: "white",
-                        fontSize: 14,
-                        fontWeight: 600,
+                        position: "absolute",
+                        top: 0,
+                        right: 0,
+                        p: 1,
+                        cursor: "pointer",
+                      }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleScrapToggle(item.id, item.isScrap);
                       }}
                     >
-                      {item.productName}
-                    </Typography>
-                    <Typography
-                      sx={{
-                        color: "white",
-                        fontSize: 8,
-                        fontWeight: 400,
-                      }}
-                    >
-                      <LocationOn sx={{ fontSize: "8px" }} />
-                      {item.tradePlace}
-                    </Typography>
+                      {item.isScrap ? (
+                        <FavoriteRounded sx={{ color: "#FF0B55" }} />
+                      ) : (
+                        <FavoriteBorderRounded sx={{ color: "white" }} />
+                      )}
+                    </Box>
                   </Box>
+
                   <Box
                     sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
+                      top: 206,
+                      left: "7.50px",
                       width: "100%",
+                      display: "flex",
                     }}
                   >
-                    <Typography
+                    <Box
                       sx={{
-                        color: "white",
-                        fontSize: 10,
-                        fontWeight: 500,
+                        width: "100%",
+                        display: "flex",
+                        flexDirection: "column",
                       }}
                     >
-                      {item.productPrice}원
-                    </Typography>
-                    <Typography
-                      sx={{
-                        color: "white",
-                        fontSize: 10,
-                        fontWeight: 500,
-                      }}
-                    >
-                      {item.length}
-                    </Typography>
+                      <Box>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            width: "100%",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            textAlign: "flex-start",
+                          }}
+                        >
+                          <Typography
+                            sx={{
+                              color: "white",
+                              width: "70%",
+                              fontSize: 14,
+                              fontWeight: 600,
+                              textAlign: "left",
+                              textOverflow: "ellipsis",
+                              overflow: "hidden",
+                              whiteSpace: "nowrap",
+                            }}
+                          >
+                            {item.productName}
+                          </Typography>
+                          <Typography
+                            sx={{
+                              color: "white",
+                              fontSize: 8,
+                              fontWeight: 400,
+                              mr: 0.6,
+                            }}
+                          >
+                            <LocationOn sx={{ fontSize: "8px" }} />
+                            {item.dongName}
+                          </Typography>
+                        </Box>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            width: "100%",
+                          }}
+                        >
+                          <Typography
+                            sx={{
+                              color: "white",
+                              fontSize: 10,
+                              fontWeight: 500,
+                              textAlign: "left",
+                            }}
+                          >
+                            {formatPrice(item.productPrice)}
+                          </Typography>
+                          <Box
+                            sx={{
+                              px: 0.6,
+                              py: 0.3,
+                              backgroundColor: "rgba(128, 128, 128, 0.55)",
+                              borderRadius: 2,
+                              overflow: "hidden",
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                          >
+                            <Typography
+                              sx={{
+                                color: "white",
+                                fontSize: 10,
+                                fontWeight: 500,
+                              }}
+                            >
+                              {item.length}
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </Box>
+                    </Box>
                   </Box>
                 </Box>
-              </Box>
-            </Box>
+              </Button>
+            </Grid>
+          ))
+        ) : (
+          <Grid item xs={12} sx={{ textAlign: "center", mt: 4 }}>
+            <Typography variant="h6" sx={{ textAlign: "center" }}>
+              쇼츠가 없습니다.
+            </Typography>
           </Grid>
-        ))}
+        )}
       </Grid>
     </Grid>
   );

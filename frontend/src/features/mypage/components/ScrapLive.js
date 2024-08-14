@@ -36,7 +36,16 @@ const ScrapLive = ({ items }) => {
     <Grid item xs={12}>
       <Grid container>
         {items.length === 0 ? (
-          <Grid item xs={12} sx={{ textAlign: "center", mt: 4 }}>
+          <Grid
+            item
+            xs={12}
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              textAlign: "center",
+            }}
+          >
             <Typography variant="h6" sx={{ color: "grey.700" }}>
               관심있는 라이브가 없어요. <br />
               지금 라이브를 보러 갈까요?
