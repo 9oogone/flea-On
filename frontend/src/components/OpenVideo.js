@@ -55,7 +55,6 @@ const OpenVideo = () => {
   const handleCustomerClick = () => {
     setOpen(true);
   };
-
   const handleClose = () => setOpen(false);
 
   const generateTimeSlots = (tradeTimes) => {
@@ -140,10 +139,14 @@ const OpenVideo = () => {
         ]);
       } else if (type === 2) {
         setIsRecording(data.isRecording);
+        setIsFirst(false);
       } else if (type === 3) {
         productList[data.index].status += 1;
+      }else if (type===5){
+        navigate("/");
       }
     });
+
     try {
       const resp = await getToken({ sessionName: sessionName });
       let token = resp[0];
@@ -300,7 +303,6 @@ const OpenVideo = () => {
       });
 
       dispatch(setLoading());
-      setIsFirst(false);
       stopRecording({
         recording: currentRecordingId,
       })
@@ -371,7 +373,6 @@ const OpenVideo = () => {
         }
         return newIndex;
       });
-      setIsFirst(false);
     }
   }, [isRecording, productList, isFirst]);
 
@@ -395,7 +396,7 @@ const OpenVideo = () => {
         } else {
           handleCustomerClick();
         }
-        productList[productIndex].status += 6;
+        productList[productIndex].status += 100;
 
         const messageData = {
           type: 3,
@@ -420,7 +421,7 @@ const OpenVideo = () => {
         userId: user.userId,
       });
       if (response.status === 200) {
-        productList[productIndex].status += 6;
+        productList[productIndex].status += 50;
 
         const messageData = {
           type: 3,
@@ -459,6 +460,13 @@ const OpenVideo = () => {
   const endBroadcast = async () => {
     try {
       await baseAxios().put(`/fleaOn/live/${sessionName}/off`);
+      const messageData = {
+        type: 5
+      };
+      session.current.signal({
+        data: JSON.stringify(messageData),
+        type: "chat",
+      });
       if (session.current) {
         session.current.disconnect();
       }
@@ -658,7 +666,32 @@ const OpenVideo = () => {
                 </Box>
               ) : (
                 <Box>
-                  {currentProduct?.status >= 6 ? (
+                   {currentProduct.status>99?
+                    (
+                      <Button
+                      variant="contained"
+                      color="primary"
+                      disabled
+                      onClick={() => handleReserve(currentProductIndex)}
+                      sx={{ width: "36vw", color: "white" }}
+                    >
+                      구매완료
+                    </Button>
+                    ):
+                    currentProduct.status>49?
+                    (
+                      <Button
+                      variant="contained"
+                      color="primary"
+                      disabled
+                      onClick={() => handleReserve(currentProductIndex)}
+                      sx={{ width: "36vw", color: "white" }}
+                    >
+                      예약 완료
+                    </Button>
+                    )
+                    :
+                  currentProduct?.status >= 6 ? (
                     <Button
                       variant="contained"
                       color="orange"
@@ -671,14 +704,14 @@ const OpenVideo = () => {
                         },
                       }}
                     >
-                      구매 종료
+                      구매 불가
                     </Button>
                   ) : currentProduct?.status > 0 ? (
                     <Button
                       variant="contained"
                       color="orange"
                       onClick={() => handleReserve(currentProductIndex)}
-                      disabled={currentProduct.status >= 5}
+          
                       sx={{
                         width: "60vw",
                         height: "6vh",
@@ -688,7 +721,7 @@ const OpenVideo = () => {
                         },
                       }}
                     >
-                      {currentProduct?.status >= 5 ? "구매 불가" : "줄서기"}
+                      줄서기
                     </Button>
                   ) : (
                     <Button
@@ -797,17 +830,41 @@ const OpenVideo = () => {
                   </Button>
                 ) : index === currentProductIndex ? (
                   <Box>
-                    {currentProduct.status > 0 && currentProduct.status < 6 ? (
+                    {currentProduct.status>99?
+                    (
+                      <Button
+                      variant="contained"
+                      color="primary"
+                      disabled
+                      onClick={() => handleReserve(currentProductIndex)}
+                      sx={{ width: "36vw", color: "white" }}
+                    >
+                      구매완료
+                    </Button>
+                    ):
+                    currentProduct.status>49?
+                    (
+                      <Button
+                      variant="contained"
+                      color="primary"
+                      disabled
+                      onClick={() => handleReserve(currentProductIndex)}
+                      sx={{ width: "36vw", color: "white" }}
+                    >
+                      예약 완료
+                    </Button>
+                    )
+                    :
+                    currentProduct.status > 0 && currentProduct.status < 6 ? (
                       <Button
                         variant="contained"
                         color="orange"
                         onClick={() => handleReserve(currentProductIndex)}
-                        disabled={currentProduct.status >= 6}
                         sx={{ width: "36vw", color: "white" }}
                       >
-                        {currentProduct.status >= 6 ? "구매 불가" : "줄서기"}
+                        줄서기
                       </Button>
-                    ) : (
+                    ) : currentProduct.status == 0 ? (
                       <Button
                         variant="contained"
                         color="secondary"
@@ -822,11 +879,49 @@ const OpenVideo = () => {
                       >
                         {isRecording ? "구매하기" : "상품 준비중"}
                       </Button>
+                    ):(
+                      <Button
+                      variant="contained"
+                      color="primary"
+                      disabled
+                      onClick={() =>
+                        handleBuy(
+                          currentProduct.productId,
+                          currentProductIndex
+                        )
+                      }
+                      sx={{ width: "36vw", color: "white" }}
+                    >
+                    구매 불가
+                    </Button>
                     )}
                   </Box>
                 ) : index < currentProductIndex ? (
                   <Box>
-                    {product.status === 0 ? (
+                    {product.status>99?
+                    (
+                      <Button
+                      variant="contained"
+                      color="primary"
+                      disabled
+                      sx={{ width: "36vw", color: "white" }}
+                    >
+                      구매완료
+                    </Button>
+                    ):
+                    product.status>49?
+                    (
+                      <Button
+                      variant="contained"
+                      color="primary"
+                      disabled
+                      sx={{ width: "36vw", color: "white" }}
+                    >
+                      예약 완료
+                    </Button>
+                    )
+                    :
+                    product.status === 0 ? (
                       <Button
                         variant="contained"
                         color="secondary"
@@ -840,10 +935,9 @@ const OpenVideo = () => {
                         variant="contained"
                         color="orange"
                         onClick={() => handleReserve(index)}
-                        disabled={product.status >= 6}
                         sx={{ width: "36vw", color: "white" }}
                       >
-                        {product.status >= 6 ? "구매 불가" : "줄서기"}
+                        줄서기
                       </Button>
                     ) : (
                       <Button
@@ -852,7 +946,7 @@ const OpenVideo = () => {
                         disabled={true}
                         sx={{ width: "36vw", color: "white" }}
                       >
-                        거래 완료
+                        구매 불가
                       </Button>
                     )}
                   </Box>
