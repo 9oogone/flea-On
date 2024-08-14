@@ -31,8 +31,8 @@ public class MainService {
     private final LiveScrapRepository liveScrapRepository;
     private final ShortsScrapRepository shortsScrapRepository;
 
-    public Slice<MainLiveResponse> getMainLiveListByRegionCode(int userId, List<UserRegion> findUserRegionList) {
-        Pageable pageable = PageRequest.of(0, 10);
+    public Slice<MainLiveResponse> getMainLiveListByRegionCode(int userId, List<UserRegion> findUserRegionList, int page) {
+        Pageable pageable = PageRequest.of(page, 10);
         List<MainLiveResponse> mainLiveResponseList = new ArrayList<>();
 
         for (UserRegion userRegion : findUserRegionList) {
@@ -50,7 +50,6 @@ public class MainService {
             }
         }
 
-        // 페이지네이션 처리를 위한 로직
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), mainLiveResponseList.size());
         boolean hasNext = mainLiveResponseList.size() > end;
@@ -58,6 +57,7 @@ public class MainService {
 
         return new SliceImpl<>(content, pageable, hasNext);
     }
+
 
 
     public List<UserRegion> getUserRegionByUserId(int userId) {
