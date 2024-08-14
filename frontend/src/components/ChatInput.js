@@ -24,6 +24,7 @@ const ChatInput = ({
   const inputRef = useRef(null);
 
   useEffect(() => {
+    console.log(isBuyer)
     if (inputRef.current) {
       inputRef.current.addEventListener("focus", () => {
         setFocus(true);

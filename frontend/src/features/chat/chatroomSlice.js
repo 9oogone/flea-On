@@ -11,11 +11,15 @@ export const fetchChatRoom = createAsyncThunk(
   'chatRoom/fetchChatRoom',
   async (chatID, { rejectWithValue }) => {
     try {
-      const response = await baseAxios().get(`/fleaon/chat/${chatID}/messages`);
+      const response = await baseAxios().get(`/fleaon/chat/messages`, {
+        params: { chattingId:chatID }
+      });;
+      console.log('나와라:', chatID)
       return response.data;
     } catch (err) {
+      console.error("에러 sending message:", err);
       return rejectWithValue(err.response.data);
-    }
+    }   
   }
 );
 

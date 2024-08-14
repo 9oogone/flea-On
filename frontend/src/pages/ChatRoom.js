@@ -18,7 +18,6 @@ import Filter from "badwords-ko";
 const isMobile = () => /Mobi|Android/i.test(navigator.userAgent);
 
 const formatTime = (date) => {
-  
   const hours = date.getHours().toString().padStart(2, "0");
   const minutes = date.getMinutes().toString().padStart(2, "0");
   return `${hours}:${minutes}`;
@@ -40,7 +39,6 @@ const ChatRoom = () => {
   const messagesEndRef = useRef(null);
   const isFocusedRef = useRef(false);
   const user = useSelector((state) => state.auth.user);
-  const [isBuyer, setIsBuyer] = useState(false);
   let publisher;
   const session = useRef();
 
@@ -72,8 +70,8 @@ const ChatRoom = () => {
 
   useEffect(() => {
     dispatch(fetchChatRoom(chatID)).then((data) => {
+      console.log(11)
       console.log(data);
-      setIsBuyer(data.payload.buyer);
       if (data.payload && data.payload.messageResponses) {
         const updatedMessages = data.payload.messageResponses.map((message) => {
           let isSent = message.writerId === user.userId;
@@ -152,7 +150,7 @@ const ChatRoom = () => {
         type: 1,
         chatTime: new Date().toISOString().slice(0, 19).replace("T", "T"),
       };
-      
+
       session.current.signal({
         data: JSON.stringify(messageData),
         type: "chat",
@@ -309,7 +307,7 @@ const ChatRoom = () => {
         handleSendMessage={sendMessage}
         setFocus={(focus) => (isFocusedRef.current = focus)}
         isChatNavOpen={isChatNavOpen}
-        isBuyer={isBuyer}
+        isBuyer={chat.buyer}
         setIsChatNavOpen={setIsChatNavOpen}
       />
     </div>

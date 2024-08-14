@@ -8,18 +8,33 @@ import {
 } from "@mui/icons-material";
 import { getTradeDetail } from "../features/chat/ChatApi";
 import useDidMountEffect from "../utils/useDidMountEffect";
+import baseAxios from "../utils/httpCommons";
+import { useSelector } from "react-redux";
 
 const ChatTradeDetail = ({ chatID, isOpen, onClose }) => {
+  const user = useSelector((state) => state.auth.user);
   const [detail, setDetail] = useState({});
   const [buyProducts, setBuyProducts] = useState([]);
   const [otherProducts, setOtherProducts] = useState([]);
+  const [reload, setReload] = useState(false);
 
-  useDidMountEffect(() => {
-    getTradeDetail(chatID).then((res) => {
-      setDetail(res);
-    });
-    // console.log(chatID)
+  useEffect(() => {
+    const fetchDetail = () => {
+      getTradeDetail(chatID).then((res) => {
+        console.log(res);
+        setDetail(res);
+      });
+    };
+
+    fetchDetail();
+
+    // const intervalId = setInterval(() => {
+    //   fetchDetail();
+    // }, 1000);
+
+    // return () => clearInterval(intervalId);
   }, [chatID]);
+
   useDidMountEffect(() => {
     if (detail != null) {
       console.log("ssss");
@@ -33,52 +48,74 @@ const ChatTradeDetail = ({ chatID, isOpen, onClose }) => {
 
   if (!isOpen) return null;
 
+  const handleBuy = async (productId) => {
+    console.log("productId");
+    console.log(productId);
+    try {
+      const response = await baseAxios().post("/fleaon/purchase/buy", {
+        productId: productId,
+        userId: user.userId,
+      });
+      // 요청이 성공했을 때 모달을 엽니다.
+      if (response.status === 200) {
+        console.log(response);
+      } else {
+        // 요청이 성공하지 않았을 때의 처리를 여기에 추가하세요.
+        console.error("Purchase failed:", response);
+      }
+    } catch (error) {
+      // 요청이 실패했을 때의 처리를 여기에 추가하세요.
+      console.error("Error purchasing product:", error);
+    }
+  };
+  const handleReserve = async (productId) => {
+    const response = await baseAxios().post("/fleaon/purchase/reserve", {
+      productId: productId,
+      userId: user.userId,
+    });
+  };
+  const handleCancelReserve = async (productId) => {
+    console.log(productId);
+    const response = await baseAxios().delete("/fleaon/purchase/reserve", {
+      data: {
+        productId: productId,
+        userId: user.userId,
+      },
+    });
+    console.log(response);
+  };
+
   const handleBackButtonClick = () => {
     onClose(true);
   };
-  const handleTradeCancel = (id, reservationCount) => {
+  const handleTradeCancel = async (id) => {
     //구매취소 로직
+    const response = await baseAxios().delete(`/fleaon/purchase/cancel`, {
+      data: {
+        productId: id,
+        userId: user.userId,
+      },
+    });
   };
-  const handleStatusClick = (id, reservationCount) => {
-    if (reservationCount == 0) {
+
+  const handleStatusClick = async (
+    id,
+    reservationCount,
+    currentBuyerId,
+    current
+  ) => {
+    if (currentBuyerId == 0) {
       //구매하기
+      await handleBuy(id);
     } else if (reservationCount > 5) {
       //줄 마감
-    } else if (reservationCount == -3) {
+    } else if (current == -3) {
       //예약 취소
+      await handleCancelReserve(id);
     } else {
       //예약 하기
+      await handleReserve(id);
     }
-
-    // setProducts((prev) =>
-    //   prev.map((product) =>
-    //     product.id === id
-    //       ? {
-    //           ...product,
-    //           status:
-    //             product.status === "상품취소"
-    //               ? "상품추가"
-    //               : product.status === "상품추가"
-    //               ? "상품취소"
-    //               : product.status === "줄 서기"
-    //               ? "줄 취소"
-    //               : product.status === "줄 취소"
-    //               ? "줄 서기"
-    //               : product.status,
-    //           statusColor:
-    //             product.status === "상품취소"
-    //               ? "#FF0B55"
-    //               : product.status === "상품추가"
-    //               ? "#FF0B55"
-    //               : product.status === "줄 서기"
-    //               ? "#FF5757"
-    //               : product.status === "줄 취소"
-    //               ? "#FF5757"
-    //               : "#CCCCCC",
-    //         }
-    //       : product
-    //   )
-    // );
   };
 
   const ProductItem = ({ product, productStatus, onStatusClick }) => {
@@ -98,7 +135,7 @@ const ChatTradeDetail = ({ chatID, isOpen, onClose }) => {
             fontSize: 18,
           }}
         >
-          {product.name}
+          {product.productId} {product.name}
         </Typography>
         <Typography
           sx={{
@@ -130,10 +167,19 @@ const ChatTradeDetail = ({ chatID, isOpen, onClose }) => {
           }}
         >
           <Box
-            onClick={() => onStatusClick(product.id, product.reservationCount)}
+            onClick={() =>
+              onStatusClick(product.productId, product.reservationCount)
+            }
             sx={{
               width: "100%",
-              backgroundColor: product.statusColor,
+              backgroundColor:
+                product.currentBuyerId == 0
+                  ? "#FF0B55"
+                  : product.reservationCount > 5
+                  ? "gray"
+                  : product.current == -3
+                  ? "red"
+                  : "#FF5757",
               borderRadius: 2,
               justifyContent: "center",
               alignItems: "center",
@@ -213,8 +259,7 @@ const ChatTradeDetail = ({ chatID, isOpen, onClose }) => {
             <Box sx={{ display: "flex", gap: 1 }}>
               <AccessTime sx={{ fontSize: 24 }} />
               <Typography sx={{ fontSize: 18 }}>
-                {detail.tradeDate}
-                {detail.tradeTime}
+                {detail.tradeDate} {detail.tradeTime}
               </Typography>
             </Box>
             <Box sx={{ display: "flex", gap: 1 }}>
@@ -263,10 +308,10 @@ const ChatTradeDetail = ({ chatID, isOpen, onClose }) => {
             >
               {buyProducts.map((product, index) => (
                 <ProductItem
-                  key={index}
+                  key={product.productId}
                   product={product}
                   productStatus="거래 취소"
-                  onStatusClick={handleTradeCancel}
+                  onStatusClick={() => handleTradeCancel(product.productId)}
                 />
               ))}
             </Box>
@@ -297,20 +342,27 @@ const ChatTradeDetail = ({ chatID, isOpen, onClose }) => {
                 overflowY: "auto",
               }}
             >
-              {otherProducts.map((product) => (
+              {otherProducts.map((product, index) => (
                 <ProductItem
-                  key={product.id}
+                  key={product.productId || `p${index}`}
                   product={product}
                   productStatus={
-                    product.reservationCount === 0
+                    product.currentBuyerId == 0
                       ? "상품추가"
                       : product.reservationCount > 5
                       ? "줄 마감"
-                      : product.reservationCount === -3
+                      : product.current == -3
                       ? "줄 취소"
                       : "줄 서기"
                   }
-                  onStatusClick={handleStatusClick}
+                  onStatusClick={() =>
+                    handleStatusClick(
+                      product.productId,
+                      product.reservationCount,
+                      product.currentBuyerId,
+                      product.current
+                    )
+                  }
                 />
               ))}
             </Box>
