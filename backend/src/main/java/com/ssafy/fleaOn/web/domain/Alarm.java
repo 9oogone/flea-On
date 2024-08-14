@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -32,4 +34,13 @@ public class Alarm {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private User user;
+
+    @Builder
+    public Alarm(String content, String profilePic, User user) {
+        this.content = content;
+        this.date = Timestamp.valueOf(LocalDateTime.now());
+        this.profilePic = profilePic;
+        this.isRead = false;
+        this.user = user;
+    }
 }
