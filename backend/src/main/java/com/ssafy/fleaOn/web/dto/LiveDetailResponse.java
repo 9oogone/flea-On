@@ -22,6 +22,7 @@ public class LiveDetailResponse {
     private final String liveThumbnail;
     private final String tradePlace;
     private final int isLive;
+    private final int viewCount;
     private final List<ProductResponse> products;
     private final List<LiveTradeResponse> liveTradeTimes;
 
@@ -36,6 +37,7 @@ public class LiveDetailResponse {
         this.user = user;
         this.products = products.stream().map(ProductResponse::new).collect(Collectors.toList());
         this.liveTradeTimes = liveTradeTimes.stream().map(LiveTradeResponse::new).collect(Collectors.toList());
+        this.viewCount = live.getViewCount();
     }
 
     @Getter

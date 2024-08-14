@@ -26,8 +26,7 @@ public class MainLiveResponse {
     private String liveThumbnail;
     private boolean isScrap;
     private LocalDateTime liveDate;
-
-
+    private int viewCount;
 
     public static MainLiveResponse fromEntity(Live live, List<Product> products, boolean isScrap) {
         return MainLiveResponse.builder()
@@ -40,6 +39,7 @@ public class MainLiveResponse {
                 .liveThumbnail(live.getLiveThumbnail())
                 .isScrap(isScrap)
                 .liveDate(live.getLiveDate())
+                .viewCount(live.getViewCount())
                 .build();
     }
 }
