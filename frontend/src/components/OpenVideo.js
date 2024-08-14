@@ -23,7 +23,7 @@ import FlipCameraAndroidIcon from "@mui/icons-material/FlipCameraAndroid";
 import SendIcon from "@mui/icons-material/Send";
 import CloseIcon from "@mui/icons-material/Close";
 import swipeLeftImage from "../assets/images/swipe_left.svg";
-
+import ReplayIcon from "@mui/icons-material/Replay";
 const OpenVideo = () => {
   const videoRef = useRef(null);
   const [isRecording, setIsRecording] = useState(false);
@@ -86,7 +86,6 @@ const OpenVideo = () => {
     return slots;
   };
 
-  let subscribers = [];
   const OV = useRef();
   const session = useRef();
   const user = useSelector((state) => state.auth.user);
@@ -143,6 +142,8 @@ const OpenVideo = () => {
         setIsFirst(false);
       } else if (type === 3) {
         productList[data.index].status += 1;
+      } else if (type === 4) {
+        productList[currentProductIndex].shortsId = data.shortsId;
       } else if (type === 5) {
         navigate("/");
       }
@@ -240,12 +241,20 @@ const OpenVideo = () => {
       const productsWithStatus = products.map((product) => ({
         ...product,
         status: 0,
+        shortsId: 0,
       }));
-
+      for (let index = 0; index < productsWithStatus.length; index++) {
+        const product = productsWithStatus[index];
+        if (product.sellStatus < 2) {
+          setCurrentProduct(productsWithStatus[index]); // 첫 번째 상품 설정
+          setCurrentProductIndex(index);
+          break;
+        }
+      }
       setTitle(title);
       setSeller(user);
       setProductList(productsWithStatus);
-      setCurrentProduct(productsWithStatus[0]); // 첫 번째 상품 설정
+
       setPlace(tradePlace);
       setLiveDate(live_date);
       const timeSlots = generateTimeSlots(liveTradeTimes);
@@ -350,10 +359,26 @@ const OpenVideo = () => {
             videoAddress,
             productId: currentProduct.productId,
             shortsChatRequests,
+            inputText: {
+              text: sttValue,
+            },
           };
           baseAxios()
             .post("fleaon/shorts/save", data)
-            .then((response) => {})
+            .then((response) => {
+              console.log("쇼츠 id : ", response.data);
+              console.log(" data : ", data);
+              productList[currentProductIndex].shortsId = response.data;
+              const messageData = {
+                type: 4,
+                shortsId: response.data,
+              };
+
+              session.current.signal({
+                data: JSON.stringify(messageData),
+                type: "chat",
+              });
+            })
             .catch((error) => {});
         })
         .catch((error) => {
@@ -667,7 +692,7 @@ const OpenVideo = () => {
                 </Box>
               ) : (
                 <Box>
-                  {currentProduct.status > 99 ? (
+                  {currentProduct?.status > 99 ? (
                     <Button
                       variant="contained"
                       color="primary"
@@ -677,7 +702,7 @@ const OpenVideo = () => {
                     >
                       구매완료
                     </Button>
-                  ) : currentProduct.status > 49 ? (
+                  ) : currentProduct?.status > 49 ? (
                     <Button
                       variant="contained"
                       color="primary"
@@ -798,6 +823,15 @@ const OpenVideo = () => {
                   <Typography variant="body1" sx={{ color: "white" }}>
                     가격: {product.price}원
                   </Typography>
+                </Box>
+                <Box>
+                  <Button
+                    color="google"
+                    onClick={() => navigate(`/shorts/${product.shortsId}`)}
+                    disabled={product.shortsId === 0}
+                  >
+                    <ReplayIcon />
+                  </Button>
                 </Box>
                 {isPublisher ? (
                   <Button
