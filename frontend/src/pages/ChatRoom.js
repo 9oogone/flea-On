@@ -201,7 +201,7 @@ const ChatRoom = () => {
   };
 
   const handleRejectTimeChange = async (messageId) => {
-    const message = `[System Message] 거래 시간 변경 요청이 거절되었습니다.`;
+    const message = `[System Message] 거래 시간 변경이 거절되었습니다.`;
     try {
       await sendMessageDB(chatID, message);
       setMessageList((prevMessages) =>

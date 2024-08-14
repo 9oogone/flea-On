@@ -7,7 +7,7 @@ export async function sendMessageDB(chatId, contents) {
     console.log("contents:", contents);
 
     const data = {
-      chattingId: chatId, 
+      chattingId: chatId,
       contents: contents,
       bot: false,
     };
@@ -21,7 +21,6 @@ export async function sendMessageDB(chatId, contents) {
     throw error;
   }
 }
-
 
 export async function getTradeDetail(chatId) {
   try {
@@ -38,12 +37,15 @@ export async function getTradeDetail(chatId) {
 
 export async function changeTradeTime(chatId, tradeDate, tradeTime) {
   try {
+    // 초 추가
+    const tradeTimeWithSeconds = `${tradeTime}:00`;
+
     const res = await baseURL.put(
       `/fleaon/chatbot/changetime/`,
       {
         chatId,
         tradeDate,
-        tradeTime
+        tradeTime: tradeTimeWithSeconds
       }
     );
     console.log(res);
