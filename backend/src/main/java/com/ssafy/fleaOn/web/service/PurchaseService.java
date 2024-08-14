@@ -1,9 +1,7 @@
 package com.ssafy.fleaOn.web.service;
 
 import com.ssafy.fleaOn.web.domain.*;
-import com.ssafy.fleaOn.web.dto.PurchaseCancleResponse;
-import com.ssafy.fleaOn.web.dto.PurchaseRequest;
-import com.ssafy.fleaOn.web.dto.TradeRequest;
+import com.ssafy.fleaOn.web.dto.*;
 import com.ssafy.fleaOn.web.repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,11 +31,12 @@ public class PurchaseService {
     private final ShortsRepository shortsRepository;
     private final ChattingListRepository chattingListRepository;
     private final TradeService tradeService;
+    private final ShortsService shortsService;
 
     @Autowired
     public PurchaseService(ProductRepository productRepository, LiveRepository liveRepository,
                            ReservationRepository reservationRepository, TradeRepository tradeRepository,
-                           ChattingRepository chattingRepository, RedisTemplate<String, Object> redisTemplate, UserRepository userRepository, ShortsRepository shortsRepository, ChattingListRepository chattingListRepository, TradeService tradeService) {
+                           ChattingRepository chattingRepository, RedisTemplate<String, Object> redisTemplate, UserRepository userRepository, ShortsRepository shortsRepository, ChattingListRepository chattingListRepository, TradeService tradeService, ShortsService shortsService) {
         this.productRepository = productRepository;
         this.liveRepository = liveRepository;
         this.reservationRepository = reservationRepository;
@@ -48,6 +47,7 @@ public class PurchaseService {
         this.shortsRepository = shortsRepository;
         this.chattingListRepository = chattingListRepository;
         this.tradeService = tradeService;
+        this.shortsService = shortsService;
     }
 
     @Transactional
@@ -316,7 +316,7 @@ public class PurchaseService {
         }
     }
 
-    public Shorts reUpload(int productId) {
+    public ShortsResponse reUpload(int productId) {
         Product product = productRepository.findByProductId(productId).orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
         product.discount();
         productRepository.save(product);
@@ -325,6 +325,6 @@ public class PurchaseService {
         shorts.reUpload();
         shortsRepository.save(shorts);
 
-        return shorts;
+        return shortsService.getShorts(shorts.getShortsId());
     }
 }

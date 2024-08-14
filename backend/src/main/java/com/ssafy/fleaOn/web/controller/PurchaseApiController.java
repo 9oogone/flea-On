@@ -3,10 +3,7 @@ package com.ssafy.fleaOn.web.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.fleaOn.web.domain.Shorts;
 import com.ssafy.fleaOn.web.domain.User;
-import com.ssafy.fleaOn.web.dto.CustomOAuth2User;
-import com.ssafy.fleaOn.web.dto.PurchaseCancleResponse;
-import com.ssafy.fleaOn.web.dto.PurchaseRequest;
-import com.ssafy.fleaOn.web.dto.TradeRequest;
+import com.ssafy.fleaOn.web.dto.*;
 import com.ssafy.fleaOn.web.producer.RedisQueueProducer;
 import com.ssafy.fleaOn.web.service.PurchaseService;
 import com.ssafy.fleaOn.web.service.RedisService;
@@ -297,7 +294,7 @@ public class PurchaseApiController {
                 return new ResponseEntity<>("사용자를 찾을 수 없습니다.", HttpStatus.UNAUTHORIZED);
             }
 
-            Shorts result = purchaseService.reUpload(productId);
+            ShortsResponse result = purchaseService.reUpload(productId);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             logger.error("Error processing confirm request", e);
