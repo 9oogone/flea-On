@@ -5,7 +5,7 @@ import { fetchSellLive, fetchSellShorts } from "../actions.js";
 import Switch from "../../../components/Switch";
 import Live from "./SellLive.js";
 import Shorts from "./SellShorts.js";
-import { Container, Box, Typography } from "@mui/material";
+import { Box, Typography, Grid } from "@mui/material";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import { switchTab } from "../sellSlice.js";
 
@@ -34,15 +34,19 @@ const SellList = () => {
   };
 
   return (
-    <Container sx={{ pt: 4 }}>
-      <Box
+    <Box sx={{ mb: 18 }}>
+      <Grid
         sx={{
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           width: "100%",
-          pb: 5,
-          position: "relative",
+          position: "fixed",
+          bgcolor: "white",
+          pt: 6,
+          pb: 3,
+          left: 0,
+          zIndex: 1000,
         }}
       >
         <Box
@@ -50,7 +54,7 @@ const SellList = () => {
           sx={{
             cursor: "pointer",
             position: "absolute",
-            left: 0,
+            left: 24,
           }}
         >
           <ArrowBackIosNewIcon />
@@ -64,11 +68,11 @@ const SellList = () => {
         >
           판매내역
         </Typography>
-      </Box>
-      <Box>
+      </Grid>
+      <Grid container sx={{ paddingTop: "12vh" }}>
         {selectedTab === "live" && <Live items={live} />}
         {selectedTab === "shorts" && <Shorts items={shorts} />}
-        <Box
+        <Grid
           sx={{
             position: "fixed",
             bottom: 100,
@@ -77,9 +81,9 @@ const SellList = () => {
           }}
         >
           <Switch options={switchOptions} type="sell" />
-        </Box>
-      </Box>
-    </Container>
+        </Grid>
+      </Grid>
+    </Box>
   );
 };
 

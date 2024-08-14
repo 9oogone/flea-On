@@ -15,11 +15,11 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: transparent;
   display: flex;
   justify-content: center;
   align-items: flex-end;
   z-index: 3000;
+  background-color: "background.paper";
 }
 
 .modalContent {
@@ -41,11 +41,19 @@
   overflow: hidden;
 }
 
+.modalImgOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
 .thumbnailImage {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: brightness(0.5); /* 이미지 어둡게 */
 }
 
 .titleOverlay {

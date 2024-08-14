@@ -27,6 +27,8 @@ const Shorts = ({ items }) => {
               justifyContent: "center",
               alignItems: "center",
               height: "60vh",
+              position: "fixed",
+              backgroundColor: "white",
             }}
           >
             <Typography sx={{ textAlign: "center" }}>
@@ -37,8 +39,10 @@ const Shorts = ({ items }) => {
           <Box>
             <Box
               sx={{
+                width: "100%",
                 pb: 1,
                 borderBottom: "1px solid rgba(84, 84, 86, 0.34)",
+                backgroundColor: "white",
               }}
             >
               <Typography sx={{ fontSize: 16, fontWeight: "600", px: 1 }}>
@@ -52,8 +56,12 @@ const Shorts = ({ items }) => {
                   sx={{
                     width: "100%",
                     height: "100%",
+                    px: 2,
                     py: 2,
                     borderTop: "0.33px solid rgba(84, 84, 86, 0.34)",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    display: "flex",
                     flexDirection: "column",
                   }}
                 >
@@ -62,7 +70,7 @@ const Shorts = ({ items }) => {
                       justifyContent: "space-between",
                       alignItems: "center",
                       display: "flex",
-                      width: "100%",
+                      width: "90%",
                       gap: 1,
                     }}
                   >
@@ -87,6 +95,7 @@ const Shorts = ({ items }) => {
                           sx={{
                             color: "black",
                             fontSize: 18,
+                            wordWrap: "break-word",
                           }}
                         >
                           {item.productName}

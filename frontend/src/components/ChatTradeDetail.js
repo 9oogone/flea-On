@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Typography, Modal } from "@mui/material";
 import {
   ArrowBackIosNew,
@@ -11,25 +11,25 @@ import useDidMountEffect from "../utils/useDidMountEffect";
 
 const ChatTradeDetail = ({ chatID, isOpen, onClose }) => {
   const [detail, setDetail] = useState({});
-  const [buyProducts, setBuyProducts] = useState([])
-  const [otherProducts, setOtherProducts] = useState([])
-  
-  useDidMountEffect(()=>{
-    getTradeDetail(chatID).then((res)=>{
+  const [buyProducts, setBuyProducts] = useState([]);
+  const [otherProducts, setOtherProducts] = useState([]);
+
+  useDidMountEffect(() => {
+    getTradeDetail(chatID).then((res) => {
       setDetail(res);
-    })
+    });
     // console.log(chatID)
-  },[chatID])
-  useDidMountEffect(()=>{
-    if(detail!=null){
-      console.log("ssss")
-    console.log(detail)
-    setBuyProducts(detail.buyProduct)
-    console.log(detail.buyProduct)
-    setOtherProducts(detail.otherProduct)
-    console.log(detail.otherProduct)
-  }
-  },[detail])
+  }, [chatID]);
+  useDidMountEffect(() => {
+    if (detail != null) {
+      console.log("ssss");
+      console.log(detail);
+      setBuyProducts(detail.buyProduct);
+      console.log(detail.buyProduct);
+      setOtherProducts(detail.otherProduct);
+      console.log(detail.otherProduct);
+    }
+  }, [detail]);
 
   if (!isOpen) return null;
 
@@ -38,15 +38,15 @@ const ChatTradeDetail = ({ chatID, isOpen, onClose }) => {
   };
   const handleTradeCancel = (id, reservationCount) => {
     //구매취소 로직
-  }
+  };
   const handleStatusClick = (id, reservationCount) => {
-    if(reservationCount==0){
+    if (reservationCount == 0) {
       //구매하기
-    }else if(reservationCount>5){
+    } else if (reservationCount > 5) {
       //줄 마감
-    }else if(reservationCount==-3){ 
+    } else if (reservationCount == -3) {
       //예약 취소
-    }else{
+    } else {
       //예약 하기
     }
 
@@ -79,10 +79,9 @@ const ChatTradeDetail = ({ chatID, isOpen, onClose }) => {
     //       : product
     //   )
     // );
-
   };
 
-  const ProductItem = ({ product,productStatus, onStatusClick }) => {
+  const ProductItem = ({ product, productStatus, onStatusClick }) => {
     return (
       <Box
         sx={{
@@ -214,7 +213,8 @@ const ChatTradeDetail = ({ chatID, isOpen, onClose }) => {
             <Box sx={{ display: "flex", gap: 1 }}>
               <AccessTime sx={{ fontSize: 24 }} />
               <Typography sx={{ fontSize: 18 }}>
-                {detail.tradeDate}{detail.tradeTime}
+                {detail.tradeDate}
+                {detail.tradeTime}
               </Typography>
             </Box>
             <Box sx={{ display: "flex", gap: 1 }}>
@@ -261,11 +261,11 @@ const ChatTradeDetail = ({ chatID, isOpen, onClose }) => {
                 overflowY: "auto",
               }}
             >
-              {buyProducts.map((product,index) => (
+              {buyProducts.map((product, index) => (
                 <ProductItem
-                  key={product.id}
+                  key={index}
                   product={product}
-                  productStatus = "거래 취소"
+                  productStatus="거래 취소"
                   onStatusClick={handleTradeCancel}
                 />
               ))}
@@ -301,7 +301,15 @@ const ChatTradeDetail = ({ chatID, isOpen, onClose }) => {
                 <ProductItem
                   key={product.id}
                   product={product}
-                  productStatus={product.reservationCount==0?"상품추가":product.reservationCount>5?"줄 마감":product.reservationCount==-3?"줄 취소":"줄 서기"}
+                  productStatus={
+                    product.reservationCount === 0
+                      ? "상품추가"
+                      : product.reservationCount > 5
+                      ? "줄 마감"
+                      : product.reservationCount === -3
+                      ? "줄 취소"
+                      : "줄 서기"
+                  }
                   onStatusClick={handleStatusClick}
                 />
               ))}

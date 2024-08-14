@@ -30,6 +30,8 @@ const Buys = ({ items }) => {
                 key={index}
                 sx={{
                   py: 2,
+                  width: "100%",
+                  height: "100%",
                   borderBottom: "0.33px solid rgba(84, 84, 86, 0.34)",
                   justifyContent: "center",
                   alignItems: "center",
