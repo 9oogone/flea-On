@@ -34,8 +34,6 @@ const OpenVideo = () => {
   const [productList, setProductList] = useState([]);
   const [currentProductIndex, setCurrentProductIndex] = useState(0);
   const [selectedProductId, setSelectedProductId] = useState(null);
-  const [isPurchaseCompleted, setIsPurchaseCompleted] = useState(false); // 추가
-  const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태를 추가합니다.
   const [isFirst, setIsFirst] = useState(true);
   const dispatch = useDispatch();
   const { sessionName } = useParams();
@@ -53,11 +51,8 @@ const OpenVideo = () => {
   const [times, setTimes] = useState([]);
   const [isFrontCamera, setIsFrontCamera] = useState(false);
   const navigate = useNavigate();
-  const [isSold, setIsSold] = useState(false);
-  const [reserveCount, setReserveCount] = useState(0);
 
   const handleCustomerClick = () => {
-    // 이미 가져온 데이터를 사용하여 상태 업데이트
     setOpen(true);
   };
   const handleClose = () => setOpen(false);
@@ -100,7 +95,7 @@ const OpenVideo = () => {
       session.current.disconnect();
     }
     if (publisher) {
-      publisher = null;
+      setPublisher(null);
     }
   };
 
@@ -127,8 +122,6 @@ const OpenVideo = () => {
         resolution: "405x1080",
         frameRate: 15,
       });
-      console.log("Stream created: ", event.stream);
-      // subscribers.push(subscriber);
       subscriber.addVideoElement(videoRef.current);
     });
     session.on("signal:chat", (event) => {
@@ -146,13 +139,8 @@ const OpenVideo = () => {
         ]);
       } else if (type === 2) {
         setIsRecording(data.isRecording);
-        setIsFirst(false);
-        console.log("isFirst : ", isFirst);
       } else if (type === 3) {
-        setIsSold(data.isSold);
-        // setIsPurchaseCompleted(true); // 추가
-      } else if (type === 4) {
-        setReserveCount(data.reserveCount);
+        productList[data.index].status += 1;
       }
     });
     try {
@@ -196,8 +184,6 @@ const OpenVideo = () => {
       const videoDevices = devices.filter(
         (device) => device.kind === "videoinput"
       );
-
-      console.log(videoDevices);
       if (videoDevices.length > 1) {
         const newPublisher = OV.current.initPublisher("htmlVideo", {
           videoSource: isFrontCamera
@@ -214,13 +200,9 @@ const OpenVideo = () => {
         setIsFrontCamera(!isFrontCamera);
 
         session.current.unpublish(publisher.current).then(() => {
-          console.log("Old publisher unpublished!");
-
           publisher.current = newPublisher;
-
           session.current.publish(newPublisher).then(() => {
             publisher.current.addVideoElement(videoRef.current);
-            console.log("New publisher published!");
           });
         });
       }
@@ -249,17 +231,21 @@ const OpenVideo = () => {
         liveTradeTimes,
         user,
       } = response.data;
-      console.log(response.data);
+
+      const productsWithStatus = products.map((product) => ({
+        ...product,
+        status: 0,
+      }));
+
       setTitle(title);
       setSeller(user);
-      setProductList(products);
-      setCurrentProduct(products[0]); // 첫 번째 상품 설정
+      setProductList(productsWithStatus);
+      setCurrentProduct(productsWithStatus[0]); // 첫 번째 상품 설정
       setPlace(tradePlace);
       setLiveDate(live_date);
       const timeSlots = generateTimeSlots(liveTradeTimes);
-      console.log("timeSlots : ", timeSlots);
-      console.log("liveDate : ", liveDate);
       setTimes(timeSlots);
+      console.log(productsWithStatus, productsWithStatus[0]);
     } catch (error) {
       console.error("상품 목록 가져오기 오류:", error);
     }
@@ -302,16 +288,18 @@ const OpenVideo = () => {
   const handleRecordStop = () => {
     if (session.current) {
       stop();
-      dispatch(setLoading());
-      setIsFirst(false);
       const messageData = {
         type: 2,
         isRecording: false,
       };
+
       session.current.signal({
         data: JSON.stringify(messageData),
         type: "chat",
       });
+
+      dispatch(setLoading());
+      setIsFirst(false);
       stopRecording({
         recording: currentRecordingId,
       })
@@ -342,21 +330,10 @@ const OpenVideo = () => {
             .map((message) => {
               const messageTime = new Date(message.time);
               const timeDifferenceInMs = messageTime - recordStartTime;
-              const messageHours = Math.floor(timeDifferenceInMs / 3600000)
-                .toString()
-                .padStart(2, "0");
-              const messageMinutes = Math.floor(
-                (timeDifferenceInMs % 3600000) / 60000
-              )
-                .toString()
-                .padStart(2, "0");
-              const messageSeconds = Math.floor(timeDifferenceInMs % 60000)
-                .toString()
-                .padStart(2, "0");
-
-              // const formattedTime = `${messageHours}:${messageMinutes}:${messageSeconds}`;
+              const messageSeconds = Math.floor(
+                timeDifferenceInMs / 1000
+              ).toString();
               const formattedTime = `${messageSeconds}`;
-
               return {
                 content: message.message,
                 time: formattedTime,
@@ -374,10 +351,6 @@ const OpenVideo = () => {
             .post("fleaon/shorts/save", data)
             .then((response) => {})
             .catch((error) => {});
-          // setCurrentProductIndex(currentProductIndex + 1);
-          // if (currentProductIndex < productList.length - 1) {
-          //   setCurrentProduct(productList[currentProductIndex + 1]);
-          // }
         })
         .catch((error) => {
           dispatch(unSetLoading());
@@ -388,9 +361,8 @@ const OpenVideo = () => {
   };
 
   useEffect(() => {
-    console.log("isRecording이 바뀌면 들어는 와?", isRecording, isFirst);
+    console.log("들어왔니?", isRecording);
     if (!isRecording && !isFirst) {
-      console.log("isRecording이 바뀌면 조건은 맞아?", isRecording, isFirst);
       setCurrentProductIndex((prevIndex) => {
         const newIndex = prevIndex + 1;
         if (newIndex < productList.length) {
@@ -398,9 +370,7 @@ const OpenVideo = () => {
         }
         return newIndex;
       });
-      setIsPurchaseCompleted(false);
-      setIsSold(false);
-      setReserveCount(0);
+      setIsFirst(false);
     }
   }, [isRecording, productList, isFirst]);
 
@@ -411,7 +381,7 @@ const OpenVideo = () => {
     setProductList(newProductList);
   };
 
-  const handleBuy = async (productId) => {
+  const handleBuy = async (productId, productIndex) => {
     setSelectedProductId(productId);
     try {
       const response = await baseAxios().post("/fleaon/purchase/buy", {
@@ -424,11 +394,11 @@ const OpenVideo = () => {
         } else {
           handleCustomerClick();
         }
-        setIsSold(true);
-        setIsPurchaseCompleted(true); // 추가
+        productList[productIndex].status += 6;
+
         const messageData = {
           type: 3,
-          isSold: true,
+          productIndex: productIndex,
         };
         session.current.signal({
           data: JSON.stringify(messageData),
@@ -442,18 +412,18 @@ const OpenVideo = () => {
     }
   };
 
-  const handleReserve = async () => {
+  const handleReserve = async (productIndex) => {
     try {
       const response = await baseAxios().post("fleaon/purchase/reserve", {
-        productId: productList[currentProductIndex].productId,
+        productId: productList[productIndex].productId,
         userId: user.userId,
       });
       if (response.status === 200) {
-        setReserveCount(reserveCount + 1);
-        setIsPurchaseCompleted(true);
+        productList[productIndex].status += 6;
+
         const messageData = {
-          type: 4,
-          reserveCount: reserveCount + 1,
+          type: 3,
+          productIndex: productIndex,
         };
         session.current.signal({
           data: JSON.stringify(messageData),
@@ -488,6 +458,12 @@ const OpenVideo = () => {
   const endBroadcast = async () => {
     try {
       await baseAxios().put(`/fleaOn/live/${sessionName}/off`);
+      if (session.current) {
+        session.current.disconnect();
+      }
+      if (publisher) {
+        setPublisher(null);
+      }
       navigate("/");
     } catch (error) {
       console.error("방송 종료 실패", error);
@@ -681,33 +657,46 @@ const OpenVideo = () => {
                 </Box>
               ) : (
                 <Box>
-                  {isSold ? (
-                    !isPurchaseCompleted ? (
-                      <Button
-                        variant="contained"
-                        color="orange"
-                        onClick={handleReserve}
-                        disabled={reserveCount >= 5}
-                        sx={{ width: "60vw", height: "6vh" }}
-                      >
-                        {reserveCount >= 5 ? "구매 불가" : "줄서기"}
-                      </Button>
-                    ) : (
-                      <Button
-                        variant="contained"
-                        color="orange"
-                        disabled
-                        sx={{ width: "60vw", height: "6vh" }}
-                      >
-                        구매 종료
-                      </Button>
-                    )
+                  {currentProduct?.status >= 6 ? (
+                    <Button
+                      variant="contained"
+                      color="orange"
+                      disabled
+                      sx={{
+                        width: "60vw",
+                        height: "6vh",
+                        "&.Mui-disabled": {
+                          color: "white",
+                        },
+                      }}
+                    >
+                      구매 종료
+                    </Button>
+                  ) : currentProduct?.status > 0 ? (
+                    <Button
+                      variant="contained"
+                      color="orange"
+                      onClick={() => handleReserve(currentProductIndex)}
+                      disabled={currentProduct.status >= 5}
+                      sx={{
+                        width: "60vw",
+                        height: "6vh",
+                        color: "white",
+                        "&.Mui-disabled": {
+                          color: "white",
+                        },
+                      }}
+                    >
+                      {currentProduct?.status >= 5 ? "구매 불가" : "줄서기"}
+                    </Button>
                   ) : (
                     <Button
                       variant="contained"
                       color="secondary"
                       disabled={!isRecording}
-                      onClick={() => handleBuy(currentProduct.id)}
+                      onClick={() =>
+                        handleBuy(currentProduct.productId, currentProductIndex)
+                      }
                       sx={{ width: "60vw", height: "6vh" }}
                     >
                       {isRecording ? "구매하기" : "상품 준비중"}
@@ -805,23 +794,75 @@ const OpenVideo = () => {
                       ? "방송 중"
                       : "이 상품 준비하기"}
                   </Button>
+                ) : index === currentProductIndex ? (
+                  <Box>
+                    {currentProduct.status > 0 && currentProduct.status < 6 ? (
+                      <Button
+                        variant="contained"
+                        color="orange"
+                        onClick={() => handleReserve(currentProductIndex)}
+                        disabled={currentProduct.status >= 6}
+                        sx={{ width: "36vw", color: "white" }}
+                      >
+                        {currentProduct.status >= 6 ? "구매 불가" : "줄서기"}
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="contained"
+                        color="secondary"
+                        disabled={!isRecording}
+                        onClick={() =>
+                          handleBuy(
+                            currentProduct.productId,
+                            currentProductIndex
+                          )
+                        }
+                        sx={{ width: "36vw", color: "white" }}
+                      >
+                        {isRecording ? "구매하기" : "상품 준비중"}
+                      </Button>
+                    )}
+                  </Box>
+                ) : index < currentProductIndex ? (
+                  <Box>
+                    {product.status === 0 ? (
+                      <Button
+                        variant="contained"
+                        color="secondary"
+                        onClick={() => handleBuy(product.productId, index)}
+                        sx={{ width: "36vw", color: "white" }}
+                      >
+                        구매하기
+                      </Button>
+                    ) : product.status > 0 && product.status < 6 ? (
+                      <Button
+                        variant="contained"
+                        color="orange"
+                        onClick={() => handleReserve(index)}
+                        disabled={product.status >= 6}
+                        sx={{ width: "36vw", color: "white" }}
+                      >
+                        {product.status >= 6 ? "구매 불가" : "줄서기"}
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="contained"
+                        color="secondary"
+                        disabled={true}
+                        sx={{ width: "36vw", color: "white" }}
+                      >
+                        거래 완료
+                      </Button>
+                    )}
+                  </Box>
                 ) : (
                   <Button
                     variant="contained"
-                    color={
-                      index === currentProductIndex ? "secondary" : "primary"
-                    }
-                    disabled={index !== currentProductIndex}
-                    onClick={() => handleBuy(product.id)}
-                    sx={{
-                      width: "36vw",
-                      color: "white",
-                      "&.Mui-disabled": {
-                        color: "white",
-                      },
-                    }}
+                    color="primary"
+                    disabled={true}
+                    sx={{ width: "36vw", color: "white" }}
                   >
-                    {index === currentProductIndex ? "구매하기" : "방송예정"}
+                    방송예정
                   </Button>
                 )}
               </Box>
@@ -835,7 +876,7 @@ const OpenVideo = () => {
         place={place}
         liveDate={liveDate}
         times={times}
-        currentProductIndex={productList[currentProductIndex]?.productId}
+        selectedProductId={selectedProductId}
         userId={user.userId}
         sellerId={seller.userId}
         liveId={sessionName}
