@@ -46,8 +46,8 @@ public class PurchaseApiController {
             redisQueueProducer.sendPurchaseRequest(request);
 
             // 결과를 일정 시간 동안 폴링하여 조회
-            int maxRetries = 10;  // 최대 10번 시도
-            int retryInterval = 100; // 1초 간격으로 시도
+            int maxRetries = 20;  // 최대 10번 시도
+            int retryInterval = 50; // 1초 간격으로 시도
 
             Integer result = null;
             for (int i = 0; i < maxRetries; i++) {
@@ -76,8 +76,8 @@ public class PurchaseApiController {
             redisQueueProducer.sendCancelPurchaseRequest(request);
 
             // 결과를 일정 시간 동안 폴링하여 조회
-            int maxRetries = 10;  // 최대 10번 시도
-            int retryInterval = 100; // 1초 간격으로 시도
+            int maxRetries = 20;  // 최대 10번 시도
+            int retryInterval = 50; // 1초 간격으로 시도
 
             PurchaseCancleResponse result = null;
             for (int i = 0; i < maxRetries; i++) {
@@ -109,8 +109,8 @@ public class PurchaseApiController {
             redisQueueProducer.sendReservationRequest(request);
 
             // 결과를 일정 시간 동안 폴링하여 조회
-            int maxRetries = 10;  // 최대 10번 시도
-            int retryInterval = 100; // 1초 간격으로 시도
+            int maxRetries = 20;  // 최대 10번 시도
+            int retryInterval = 50; // 1초 간격으로 시도
 
             Integer result = null;
             for (int i = 0; i < maxRetries; i++) {
@@ -139,8 +139,8 @@ public class PurchaseApiController {
             redisQueueProducer.sendCancelReservationRequest(request);
 
             // 결과를 일정 시간 동안 폴링하여 조회
-            int maxRetries = 10;  // 최대 10번 시도
-            int retryInterval = 100; // 1초 간격으로 시도
+            int maxRetries = 20;  // 최대 10번 시도
+            int retryInterval = 50; // 1초 간격으로 시도
 
             Integer result = null;
             for (int i = 0; i < maxRetries; i++) {
@@ -169,8 +169,8 @@ public class PurchaseApiController {
             redisQueueProducer.sendConfirmPurchaseRequest(request);
 
             // 결과를 일정 시간 동안 폴링하여 조회
-            int maxRetries = 10;  // 최대 10번 시도
-            int retryInterval = 100; // 1초 간격으로 시도
+            int maxRetries = 20;  // 최대 10번 시도
+            int retryInterval = 50; // 1초 간격으로 시도
 
             String result = null;
             for (int i = 0; i < maxRetries; i++) {
@@ -200,8 +200,8 @@ public class PurchaseApiController {
             redisQueueProducer.sendConfirmTradeRequest(request);
 
             // 결과를 일정 시간 동안 폴링하여 조회
-            int maxRetries = 10;  // 최대 10번 시도
-            int retryInterval = 100; // 1초 간격으로 시도
+            int maxRetries = 20;  // 최대 10번 시도
+            int retryInterval = 50; // 1초 간격으로 시도
 
             String result = null;
             for (int i = 0; i < maxRetries; i++) {
@@ -239,8 +239,8 @@ public class PurchaseApiController {
             redisQueueProducer.sendBreakTradeRequest(chatId, user.getUserId());
 
             // 결과를 일정 시간 동안 폴링하여 조회
-            int maxRetries = 10;  // 최대 10번 시도
-            int retryInterval = 100; // 1초 간격으로 시도
+            int maxRetries = 20;  // 최대 10번 시도
+            int retryInterval = 50; // 1초 간격으로 시도
 
             List<PurchaseCancleResponse> result = null;
             String redisKey = "breakTradeResult:" + chatId + ":" + user.getUserId(); // 정확한 Redis 키 설정
