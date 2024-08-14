@@ -8,6 +8,9 @@ import baseAxios from "../utils/httpCommons";
 import { useNavigate } from "react-router-dom";
 import { fetchUserInfo } from "../features/auth/actions";
 import { fetchShortList } from "../features/shorts/actions";
+import useDidMountEffect from "../utils/useDidMountEffect";
+import { useInView } from 'react-intersection-observer';
+
 const HomePage = () => {
   const selectedTab = useSelector((state) => state.content.selectedTab);
   const [hasLive, setHasLive] = useState(false);
@@ -15,9 +18,16 @@ const HomePage = () => {
   const [shorts, setShorts] = useState([]);
   const [live, setLive] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [scrollLoading, setScrollLoading] = useState();
   const [error, setError] = useState(null);
+  const [page, setPage] = useState(0);
   const navigate = useNavigate();
-
+  const [trigger,setTrigger] = useState(0);
+  const [isLast, setIsLast] = useState(true)
+  const [ref, inView] = useInView({
+    triggerOnce: false,
+    threshold: 0.5,  // 화면에 절반 이상 보이면 트리거
+  });
   useEffect(() => {
     const checkLiveExistence = async () => {
       try {
@@ -37,6 +47,26 @@ const HomePage = () => {
     checkLiveExistence();
   }, []);
 
+  useEffect(() => {
+
+    if (inView && !scrollLoading) {
+      console.log(123123)
+      setPage((prevPage) => prevPage + 1);
+      setTrigger(trigger+1)
+    }
+  }, [inView, scrollLoading]);
+
+  // const handleScroll = () => {
+  //   const scrollHeight = document.documentElement.scrollHeight;
+  //   const scrollTop = document.documentElement.scrollTop;
+  //   const clientHeight = window.innerHeight;
+  
+  //   if (scrollTop + clientHeight >= scrollHeight - 5 && !loading) {
+  //     console.log(12345)
+  //     setPage((prevPage) => prevPage + 1);
+  //   }
+  // };
+
   const startLiveBroadcast = async (liveId) => {
     try {
       await baseAxios().put(`/fleaOn/live/${liveId}/on`);
@@ -48,7 +78,9 @@ const HomePage = () => {
 
   const fetchShorts = async () => {
     try {
-      const response = await baseAxios().get("/fleaon/mainShorts");
+      const response = await baseAxios().get(`/fleaon/mainShorts?page=${page}`
+      );
+      console.log(response)
       const shortsData = response.data.content.map((short) => ({
         id: short.shortsId,
         productName: short.productName,
@@ -59,19 +91,20 @@ const HomePage = () => {
         shortsThumbnail: short.shortsThumbnail,
         shortsId: short.shortsId,
       }));
-
-      setShorts(shortsData);
-      setLoading(false);
+      setIsLast(response.data.last)
+      setShorts((prevShorts) => [...prevShorts, ...shortsData]);
+      setScrollLoading(false);
     } catch (error) {
       console.error("Error fetching shorts:", error);
       setError(error.message);
-      setLoading(false);
+      setScrollLoading(false);
     }
   };
 
   const fetchLiveData = async () => {
     try {
-      const response = await baseAxios().get("/fleaon/mainLive");
+      const response = await baseAxios().get(`/fleaon/mainLive?page=${page}`
+      );
       const liveData = response.data.content.map((liveItem) => ({
         id: liveItem.liveId,
         title: liveItem.liveTitle,
@@ -83,14 +116,14 @@ const HomePage = () => {
         scrap: liveItem.scrap,
         liveDate: liveItem.liveDate,
       }));
-
-      setLive(liveData);
+      setIsLast(response.data.last)
+      setLive((prevLive) => [...prevLive, ...liveData]);
       console.log(liveData);
-      setLoading(false);
+      setScrollLoading(false);
     } catch (error) {
       console.error("Error fetching live data:", error);
       setError(error.message);
-      setLoading(false);
+      setScrollLoading(false);
     }
   };
 
@@ -98,14 +131,34 @@ const HomePage = () => {
   useEffect(() => {
     dispatch(fetchUserInfo());
     dispatch(fetchShortList());
-    fetchShorts();
-    fetchLiveData();
+    // fetchShorts();
+    // fetchLiveData();
   }, [dispatch]);
+
+  useDidMountEffect(()=>{
+    if(trigger!=0){
+      console.log("22")
+      setScrollLoading(true)
+      if(selectedTab==="shorts"){
+        fetchShorts();
+      }else{
+        fetchLiveData();
+      }
+      setScrollLoading(false)
+  }
+  },[trigger])
 
   const contents = {
     live: live,
     shorts: shorts,
   };
+  useDidMountEffect(()=>{
+    console.log("1231")
+    setShorts([])
+    setLive([])
+    setPage(0)
+    setTrigger(trigger+1)
+  },[selectedTab])
 
   const switchOptions = [
     { value: "live", label: "Live" },
@@ -154,6 +207,7 @@ const HomePage = () => {
         )}
         {selectedTab === "live" && <LiveBroadcasts items={contents.live} />}
         {selectedTab === "shorts" && <Shorts items={contents.shorts} />}
+        {!isLast && (<div ref={ref}>로딩</div>)}
         <Box
           sx={{
             position: "fixed",
