@@ -60,7 +60,7 @@ public class MainApiController {
 
     @Operation(summary = "쇼츠 목록 조회", description = "쇼츠 목록을 조회할 때 사용합니다. ")
     @GetMapping("/mainShorts")
-    public ResponseEntity<?> getMainShorts(HttpServletRequest request) {
+    public ResponseEntity<?> getMainShorts(HttpServletRequest request, @RequestParam("page") int page) {
         try {
             String authorizationToken = request.getHeader("Authorization");
             if (authorizationToken.isEmpty() || !authorizationToken.startsWith("Bearer ")) {
@@ -72,7 +72,7 @@ public class MainApiController {
             if (user == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당하는 사용자를 찾을 수 없습니다 .");
             }
-            Slice<MainShortsResponse> shortsSlice = mainService.getMainShortsListByUploadDate(user.getUserId());
+            Slice<MainShortsResponse> shortsSlice = mainService.getMainShortsListByUploadDate(user.getUserId(), page);
             if (shortsSlice.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No short data found");
             }
