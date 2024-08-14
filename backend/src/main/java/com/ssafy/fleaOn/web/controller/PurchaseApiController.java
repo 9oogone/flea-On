@@ -1,12 +1,11 @@
 package com.ssafy.fleaOn.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ssafy.fleaOn.web.domain.Shorts;
 import com.ssafy.fleaOn.web.domain.User;
-import com.ssafy.fleaOn.web.dto.CustomOAuth2User;
-import com.ssafy.fleaOn.web.dto.PurchaseCancleResponse;
-import com.ssafy.fleaOn.web.dto.PurchaseRequest;
-import com.ssafy.fleaOn.web.dto.TradeRequest;
+import com.ssafy.fleaOn.web.dto.*;
 import com.ssafy.fleaOn.web.producer.RedisQueueProducer;
+import com.ssafy.fleaOn.web.service.PurchaseService;
 import com.ssafy.fleaOn.web.service.RedisService;
 import com.ssafy.fleaOn.web.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,7 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,14 +35,16 @@ public class PurchaseApiController {
     private final UserService userService;
     private final RedisService redisService;
     private final ObjectMapper objectMapper;
+    private final PurchaseService purchaseService;
 
     @Autowired
-    public PurchaseApiController(RedisQueueProducer redisQueueProducer, RedisTemplate<String, Object> redisTemplate, UserService userService, RedisService redisService, ObjectMapper objectMapper) {
+    public PurchaseApiController(RedisQueueProducer redisQueueProducer, RedisTemplate<String, Object> redisTemplate, UserService userService, RedisService redisService, ObjectMapper objectMapper, PurchaseService purchaseService) {
         this.redisQueueProducer = redisQueueProducer;
         this.redisTemplate = redisTemplate;
         this.userService = userService;
         this.redisService = redisService;
         this.objectMapper = objectMapper;
+        this.purchaseService = purchaseService;
     }
 
     @PostMapping("/buy")
@@ -199,6 +202,7 @@ public class PurchaseApiController {
                 logger.info("null here!!");
                 return ResponseEntity.ok("not confirmed"); // 아직 결과가 없는 경우
             }
+            System.out.println(result);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             logger.error("Error processing confirm request", e);
@@ -274,6 +278,27 @@ public class PurchaseApiController {
         } catch (Exception e) {
             logger.error("Error processing break trade request", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("거래 파기 중 오류 발생");
+        }
+    }
+
+    @PutMapping("/reUpload")
+    @Operation(summary = "끌어올리기", description = "쇼츠를 10% 할인된 가격으로 다시 끌어올립니다.")
+    public ResponseEntity<?> reUpload(@RequestParam int productId) {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
+            String userEmail = oAuth2User.getEmail(); // 현재 인증된 사용자의 이메일 가져오기
+
+            User user = userService.findByEmail(userEmail); // 이메일로 사용자 정보를 가져옴
+            if (user == null) {
+                return new ResponseEntity<>("사용자를 찾을 수 없습니다.", HttpStatus.UNAUTHORIZED);
+            }
+
+            ShortsResponse result = purchaseService.reUpload(productId);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            logger.error("Error processing confirm request", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error processing confirm request");
         }
     }
 

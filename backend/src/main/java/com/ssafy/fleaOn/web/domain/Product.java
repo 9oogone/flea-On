@@ -78,4 +78,8 @@ public class Product {
     public void sellEnd(){
         this.end = true;
     }
+
+    public void discount(){
+        this.price = (int)(this.price*0.9);
+    }
 }

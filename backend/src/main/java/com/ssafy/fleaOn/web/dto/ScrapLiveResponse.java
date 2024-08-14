@@ -20,4 +20,5 @@ public class ScrapLiveResponse {
     private String thumbnail;
     private String dongName;
     private int liveId;
+    private int viewCount;
 }

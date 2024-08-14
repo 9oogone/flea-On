@@ -62,4 +62,8 @@ public class Shorts {
         this.seller = user;
         this.uploadDate = uploadDate;
     }
+
+    public void reUpload(){
+        this.uploadDate = LocalDateTime.now();
+    }
 }

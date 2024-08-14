@@ -2,12 +2,10 @@ package com.ssafy.fleaOn.web.service;
 
 import com.ssafy.fleaOn.web.config.handler.FileHandler;
 import com.ssafy.fleaOn.web.domain.*;
-import com.ssafy.fleaOn.web.dto.AddLiveRequest;
-import com.ssafy.fleaOn.web.dto.CustomOAuth2User;
-import com.ssafy.fleaOn.web.dto.UpdateLiveRequest;
-import com.ssafy.fleaOn.web.dto.LiveDetailResponse;
+import com.ssafy.fleaOn.web.dto.*;
 import com.ssafy.fleaOn.web.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -15,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,6 +27,7 @@ public class LiveService {
     private final UserRepository userRepository;
     private final RegionInfoRepository regionInfoRepository;
     private final FileHandler fileHandler;
+    private final ShortsRepository shortsRepository;
 
     @Transactional
     public Live saveLive(AddLiveRequest addLiveRequest, User user, String thumbnail) throws Exception {
@@ -114,10 +114,7 @@ public class LiveService {
 
     public LiveDetailResponse findLiveWithProducts(int liveId) {
         Live live = findById(liveId);
-        List<Product> products = productRepository.findByLive_LiveId(liveId).orElseThrow(() -> new IllegalArgumentException("no products found for live id: " + liveId));
-        List<LiveTradeTime> liveTradeTimes = liveTradeTimeRepository.findByLive_LiveId(liveId).orElseThrow(() -> new IllegalArgumentException("no teade times found for live id: " + liveId));
-        User user = userRepository.findById(live.getSeller().getUserId()).orElseThrow(() -> new IllegalArgumentException("no sellers found for live id: " + liveId));
-        return new LiveDetailResponse(live, products, liveTradeTimes,user);
+        return getLiveDetailResponse(liveId, live);
     }
 
 
@@ -127,10 +124,25 @@ public class LiveService {
                 .orElseThrow(() -> new IllegalArgumentException("not found : " + liveId));
         authorizeArticleAuthor(live);
         live.on();
+        liveRepository.save(live);
+        return getLiveDetailResponse(liveId, live);
+    }
+
+    @NotNull
+    private LiveDetailResponse getLiveDetailResponse(int liveId, Live live) {
         List<Product> products = productRepository.findByLive_LiveId(liveId).orElseThrow(() -> new IllegalArgumentException("no products found for live id: " + liveId));
+        List<ProductDetailsResponse> productDetailsResponses = new ArrayList<>();
+        for (Product product : products) {
+            Shorts shorts = shortsRepository.findByProduct_ProductId(product.getProductId()).orElse(null);
+            if (shorts != null) {
+                productDetailsResponses.add(ProductDetailsResponse.builder().product(product).shortsId(shorts.getShortsId()).build());
+            } else {
+                productDetailsResponses.add(ProductDetailsResponse.builder().product(product).shortsId(0).build());
+            }
+        }
         List<LiveTradeTime> liveTradeTimes = liveTradeTimeRepository.findByLive_LiveId(liveId).orElseThrow(() -> new IllegalArgumentException("no teade times found for live id: " + liveId));
         User user = userRepository.findById(live.getSeller().getUserId()).orElseThrow(() -> new IllegalArgumentException("no sellers found for live id: " + liveId));
-        return new LiveDetailResponse(live, products, liveTradeTimes,user);
+        return new LiveDetailResponse(live, productDetailsResponses, liveTradeTimes,user);
     }
 
     @Transactional
@@ -139,6 +151,22 @@ public class LiveService {
                 .orElseThrow(() -> new IllegalArgumentException("not found : " + liveId));
         authorizeArticleAuthor(live);
         live.off();
+        liveRepository.save(live);
+    }
+
+    @Transactional
+    public void connect(int liveId) {
+        Live live = liveRepository.findById(liveId)
+                .orElseThrow(() -> new IllegalArgumentException("not found : " + liveId));
+        live.connect();
+        liveRepository.save(live);
+    }
+
+    @Transactional
+    public void disconnect(int liveId) {
+        Live live = liveRepository.findById(liveId)
+                .orElseThrow(() -> new IllegalArgumentException("not found : " + liveId));
+        live.disconnect();
         liveRepository.save(live);
     }
 

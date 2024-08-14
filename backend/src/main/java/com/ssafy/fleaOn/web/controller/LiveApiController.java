@@ -184,5 +184,45 @@ public class LiveApiController {
         }
     }
 
+    @PutMapping("/{liveID}/connect")
+    @Operation(summary = "라이브 방송 접속", description = "라이브 방송을 들어갑니다.")
+    public ResponseEntity<?> connection(@PathVariable int liveID) {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
+            String userEmail = oAuth2User.getEmail(); // 현재 인증된 사용자의 이메일 가져오기
 
+            User user = userService.findByEmail(userEmail); // 이메일로 사용자 정보를 가져옴
+            if (user == null) {
+                return new ResponseEntity<>("사용자를 찾을 수 없습니다.", HttpStatus.UNAUTHORIZED);
+            }
+
+            liveService.connect(liveID); // 서비스를 통해 Live 정보를 업데이트
+            return ResponseEntity.ok("방송 접속"); // 업데이트된 Live 정보 반환
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new ResponseEntity<>("접속할 라이브를 찾을 수 없습니다: " + ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PutMapping("/{liveID}/disconnect")
+    @Operation(summary = "라이브 방송 퇴장", description = "라이브 방송을 퇴장합니다.")
+    public ResponseEntity<?> disconnection(@PathVariable int liveID) {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
+            String userEmail = oAuth2User.getEmail(); // 현재 인증된 사용자의 이메일 가져오기
+
+            User user = userService.findByEmail(userEmail); // 이메일로 사용자 정보를 가져옴
+            if (user == null) {
+                return new ResponseEntity<>("사용자를 찾을 수 없습니다.", HttpStatus.UNAUTHORIZED);
+            }
+
+            liveService.disconnect(liveID); // 서비스를 통해 Live 정보를 업데이트
+            return ResponseEntity.ok("방송 퇴장"); // 업데이트된 Live 정보 반환
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new ResponseEntity<>("퇴장할 라이브를 찾을 수 없습니다: " + ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
 }

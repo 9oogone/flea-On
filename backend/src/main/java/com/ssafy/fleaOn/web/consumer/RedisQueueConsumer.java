@@ -179,8 +179,8 @@ public class RedisQueueConsumer {
         if (data != null) {
             TradeRequest request = objectMapper.convertValue(data, TradeRequest.class);
             logger.info(String.valueOf(request.getProductId()));
-            purchaseService.processConfirmPurchaseRequest(request);
-            redisTemplate.opsForValue().set("confirPurchasemResult:" + request.getBuyerId() + ":" + request.getProductId(), "confirmed");
+            String result = purchaseService.processConfirmPurchaseRequest(request);
+            redisTemplate.opsForValue().set("confirPurchasemResult:" + request.getBuyerId() + ":" + request.getProductId(), result);
         }
     }
 
