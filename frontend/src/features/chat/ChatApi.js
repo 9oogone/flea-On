@@ -1,25 +1,27 @@
 import baseAxios from "../../utils/httpCommons";
 const baseURL = baseAxios();
 
-export async function sendMessageDB(chatId, param) {
+export async function sendMessageDB(chatId, contents) {
   try {
-    console.log(chatId, param);
-    const res = await baseURL.post(
-      `/fleaon/chat/${chatId}/messages`,
-      {},
-      {
-        params: {
-          chatContent: param,
-        },
-      }
-    );
-    console.log(res);
+    console.log("chatId:", chatId);
+    console.log("contents:", contents);
+
+    const data = {
+      chattingId: chatId, 
+      contents: contents,
+      bot: false,
+    };
+    console.log("Request data:", JSON.stringify(data));
+
+    const res = await baseURL.post(`/fleaon/chat/messages`, data);
+    console.log("Response:", res);
     return res.data;
   } catch (error) {
-    console.error("Error fetching token:", error);
+    console.error("Error sending message:", error);
     throw error;
   }
 }
+
 
 export async function getTradeDetail(chatId) {
   try {
@@ -36,19 +38,18 @@ export async function getTradeDetail(chatId) {
 
 export async function changeTradeTime(chatId, tradeDate, tradeTime) {
   try {
-      const res = await baseURL.put(
-          `/fleaon/chatbot/changetime/`,
-          {
-              chatId,
-              tradeDate,
-              tradeTime
-          }
-      );
-      console.log(res);
-      return res.data;
+    const res = await baseURL.put(
+      `/fleaon/chatbot/changetime/`,
+      {
+        chatId,
+        tradeDate,
+        tradeTime
+      }
+    );
+    console.log(res);
+    return res.data;
   } catch (error) {
-      console.error("Error changing trade time:", error);
-      throw error;
+    console.error("Error changing trade time:", error);
+    throw error;
   }
 }
-  
