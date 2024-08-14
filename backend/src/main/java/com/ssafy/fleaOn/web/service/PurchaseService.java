@@ -249,7 +249,7 @@ public class PurchaseService {
     }
 
     @Transactional
-    public void processConfirmPurchaseRequest(TradeRequest request) { // 구매 확정
+    public String processConfirmPurchaseRequest(TradeRequest request) { // 구매 확정
         logger.info("Processing confirm purchase request for productId: {} and buyerId: {}", request.getProductId(), request.getBuyerId());
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> {
@@ -290,10 +290,12 @@ public class PurchaseService {
             productRepository.save(product);
 
             // 구매 확정 결과를 Redis에 설정
-            redisTemplate.opsForValue().set("confirmResult:" + request.getBuyerId() + ":" + request.getProductId(), "confirmed");
+            redisTemplate.opsForValue().set("confirmResult:" + request.getBuyerId() + ":" + request.getProductId(), String.valueOf(chatting.getChattingId()));
+            return String.valueOf(chatting.getChattingId());
         } else {
             // 구매자와 현재 구매자가 일치하지 않는 경우 결과를 Redis에 설정
             redisTemplate.opsForValue().set("confirmResult:" + request.getBuyerId() + ":" + request.getProductId(), "not confirmed");
+            return "0";
         }
     }
 
@@ -312,5 +314,17 @@ public class PurchaseService {
             // 구매자와 현재 구매자가 일치하지 않는 경우 결과를 Redis에 설정
             redisTemplate.opsForValue().set("confirmResult:" + request.getBuyerId() + ":" + request.getProductId(), "not confirmed");
         }
+    }
+
+    public Shorts reUpload(int productId) {
+        Product product = productRepository.findByProductId(productId).orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
+        product.discount();
+        productRepository.save(product);
+
+        Shorts shorts = product.getShorts();
+        shorts.reUpload();
+        shortsRepository.save(shorts);
+
+        return shorts;
     }
 }

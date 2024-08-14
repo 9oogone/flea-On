@@ -19,9 +19,10 @@ public class ShortsResponse {
     private final ProductResponse product;
     private final UserResponse user;
     private final String liveTitle;
+    private final boolean tradeNow;;
     private final List<ShortsChatResponse> shortsChatResponseList;
 
-    public ShortsResponse(Shorts shorts, String liveTitle, List<ShortsChatResponse> shortsChatResponseList) {
+    public ShortsResponse(Shorts shorts, String liveTitle, boolean tradeNow, List<ShortsChatResponse> shortsChatResponseList) {
         this.shortsId = shorts.getShortsId();
         this.shortsThumbnail = shorts.getShortsThumbnail();
         this.length = shorts.getLength();
@@ -30,6 +31,7 @@ public class ShortsResponse {
         this.product = new ProductResponse(shorts.getProduct());
         this.user = new UserResponse(shorts.getProduct().getSeller());
         this.liveTitle = liveTitle;
+        this.tradeNow = tradeNow;
         this.shortsChatResponseList = shortsChatResponseList;
     }
 
