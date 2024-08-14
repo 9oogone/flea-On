@@ -35,14 +35,19 @@ const ScrapList = () => {
   };
 
   return (
-    <Container sx={{ pt: 4 }}>
+    <Box sx={{ mb: 18 }}>
       <Box
         sx={{
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
+          position: "fixed",
           width: "100%",
-          position: "relative",
+          pt: 6,
+          pb: 3,
+          left: 0,
+          backgroundColor: "white",
+          zIndex: 1000,
         }}
       >
         <Box
@@ -50,7 +55,7 @@ const ScrapList = () => {
           sx={{
             cursor: "pointer",
             position: "absolute",
-            left: 0,
+            left: 24,
           }}
         >
           <ArrowBackIosNewIcon />
@@ -66,8 +71,8 @@ const ScrapList = () => {
         </Typography>
       </Box>
 
-      <Container>
-        <Grid container spacing={3} sx={{ marginTop: "2vh" }}>
+      <Grid>
+        <Grid container sx={{ paddingTop: "12vh" }}>
           {selectedTab === "live" && <ScrapLive items={liveScrap} />}
           {selectedTab === "shorts" && <ScrapShorts items={shortsScrap} />}
           <Box
@@ -81,8 +86,8 @@ const ScrapList = () => {
             <Switch options={switchOptions} type="scrap" />
           </Box>
         </Grid>
-      </Container>
-    </Container>
+      </Grid>
+    </Box>
   );
 };
 

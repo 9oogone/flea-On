@@ -11,7 +11,7 @@ const Profile = ({ user }) => {
   return (
     <Container
       sx={{
-        mt: 7,
+        mt: 4,
         mb: 2,
         display: "flex",
         justifyContent: "center",

@@ -6,7 +6,7 @@ import { fetchBuys, fetchWaits } from "../actions.js";
 import Switch from "../../../components/Switch";
 import Buys from "./Buys.js";
 import Waits from "./BuyWaits.js";
-import { Container, Box, Typography } from "@mui/material";
+import { Container, Box, Typography, Grid } from "@mui/material";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import { switchTab } from "../buySlice.js";
 
@@ -36,15 +36,19 @@ const BuyList = () => {
   };
 
   return (
-    <Container sx={{ pt: 4 }}>
+    <Box sx={{ mb: 18 }}>
       <Box
         sx={{
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           width: "100%",
-          pb: 5,
-          position: "relative",
+          position: "fixed",
+          bgcolor: "white",
+          pt: 6,
+          pb: 3,
+          left: 0,
+          zIndex: 1000,
         }}
       >
         <Box
@@ -52,7 +56,7 @@ const BuyList = () => {
           sx={{
             cursor: "pointer",
             position: "absolute",
-            left: 0,
+            left: 24,
           }}
         >
           <ArrowBackIosNewIcon />
@@ -67,7 +71,8 @@ const BuyList = () => {
           구매내역
         </Typography>
       </Box>
-      <Box>
+
+      <Box container sx={{ paddingTop: "12vh" }}>
         {selectedTab === "buys" && <Buys items={buys} />}
         {selectedTab === "waits" && <Waits items={waits} />}
         <Box
@@ -81,7 +86,7 @@ const BuyList = () => {
           <Switch options={switchOptions} type="buy" />
         </Box>
       </Box>
-    </Container>
+    </Box>
   );
 };
 

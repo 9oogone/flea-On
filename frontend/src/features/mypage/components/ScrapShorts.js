@@ -27,37 +27,22 @@ const ScrapShorts = ({ items }) => {
   return (
     <Grid item xs={12}>
       <Grid container>
-        {items.length === 0 ? (
-          <Grid item xs={12} sx={{ textAlign: "center", mt: 4 }}>
-            <Typography variant="h6" sx={{ color: "grey.700" }}>
-              관심있는 판매 쇼츠가 없어요 <br />
-              한번 둘러보세요
-            </Typography>
-            <Button
-              onClick={handleNavigateToShorts}
+        {items && items.length > 0 ? (
+          items.map((item, index) => (
+            <Grid
+              key={index}
+              item
+              xs={6}
               sx={{
-                mt: 2,
-                color: "white",
-                backgroundColor: "#FF0B55",
-                padding: "10px 20px",
-                borderRadius: 3,
-                textTransform: "none",
-                fontSize: 18,
-                fontWeight: "bold",
+                textAlign: "center",
+                display: "flex",
+                justifyContent: "center",
               }}
             >
-              쇼츠 보러 가기
-            </Button>
-          </Grid>
-        ) : (
-          items.map((item, index) => (
-            <Grid key={index} item xs={6} sx={{ textAlign: "center" }}>
-              <Button
-                onClick={() => handleButtonClick(item.shortsId)}
-                sx={{ padding: 0, minWidth: 0 }}
-              >
+              <Button onClick={() => handleButtonClick(item.shortsId)}>
                 <Box
                   sx={{
+                    cursor: "pointer",
                     width: "16vh",
                     height: "28vh",
                     backgroundImage: `url(${item.shortsThumbnail})`,
@@ -73,8 +58,6 @@ const ScrapShorts = ({ items }) => {
                     sx={{
                       position: "relative",
                       height: "85%",
-                      textAlign: "end",
-                      color: "white",
                     }}
                   >
                     <Box
@@ -84,7 +67,6 @@ const ScrapShorts = ({ items }) => {
                         right: 0,
                         p: 1,
                         cursor: "pointer",
-                        zIndex: 1,
                       }}
                       onClick={(e) => {
                         e.stopPropagation();
@@ -94,6 +76,7 @@ const ScrapShorts = ({ items }) => {
                       <FavoriteRounded sx={{ color: "#FF0B55" }} />
                     </Box>
                   </Box>
+
                   <Box
                     sx={{
                       top: 206,
@@ -191,6 +174,38 @@ const ScrapShorts = ({ items }) => {
               </Button>
             </Grid>
           ))
+        ) : (
+          <Grid
+            item
+            xs={12}
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              textAlign: "center",
+              mt: 20,
+            }}
+          >
+            <Typography variant="h6" sx={{ color: "grey.700" }}>
+              관심있는 쇼츠가 없어요. <br />
+              지금 쇼츠를 보러 갈까요?
+            </Typography>
+            <Button
+              onClick={handleNavigateToShorts}
+              sx={{
+                mt: 2,
+                color: "white",
+                backgroundColor: "#FF0B55",
+                padding: "10px 20px",
+                borderRadius: 3,
+                textTransform: "none",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              쇼츠 보러 가기
+            </Button>
+          </Grid>
         )}
       </Grid>
     </Grid>

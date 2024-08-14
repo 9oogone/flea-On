@@ -30,6 +30,8 @@ const Buys = ({ items }) => {
                 key={index}
                 sx={{
                   py: 2,
+                  width: "100%",
+                  height: "100%",
                   borderBottom: "0.33px solid rgba(84, 84, 86, 0.34)",
                   justifyContent: "center",
                   alignItems: "center",
@@ -58,19 +60,10 @@ const Buys = ({ items }) => {
                       sx={{
                         justifyContent: "center",
                         alignItems: "center",
-                        gap: 0.6,
+                        gap: 1.2,
                         display: "flex",
                       }}
                     >
-                      <Typography
-                        sx={{
-                          color: "black",
-                          fontSize: 18,
-                          wordWrap: "break-word",
-                        }}
-                      >
-                        {item.productName}
-                      </Typography>
                       <Box
                         sx={{
                           width: 60,
@@ -92,6 +85,15 @@ const Buys = ({ items }) => {
                           거래예정
                         </Typography>
                       </Box>
+                      <Typography
+                        sx={{
+                          color: "black",
+                          fontSize: 18,
+                          wordWrap: "break-word",
+                        }}
+                      >
+                        {item.productName}
+                      </Typography>
                     </Box>
                     <Typography
                       sx={{

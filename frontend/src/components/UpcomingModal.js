@@ -15,8 +15,6 @@ import { ReactComponent as LevelBaby } from "../assets/images/level_baby.svg";
 import { ReactComponent as LevelSmall } from "../assets/images/level_small.svg";
 import { ReactComponent as LevelMiddle } from "../assets/images/level_middle.svg";
 import { ReactComponent as LevelBig } from "../assets/images/level_big.svg";
-import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
-import BookmarkIcon from "@mui/icons-material/Bookmark";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import styles from "../styles/UpcomingModal.module.css";
 import { formatDateTime, formatPrice } from "../utils/cssUtils";
@@ -29,8 +27,8 @@ const UpcomingModal = ({
   setScrap,
   scrap,
 }) => {
-  const auth = useSelector((state) => state.auth.user?.userId);
-  const user = useSelector((state) => state.live.liveDetail?.user?.userId);
+  const authId = useSelector((state) => state.auth.user?.userId);
+  const userId = useSelector((state) => state.live.liveDetail?.user?.userId);
   // console.log(user, "사용자입니다");
   // console.log(auth, "판매자입니다.");
   // console.log(liveDetail);
@@ -58,6 +56,7 @@ const UpcomingModal = ({
               alt="thumbnail"
               className={styles.thumbnailImage}
             />
+            <div class={styles.modalImgOverlay}></div>
             <div className={styles.titleOverlay}>
               <Box
                 sx={{
@@ -94,22 +93,34 @@ const UpcomingModal = ({
                   {liveDetail?.user?.nickname}
                 </Typography>
               </Box>
-
-              <Button
-                onClick={() => {
-                  setScrap();
-                }}
-                sx={{
-                  bgcolor: scrap ? "#EEEEEF" : "#FF0B55",
-                  color: scrap ? "rgba(0, 0, 0, 0.52)" : "#FFFFFF",
-                }}
-              >
-                {scrap ? (
-                  <Typography>이미 찜한 라이브</Typography>
-                ) : (
-                  <Typography>라이브 찜하기</Typography>
-                )}
-              </Button>
+              {authId && authId === userId ? (
+                <Button
+                  onClick={handleEditLive}
+                  sx={{
+                    backgroundColor: "#FF0B55",
+                    color: "white",
+                    letterSpacing: "-0.5px",
+                  }}
+                >
+                  라이브 수정하기
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => {
+                    setScrap();
+                  }}
+                  sx={{
+                    bgcolor: scrap ? "#EEEEEF" : "#FF0B55",
+                    color: scrap ? "rgba(0, 0, 0, 0.52)" : "#FFFFFF",
+                  }}
+                >
+                  {scrap ? (
+                    <Typography>이미 찜한 라이브</Typography>
+                  ) : (
+                    <Typography>라이브 찜하기</Typography>
+                  )}
+                </Button>
+              )}
             </div>
 
             <div className={styles.modalHeader2}>
@@ -135,32 +146,6 @@ const UpcomingModal = ({
                 ))}
               </List>
             </div>
-
-            {auth && auth === user && (
-              <Box
-                sx={{
-                  width: "100%",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  display: "flex",
-                  mt: 10,
-                }}
-              >
-                <Button
-                  variant="contained"
-                  onClick={handleEditLive}
-                  sx={{
-                    width: "95%",
-                    backgroundColor: "#FF0B55",
-                    color: "white",
-                    fontSize: 16,
-                    borderRadius: 2,
-                  }}
-                >
-                  라이브 수정하기
-                </Button>
-              </Box>
-            )}
           </Box>
         </Box>
       </div>
