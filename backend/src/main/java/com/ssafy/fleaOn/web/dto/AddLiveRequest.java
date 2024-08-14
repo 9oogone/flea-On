@@ -35,6 +35,7 @@ public class AddLiveRequest {
                 .tradePlace(tradePlace)
                 .liveThumbnail(filePath)
                 .seller(user)
+                .viewCount(0)
                 .regionInfo(regionInfo)
                 .build();
     }

@@ -40,6 +40,9 @@ public class Live {
     @Column(name = "is_live", nullable = false)
     private int isLive; // 0: 방송 예정, 1: 방송 중, 2: 방송 종료
 
+    @Column(name = "view_count")
+    private int viewCount;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seller_id", nullable = false)
     private User seller;
@@ -49,7 +52,7 @@ public class Live {
     private RegionInfo regionInfo;
 
     @Builder
-    public Live(String title, LocalDateTime liveDate, String liveThumbnail, String tradePlace, User seller, RegionInfo regionInfo, int isLive) {
+    public Live(String title, LocalDateTime liveDate, String liveThumbnail, String tradePlace, User seller, RegionInfo regionInfo, int isLive, int viewCount, User seller2) {
         this.title = title;
         this.liveDate = liveDate;
         this.liveThumbnail = liveThumbnail;
@@ -57,6 +60,7 @@ public class Live {
         this.seller = seller;
         this.regionInfo = regionInfo;
         this.isLive = isLive;
+        this.viewCount = 0;
     }
 
     public void update(String title, LocalDateTime liveDate, String liveThumbnail, String tradePlace, RegionInfo regionInfo) {
@@ -73,5 +77,13 @@ public class Live {
 
     public void off() {
         this.isLive = 2;
+    }
+
+    public void connect(){
+        this.viewCount++;
+    }
+
+    public void disconnect(){
+        this.viewCount--;
     }
 }

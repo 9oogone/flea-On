@@ -142,6 +142,22 @@ public class LiveService {
         liveRepository.save(live);
     }
 
+    @Transactional
+    public void connect(int liveId) {
+        Live live = liveRepository.findById(liveId)
+                .orElseThrow(() -> new IllegalArgumentException("not found : " + liveId));
+        live.connect();
+        liveRepository.save(live);
+    }
+
+    @Transactional
+    public void disconnect(int liveId) {
+        Live live = liveRepository.findById(liveId)
+                .orElseThrow(() -> new IllegalArgumentException("not found : " + liveId));
+        live.disconnect();
+        liveRepository.save(live);
+    }
+
     private static void authorizeArticleAuthor(Live live) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();

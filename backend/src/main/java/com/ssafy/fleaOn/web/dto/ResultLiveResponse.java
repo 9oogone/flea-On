@@ -20,6 +20,7 @@ public class ResultLiveResponse {
     private String tradePlace;
     private String liveThumbnail;
     private String dongName;
+    private int viewCount;
 
 
     public static ResultLiveResponse fromEntity(Live live, Product product) {
@@ -31,6 +32,7 @@ public class ResultLiveResponse {
                 .tradePlace(live.getTradePlace())
                 .liveThumbnail(live.getLiveThumbnail())
                 .dongName(live.getRegionInfo().getEupmyeon())
+                .viewCount(live.getViewCount())
                 .build();
     }
 }
