@@ -35,11 +35,12 @@ public class AlarmService {
     }
 
     @Transactional
-    public void markAlarmAsRead(int alarmId) {
-        Alarm alarm = alarmRepository.findById(alarmId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid alarm ID"));
-        alarm.setRead(true);
-        alarmRepository.save(alarm);
+    public void markAlarmAsRead(int userId) {
+        List<Alarm> unreadAlarms = alarmRepository.findByUser_UserIdAndIsReadFalseOrderByDateDesc(userId);
+        for (Alarm alarm : unreadAlarms) {
+            alarm.setRead(true);
+            alarmRepository.save(alarm);
+        }
     }
 
     private AlarmDTO convertToDTO(Alarm alarm) {

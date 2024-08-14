@@ -38,4 +38,4 @@ out/
 .vscode/
 
 # json.key
-src/main/java/com/ssafy/fleaOn/web/fleaon-d171c-firebase-adminsdk-dhf82-463da3a7a7.json
+src/main/resources/firebase/firebasePushAlarm.json
