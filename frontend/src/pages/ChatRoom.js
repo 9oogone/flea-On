@@ -174,7 +174,9 @@ const ChatRoom = () => {
     // 날짜와 시간을 분리
     const [tradeDate, tradeTime] = dateTimeString.split(" ");
 
-    const message = `거래 시간 변경 수락: ${dateTimeString}`;
+    const message = `[System Message]<br/>
+    거래 시간이 변경되었습니다.<br/>
+    ${dateTimeString}에 만나요!`;
     try {
       await changeTradeTime(chatID, tradeDate, tradeTime); // API 호출
 
@@ -216,7 +218,8 @@ const ChatRoom = () => {
   };
 
   const handleRejectTimeChange = async (messageId) => {
-    const message = `[System Message] 거래 시간 변경이 거절되었습니다.`;
+    const message = `[System Message]<br/>
+    거래 시간 변경이 거절되었습니다.`;
     try {
       await sendMessageDB(chatID, message);
 
