@@ -16,4 +16,5 @@ public class LiveListResponse {
     private LocalDateTime liveDate;
     private int isLive;
     private int liveId;
+    private int viewCount;
 }

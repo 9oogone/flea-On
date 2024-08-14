@@ -61,6 +61,7 @@ public class ShortsService {
         Optional<List<ShortsChatting>> shortsChattings = shortsChattingRepository.findByShorts_ShortsId(shortsId);
         List<ShortsChatResponse> shortsChatResponseList = new ArrayList<>();
         String liveTitle;
+        boolean isTradeNow = false;
         if (shortsChattings.isPresent()){
             Product product = shorts.getProduct();
             liveTitle = product.getLive().getTitle();
@@ -74,11 +75,12 @@ public class ShortsService {
                 );
                 shortsChatResponseList.add(shortsChatResponse);
             }
+            isTradeNow = tradeRepository.findByProductId(product.getProductId()).isPresent();
         } else {
             liveTitle = "";
         }
 
-        return new ShortsResponse(shorts, liveTitle, shortsChatResponseList);
+        return new ShortsResponse(shorts, liveTitle, isTradeNow, shortsChatResponseList);
     }
 
     public void addUserShortsScrap(int userId, int shortsId) {

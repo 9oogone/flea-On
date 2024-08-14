@@ -314,6 +314,7 @@ public class UserService {
                         .dongName(commerceLive.getRegionInfo().getEupmyeon())
                         .isLive(commerceLive.getIsLive())
                         .liveId(commerceLive.getLiveId())
+                        .viewCount(commerceLive.getViewCount())
                         .build();
                 userCommerceLiveList.add(liveListResponse);
             });
@@ -343,6 +344,7 @@ public class UserService {
                         .liveDate(scrapLive.getLiveDate())
                         .dongName(scrapLive.getRegionInfo().getEupmyeon())
                         .liveId(scrapLive.getLiveId())
+                        .viewCount(scrapLive.getViewCount())
                         .build();
 
                 userScrapLiveList.add(scrapLiveResponse);
