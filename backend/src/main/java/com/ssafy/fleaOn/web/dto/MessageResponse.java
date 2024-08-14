@@ -15,6 +15,7 @@ public class MessageResponse {
     private final int chattingListId;
     private final int writerId;
     private final String chatContent;
+    private final boolean isBot;
     private final LocalDateTime chatTime;
 
     public MessageResponse(ChattingList chattingList) {
@@ -22,5 +23,6 @@ public class MessageResponse {
         this.writerId = chattingList.getWriterId();
         this.chatContent = chattingList.getChatContent();
         this.chatTime = chattingList.getChatTime();
+        this.isBot = chattingList.isBot();
     }
 }
