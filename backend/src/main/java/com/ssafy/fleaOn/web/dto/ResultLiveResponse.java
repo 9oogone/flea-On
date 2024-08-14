@@ -19,6 +19,8 @@ public class ResultLiveResponse {
     private String title;
     private String tradePlace;
     private String liveThumbnail;
+    private String dongName;
+
 
     public static ResultLiveResponse fromEntity(Live live, Product product) {
         return ResultLiveResponse.builder()
@@ -28,6 +30,7 @@ public class ResultLiveResponse {
                 .title(live.getTitle())
                 .tradePlace(live.getTradePlace())
                 .liveThumbnail(live.getLiveThumbnail())
+                .dongName(live.getRegionInfo().getEupmyeon())
                 .build();
     }
 }

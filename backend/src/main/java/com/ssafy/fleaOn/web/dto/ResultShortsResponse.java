@@ -23,6 +23,7 @@ public class ResultShortsResponse {
     private LocalTime length;
     private String shortsThumbnail;
     private boolean isScrap;
+    private String dongName;
 
     public static ResultShortsResponse fromEntity(Shorts shorts, Product product, Live live) {
         return ResultShortsResponse.builder()
@@ -33,6 +34,7 @@ public class ResultShortsResponse {
                 .length(shorts.getLength())
                 .shortsThumbnail(shorts.getShortsThumbnail())
                 .isScrap(false)
+                .dongName(live.getRegionInfo().getEupmyeon())
                 .build();
     }
 }
