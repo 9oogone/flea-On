@@ -1,12 +1,13 @@
 package com.ssafy.fleaOn.web.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.fleaOn.web.domain.User;
 import com.ssafy.fleaOn.web.dto.CustomOAuth2User;
 import com.ssafy.fleaOn.web.dto.PurchaseCancleResponse;
 import com.ssafy.fleaOn.web.dto.PurchaseRequest;
 import com.ssafy.fleaOn.web.dto.TradeRequest;
 import com.ssafy.fleaOn.web.producer.RedisQueueProducer;
-import com.ssafy.fleaOn.web.service.PurchaseService;
+import com.ssafy.fleaOn.web.service.RedisService;
 import com.ssafy.fleaOn.web.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -31,14 +32,16 @@ public class PurchaseApiController {
     private final RedisQueueProducer redisQueueProducer;
     private final RedisTemplate<String, Object> redisTemplate;
     private final UserService userService;
-    private final PurchaseService purchaseService;
+    private final RedisService redisService;
+    private final ObjectMapper objectMapper;
 
     @Autowired
-    public PurchaseApiController(RedisQueueProducer redisQueueProducer, RedisTemplate<String, Object> redisTemplate, UserService userService, PurchaseService purchaseService) {
+    public PurchaseApiController(RedisQueueProducer redisQueueProducer, RedisTemplate<String, Object> redisTemplate, UserService userService, RedisService redisService, ObjectMapper objectMapper) {
         this.redisQueueProducer = redisQueueProducer;
         this.redisTemplate = redisTemplate;
         this.userService = userService;
-        this.purchaseService = purchaseService;
+        this.redisService = redisService;
+        this.objectMapper = objectMapper;
     }
 
     @PostMapping("/buy")
@@ -75,36 +78,37 @@ public class PurchaseApiController {
     @Operation(summary = "구매 취소 기능", description = "구매 취소를 합니다.")
     public ResponseEntity<?> cancel(@RequestBody PurchaseRequest request) {
         try {
-//            // 구매 취소 요청을 큐에 추가
-//            redisQueueProducer.sendCancelPurchaseRequest(request);
-//
-//            // 결과를 일정 시간 동안 폴링하여 조회
-//            int maxRetries = 50;
-//            int retryInterval = 100;
-//
-//            PurchaseCancleResponse result = null;
-//            String redisKey = "cancelPurchaseResult:" + request.getUserId() + ":" + request.getProductId();
-//            logger.info("redis key : {}", redisKey);
-//            logger.info("get redis key: {}" ,redisTemplate.opsForValue().get(redisKey));
-//            System.out.println(redisTemplate.opsForValue().get(redisKey).getClass());
-////            logger.info("get type of redis key: {}" , redisTemplate.opsForValue().get(redisKey).getClass());
-//
-//            for (int i = 0; i < maxRetries; i++) {
-//                PurchaseCancleResponse response = (PurchaseCancleResponse) (redisTemplate.opsForValue().get(redisKey));
-//                if (response != null &&  response instanceof PurchaseCancleResponse) {
-//                    result = (PurchaseCancleResponse) response;
-//                    break; // 결과를 성공적으로 가져온 경우
-//                }
-//                Thread.sleep(retryInterval); // 대기
-//            }
-//
-//            if (result == null) {
-//                logger.warn("No cancel purchase result found for userId: {} and productId: {}", request.getUserId(), request.getProductId());
-//                return ResponseEntity.ok(-1); // 아직 결과가 없는 경우
-//            }
-            PurchaseCancleResponse purchaseCancleResponse = purchaseService.cancelPurchaseProduct(request);
+            // 구매 취소 요청을 큐에 추가
+            redisQueueProducer.sendCancelPurchaseRequest(request);
 
-            return ResponseEntity.ok(purchaseCancleResponse);
+            // 결과를 일정 시간 동안 폴링하여 조회
+            int maxRetries = 50;
+            int retryInterval = 100;
+
+            PurchaseCancleResponse result = null;
+            String redisKey = "cancelPurchaseResult:" + request.getProductId();
+            logger.info("redis key : {}", redisKey);
+
+            for (int i = 0; i < maxRetries; i++) {
+                String redisValue = (String) redisTemplate.opsForValue().get(redisKey);
+                if (redisValue != null) {
+                    logger.info("get redis key: {}", redisValue);
+
+                    // Redis에서 가져온 JSON을 객체로 변환
+                    result = objectMapper.readValue(redisValue, PurchaseCancleResponse.class);
+                    break; // 결과를 성공적으로 가져온 경우
+                } else {
+                    logger.info("Redis key not found or null for key: {}", redisKey);
+                }
+                Thread.sleep(retryInterval); // 대기
+            }
+
+            if (result == null) {
+                logger.warn("No cancel purchase result found for userId: {} and productId: {}", request.getUserId(), request.getProductId());
+                return ResponseEntity.ok(-1); // 아직 결과가 없는 경우
+            }
+
+            return ResponseEntity.ok(result);
         } catch (Exception e) {
             logger.error("Error processing cancel purchase request", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(-1);

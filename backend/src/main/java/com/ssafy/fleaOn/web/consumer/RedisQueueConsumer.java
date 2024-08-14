@@ -97,11 +97,13 @@
 //}
 package com.ssafy.fleaOn.web.consumer;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.fleaOn.web.dto.PurchaseCancleResponse;
 import com.ssafy.fleaOn.web.dto.PurchaseRequest;
 import com.ssafy.fleaOn.web.dto.TradeRequest;
 import com.ssafy.fleaOn.web.service.PurchaseService;
+import com.ssafy.fleaOn.web.service.RedisService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -127,6 +129,9 @@ public class RedisQueueConsumer {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private RedisService redisService;
+
     @Scheduled(fixedDelay = 500)
     public void handlePurchaseRequest() {
         Object data = redisTemplate.opsForList().leftPop(PURCHASE_QUEUE);
@@ -138,19 +143,13 @@ public class RedisQueueConsumer {
     }
 
     @Scheduled(fixedDelay = 500)
-    public void handleCancelPurchaseRequest() {
+    public void handleCancelPurchaseRequest() throws JsonProcessingException {
         Object data = redisTemplate.opsForList().leftPop(CANCEL_PURCHASE_QUEUE);
         if (data != null) {
             PurchaseRequest request = objectMapper.convertValue(data, PurchaseRequest.class);
             logger.info("user id: {}", request.getUserId());
             PurchaseCancleResponse result = purchaseService.cancelPurchaseProduct(request);
-            logger.info("result: {}", result);
-//            response instanceof PurchaseCancleResponse
-            logger.info("is instanceof PCR? : {}", result instanceof PurchaseCancleResponse);
-
-            String redisKey = "cancelPurchaseResult:" + request.getUserId() + ":" + request.getProductId();
-            logger.info("redisKey : {}", redisKey);
-            redisTemplate.opsForValue().set(redisKey, result);
+            redisService.setRedisValue(result);
         }
     }
 
