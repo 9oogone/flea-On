@@ -11,6 +11,7 @@ import {
   Button,
   Modal
 } from "@mui/material";
+import { truncateText } from "../utils/truncateText";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import "moment/locale/ko"; // 한국어 로케일을 사용합니다
@@ -28,10 +29,10 @@ const ChatPage = () => {
   const { chats, status, error, noChats } = useSelector((state) => state.chat);
 
   useEffect(() => {
+    fetchChats()
     const intervalId = setInterval(() => {
         dispatch(fetchChats());
     }, 1000);
-    fetchChats()
     return () => clearInterval(intervalId);
   }, [status, dispatch]);
 
@@ -153,7 +154,7 @@ const ChatPage = () => {
                     variant="body2"
                     color="textPrimary"
                   >
-                    {chat.recentMessage}
+                    {chat.recentMessage.startsWith("[System Message]")?"시스템 메세지":truncateText(chat.recentMessage,30)}
                   </Typography>
                   <Typography
                     component="span"
