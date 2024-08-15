@@ -38,7 +38,7 @@ const HomePage = () => {
         );
         // setHasLive(response.data.exist);
         setLiveId(response.data.liveId);
-        setLiveTitle(response.data.liveTitle);
+        setLiveTitle(response.data.title);
         if (response.data.liveId !== 0) {
           setHasLive(true);
         }
