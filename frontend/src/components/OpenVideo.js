@@ -47,7 +47,7 @@ const OpenVideo = () => {
   const [currentVideoDevice, setCurrentVideoDevice] = useState(null);
   const [mainStreamManager, setMainStreamManager] = useState(undefined);
   const [sttValue, setSttValue] = useState("");
-  const [publisher, setPublisher] = useState(undefined);
+  // const [publisher, setPublisher] = useState(undefined);
   const [currentRecordingId, setCurrentRecordingId] = useState("");
   const [recordStartTime, setRecordStartTime] = useState(null);
   const [title, setTitle] = useState("");
@@ -58,9 +58,11 @@ const OpenVideo = () => {
   const [shortsId, setShortsId] = useState({ shortsId: 0, index: 0 });
   const [times, setTimes] = useState([]);
   const [isFrontCamera, setIsFrontCamera] = useState(false);
+  const [videoIndex, setVideoIndex] = useState(0)
   const [soldIndex, setSoldIndex] = useState(0);
+  const publisher = useRef();
   const navigate = useNavigate();
-
+  
   const handleCustomerClick = () => {
     setOpen(true);
   };
@@ -110,8 +112,8 @@ const OpenVideo = () => {
     if (session.current) {
       session.current.disconnect();
     }
-    if (publisher) {
-      setPublisher(null);
+    if (publisher.current) {
+      publisher.current = null;
     }
   };
 
@@ -131,7 +133,6 @@ const OpenVideo = () => {
         });
     }
   }, [sessionName]);
-
   const MakeSession = async (videoRef, dispatch, sessionName) => {
     const session = OV.current.initSession();
     session.on("streamCreated", (event) => {
@@ -172,14 +173,13 @@ const OpenVideo = () => {
         navigate("/");
       }
     });
-
     try {
       const resp = await getToken({ sessionName: sessionName });
       let token = resp[0];
       await session.connect(token, { clientData: "example" });
       if (resp[1] === true) {
         setIsPublisher(true);
-        let publisher = OV.current.initPublisher(
+        publisher.current = OV.current.initPublisher(
           undefined,
           {
             audioSource: undefined,
@@ -193,8 +193,8 @@ const OpenVideo = () => {
           },
           () => {
             if (videoRef.current) {
-              publisher.addVideoElement(videoRef.current);
-              session.publish(publisher);
+              publisher.current.addVideoElement(videoRef.current);
+              session.publish(publisher.current);
               dispatch(unSetLoading());
             }
           },
@@ -214,9 +214,19 @@ const OpenVideo = () => {
       const videoDevices = devices.filter(
         (device) => device.kind === "videoinput"
       );
+      // var len = videoDevices.length;
+      
       if (videoDevices.length > 1) {
+        // if(videoIndex+1>=len){
+        //   setVideoIndex(0)
+        // }else{
+        //   setVideoIndex(videoIndex+1)
+        // }
         const newPublisher = OV.current.initPublisher("htmlVideo", {
-          videoSource: isFrontCamera
+          videoSource: 
+          // videoDevices[videoIndex].deviceId,
+          // vidoeIndex+1>len?
+          isFrontCamera
             ? videoDevices[0].deviceId
             : videoDevices[2].deviceId,
           publishAudio: true,
@@ -463,7 +473,6 @@ const OpenVideo = () => {
           handleCustomerClick();
         }
         productList[productIndex].status += 100;
-
         const messageData = {
           type: 3,
           productIndex: productIndex,
@@ -536,8 +545,8 @@ const OpenVideo = () => {
       if (session.current) {
         session.current.disconnect();
       }
-      if (publisher) {
-        setPublisher(null);
+      if (publisher.current) {
+        publisher.current=null;
       }
       navigate("/");
     } catch (error) {
