@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class NextAlarmRequest {
     int nextId;
-    int liveId;
-    int productId;
+    Integer liveId;
+    Integer productId;
     int type;
 }

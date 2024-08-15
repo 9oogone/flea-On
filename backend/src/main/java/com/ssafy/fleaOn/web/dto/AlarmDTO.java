@@ -15,6 +15,6 @@ public class AlarmDTO {
     private String profilePic;
     private boolean isRead;
     private int type;
-    private int productId;
-    private int liveId;
+    private Integer productId;
+    private Integer liveId;
 }
