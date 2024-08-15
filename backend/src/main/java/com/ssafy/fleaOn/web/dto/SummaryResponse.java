@@ -10,13 +10,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 public class SummaryResponse {
-
+    private int shortId;
     private String commend;
     private String description;
     private String period;
     private String status;
-
-
-
-
 }

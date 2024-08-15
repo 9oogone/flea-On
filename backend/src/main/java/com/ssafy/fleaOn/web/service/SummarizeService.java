@@ -2,11 +2,13 @@ package com.ssafy.fleaOn.web.service;
 
 import com.ssafy.fleaOn.web.domain.Shorts;
 import com.ssafy.fleaOn.web.domain.ShortsContent;
+import com.ssafy.fleaOn.web.domain.ShortsScrap;
 import com.ssafy.fleaOn.web.dto.CategoryIdResponse;
 import com.ssafy.fleaOn.web.dto.SummaryResponse;
 import com.ssafy.fleaOn.web.repository.CategoryRepository;
 import com.ssafy.fleaOn.web.repository.ShortsContentRepository;
 import com.ssafy.fleaOn.web.repository.ShortsRepository;
+import com.ssafy.fleaOn.web.repository.SummationRepository;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -21,6 +23,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class SummarizeService {
 
+    private final SummationRepository summationRepository;
     @Value("${OPENAI_API_KEY}")
     private String apiKey;
 
@@ -130,5 +133,17 @@ public class SummarizeService {
         if (endIndex == -1) endIndex = content.length();
 
         return content.substring(startIndex, endIndex).trim();
+    }
+
+    public SummaryResponse getSummary(int shortsId) {
+        ShortsContent summation = summationRepository.findByShorts_ShortsId(shortsId).orElseThrow(()-> new IllegalArgumentException("쇼츠 요약본을 찾을 수 없습니다."));
+        SummaryResponse response = SummaryResponse.builder()
+                .shortId(shortsId)
+                .commend(summation.getCommend())
+                .description(summation.getDescription())
+                .period(summation.getPeriod())
+                .status(summation.getStatus())
+                .build();
+        return response;
     }
 }
