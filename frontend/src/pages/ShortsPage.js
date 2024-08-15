@@ -5,8 +5,8 @@ import { setCurrentShort } from "../features/shorts/shortsSlice";
 import CustomVideoPlayer from "../components/CustomVideoPlayer";
 import baseAxios from "../utils/httpCommons";
 import { useSwipeable } from "react-swipeable";
-import TextSnippetIcon from '@mui/icons-material/TextSnippet';
-import CloseIcon from '@mui/icons-material/Close';
+import TextSnippetIcon from "@mui/icons-material/TextSnippet";
+import CloseIcon from "@mui/icons-material/Close";
 import {
   Modal,
   Container,
@@ -54,14 +54,16 @@ const ShortsPage = () => {
   const [open, setOpen] = useState(false);
   const [ai, setAi] = useState();
 
-  const handleOpen = () =>{ 
+  const handleOpen = () => {
     setOpen(true);
-  }
-  useEffect(()=>{
-    baseAxios().get(`/fleaon/summation/ai?shortId=${shortsId}`).then((res)=>{
-      setAi(res.data)
-    })
-  },[])
+  };
+  useEffect(() => {
+    baseAxios()
+      .get(`/fleaon/summation/ai?shortId=${shortsId}`)
+      .then((res) => {
+        setAi(res.data);
+      });
+  }, []);
   const handleClose = () => setOpen(false);
   const videoRef = useRef(null);
   useDidMountEffect(() => {
@@ -165,9 +167,7 @@ const ShortsPage = () => {
       }
     }
   };
-  const handleClickAi = ()=>{
-    
-  }
+  const handleClickAi = () => {};
   if (!currentShort) return <Typography>Loading...</Typography>;
 
   return (
@@ -436,76 +436,96 @@ const ShortsPage = () => {
         }}
       >
         <IconButton color="inherit">
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-      }}
-    >
-      <TextSnippetIcon 
-        onClick={handleOpen} 
-        sx={{ fontSize: 40, margin: 2, marginRight: 0 }} 
-      />
-      <FavoriteIcon sx={{ fontSize: 40, margin: 2, marginRight: 0 }} />
-      <Typography>{currentShort.likes}</Typography>
-    </Box>
-  </IconButton>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            <TextSnippetIcon
+              onClick={handleOpen}
+              sx={{ fontSize: 40, margin: 2, marginRight: 0 }}
+            />
+            <FavoriteIcon sx={{ fontSize: 40, margin: 2, marginRight: 0 }} />
+            <Typography>{currentShort.likes}</Typography>
+          </Box>
+        </IconButton>
       </Box>
       <Modal
-  open={open}
-  onClose={handleClose}
-  aria-labelledby="modal-title"
-  aria-describedby="modal-description"
->
-  <Box 
-    sx={{
-      position: 'absolute',
-      top: '50%',
-      left: '50%',
-      transform: 'translate(-50%, -50%)',
-      width: '80%',
-      bgcolor: 'background.paper',
-      borderRadius: '8px',
-      boxShadow: 24,
-      p: 3,
-      maxHeight: '80vh',
-      overflowY: 'auto'
-    }}
-  >
-    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-      <Typography id="modal-title" variant="h6" component="h2">
-        AI 요약
-      </Typography>
-      <IconButton onClick={handleClose}>
-        <CloseIcon />
-      </IconButton>
-    </Box>
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-title"
+        aria-describedby="modal-description"
+      >
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: "80%",
+            bgcolor: "background.paper",
+            borderRadius: "8px",
+            boxShadow: 24,
+            p: 3,
+            maxHeight: "80vh",
+            overflowY: "auto",
+          }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              mb: 2,
+            }}
+          >
+            <Typography id="modal-title" variant="h6" component="h2">
+              AI 요약
+            </Typography>
+            <IconButton onClick={handleClose}>
+              <CloseIcon />
+            </IconButton>
+          </Box>
 
-    <Box sx={{ mb: 2 }}>
-      <Typography variant="body1" sx={{ fontWeight: 'bold' }}>사용 기간</Typography>
-      <Typography variant="body2">{ai?.period || '정보를 불러오는 중...'}</Typography>
-    </Box>
+          <Box sx={{ mb: 2 }}>
+            <Typography variant="body1" sx={{ fontWeight: "bold" }}>
+              사용 기간
+            </Typography>
+            <Typography variant="body2">
+              {ai?.period || "정보를 불러오는 중..."}
+            </Typography>
+          </Box>
 
-    <Box sx={{ mb: 2 }}>
-      <Typography variant="body1" sx={{ fontWeight: 'bold' }}>상태</Typography>
-      <Typography variant="body2">{ai?.status || '정보를 불러오는 중...'}</Typography>
-    </Box>
+          <Box sx={{ mb: 2 }}>
+            <Typography variant="body1" sx={{ fontWeight: "bold" }}>
+              상태
+            </Typography>
+            <Typography variant="body2">
+              {ai?.status || "정보를 불러오는 중..."}
+            </Typography>
+          </Box>
 
-    <Box sx={{ mb: 2 }}>
-      <Typography variant="body1" sx={{ fontWeight: 'bold' }}>구매자 칭찬</Typography>
-      <Typography variant="body2">{ai?.commend || '정보를 불러오는 중...'}</Typography>
-    </Box>
+          <Box sx={{ mb: 2 }}>
+            <Typography variant="body1" sx={{ fontWeight: "bold" }}>
+              구매자 칭찬
+            </Typography>
+            <Typography variant="body2">
+              {ai?.commend || "정보를 불러오는 중..."}
+            </Typography>
+          </Box>
 
-    <Box>
-      <Typography variant="body1" sx={{ fontWeight: 'bold' }}>사진 설명</Typography>
-      <Typography variant="body2">
-        {ai?.description || '정보를 불러오는 중...'}
-      </Typography>
-    </Box>
-  </Box>
-</Modal>
-
+          <Box>
+            <Typography variant="body1" sx={{ fontWeight: "bold" }}>
+              사진 설명
+            </Typography>
+            <Typography variant="body2">
+              {ai?.description || "정보를 불러오는 중..."}
+            </Typography>
+          </Box>
+        </Box>
+      </Modal>
     </Container>
   );
 };

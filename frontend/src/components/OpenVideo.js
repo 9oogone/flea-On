@@ -58,11 +58,11 @@ const OpenVideo = () => {
   const [shortsId, setShortsId] = useState({ shortsId: 0, index: 0 });
   const [times, setTimes] = useState([]);
   const [isFrontCamera, setIsFrontCamera] = useState(false);
-  const [videoIndex, setVideoIndex] = useState(0)
+  const [videoIndex, setVideoIndex] = useState(0);
   const [soldIndex, setSoldIndex] = useState(0);
   const publisher = useRef();
   const navigate = useNavigate();
-  
+
   const handleCustomerClick = () => {
     setOpen(true);
   };
@@ -215,7 +215,7 @@ const OpenVideo = () => {
         (device) => device.kind === "videoinput"
       );
       // var len = videoDevices.length;
-      
+
       if (videoDevices.length > 1) {
         // if(videoIndex+1>=len){
         //   setVideoIndex(0)
@@ -223,12 +223,10 @@ const OpenVideo = () => {
         //   setVideoIndex(videoIndex+1)
         // }
         const newPublisher = OV.current.initPublisher("htmlVideo", {
-          videoSource: 
-          // videoDevices[videoIndex].deviceId,
-          // vidoeIndex+1>len?
-          isFrontCamera
-            ? videoDevices[0].deviceId
-            : videoDevices[2].deviceId,
+          videoSource:
+            // videoDevices[videoIndex].deviceId,
+            // vidoeIndex+1>len?
+            isFrontCamera ? videoDevices[0].deviceId : videoDevices[2].deviceId,
           publishAudio: true,
           publishVideo: true,
           mirror: isFrontCamera,
@@ -546,7 +544,7 @@ const OpenVideo = () => {
         session.current.disconnect();
       }
       if (publisher.current) {
-        publisher.current=null;
+        publisher.current = null;
       }
       navigate("/");
     } catch (error) {
@@ -809,6 +807,7 @@ const OpenVideo = () => {
               )}
             </Box>
           </Box>
+
           <Box
             sx={{
               backgroundColor: "rgba(0, 0, 0, 0.2)",
@@ -965,7 +964,7 @@ const OpenVideo = () => {
                               ? "방송 종료"
                               : index === currentProductIndex
                               ? "방송 중"
-                              : "이 상품 준비하기"}
+                              : "다음 상품 준비"}
                           </Button>
                         ) : index === currentProductIndex ? (
                           <Box>

@@ -324,7 +324,10 @@ const Live = ({ items }) => {
             height: "60vh",
           }}
         >
-          <Typography sx={{ textAlign: "center" }}>
+          <Typography
+            variant="h6"
+            sx={{ color: "grey.700", textAlign: "center" }}
+          >
             현재 판매 중인 라이브 방송이 없습니다. <br />
             새로운 라이브를 시작해 볼까요?"
           </Typography>

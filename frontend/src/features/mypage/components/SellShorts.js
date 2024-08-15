@@ -29,11 +29,12 @@ const Shorts = ({ items }) => {
               justifyContent: "center",
               alignItems: "center",
               height: "60vh",
-              position: "fixed",
-              backgroundColor: "white",
             }}
           >
-            <Typography sx={{ textAlign: "center" }}>
+            <Typography
+              variant="h6"
+              sx={{ color: "grey.700", textAlign: "center" }}
+            >
               판매 쇼츠가 없어요.
             </Typography>
           </Box>
