@@ -1,74 +1,77 @@
 /* src/styles/BottomAppBar.css */
 
 .appBar {
-    top: auto;
-    bottom: 0;
-    width: 100%;
-  }
-  
-  .homeIcon {
-    width: 24px;
-    height: 24px;
-    position: relative;
-  }
-  
-  .searchIcon {
-    width: 24px;
-    height: 24px;
-    position: relative;
-  }
-  
-  .AddCircleIcon {
-    width: 24px;
-    height: 24px;
-    position: relative;
-    color: #FF0B55;
-  }
-  
-  .chatIcon {
-    width: 24px;
-    height: 24px;
-    position: relative;
-  }
-  
-  .accountIcon {
-    width: 24px;
-    height: 24px;
-    position: relative;
-  }
-  
-  .tab1, .tab2, .tab3, .tab4, .tab5 {
-    flex: 1;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    padding: 1px 15px;
-  }
-  
-  .tabBarButtons {
-    position: absolute;
-    width: calc(100% + 1px);
-    top: 7px;
-    right: -1px;
-    left: 0px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 0px;
-    box-sizing: border-box;
-  }
-  
-  .tabBar {
-    width: 100%;
-    position: absolute;
-    margin: 0 !important;
-    top: 769px;
-    left: 0px;
-    background-color: #fff;
-    border-top: 1px solid #000;
-    box-sizing: border-box;
-    height: 83px;
-  }
-  
+  top: auto;
+  bottom: 0;
+  width: 100%;
+}
+
+.homeIcon {
+  width: 24px;
+  height: 24px;
+  position: relative;
+}
+
+.searchIcon {
+  width: 24px;
+  height: 24px;
+  position: relative;
+}
+
+.AddCircleIcon {
+  width: 24px;
+  height: 24px;
+  position: relative;
+  color: #ff0b55;
+}
+
+.chatIcon {
+  width: 24px;
+  height: 24px;
+  position: relative;
+}
+
+.accountIcon {
+  width: 24px;
+  height: 24px;
+  position: relative;
+}
+
+.tab1,
+.tab2,
+.tab3,
+.tab4,
+.tab5 {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 1px 15px;
+}
+
+.tabBarButtons {
+  position: absolute;
+  width: calc(100% + 1px);
+  top: 7px;
+  right: -1px;
+  left: 0px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0px;
+  box-sizing: border-box;
+}
+
+.tabBar {
+  width: 100%;
+  position: absolute;
+  margin: 0 !important;
+  top: 769px;
+  left: 0px;
+  background-color: #fff;
+  border-top: 1px solid #000;
+  box-sizing: border-box;
+  height: 83px;
+}
