@@ -50,6 +50,7 @@ const OpenVideo = () => {
   const [open, setOpen] = useState(false);
   const [place, setPlace] = useState("");
   const [liveDate, setLiveDate] = useState("");
+  const [shortsId, setShortsId] = useState();
   const [times, setTimes] = useState([]);
   const [isFrontCamera, setIsFrontCamera] = useState(false);
   const navigate = useNavigate();
@@ -58,6 +59,14 @@ const OpenVideo = () => {
     setOpen(true);
   };
   const handleClose = () => setOpen(false);
+
+  useEffect(() => {
+    console.log("productList 바뀜");
+    console.log(productList);
+  }, [productList]);
+  useEffect(() => {
+    console.log("빈배열 로그");
+  }, []);
 
   const generateTimeSlots = (tradeTimes) => {
     const slots = [];
@@ -101,6 +110,7 @@ const OpenVideo = () => {
   };
 
   useDidMountEffect(() => {
+    console.log("또들어옴?");
     OV.current = new OpenVidu();
     window.addEventListener("popstate", handlePopState);
     if (sessionName) {
@@ -145,7 +155,10 @@ const OpenVideo = () => {
       } else if (type === 3) {
         productList[data.index].status += 1;
       } else if (type === 4) {
-        productList[currentProductIndex].shortsId = data.shortsId;
+        console.log("currentProductIndex : ", currentProductIndex);
+        console.log("productList : ", productList);
+        setShortsId(data.shortsId);
+        // productList[currentProductIndex].shortsId = data.shortsId;
       } else if (type === 5) {
         navigate("/");
       }
@@ -370,7 +383,7 @@ const OpenVideo = () => {
             .then((response) => {
               console.log("쇼츠 id : ", response.data);
               console.log(" data : ", data);
-              productList[currentProductIndex].shortsId = response.data;
+              // productList[currentProductIndex].shortsId = response.data;
               const messageData = {
                 type: 4,
                 shortsId: response.data,
@@ -397,6 +410,7 @@ const OpenVideo = () => {
   useEffect(() => {
     console.log("들어왔니?", isRecording);
     if (!isRecording && !isFirst) {
+      productList[currentProductIndex].shortsId = shortsId;
       setCurrentProductIndex((prevIndex) => {
         const newIndex = prevIndex + 1;
         if (newIndex < productList.length) {

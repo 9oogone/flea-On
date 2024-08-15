@@ -95,7 +95,7 @@ const ScrapLive = ({ items }) => {
                     <UpcomingHeader liveDate={item.liveDate} isScrap={true} />
                   </Box>
                   <UpcomingFooter
-                    tradePlace={item.dongName}
+                    dongName={item.dongName}
                     title={item.title}
                   />
                 </Box>
