@@ -45,7 +45,7 @@ const BuyList = () => {
           width: "100%",
           position: "fixed",
           bgcolor: "white",
-          pt: 6,
+          pt: 2,
           pb: 3,
           left: 0,
           zIndex: 1000,
@@ -72,7 +72,7 @@ const BuyList = () => {
         </Typography>
       </Box>
 
-      <Box container sx={{ paddingTop: "12vh" }}>
+      <Box container sx={{ paddingTop: 10 }}>
         {selectedTab === "buys" && <Buys items={buys} />}
         {selectedTab === "waits" && <Waits items={waits} />}
         <Box

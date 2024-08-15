@@ -7,6 +7,8 @@ import UpcomingBroadcasts from "../components/UpcomingBroadcasts";
 import LiveBroadcasts from "../components/LiveBroadcasts";
 import Shorts from "../components/Shorts";
 import Spinner from "../components/Spinner.js";
+import { ChevronRight } from "@mui/icons-material";
+
 // import Question from "../assets/images/question.svg";
 
 const useQuery = () => {
@@ -20,6 +22,7 @@ const SearchPage = () => {
   const [live, setLive] = useState([]);
   const [shorts, setShorts] = useState([]);
   const [upcoming, setUpcoming] = useState([]);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -66,21 +69,24 @@ const SearchPage = () => {
     <Container sx={{ mt: 10, mb: 10 }}>
       {loading && <Spinner />}
       {error && <Typography color="error">{getErrorMessage()}</Typography>}
-      {!loading && !error && results && (
-        isEmptyResults() ? (
-          <Box sx={{ mt: '100%', textAlign: 'center' }}>
+      {!loading &&
+        !error &&
+        results &&
+        (isEmptyResults() ? (
+          <Box sx={{ mt: "100%", textAlign: "center" }}>
             {/* <img src={Question} alt="No results" style={{ width: '100px', height: '100px' }} /> */}
-            <Typography 
-            sx={{ 
-              color: "gray",
-              fontSize: "20px",
-              letterSpacing: "-0.5px"
-              }}>
+            <Typography
+              sx={{
+                color: "gray",
+                fontSize: "20px",
+                letterSpacing: "-0.5px",
+              }}
+            >
               {query}의 검색 결과가 없습니다!
             </Typography>
           </Box>
         ) : (
-          <Grid container spacing={3}>
+          <Grid container spacing={3} sx={{ mt: 0 }}>
             {upcoming.length > 0 && <UpcomingBroadcasts items={upcoming} />}
             {shorts.length > 0 && (
               <>
@@ -90,22 +96,30 @@ const SearchPage = () => {
                       display: "flex",
                       justifyContent: "space-between",
                       alignItems: "center",
-                      mt: "10px"
+                      mt: "10px",
                     }}
                   >
                     <Typography
-                    sx={{ 
-                      mt: upcoming.length === 0 ? "4%" : 0,
-                      fontSize: "20px",
-                      fontWeight: "600",
-                      letterSpacing: "-0.5px",
-                      color: "#2E2E32",
-                      fontFamily: "Noto Sans KR"
-                      }}>SHORTS</Typography>
+                      sx={{
+                        fontSize: "20px",
+                        fontWeight: "600",
+                        letterSpacing: "-0.5px",
+                        color: "#2E2E32",
+                        fontFamily: "Noto Sans KR",
+                        pl: 2.5,
+                      }}
+                    >
+                      SHORTS
+                    </Typography>
                     {shorts.length > 2 && (
-                    <Button onClick={() => navigate(`/search/shorts?query=${query}`)}>
-                      모두보기
-                    </Button>
+                      <Button
+                        onClick={() =>
+                          navigate(`/search/shorts?query=${query}`)
+                        }
+                      >
+                        모두보기
+                        <ChevronRight />
+                      </Button>
                     )}
                   </Box>
                 </Grid>
@@ -120,20 +134,28 @@ const SearchPage = () => {
                       display: "flex",
                       justifyContent: "space-between",
                       alignItems: "center",
-                       mt: "10px"
+                      mt: "10px",
                     }}
                   >
-                    <Typography sx={{ 
-                      mt: upcoming.length && shorts.length === 0 ? "4%" : 0,
-                      fontSize: "20px",
-                      fontWeight: "600",
-                      letterSpacing: "-0.5px",
-                      color: "#2E2E32"
-                      }}>LIVE</Typography>
+                    <Typography
+                      sx={{
+                        mt: upcoming.length && shorts.length === 0 ? "4%" : 0,
+                        fontSize: "20px",
+                        fontWeight: "600",
+                        letterSpacing: "-0.5px",
+                        color: "#2E2E32",
+                        pl: 2.5,
+                      }}
+                    >
+                      LIVE
+                    </Typography>
                     {live.length > 2 && (
-                    <Button onClick={() => navigate(`/search/live?query=${query}`)}>
-                      모두보기
-                    </Button>
+                      <Button
+                        onClick={() => navigate(`/search/live?query=${query}`)}
+                      >
+                        모두보기
+                        <ChevronRight />
+                      </Button>
                     )}
                   </Box>
                 </Grid>
@@ -141,8 +163,7 @@ const SearchPage = () => {
               </>
             )}
           </Grid>
-        )
-      )}
+        ))}
     </Container>
   );
 };

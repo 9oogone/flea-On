@@ -43,8 +43,8 @@ const SellList = () => {
           width: "100%",
           position: "fixed",
           bgcolor: "white",
-          pt: 6,
-          pb: 3,
+          pt: 2,
+          pb: 3.5,
           left: 0,
           zIndex: 1000,
         }}
@@ -69,7 +69,7 @@ const SellList = () => {
           판매내역
         </Typography>
       </Box>
-      <Box container sx={{ paddingTop: "12vh" }}>
+      <Box container sx={{ paddingTop: 10 }}>
         {selectedTab === "live" && <Live items={live} />}
         {selectedTab === "shorts" && <Shorts items={shorts} />}
         <Grid
