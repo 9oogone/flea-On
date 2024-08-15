@@ -182,21 +182,21 @@ public class PurchaseService {
             PurchaseCancleResponse cancelResponse = cancelPurchaseProduct(cancelRequest);
             cancelResponses.add(cancelResponse);
 
-            // 3. 해당 제품의 예약 리스트 삭제
-            reservationRepository.deleteByProduct_ProductId(product.getProductId());
-
-            // 4. 제품의 구매자 및 예약자 초기화
-            product.setCurrentBuyerId(0);
-            product.setReservationCount(0);
-            productRepository.save(product);
+//            // 3. 해당 제품의 예약 리스트 삭제
+//            reservationRepository.deleteByProduct_ProductId(product.getProductId());
+//
+//            // 4. 제품의 구매자 및 예약자 초기화
+//            product.setCurrentBuyerId(0);
+//            product.setReservationCount(0);
+//            productRepository.save(product);
 
             System.out.println("size: "+cancelResponses.size());
         }
 
-        // 5. 채팅방 및 채팅 메시지 삭제
-        logger.info("Deleting all chatting lists and chat rooms for live ID: {}", liveId);
-        chattingListRepository.deleteByChatting_ChattingId(liveId);
-        chattingRepository.deleteById(liveId);
+//        // 5. 채팅방 및 채팅 메시지 삭제
+//        logger.info("Deleting all chatting lists and chat rooms for live ID: {}", liveId);
+//        chattingListRepository.deleteByChatting_ChattingId(liveId);
+//        chattingRepository.deleteById(liveId);
 
         return cancelResponses;
     }
