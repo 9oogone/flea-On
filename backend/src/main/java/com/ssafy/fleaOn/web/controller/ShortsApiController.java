@@ -147,5 +147,11 @@ public class ShortsApiController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+    @Operation(summary = "랜덤 쇼츠", description = "쇼츠 랜덤으로 하나 가져오기")
+    @GetMapping("/random")
+    public ResponseEntity<Integer> random() {
+        int shortsId = shortsService.getRandomShorts();
+        return ResponseEntity.status(HttpStatus.OK).body(shortsId);
+    }
 
 }
