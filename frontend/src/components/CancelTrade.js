@@ -5,9 +5,9 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   Button,
+  Typography,
 } from "@mui/material";
 import baseAxios from "../utils/httpCommons";
 import Spinner from "../components/Spinner.js";
@@ -34,19 +34,62 @@ const CancelTrade = ({ isOpen, onClose, chatID, products }) => {
     <Dialog
       open={isOpen}
       onClose={onClose}
-      aria-labelledby="cancel-trade-dialog-title"
+      sx={{ "& .MuiDialog-paper": { borderRadius: "16px" } }}
     >
-      <DialogTitle id="cancel-trade-dialog-title">거래 파기</DialogTitle>
-      <DialogContent>
-        <DialogContentText>거래를 파기하시겠습니까?</DialogContentText>
-        <DialogContentText>파기된 거래는 재개할 수 없습니다.</DialogContentText>
+      <DialogTitle
+        sx={{
+          color: "#FF0B55",
+          fontWeight: "bold",
+          textAlign: "center",
+        }}
+      >
+        거래 파기
+      </DialogTitle>
+      <DialogContent
+        sx={{
+          textAlign: "center",
+        }}
+      >
+        <Typography variant="body1" sx={{ mb: 1.5 }}>
+          거래를 파기하시겠습니까?
+        </Typography>
+        <Typography variant="body2" sx={{ color: "#888888" }}>
+          (거래 파기 시 생성된 채팅방이 즉시 삭제됩니다.)
+        </Typography>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} color="primary">
+      <DialogActions
+        sx={{
+          mb: 1,
+          justifyContent: "center",
+        }}
+      >
+        <Button
+          onClick={onClose}
+          variant="outlined"
+          sx={{
+            borderColor: "#ccc",
+            color: "#333",
+            width: "100px",
+            borderRadius: "8px",
+            margin: "0 8px",
+          }}
+        >
           취소
         </Button>
-        <Button onClick={cancelTrade} color="primary" autoFocus>
-          확인
+        <Button
+          onClick={cancelTrade}
+          variant="contained"
+          color="primary"
+          sx={{
+            width: "100px",
+            backgroundColor: "#FF0B55",
+            color: "white",
+            boxShadow: "none",
+            borderRadius: "8px",
+            margin: "0 8px",
+          }}
+        >
+          거래 파기
         </Button>
       </DialogActions>
       {loading ? (

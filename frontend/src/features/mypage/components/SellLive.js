@@ -15,8 +15,10 @@ const Live = ({ items }) => {
 
   const [open, setOpen] = useState(false);
   const liveDetail = useSelector((state) => state.live.liveDetail);
+  // console.log("0000", liveDetail);
 
   const handleButtonClick = async (item) => {
+    // console.log("1", item);
     try {
       await dispatch(fetchLiveDetail(item.liveId));
       setOpen(true);
@@ -163,6 +165,14 @@ const Live = ({ items }) => {
                     </Typography>
                     <ChevronRight />
                   </Box>
+                  {liveDetail.liveId && (
+                    <UpcomingModal
+                      id={index}
+                      open={open}
+                      handleClose={handleClose}
+                      liveDetail={liveDetail}
+                    />
+                  )}
                 </Box>
               </Box>
             ))}
@@ -314,7 +324,10 @@ const Live = ({ items }) => {
             height: "60vh",
           }}
         >
-          <Typography sx={{ textAlign: "center" }}>
+          <Typography
+            variant="h6"
+            sx={{ color: "grey.700", textAlign: "center" }}
+          >
             현재 판매 중인 라이브 방송이 없습니다. <br />
             새로운 라이브를 시작해 볼까요?"
           </Typography>

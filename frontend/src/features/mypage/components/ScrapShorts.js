@@ -186,7 +186,10 @@ const ScrapShorts = ({ items }) => {
               mt: 20,
             }}
           >
-            <Typography variant="h6" sx={{ color: "grey.700" }}>
+            <Typography
+              variant="h6"
+              sx={{ color: "grey.700", textAlign: "center" }}
+            >
               관심있는 쇼츠가 없어요. <br />
               지금 쇼츠를 보러 갈까요?
             </Typography>

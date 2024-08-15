@@ -209,7 +209,7 @@ const CustomerDateTimeSelector = ({
   const currentMonth = selectedDate
     ? format(parseISO(selectedDate), "M월")
     : "";
-  const filteredTimes = times.filter((slot) => slot.date === selectedDate);
+  const filteredTimes = times?.filter((slot) => slot.date === selectedDate);
   const morningSlots = filteredTimes.filter(
     (slot) => formatTime(slot.time).period === "오전"
   );
