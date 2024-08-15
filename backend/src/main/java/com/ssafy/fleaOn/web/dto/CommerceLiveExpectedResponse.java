@@ -14,4 +14,5 @@ public class CommerceLiveExpectedResponse {
 
     private int liveId;
     private boolean isExist;
+    private String title;
 }
