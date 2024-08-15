@@ -42,7 +42,7 @@ const OpenVideo = () => {
   const [currentVideoDevice, setCurrentVideoDevice] = useState(null);
   const [mainStreamManager, setMainStreamManager] = useState(undefined);
   const [sttValue, setSttValue] = useState("");
-  const [publisher, setPublisher] = useState(undefined);
+  // const [publisher, setPublisher] = useState(undefined);
   const [currentRecordingId, setCurrentRecordingId] = useState("");
   const [recordStartTime, setRecordStartTime] = useState(null);
   const [title, setTitle] = useState("");
@@ -55,7 +55,7 @@ const OpenVideo = () => {
   const navigate = useNavigate();
   const [isSold, setIsSold] = useState(false);
   const [reserveCount, setReserveCount] = useState(0);
-
+  const publisher = useRef();
   const handleCustomerClick = () => {
     // 이미 가져온 데이터를 사용하여 상태 업데이트
     setOpen(true);
@@ -100,8 +100,8 @@ const OpenVideo = () => {
     if (session.current) {
       session.current.disconnect();
     }
-    if (publisher) {
-      publisher = null;
+    if (publisher.current) {
+      publisher.current = null;
     }
   };
 
@@ -162,7 +162,7 @@ const OpenVideo = () => {
       await session.connect(token, { clientData: "example" });
       if (resp[1] === true) {
         setIsPublisher(true);
-        let publisher = OV.current.initPublisher(
+        publisher.current = OV.current.initPublisher(
           undefined,
           {
             audioSource: undefined,
@@ -176,8 +176,8 @@ const OpenVideo = () => {
           },
           () => {
             if (videoRef.current) {
-              publisher.addVideoElement(videoRef.current);
-              session.publish(publisher);
+              publisher.current.addVideoElement(videoRef.current);
+              session.publish(publisher.current);
               dispatch(unSetLoading());
             }
           },
@@ -371,11 +371,27 @@ const OpenVideo = () => {
             videoAddress,
             productId: currentProduct.productId,
             shortsChatRequests,
+            inputText: { text: sttValue },
           };
           baseAxios()
             .post("fleaon/shorts/save", data)
-            .then((response) => {})
-            .catch((error) => {});
+            .then((response) => {
+              console.log(response);
+              console.log(data);
+              // POST 요청이 성공한 후에 PUT 요청을 진행
+              return baseAxios().put(
+                `/fleaon/shorts/${currentProduct.productId}/Start`
+              );
+            })
+            .then((putResponse) => {
+              // PUT 요청의 응답 처리
+              console.log(putResponse);
+            })
+            .catch((error) => {
+              // 에러 처리
+              console.error("Error occurred:", error);
+              console.log(data);
+            });
           // setCurrentProductIndex(currentProductIndex + 1);
           // if (currentProductIndex < productList.length - 1) {
           //   setCurrentProduct(productList[currentProductIndex + 1]);
@@ -414,10 +430,12 @@ const OpenVideo = () => {
   };
 
   const handleBuy = async (productId) => {
+    console.log("productId", productId);
+    console.log(user.userId);
     setSelectedProductId(productId);
     try {
       const response = await baseAxios().post("/fleaon/purchase/buy", {
-        productId: productId,
+        productId: productList[currentProductIndex].productId,
         userId: user.userId,
       });
       if (response.status === 200) {
@@ -490,6 +508,19 @@ const OpenVideo = () => {
   const endBroadcast = async () => {
     try {
       await baseAxios().put(`/fleaOn/live/${sessionName}/off`);
+      const messageData = {
+        type: 5,
+      };
+      session.current.signal({
+        data: JSON.stringify(messageData),
+        type: "chat",
+      });
+      if (session.current) {
+        session.current.disconnect();
+      }
+      if (publisher.current) {
+        publisher.current = null;
+      }
       navigate("/");
     } catch (error) {
       console.error("방송 종료 실패", error);
@@ -923,8 +954,8 @@ const OpenVideo = () => {
         liveDate={liveDate}
         times={times}
         selectedProductId={selectedProductId}
-        userId={user.userId}
-        sellerId={seller.userId}
+        user={user}
+        seller={seller}
         liveId={sessionName}
       />
     </div>
