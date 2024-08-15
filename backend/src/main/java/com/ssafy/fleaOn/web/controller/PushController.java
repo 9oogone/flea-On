@@ -1,25 +1,22 @@
 package com.ssafy.fleaOn.web.controller;
 
-import com.google.firebase.messaging.FirebaseMessagingException;
+import com.ssafy.fleaOn.web.dto.ChatAlarmRequest;
+import com.ssafy.fleaOn.web.dto.NextAlarmRequest;
 import com.ssafy.fleaOn.web.dto.UserFcmResponse;
 import com.ssafy.fleaOn.web.service.FcmService;
+import com.ssafy.fleaOn.web.service.PurchaseService;
 import com.ssafy.fleaOn.web.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.ssafy.fleaOn.web.service.UserService;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/push")
 public class PushController {
-
     private final UserService userService;
     private final FcmService fcmService;
 
@@ -54,6 +51,24 @@ public class PushController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
+    @PostMapping("/cancelAlarm")
+    public ResponseEntity<?> cancelAlarm(@RequestBody NextAlarmRequest nextAlarmRequest) {
+        if(nextAlarmRequest.getNextId()==0){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }else{
+
+            fcmService.sendMessageToNextPerson(nextAlarmRequest);
+            return ResponseEntity.status(HttpStatus.OK).build();
+        }
+    }
+
+    @PostMapping("/chatAlarm")
+    public ResponseEntity<?> chatAlarm(@RequestBody ChatAlarmRequest chatAlarmRequest) {
+        fcmService.sendMessageToRecipient(chatAlarmRequest);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
 
 }
 

@@ -582,4 +582,17 @@ public class UserService {
         userRepository.save(user);
         return user;
     }
+
+    public String getUserFcmByUserId(int userId) {
+        Optional<User> findUser = userRepository.findById(userId);
+        if (findUser.isPresent()) {
+            return findUser.get().getFcm();
+        }
+        return null;
+    }
+
+    public String getProfile(int productId) {
+        User user = productRepository.findByProductId(productId).orElseThrow(()->new IllegalArgumentException("찾을 수 없는 상품입니다.")).getSeller();
+        return user.getProfilePicture();
+    }
 }
