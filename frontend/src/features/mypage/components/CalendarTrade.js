@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { confirmTrade } from "../actions";
+import { confirmTrade, fetchCalendarWeek, fetchCalendarDate } from "../actions";
 import { useNavigate } from "react-router-dom";
 import { fetchChats } from "../../chat/chatSlice";
 import {
@@ -21,11 +21,14 @@ import {
   PlaceRounded,
   ChevronRight,
 } from "@mui/icons-material";
+import { startOfWeek } from "date-fns";
 import { formatTime, formatPrice } from "../../../utils/cssUtils";
+import { updateUserLevel } from "../../auth/authSlice";
 
 const CalendarTrade = ({ userId, selectedDate, dateTrade }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const user = useSelector((state) => state.auth.user);
   const [trade, setTrade] = useState([]);
   const [tradeDone, setTradeDone] = useState([]);
   const { chats, status } = useSelector((state) => state.chat);
@@ -50,9 +53,9 @@ const CalendarTrade = ({ userId, selectedDate, dateTrade }) => {
     if (status === "idle") {
       dispatch(fetchChats());
     }
-    console.log(chats);
+    // console.log(chats);
   }, [status, dispatch]);
-  console.log(chats, status, "챗 디스패치입니다");
+  // console.log(chats, status, "챗 디스패치입니다");
 
   const goToChatRoom = (chats, chattingId) => {
     const chat = chats.find((chat) => chat.chattingId === chattingId);
@@ -96,13 +99,20 @@ const CalendarTrade = ({ userId, selectedDate, dateTrade }) => {
         .then(() => {
           setIsModalOpen(false);
           setSelectedTrade(null);
-          // 거래확정 상태 반영
-          setTrade((prevTrades) =>
-            prevTrades.filter(
-              (trade) => trade.productId !== selectedTrade.productId
-            )
+
+          // 상태 업데이트를 위한 액션 디스패치
+          dispatch(
+            fetchCalendarWeek({
+              email: user?.email,
+              today: startOfWeek(selectedDate, { weekStartsOn: 0 }),
+            })
           );
-          setTradeDone((prevDoneTrades) => [...prevDoneTrades, selectedTrade]);
+
+          dispatch(
+            fetchCalendarDate({ email: user?.email, tradeDate: selectedDate })
+          );
+          const newLevel = user?.level + 1;
+          dispatch(updateUserLevel(newLevel));
         })
         .catch((error) => {
           console.error("거래 확정 중 오류 발생:", error);
@@ -252,12 +262,11 @@ const CalendarTrade = ({ userId, selectedDate, dateTrade }) => {
                     </Box>
                     <Box
                       sx={{
-                        width: "35%",
+                        width: "40%",
 
                         display: "flex",
                         flexDirection: "column",
                         justifyContent: "space-around",
-                        alignItems: "flex-end",
                       }}
                     >
                       <Typography
@@ -330,9 +339,7 @@ const CalendarTrade = ({ userId, selectedDate, dateTrade }) => {
       >
         <DialogTitle
           sx={{
-            backgroundColor: "#FF0B55",
-            color: "white",
-            borderBottom: "1px solid #FF0B55",
+            color: "#FF0B55",
             fontWeight: "bold",
             textAlign: "center",
           }}
@@ -341,44 +348,38 @@ const CalendarTrade = ({ userId, selectedDate, dateTrade }) => {
         </DialogTitle>
         <DialogContent
           sx={{
-            backgroundColor: "#f5f5f5",
-            padding: "24px",
             textAlign: "center",
           }}
         >
-          <Typography variant="body1" sx={{ mb: 2 }}>
+          <Typography variant="body1" sx={{ mb: 1.5 }}>
             거래를 확정하시겠습니까?
           </Typography>
           <Typography variant="body2" sx={{ color: "#888888" }}>
-            (거래를 확정 시 판매한 상품의 쇼츠와 생성된 채팅방이 사라집니다.)
+            (거래를 확정 시 판매한 상품의 쇼츠와 <br />
+            생성된 채팅방이 사라집니다.)
           </Typography>
+          <Box
+            onClick={handleChat}
+            sx={{
+              display: "flex",
+              justifyContent: "flex-end",
+              alignItems: "center",
+              mt: 1,
+            }}
+          >
+            <Typography variant="body2" sx={{ color: "#FF0B55" }}>
+              생성된 채팅방으로 이동하기
+            </Typography>
+            <ChevronRight sx={{ color: "#FF0B55" }} />
+          </Box>
         </DialogContent>
         <DialogActions
           sx={{
+            mb: 1,
             justifyContent: "center",
-            backgroundColor: "#f5f5f5",
-            borderTop: "1px solid #ddd",
           }}
         >
-          <Button
-            onClick={handleConfirmTrade}
-            variant="contained"
-            color="primary"
-            sx={{
-              backgroundColor: "#FF0B55",
-              color: "white",
-              "&:hover": {
-                backgroundColor: "#e6004c",
-              },
-              boxShadow: "none",
-              borderRadius: "8px",
-              margin: "0 8px",
-            }}
-          >
-            거래확정
-          </Button>
-          <Button
-            onClick={handleChat}
+          {/* <Button
             variant="outlined"
             color="primary"
             sx={{
@@ -393,20 +394,34 @@ const CalendarTrade = ({ userId, selectedDate, dateTrade }) => {
             }}
           >
             채팅하기
-          </Button>
+          </Button> */}
           <Button
             onClick={handleCloseModal}
             variant="outlined"
-            color="secondary"
             sx={{
               borderColor: "#ccc",
               color: "#333",
-
+              width: "100px",
               borderRadius: "8px",
               margin: "0 8px",
             }}
           >
             취소
+          </Button>
+          <Button
+            onClick={handleConfirmTrade}
+            variant="contained"
+            color="primary"
+            sx={{
+              width: "100px",
+              backgroundColor: "#FF0B55",
+              color: "white",
+              boxShadow: "none",
+              borderRadius: "8px",
+              margin: "0 8px",
+            }}
+          >
+            거래확정
           </Button>
         </DialogActions>
       </Dialog>
@@ -416,11 +431,11 @@ const CalendarTrade = ({ userId, selectedDate, dateTrade }) => {
         open={openSnackbar}
         autoHideDuration={1000}
         onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "center", horizontal: "center" }}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
         sx={{
           width: "80%",
           position: "fixed",
-          top: "50%",
+          top: "28%",
           left: "50%",
           transform: "translate(-50%, -50%)",
         }}

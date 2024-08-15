@@ -83,6 +83,12 @@ const authSlice = createSlice({
       state.user.regionCode = action.payload.regionCode;
       saveState(state);
     },
+    updateUserLevel(state, action) {
+      if (state.user) {
+        state.user.level = action.payload;
+        saveState(state);
+      }
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(updateUserInfo.fulfilled, (state, action) => {
@@ -92,6 +98,13 @@ const authSlice = createSlice({
   },
 });
 
-export const { login, logout, setUser, setPhone, setNickname, setUserRegion } =
-  authSlice.actions;
+export const {
+  login,
+  logout,
+  setUser,
+  setPhone,
+  setNickname,
+  setUserRegion,
+  updateUserLevel,
+} = authSlice.actions;
 export default authSlice.reducer;

@@ -120,6 +120,8 @@ const ShortsPage = () => {
 
   // 끌어올리기 모달
   const handelBoostShorts = () => {
+    const calculatedDiscountedPrice = Math.floor(product.price * 0.9);
+    setDiscountedPrice(calculatedDiscountedPrice);
     setIsBoostModalOpen(true);
   };
 
@@ -128,8 +130,6 @@ const ShortsPage = () => {
   };
 
   const handleConfirmBoost = async () => {
-    const calculatedDiscountedPrice = Math.floor(product.price * 0.9);
-    setDiscountedPrice(calculatedDiscountedPrice);
     setIsBoostModalOpen(false);
     if (product.productId) {
       console.log(product.pro);
@@ -317,7 +317,7 @@ const ShortsPage = () => {
                 color: "#333",
               }}
             >
-              상품 끌어올리기
+              쇼츠 끌어올리기
             </DialogTitle>
             <DialogContent
               sx={{
@@ -356,43 +356,51 @@ const ShortsPage = () => {
                 }}
               >
                 (끌어올리기를 하면 상품이 목록의 상단으로 이동하며, 10% 비율로
-                가격이 할인됩니다.) <br />
-                <br />
+                가격이 할인됩니다.)
+              </Typography>
+              <Typography
+                sx={{
+                  textAlign: "center",
+                  fontSize: "0.875rem",
+                  color: "#777",
+                }}
+              >
                 ♥무료나눔은 언제든 끌올 가능♥
               </Typography>
             </DialogContent>
             <DialogActions
               sx={{
-                justifyContent: "flex-end",
-                padding: "16px",
+                justifyContent: "center",
+                mb: 1,
               }}
             >
+              <Button
+                onClick={handleCloseBoostModal}
+                variant="outlined"
+                color="secondary"
+                sx={{
+                  color: "#333",
+                  borderColor: "#ccc",
+                  borderRadius: "8px",
+
+                  width: "100px",
+                }}
+              >
+                취소
+              </Button>
               <Button
                 onClick={handleConfirmBoost}
                 color="primary"
                 variant="contained"
                 sx={{
+                  width: "100px",
                   backgroundColor: "#FF0B55",
                   color: "white",
+                  borderRadius: "8px",
                   boxShadow: "none",
                 }}
               >
                 끌어올리기
-              </Button>
-              <Button
-                onClick={handleCloseBoostModal}
-                color="inherit"
-                variant="outlined"
-                sx={{
-                  marginLeft: "8px",
-                  color: "FF0B55",
-                  borderColor: "#FF0B55",
-                  "&:hover": {
-                    borderColor: "#1565c0",
-                  },
-                }}
-              >
-                취소
               </Button>
             </DialogActions>
           </Dialog>

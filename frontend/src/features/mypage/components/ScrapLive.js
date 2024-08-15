@@ -15,7 +15,7 @@ const ScrapLive = ({ items }) => {
 
   const [open, setOpen] = useState(false);
   const liveDetail = useSelector((state) => state.live.liveDetail);
-  console.log(liveDetail);
+  // console.log(liveDetail);
 
   const handleButtonClick = async (item) => {
     try {

@@ -26,11 +26,11 @@ const Notification = () => {
   }, []);
 
   const handleBackButtonClick = () => {
-    navigate("/mypage");
+    navigate("/");
   };
 
   return (
-    <Box sx={{ minHeight: "100vh", bgcolor: "rgba(0, 0, 0, 0.04)" }}>
+    <Box sx={{ minHeight: "100vh", bgcolor: "rgba(0, 0, 0, 0.03)" }}>
       <Box sx={{ mb: 7 }}>
         <Box
           sx={{
