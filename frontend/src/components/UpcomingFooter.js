@@ -28,6 +28,9 @@ const UpcomingFooter = ({ name, dongName, title, price }) => {
           color: "white",
           fontSize: 14,
           fontWeight: 600,
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
         }}
       >
         {title}

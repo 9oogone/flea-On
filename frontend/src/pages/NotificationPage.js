@@ -1,6 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, Typography, Avatar, Modal, Button } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Avatar,
+  Modal,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from "@mui/material";
 import baseAxios from "../utils/httpCommons";
 import { useSelector } from "react-redux";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
@@ -27,9 +37,10 @@ const Notification = () => {
   const [title, setTitle] = useState("");
   const [seller, setSeller] = useState({});
   const [place, setPlace] = useState("");
-  const [times, setTimes] = useState("");
+  const [times, setTimes] = useState([]);
   const [liveDate, setLiveDate] = useState("");
   const [liveId, setLiveId] = useState(0);
+  const [product, setProduct] = useState({});
   const [productId, setProductId] = useState(0);
   const [open, setOpen] = useState(false);
   const [childOpen, setChildOpen] = useState(false);
@@ -93,9 +104,15 @@ const Notification = () => {
         tradePlace,
         liveDate: live_date,
         liveTradeTimes,
+        products,
         user,
       } = response.data;
-
+      for (let index = 0; index < products.length; index++) {
+        const p = products[index];
+        if (p.productId === productId) {
+          setProduct(p);
+        }
+      }
       setTitle(title);
       setSeller(user);
       setLiveId(id);
@@ -229,34 +246,122 @@ const Notification = () => {
         </Box>
       </Box>
 
-      <Modal open={open} onClose={handleClose}>
-        <Box sx={{ ...style, width: 400 }}>
-          <Typography variant="h6">구매하시겠습니까?</Typography>
-          <Typography sx={{ mt: 2 }}>
-            구매하시려면 아래 버튼을 클릭하세요.
+      {/* 거래 확정 다이얼로그 */}
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        PaperProps={{
+          sx: {
+            borderRadius: "12px",
+            padding: "20px",
+            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+          },
+        }}
+      >
+        <DialogTitle
+          sx={{
+            fontWeight: "bold",
+            fontSize: "1.25rem",
+            color: "#333",
+          }}
+        >
+          줄 서기 구매!
+        </DialogTitle>
+        <DialogContent
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "16px",
+          }}
+        >
+          <Typography
+            sx={{
+              fontSize: "1rem",
+              color: "#555",
+            }}
+          >
+            당신에게 구매의 기회가 왔습니다.
           </Typography>
-          <Button onClick={handleTradeCancel} sx={{ mt: 2 }}>
-            구매취소
+
+          <Typography
+            sx={{
+              fontSize: "1rem",
+              fontWeight: "bold",
+              color: "#FF0B55",
+              backgroundColor: "#fbe9e7",
+              padding: "8px",
+              borderRadius: "4px",
+              textAlign: "center",
+            }}
+          >
+            {title} {product.price}
+          </Typography>
+
+          <Typography
+            sx={{
+              fontSize: "0.875rem",
+              color: "#777",
+            }}
+          >
+            거래 장소 : {place}
+          </Typography>
+          <Typography
+            sx={{
+              textAlign: "center",
+              fontSize: "0.875rem",
+              color: "#777",
+            }}
+          >
+            해당 상품을 구매하시겠습니까?
+          </Typography>
+        </DialogContent>
+        <DialogActions
+          sx={{
+            justifyContent: "center",
+            mb: 1,
+          }}
+        >
+          <Button
+            onClick={handleTradeCancel}
+            variant="outlined"
+            color="secondary"
+            sx={{
+              color: "#333",
+              borderColor: "#ccc",
+              borderRadius: "8px",
+
+              width: "100px",
+            }}
+          >
+            취소
           </Button>
-          <Button onClick={handleChildOpen} sx={{ mt: 2 }}>
+          <Button
+            onClick={handleChildOpen}
+            color="primary"
+            variant="contained"
+            sx={{
+              width: "100px",
+              backgroundColor: "#FF0B55",
+              color: "white",
+              borderRadius: "8px",
+              boxShadow: "none",
+            }}
+          >
             구매하기
           </Button>
-        </Box>
-      </Modal>
-
-      <Modal open={childOpen} onClose={handleChildClose}>
-        <Box sx={{ ...style, width: 600 }}>
-          <CustomerDateTimeSelector
-            place={place}
-            liveDate={liveDate}
-            times={times}
-            selectedProductId={productId}
-            user={user}
-            seller={seller}
-            liveId={liveId}
-          />
-        </Box>
-      </Modal>
+        </DialogActions>
+      </Dialog>
+      <CustomerDateTimeSelector
+        open={childOpen}
+        handleClose={handleChildClose}
+        place={place}
+        liveDate={liveDate}
+        times={times}
+        selectedProductId={productId}
+        user={user}
+        seller={seller}
+        liveId={liveId}
+      />
     </Box>
   );
 };

@@ -743,60 +743,58 @@ const OpenVideo = () => {
               )}
             </Box>
           </Box>
+
           <Box
             sx={{
-              backgroundColor: "rgba(0, 0, 0, 0.12)",
+              backgroundColor: "rgba(0, 0, 0, 0.2)",
               height: "100vh",
               backdropFilter: "blur(10px)",
-              display: "flex",
+              display: "fixed",
               flexDirection: "column",
-              justifyContent: "flex-start",
+              justifyContent: "center",
               alignItems: "center",
+              width: "100%",
               pr: 5,
-              pl: 5,
-              pt: 15,
             }}
           >
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                marginBottom: 2,
-              }}
-            >
-              <Avatar
-                src={seller.profilePicture}
-                alt={seller.nickname}
-                sx={{ marginRight: 2, width: 32, height: 32 }}
-              />
-              <Box>
-                <Typography
-                  variant="body2"
-                  sx={{ fontWeight: "bold", color: "white" }}
-                >
-                  {seller.nickname}
-                </Typography>
-                <Typography variant="body1" sx={{ color: "white" }}>
-                  {title}
-                </Typography>
-              </Box>
-            </Box>
-            <Typography variant="h6" sx={{ color: "white", marginBottom: 5 }}>
-              상품 목록
-            </Typography>
-            {productList.map((product, index) => (
+            <Box sx={{ display: "flex", alignItems: "center", gap: 2, mt: 15 }}>
+              <ArrowBackIosNewIcon sx={{ color: "white", fontSize: 28 }} />
               <Box
-                key={index}
                 sx={{
-                  marginBottom: 2,
                   display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  width: "80%",
+
+                  marginBottom: 2,
+                  flexDirection: "column",
+                  gap: 1,
                 }}
               >
-                <Box>
+                <Box
+                  sx={{
+                    gap: 0.8,
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <Typography sx={{ color: "white", fontSize: 25 }}>
+                    {title}
+                  </Typography>
+                  {seller.level < 2 ? (
+                    <LevelBaby />
+                  ) : seller.level < 7 ? (
+                    <LevelSmall />
+                  ) : seller.level < 26 ? (
+                    <LevelMiddle />
+                  ) : (
+                    <LevelBig />
+                  )}
+                </Box>
+
+                <Box sx={{ display: "flex", alignItems: "center" }}>
+                  <Avatar
+                    src={seller.profilePicture}
+                    alt={seller.nickname}
+                    sx={{ marginRight: 1.5, width: 24, height: 24 }}
+                  />
                   <Typography
                     variant="body2"
                     sx={{ fontWeight: "bold", color: "white" }}
@@ -911,7 +909,7 @@ const OpenVideo = () => {
                   </Button>
                 )}
               </Box>
-            ))}
+            </Box>
           </Box>
         </Slider>
       </Box>
