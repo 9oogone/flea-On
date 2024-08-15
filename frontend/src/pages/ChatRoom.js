@@ -178,15 +178,18 @@ const ChatRoom = () => {
     try {
       await changeTradeTime(chatID, tradeDate, tradeTime);
 
+      const newSystemMessage = {
+        chatContent: message,
+        writerId: user.userId,
+        isSent: true,
+        chatTime: new Date().toISOString(),
+        isSystemMessage: true,
+      };
+
+      // 상태를 즉시 업데이트하여 화면에 반영
       setMessageList((prevMessages) => [
         ...prevMessages,
-        {
-          chatContent: message,
-          writerId: user.userId,
-          isSent: true,
-          chatTime: new Date().toISOString(),
-          isSystemMessage: true,
-        },
+        newSystemMessage,
       ]);
 
       await sendMessageDB(chatID, message);
@@ -218,18 +221,21 @@ const ChatRoom = () => {
     거래 시간 변경이 거절되었습니다.`;
     
     try {
-      await sendMessageDB(chatID, message);
+      const newSystemMessage = {
+        chatContent: message,
+        writerId: user.userId,
+        isSent: true,
+        chatTime: new Date().toISOString(),
+        isSystemMessage: true,
+      };
 
+      // 상태를 즉시 업데이트하여 화면에 반영
       setMessageList((prevMessages) => [
         ...prevMessages,
-        {
-          chatContent: message,
-          writerId: user.userId,
-          isSent: true,
-          chatTime: new Date().toISOString(),
-          isSystemMessage: true,
-        },
+        newSystemMessage,
       ]);
+
+      await sendMessageDB(chatID, message);
 
       setMessageList((prevMessages) =>
         prevMessages.map((msg) =>
