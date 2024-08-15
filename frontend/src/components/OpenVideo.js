@@ -34,7 +34,6 @@ const OpenVideo = () => {
   const [productList, setProductList] = useState([]);
   const [currentProductIndex, setCurrentProductIndex] = useState(0);
   const [selectedProductId, setSelectedProductId] = useState(null);
-  const [selectedProduct, setSelectedProduct] = useState({});
   const [isFirst, setIsFirst] = useState(true);
   const dispatch = useDispatch();
   const { sessionName } = useParams();
@@ -242,6 +241,7 @@ const OpenVideo = () => {
       const productsWithStatus = products.map((product) => ({
         ...product,
         status: 0,
+        shortsId: 0,
       }));
       for (let index = 0; index < productsWithStatus.length; index++) {
         const product = productsWithStatus[index];
@@ -411,7 +411,6 @@ const OpenVideo = () => {
 
   const handleBuy = async (productId, productIndex) => {
     setSelectedProductId(productId);
-    setSelectedProduct(productList[productIndex]);
     try {
       const response = await baseAxios().post("/fleaon/purchase/buy", {
         productId: productId,

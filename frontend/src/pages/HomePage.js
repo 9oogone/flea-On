@@ -10,6 +10,7 @@ import { fetchUserInfo } from "../features/auth/actions";
 import { fetchShortList } from "../features/shorts/actions";
 import useDidMountEffect from "../utils/useDidMountEffect";
 import { useInView } from 'react-intersection-observer';
+import Spinner from "../assets/images/spinner.svg"
 
 const HomePage = () => {
   const selectedTab = useSelector((state) => state.content.selectedTab);
@@ -167,7 +168,7 @@ const HomePage = () => {
 
   return (
     <Container>
-      <Grid container sx={{ marginTop: "12vh", marginBottom: "12vh" }}>
+      <Grid container sx={{ marginTop: "12vh", marginBottom: "8vh" ,display:"flex",justifyContent:'center'}}>
         {hasLive ? (
           <Grid
             item
@@ -207,7 +208,21 @@ const HomePage = () => {
         )}
         {selectedTab === "live" && <LiveBroadcasts items={contents.live} />}
         {selectedTab === "shorts" && <Shorts items={contents.shorts} />}
-        {!isLast && (<div ref={ref}>로딩</div>)}
+        {!isLast && (
+      <div style={{ textAlign: 'center' }} ref={ref}>
+        <img
+          src={Spinner}
+          alt="Loading..."
+          style={{
+            display: 'block',
+            margin: '0 auto',
+            width: '80px',
+            height: '80px',
+          }}
+        />
+      </div>
+)}
+
         <Box
           sx={{
             position: "fixed",
