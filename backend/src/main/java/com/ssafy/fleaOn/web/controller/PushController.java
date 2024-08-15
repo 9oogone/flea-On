@@ -31,14 +31,15 @@ public class PushController {
     @GetMapping("/scrap/{liveId}")
     public ResponseEntity<?> scrapNotification(
             @PathVariable("liveId") int liveId,
-            @RequestParam("title") String title) {
+            @RequestParam("title") String title,
+            @RequestParam("type") int type) {
         try {
             // liveId를 기반으로 FCM 정보를 가져옴
             List<UserFcmResponse> liveScrapUserInfo = userService.getUserFcmByLiveId(liveId);
 
             if (!liveScrapUserInfo.isEmpty()) {
                 // FCM 메시지 전송
-                fcmService.sendMessageToMultipleTokens(liveScrapUserInfo, title);
+                fcmService.sendMessageToMultipleTokens(liveScrapUserInfo, title, type, liveId);
 
                 // 성공적으로 전송되었을 때, 사용자 정보를 반환
                 return ResponseEntity.status(HttpStatus.OK).body(liveScrapUserInfo);
