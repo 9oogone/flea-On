@@ -80,7 +80,7 @@ const ChatRoom = () => {
             isSent: isSent,
             isSystemMessage: message.chatContent.startsWith("[System Message]"),
             buttonsDisabled: false, // 버튼 비활성화 상태 추가
-          };  
+          };
         });
         setMessageList(updatedMessages);
       }
@@ -168,17 +168,68 @@ const ChatRoom = () => {
   };
 
   const handleAcceptTimeChange = async (messageId, newTime) => {
-    const dateTimeString = newTime.split(": ")[1];
-    const [tradeDate, tradeTime] = dateTimeString.split(" ");
+    console.log("이게 가:", newTime);
 
-  console.log("dateTimeString:", dateTimeString); // dateTimeString 출력
-  console.log("tradeDate:", tradeDate); // tradeDate 출력
-  console.log("tradeTime:", tradeTime); // tradeTime 출력
+    // 희망 거래 시간만 추출
+    const match = newTime.match(
+      /(\d{2}월 \d{2}일 (오전|오후) \d{2}시 \d{2}분)/
+    );
+    const dateTimeString = match ? match[1] : null;
+    
+    function transformDateTime(dateTimeString) {
+      if (!dateTimeString) {
+        console.error("dateTimeString is null or undefined");
+        return { tradeDate: null, tradeTime: null };
+      }
+
+      const datePart = dateTimeString.match(/\d{2}월 \d{2}일/)[0];
+      const period = dateTimeString.match(/오전|오후/)[0];
+      const timePart = dateTimeString.match(/\d{2}시 \d{2}분/)[0];
+
+      const [month, day] = datePart
+        .split("월 ")
+        .map((part) => part.replace("일", "").trim());
+      let [hour, minute] = timePart
+        .split("시 ")
+        .map((part) => part.replace("분", "").trim());
+
+      const now = new Date();
+      const currentYear = now.getFullYear();
+      const currentMonth = now.getMonth() + 1; // getMonth() returns 0-based month
+
+      let year = currentYear;
+      if (parseInt(month, 10) < currentMonth) {
+        year += 1; // Next year if the month is earlier than the current month
+      }
+
+      hour = parseInt(hour, 10);
+      if (period === "오후" && hour !== 12) {
+        hour += 12; // Convert PM to 24-hour format
+      } else if (period === "오전" && hour === 12) {
+        hour = 0; // Midnight case
+      }
+
+      const tradeDate = `${year}-${month.padStart(2, "0")}-${day.padStart(
+        2,
+        "0"
+      )}`;
+      const tradeTime = `${hour.toString().padStart(2, "0")}:${minute.padStart(
+        2,
+        "0"
+      )}`;
+
+      return { tradeDate, tradeTime };
+    }
+
+    const { tradeDate, tradeTime } = transformDateTime(dateTimeString);
+
+    console.log("tradeDate:", tradeDate); // Output: tradeDate: 2023-12-24 or 2024-12-24 depending on current date
+    console.log("tradeTime:", tradeTime); // Output: tradeTime: 21:24
 
     const message = `[System Message]<br/>
     거래 시간이 변경되었습니다.<br/>
     ${dateTimeString}에 만나요!`;
-    
+
     try {
       await changeTradeTime(chatID, tradeDate, tradeTime);
 
@@ -191,10 +242,7 @@ const ChatRoom = () => {
       };
 
       // 상태를 즉시 업데이트하여 화면에 반영
-      setMessageList((prevMessages) => [
-        ...prevMessages,
-        newSystemMessage,
-      ]);
+      setMessageList((prevMessages) => [...prevMessages, newSystemMessage]);
 
       await sendMessageDB(chatID, message);
 
@@ -223,7 +271,7 @@ const ChatRoom = () => {
   const handleRejectTimeChange = async (messageId) => {
     const message = `[System Message]<br/>
     거래 시간 변경이 거절되었습니다.`;
-    
+
     try {
       const newSystemMessage = {
         chatContent: message,
@@ -234,10 +282,7 @@ const ChatRoom = () => {
       };
 
       // 상태를 즉시 업데이트하여 화면에 반영
-      setMessageList((prevMessages) => [
-        ...prevMessages,
-        newSystemMessage,
-      ]);
+      setMessageList((prevMessages) => [...prevMessages, newSystemMessage]);
 
       await sendMessageDB(chatID, message);
 
