@@ -16,7 +16,12 @@ const NicknameInput = ({ onNext }) => {
 
   const handleSubmit = () => {
     dispatch(setNickname(nickname));
-    dispatch(updateUserInfo({ email: user.email, data: { nickname } }));
+    dispatch(
+      updateUserInfo({
+        email: user.email,
+        data: { nickname, phone: user.phone },
+      })
+    );
 
     onNext();
   };
@@ -37,12 +42,12 @@ const NicknameInput = ({ onNext }) => {
         color={isButtonEnabled ? "secondary" : "primary"}
         disabled={!isButtonEnabled}
         fullWidth
-        sx = {{
+        sx={{
           boxShadow: "none",
           width: "100%",
           height: "46px",
-          letterSpacing: "-0.5px"
-        }} 
+          letterSpacing: "-0.5px",
+        }}
       >
         계속하기
       </Button>
