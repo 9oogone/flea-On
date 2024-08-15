@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,9 +20,10 @@ public class ResultLiveResponse {
     private int productPrice;
     private String title;
     private String tradePlace;
-    private String liveThumbnail;
+    private String thumbnail;
     private String dongName;
     private int viewCount;
+    private LocalDateTime liveDate;
 
 
     public static ResultLiveResponse fromEntity(Live live, Product product) {
@@ -30,9 +33,10 @@ public class ResultLiveResponse {
                 .productPrice(product.getPrice())
                 .title(live.getTitle())
                 .tradePlace(live.getTradePlace())
-                .liveThumbnail(live.getLiveThumbnail())
+                .thumbnail(live.getLiveThumbnail())
                 .dongName(live.getRegionInfo().getEupmyeon())
                 .viewCount(live.getViewCount())
+                .liveDate(live.getLiveDate())
                 .build();
     }
 }
