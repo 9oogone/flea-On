@@ -11,7 +11,7 @@ export const fetchShortList = createAsyncThunk(
         id: short.shortsId,
         productName: short.productName,
         productPrice: short.productPrice,
-        tradePlace: short.tradePlace,
+        tradePlace: short.dongName,
         length: short.length,
         isScrap: short.is_scrap,
         shortsThumbnail: short.shortsThumbnail,
