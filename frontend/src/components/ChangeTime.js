@@ -35,7 +35,7 @@ const ChangeTime = ({ open, handleClose, chatID }) => {
   }, [chatID]);
 
   const handleRequestChangeTime = async () => {
-    const messageContent = `거래 시간 변경 요청: ${selectedDate.format(
+    const messageContent = `[System Message]<br/>거래 시간 변경 요청합니다!<br/><br/>희망 거래 시간<br/>${selectedDate.format(
       "YYYY-MM-DD HH:mm"
     )}`;
     try {

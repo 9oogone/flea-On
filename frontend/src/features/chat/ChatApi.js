@@ -6,10 +6,13 @@ export async function sendMessageDB(chatId, contents) {
     console.log("chatId:", chatId);
     console.log("contents:", contents);
 
+    // 메시지가 [System Message]로 시작하는지 확인
+    const isSystemMessage = contents.startsWith("[System Message]");
+    
     const data = {
       chattingId: chatId,
       contents: contents,
-      bot: false,
+      bot: isSystemMessage, // 시스템 메시지이면 bot을 true로 설정
     };
     console.log("Request data:", JSON.stringify(data));
 
@@ -21,6 +24,7 @@ export async function sendMessageDB(chatId, contents) {
     throw error;
   }
 }
+
 
 export async function getTradeDetail(chatId) {
   try {
