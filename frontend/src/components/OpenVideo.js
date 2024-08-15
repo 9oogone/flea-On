@@ -53,9 +53,10 @@ const OpenVideo = () => {
   const [shortsId, setShortsId] = useState({ shortsId: 0, index: 0 });
   const [times, setTimes] = useState([]);
   const [isFrontCamera, setIsFrontCamera] = useState(false);
+  const [videoIndex, setVideoIndex] = useState(0)
   const [soldIndex, setSoldIndex] = useState(0);
   const navigate = useNavigate();
-
+  
   const handleCustomerClick = () => {
     setOpen(true);
   };
@@ -126,7 +127,6 @@ const OpenVideo = () => {
         });
     }
   }, [sessionName]);
-
   const MakeSession = async (videoRef, dispatch, sessionName) => {
     const session = OV.current.initSession();
     session.on("streamCreated", (event) => {
@@ -167,7 +167,6 @@ const OpenVideo = () => {
         navigate("/");
       }
     });
-
     try {
       const resp = await getToken({ sessionName: sessionName });
       let token = resp[0];
@@ -209,11 +208,20 @@ const OpenVideo = () => {
       const videoDevices = devices.filter(
         (device) => device.kind === "videoinput"
       );
+      var len = videoDevices.length;
+      
       if (videoDevices.length > 1) {
+        if(videoIndex+1>=len){
+          setVideoIndex(0)
+        }else{
+          setVideoIndex(videoIndex+1)
+        }
         const newPublisher = OV.current.initPublisher("htmlVideo", {
-          videoSource: isFrontCamera
-            ? videoDevices[0].deviceId
-            : videoDevices[2].deviceId,
+          videoSource: videoDevices[videoIndex].deviceId,
+          // vidoeIndex+1>len?
+          // isFrontCamera
+          //   ? videoDevices[0].deviceId
+          //   : videoDevices[2].deviceId,
           publishAudio: true,
           publishVideo: true,
           mirror: isFrontCamera,
@@ -224,10 +232,10 @@ const OpenVideo = () => {
 
         setIsFrontCamera(!isFrontCamera);
 
-        session.current.unpublish(publisher.current).then(() => {
-          publisher.current = newPublisher;
+        session.current.unpublish(publisher).then(() => {
+          setPublisher(newPublisher);
           session.current.publish(newPublisher).then(() => {
-            publisher.current.addVideoElement(videoRef.current);
+            publisher.addVideoElement(videoRef.current);
           });
         });
       }
@@ -458,7 +466,6 @@ const OpenVideo = () => {
           handleCustomerClick();
         }
         productList[productIndex].status += 100;
-
         const messageData = {
           type: 3,
           productIndex: productIndex,
