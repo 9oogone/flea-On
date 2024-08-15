@@ -45,13 +45,14 @@ const CalendarTrade = ({ userId, selectedDate, dateTrade }) => {
     setTradeDone(dateTrade?.tradeDoneSchedules || []);
   }, [dateTrade]);
 
+  // 채팅하기
   useEffect(() => {
     if (status === "idle") {
       dispatch(fetchChats());
     }
-    // console.log(chats);
+    console.log(chats);
   }, [status, dispatch]);
-  // console.log(chats, status, "챗 디스패치입니다");
+  console.log(chats, status, "챗 디스패치입니다");
 
   const goToChatRoom = (chats, chattingId) => {
     const chat = chats.find((chat) => chat.chattingId === chattingId);
@@ -95,7 +96,13 @@ const CalendarTrade = ({ userId, selectedDate, dateTrade }) => {
         .then(() => {
           setIsModalOpen(false);
           setSelectedTrade(null);
-          // 성공적인 응답 후 추가 작업 수행 가능
+          // 거래확정 상태 반영
+          setTrade((prevTrades) =>
+            prevTrades.filter(
+              (trade) => trade.productId !== selectedTrade.productId
+            )
+          );
+          setTradeDone((prevDoneTrades) => [...prevDoneTrades, selectedTrade]);
         })
         .catch((error) => {
           console.error("거래 확정 중 오류 발생:", error);
@@ -107,8 +114,8 @@ const CalendarTrade = ({ userId, selectedDate, dateTrade }) => {
   // 판매자 채팅하기
   const handleChat = () => {
     if (selectedTrade) {
-      console.log(chats);
-      console.log(selectedTrade);
+      // console.log(chats);
+      // console.log(selectedTrade);
       goToChatRoom(chats, selectedTrade.chattingId);
     }
   };

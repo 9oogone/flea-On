@@ -21,14 +21,20 @@ const UpcomingBroadcasts = ({ items = [] }) => {
   const handleClose = () => setOpen(false);
 
   return (
-    <Container sx={{ margin: "8px" }}>
-      <Typography gutterBottom sx={{
-         marginTop: "12%",
-         fontSize: "20px",
-         fontWeight: "600",
-         letterSpacing: "-0.5px",
-         color: "#2E2E32",
-         fontFamily: "Noto Sans KR" }}
+    <Container sx={{ margin: "8px", mt: 0 }}>
+      <Typography
+        gutterBottom
+        sx={{
+          marginTop: "12%",
+          fontSize: "20px",
+          fontWeight: "600",
+          letterSpacing: "-0.5px",
+          color: "#2E2E32",
+          fontFamily: "Noto Sans KR",
+          pl: 2.5,
+          position: "sticky",
+          top: "30px",
+        }}
       >
         UPCOMING LIVE!
       </Typography>
@@ -38,6 +44,7 @@ const UpcomingBroadcasts = ({ items = [] }) => {
           overflowX: "auto",
           whiteSpace: "nowrap",
           padding: "10px 0",
+          ml: 2,
         }}
       >
         {items.map((item) => (
@@ -60,7 +67,6 @@ const UpcomingBroadcasts = ({ items = [] }) => {
               justifyContent: "space-between",
               flexWrap: "wrap",
               flexShrink: 0,
-              mr: 3,
             }}
           >
             <Typography
@@ -68,7 +74,7 @@ const UpcomingBroadcasts = ({ items = [] }) => {
                 color: "#FF0B55",
                 fontSize: "14px",
                 letterSpacing: "-0.5px",
-                fontWeight: "600"
+                fontWeight: "600",
               }}
             >
               {formatDateTimeDistance(item.liveDate)}
@@ -90,9 +96,9 @@ const UpcomingBroadcasts = ({ items = [] }) => {
                 textOverflow: "ellipsis",
                 overflow: "hidden",
                 whiteSpace: "nowrap",
-                letterSpacing: '-0.5px',
+                letterSpacing: "-0.5px",
                 color: "rgba(44, 44, 46, 1)",
-                fontSize: '16px'
+                fontSize: "16px",
               }}
             >
               {item.productName}
@@ -102,9 +108,9 @@ const UpcomingBroadcasts = ({ items = [] }) => {
                 fontWeight: 300,
                 overflow: "hidden",
                 whiteSpace: "nowrap",
-                letterSpacing: '-0.5px',
+                letterSpacing: "-0.5px",
                 color: "rgba(44, 44, 46, 1)",
-                fontSize: '13px'
+                fontSize: "13px",
               }}
             >
               {formatPrice(item.productPrice)}

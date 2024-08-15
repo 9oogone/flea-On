@@ -11,7 +11,7 @@ import { formatPrice } from "../utils/cssUtils";
 const Shorts = ({ items: initialItems }) => {
   const navigate = useNavigate();
   const [items, setItems] = useState([]);
-
+  console.log("홈페이지 쇼츠목록", items);
   useEffect(() => {
     if (initialItems) {
       setItems(initialItems);
