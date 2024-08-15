@@ -21,7 +21,7 @@ public class ResultShortsResponse {
     private int productPrice;
     private String tradePlace;
     private LocalTime length;
-    private String shortsThumbnail;
+    private String thumbnail;
     private boolean isScrap;
     private String dongName;
 
@@ -32,7 +32,7 @@ public class ResultShortsResponse {
                 .productPrice(product.getPrice())
                 .tradePlace(live.getTradePlace())
                 .length(shorts.getLength())
-                .shortsThumbnail(shorts.getShortsThumbnail())
+                .thumbnail(shorts.getShortsThumbnail())
                 .isScrap(false)
                 .dongName(live.getRegionInfo().getEupmyeon())
                 .build();
