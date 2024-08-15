@@ -2,7 +2,7 @@ import React from "react";
 import { Box, Typography } from "@mui/material";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 
-const LiveFooter = ({ name, tradePlace, title, price }) => (
+const LiveFooter = ({ name, dongName, title, price }) => (
   <Box
     sx={{
       top: 206,
@@ -38,7 +38,7 @@ const LiveFooter = ({ name, tradePlace, title, price }) => (
           }}
         >
           <LocationOnIcon sx={{ fontSize: "8px" }} />
-          {tradePlace}
+          {dongName}
         </Typography>
       </Box>
       <Box

@@ -52,6 +52,7 @@ const ShortsPage = () => {
         );
         dispatch(setCurrentShort(response.data));
         console.log(response.data);
+        console.log(response);
         console.log(currentShort);
         setUserId(response.data.user.userId);
         setSubList(response.data.shortsChatResponseList);
@@ -276,6 +277,7 @@ const ShortsPage = () => {
                 width: "60%",
               }}
               color="secondary"
+              onClick={handelBoostShorts}
             >
               구매하기
             </Button>

@@ -96,13 +96,13 @@ const LiveBroadcasts = ({ items: initialItems }) => {
                   {item.isLive ? (
                     <LiveFooter
                       name={item.productNames}
-                      tradePlace={item.tradePlace}
+                      dongName={item.dongName}
                       title={item.title}
                       price={item.productPrices}
                     />
                   ) : (
                     <UpcomingFooter
-                      tradePlace={item.tradePlace}
+                      dongName={item.dongName}
                       title={item.title}
                     />
                   )}
