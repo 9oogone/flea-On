@@ -42,7 +42,7 @@ const OpenVideo = () => {
   const [currentVideoDevice, setCurrentVideoDevice] = useState(null);
   const [mainStreamManager, setMainStreamManager] = useState(undefined);
   const [sttValue, setSttValue] = useState("");
-  const [publisher, setPublisher] = useState(undefined);
+  // const [publisher, setPublisher] = useState(undefined);
   const [currentRecordingId, setCurrentRecordingId] = useState("");
   const [recordStartTime, setRecordStartTime] = useState(null);
   const [title, setTitle] = useState("");
@@ -120,7 +120,6 @@ const OpenVideo = () => {
         });
     }
   }, [sessionName]);
-
   const MakeSession = async (videoRef, dispatch, sessionName) => {
     const session = OV.current.initSession();
     session.on("streamCreated", (event) => {
@@ -162,7 +161,7 @@ const OpenVideo = () => {
       await session.connect(token, { clientData: "example" });
       if (resp[1] === true) {
         setIsPublisher(true);
-        let publisher = OV.current.initPublisher(
+        publisher.current = OV.current.initPublisher(
           undefined,
           {
             audioSource: undefined,
@@ -176,8 +175,8 @@ const OpenVideo = () => {
           },
           () => {
             if (videoRef.current) {
-              publisher.addVideoElement(videoRef.current);
-              session.publish(publisher);
+              publisher.current.addVideoElement(videoRef.current);
+              session.publish(publisher.current);
               dispatch(unSetLoading());
             }
           },
