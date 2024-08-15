@@ -11,7 +11,9 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Table(name = "alarm")
+@Builder
 public class Alarm {
 
     @Id
@@ -32,15 +34,15 @@ public class Alarm {
     private boolean isRead;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Builder
-    public Alarm(String content, String profilePic, User user) {
-        this.content = content;
-        this.date = Timestamp.valueOf(LocalDateTime.now());
-        this.profilePic = profilePic;
-        this.isRead = false;
-        this.user = user;
-    }
+//    @Builder
+//    public Alarm(String content, String profilePic, User user) {
+//        this.content = content;
+//        this.date = Timestamp.valueOf(LocalDateTime.now());
+//        this.profilePic = profilePic;
+//        this.isRead = false;
+//        this.user = user;
+//    }
 }

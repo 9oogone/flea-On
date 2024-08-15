@@ -11,6 +11,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,7 +42,13 @@ public class FcmService {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
             User sender = userRepository.findByEmail(oAuth2User.getEmail()).orElseThrow(()-> new IllegalArgumentException("찾을 수 없는 발신자입니다."));
-            Alarm alarm = new Alarm(title+" 방송이 시작되었습니다!", sender.getProfilePicture(), user);
+            Alarm alarm = Alarm.builder()
+                    .user(user)
+                    .date(Timestamp.valueOf(LocalDateTime.now()))
+                    .isRead(false)
+                    .content(title+" 방송이 시작되었습니다!")
+                    .profilePic(sender.getProfilePicture())
+                    .build();
             alarmRepository.save(alarm);
         }
 

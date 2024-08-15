@@ -563,6 +563,7 @@ public class UserService {
             CommerceLiveExpectedResponse commerceLiveExpectedResponse = CommerceLiveExpectedResponse.builder()
                     .liveId(findLive.get().getLiveId())
                     .isExist(true)
+                    .title(findLive.get().getTitle())
                     .build();
             return commerceLiveExpectedResponse;
         }
@@ -571,6 +572,7 @@ public class UserService {
         CommerceLiveExpectedResponse commerceLiveExpectedResponse = CommerceLiveExpectedResponse.builder()
                 .liveId(0)
                 .isExist(false)
+                .title("라이브가 없습니다.")
                 .build();
         return commerceLiveExpectedResponse;
     }
