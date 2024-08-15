@@ -171,6 +171,10 @@ const ChatRoom = () => {
     const dateTimeString = newTime.split(": ")[1];
     const [tradeDate, tradeTime] = dateTimeString.split(" ");
 
+  console.log("dateTimeString:", dateTimeString); // dateTimeString 출력
+  console.log("tradeDate:", tradeDate); // tradeDate 출력
+  console.log("tradeTime:", tradeTime); // tradeTime 출력
+
     const message = `[System Message]<br/>
     거래 시간이 변경되었습니다.<br/>
     ${dateTimeString}에 만나요!`;
@@ -178,15 +182,18 @@ const ChatRoom = () => {
     try {
       await changeTradeTime(chatID, tradeDate, tradeTime);
 
+      const newSystemMessage = {
+        chatContent: message,
+        writerId: user.userId,
+        isSent: true,
+        chatTime: new Date().toISOString(),
+        isSystemMessage: true,
+      };
+
+      // 상태를 즉시 업데이트하여 화면에 반영
       setMessageList((prevMessages) => [
         ...prevMessages,
-        {
-          chatContent: message,
-          writerId: user.userId,
-          isSent: true,
-          chatTime: new Date().toISOString(),
-          isSystemMessage: true,
-        },
+        newSystemMessage,
       ]);
 
       await sendMessageDB(chatID, message);
@@ -218,18 +225,21 @@ const ChatRoom = () => {
     거래 시간 변경이 거절되었습니다.`;
     
     try {
-      await sendMessageDB(chatID, message);
+      const newSystemMessage = {
+        chatContent: message,
+        writerId: user.userId,
+        isSent: true,
+        chatTime: new Date().toISOString(),
+        isSystemMessage: true,
+      };
 
+      // 상태를 즉시 업데이트하여 화면에 반영
       setMessageList((prevMessages) => [
         ...prevMessages,
-        {
-          chatContent: message,
-          writerId: user.userId,
-          isSent: true,
-          chatTime: new Date().toISOString(),
-          isSystemMessage: true,
-        },
+        newSystemMessage,
       ]);
+
+      await sendMessageDB(chatID, message);
 
       setMessageList((prevMessages) =>
         prevMessages.map((msg) =>
