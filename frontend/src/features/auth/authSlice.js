@@ -40,12 +40,23 @@ const initialState = loadState() || {
   token: null,
 };
 
-// Async thunk for updating user info
 export const updateUserInfo = createAsyncThunk(
   "auth/updateUserInfo",
-  async ({ email, data }) => {
-    const response = await baseAxios().put(`/fleaon/users/${email}/info`, data);
-    return response.data;
+  async ({ data }, { rejectWithValue }) => {
+    try {
+      const response = await baseAxios().post(`/fleaon/users/extraInfo`, data);
+      console.log("response : ", response);
+      return response.data;
+    } catch (error) {
+      console.error("Error in updateUserInfo:", error);
+      if (error.response && error.response.data) {
+        // 서버가 반환한 오류 메시지 처리
+        return rejectWithValue(error.response.data);
+      } else {
+        // 기타 오류 처리
+        return rejectWithValue(error.message);
+      }
+    }
   }
 );
 const authSlice = createSlice({

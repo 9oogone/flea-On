@@ -17,10 +17,7 @@ const PhoneInput = ({ onNext }) => {
 
   const handleSubmit = () => {
     if (isButtonEnabled) {
-      dispatch(setPhone(toString(phone)));
-      dispatch(
-        updateUserInfo({ email: user.email, data: { phone: toString(phone) } })
-      );
+      dispatch(setPhone(phone));
       onNext();
     }
   };
@@ -41,12 +38,12 @@ const PhoneInput = ({ onNext }) => {
         color={isButtonEnabled ? "secondary" : "primary"}
         disabled={!isButtonEnabled}
         fullWidth
-        sx = {{
+        sx={{
           boxShadow: "none",
           width: "100%",
           height: "46px",
-          letterSpacing: "-0.5px"
-        }}  
+          letterSpacing: "-0.5px",
+        }}
       >
         계속하기
       </Button>

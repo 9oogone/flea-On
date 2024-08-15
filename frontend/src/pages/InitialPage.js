@@ -12,13 +12,13 @@ const InitialPage = () => {
   const user = useSelector((state) => state.auth.user);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (user.phone) setStep(1);
-    if (user.nickname) setStep(2);
-    if (user.dongName.length) {
-      navigate("/");
-    }
-  }, [user]);
+  // useEffect(() => {
+  //   if (user.phone !== "") setStep(1);
+  //   else if (user.nickname !== "") setStep(2);
+  //   else if (user.dongName?.length) {
+  //     navigate("/");
+  //   }
+  // }, [user]);
 
   const nextStep = () => {
     setStep((prev) => prev + 1);

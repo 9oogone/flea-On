@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -137,31 +137,56 @@ function App() {
       </div>
     );
   };
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // 3초 후에 로딩 상태를 false로 설정 (GIF 재생 시간에 맞추기)
+    const timer = setTimeout(() => setIsLoading(false), 2000);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
-    <Router>
-      <LocationWrapper>
-        <Routes>
-          {routes.map((route) =>
-            route.isPrivate ? (
+    <div className="app-container">
+      {isLoading ? (
+        <div>
+          <img
+            style={{
+              width: "100vw",
+              objectFit: "contain",
+            }}
+            src="/icons/startup.gif"
+            alt="Startup Animation"
+          />
+        </div>
+      ) : (
+        <Router>
+          <LocationWrapper>
+            <Routes>
+              {routes.map((route) =>
+                route.isPrivate ? (
+                  <Route
+                    key={route.path}
+                    path={route.path}
+                    element={<PrivateRoute element={route.element} />}
+                  />
+                ) : (
+                  <Route
+                    key={route.path}
+                    path={route.path}
+                    element={route.element}
+                  />
+                )
+              )}
               <Route
-                key={route.path}
-                path={route.path}
-                element={<PrivateRoute element={route.element} />}
-              />
-            ) : (
-              <Route
-                key={route.path}
-                path={route.path}
-                element={route.element}
-              />
-            )
-          )}
-          <Route path={"/live/:sessionName"} element={<OpenVideo />}></Route>
-          <Route path={"/shorts/:shortsId"} element={<Shorts />}></Route>
-        </Routes>
-      </LocationWrapper>
-    </Router>
+                path={"/live/:sessionName"}
+                element={<OpenVideo />}
+              ></Route>
+              <Route path={"/shorts/:shortsId"} element={<Shorts />}></Route>
+            </Routes>
+          </LocationWrapper>
+        </Router>
+      )}
+    </div>
   );
 }
 
