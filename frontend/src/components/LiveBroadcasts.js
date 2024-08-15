@@ -61,6 +61,7 @@ const LiveBroadcasts = ({ items: initialItems }) => {
         {items && items.length > 0 ? (
           items.map((item) => (
             <Grid key={item.id} item xs={6} sx={{ textAlign: "center" }}>
+              {item.tradePlace}
               <Button onClick={() => handleButtonClick(item)}>
                 <Box
                   sx={{

@@ -11,16 +11,33 @@ const Live = ({ items }) => {
   const completedItems = items.filter((item) => item.isLive === 2);
 
   return (
-    <Box sx={{ height: "auto" }}>
+    <Box
+      sx={{
+        height: "auto",
+        display: "flex",
+        gap: 4,
+        flexDirection: "column",
+        width: "100%",
+      }}
+    >
       {upcomingItems.length > 0 && (
-        <Box sx={{ pb: 4, px: 0 }}>
+        <Box
+          sx={{
+            width: "100%",
+            justifyContent: "center",
+            alignItems: "center",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
           <Box
             sx={{
+              width: "90%",
               pb: 1,
               backgroundColor: "white",
               borderBottom: "1px solid rgba(84, 84, 86, 0.34)",
               position: "sticky",
-              top: "105px",
+              top: "79px",
               zIndex: 1,
             }}
           >
@@ -34,13 +51,28 @@ const Live = ({ items }) => {
               예정된 라이브
             </Typography>
           </Box>
-          <Box sx={{ top: "105px" }}>
+          <Box
+            sx={{
+              top: "105px",
+              width: "100%",
+              justifyContent: "center",
+              alignItems: "center",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
             {upcomingItems.map((item, index) => (
               <Box
                 key={index}
                 sx={{
+                  width: "90%",
+                  height: "100%",
                   py: 2,
                   borderTop: "0.33px solid rgba(84, 84, 86, 0.34)",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  display: "flex",
+                  flexDirection: "column",
                 }}
               >
                 <Box
@@ -48,8 +80,8 @@ const Live = ({ items }) => {
                     justifyContent: "space-between",
                     alignItems: "center",
                     display: "flex",
+                    width: "95%",
                     gap: 1,
-                    px: 1,
                   }}
                 >
                   <Box
@@ -64,199 +96,7 @@ const Live = ({ items }) => {
                     <Typography
                       sx={{
                         color: "black",
-                        fontSize: 18,
-                      }}
-                    >
-                      {item.title}
-                    </Typography>
-
-                    <Typography
-                      sx={{
-                        alignSelf: "stretch",
-                        color: "rgba(128, 128, 128, 0.55)",
-                        fontSize: 11,
-                        wordWrap: "break-word",
-                      }}
-                    >
-                      {item.dongName} ·
-                      {getRelativeDate(format(item.liveDate, "yyyy-MM-dd"))}
-                    </Typography>
-                  </Box>
-
-                  <Button
-                    sx={{
-                      backgroundColor: "#FF0B55",
-                      color: "white",
-                      fontSize: 12,
-                      borderRadius: 2,
-                      justifyContent: "flex-start",
-                      alignItems: "center",
-                      display: "flex",
-                    }}
-                  >
-                    수정하기
-                  </Button>
-                </Box>
-              </Box>
-            ))}{" "}
-            {upcomingItems.map((item, index) => (
-              <Box
-                key={index}
-                sx={{
-                  py: 2,
-                  borderTop: "0.33px solid rgba(84, 84, 86, 0.34)",
-                }}
-              >
-                <Box
-                  sx={{
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    display: "flex",
-                    gap: 1,
-                    px: 1,
-                  }}
-                >
-                  <Box
-                    sx={{
-                      flexDirection: "column",
-                      justifyContent: "flex-start",
-                      alignItems: "flex-start",
-                      display: "flex",
-                      gap: 0.5,
-                    }}
-                  >
-                    <Typography
-                      sx={{
-                        color: "black",
-                        fontSize: 18,
-                      }}
-                    >
-                      {item.title}
-                    </Typography>
-
-                    <Typography
-                      sx={{
-                        alignSelf: "stretch",
-                        color: "rgba(128, 128, 128, 0.55)",
-                        fontSize: 11,
-                        wordWrap: "break-word",
-                      }}
-                    >
-                      {item.dongName} ·
-                      {getRelativeDate(format(item.liveDate, "yyyy-MM-dd"))}
-                    </Typography>
-                  </Box>
-
-                  <Button
-                    sx={{
-                      backgroundColor: "#FF0B55",
-                      color: "white",
-                      fontSize: 12,
-                      borderRadius: 2,
-                      justifyContent: "flex-start",
-                      alignItems: "center",
-                      display: "flex",
-                    }}
-                  >
-                    수정하기
-                  </Button>
-                </Box>
-              </Box>
-            ))}{" "}
-            {upcomingItems.map((item, index) => (
-              <Box
-                key={index}
-                sx={{
-                  py: 2,
-                  borderTop: "0.33px solid rgba(84, 84, 86, 0.34)",
-                }}
-              >
-                <Box
-                  sx={{
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    display: "flex",
-                    gap: 1,
-                    px: 1,
-                  }}
-                >
-                  <Box
-                    sx={{
-                      flexDirection: "column",
-                      justifyContent: "flex-start",
-                      alignItems: "flex-start",
-                      display: "flex",
-                      gap: 0.5,
-                    }}
-                  >
-                    <Typography
-                      sx={{
-                        color: "black",
-                        fontSize: 18,
-                      }}
-                    >
-                      {item.title}
-                    </Typography>
-
-                    <Typography
-                      sx={{
-                        alignSelf: "stretch",
-                        color: "rgba(128, 128, 128, 0.55)",
-                        fontSize: 11,
-                        wordWrap: "break-word",
-                      }}
-                    >
-                      {item.dongName} ·
-                      {getRelativeDate(format(item.liveDate, "yyyy-MM-dd"))}
-                    </Typography>
-                  </Box>
-
-                  <Button
-                    sx={{
-                      backgroundColor: "#FF0B55",
-                      color: "white",
-                      fontSize: 12,
-                      borderRadius: 2,
-                      justifyContent: "flex-start",
-                      alignItems: "center",
-                      display: "flex",
-                    }}
-                  >
-                    수정하기
-                  </Button>
-                </Box>
-              </Box>
-            ))}{" "}
-            {upcomingItems.map((item, index) => (
-              <Box
-                key={index}
-                sx={{
-                  py: 2,
-                  borderTop: "0.33px solid rgba(84, 84, 86, 0.34)",
-                }}
-              >
-                <Box
-                  sx={{
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    display: "flex",
-                    gap: 1,
-                    px: 1,
-                  }}
-                >
-                  <Box
-                    sx={{
-                      flexDirection: "column",
-                      justifyContent: "flex-start",
-                      alignItems: "flex-start",
-                      display: "flex",
-                      gap: 0.5,
-                    }}
-                  >
-                    <Typography
-                      sx={{
-                        color: "black",
-                        fontSize: 18,
+                        fontSize: 17,
                       }}
                     >
                       {item.title}
@@ -295,86 +135,111 @@ const Live = ({ items }) => {
         </Box>
       )}
       {completedItems.length > 0 && (
-        <Box sx={{ px: 0 }}>
+        <Box
+          sx={{
+            width: "100%",
+            justifyContent: "center",
+            alignItems: "center",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
           <Box
             sx={{
+              width: "90%",
               pb: 1,
-              position: "sticky",
-              top: "105px",
               backgroundColor: "white",
               borderBottom: "1px solid rgba(84, 84, 86, 0.34)",
+              position: "sticky",
+              top: "79px",
+              zIndex: 1,
             }}
           >
             <Typography sx={{ fontSize: 16, fontWeight: "600", px: 1 }}>
               종료된 라이브
             </Typography>
           </Box>
-          {completedItems.map((item, index) => (
-            <Box
-              key={index}
-              sx={{
-                width: "100%",
-                height: "100%",
-                py: 2,
-                borderTop: "0.33px solid rgba(84, 84, 86, 0.34)",
-              }}
-            >
+          <Box
+            sx={{
+              top: "79px",
+              width: "100%",
+              justifyContent: "center",
+              alignItems: "center",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            {completedItems.map((item, index) => (
               <Box
+                key={index}
                 sx={{
-                  justifyContent: "space-between",
+                  width: "90%",
+                  height: "100%",
+                  py: 2,
+                  borderTop: "0.33px solid rgba(84, 84, 86, 0.34)",
+                  justifyContent: "center",
                   alignItems: "center",
                   display: "flex",
-                  gap: 1,
-                  px: 1,
+                  flexDirection: "column",
                 }}
               >
                 <Box
                   sx={{
-                    flexDirection: "column",
-                    justifyContent: "flex-start",
-                    alignItems: "flex-start",
-                    display: "flex",
-                    gap: 0.5,
-                  }}
-                >
-                  <Typography
-                    sx={{
-                      color: "black",
-                      fontSize: 18,
-                    }}
-                  >
-                    {item.title}
-                  </Typography>
-
-                  <Typography
-                    sx={{
-                      alignSelf: "stretch",
-                      color: "rgba(128, 128, 128, 0.55)",
-                      fontSize: 11,
-                      wordWrap: "break-word",
-                    }}
-                  >
-                    {item.dongName} ·
-                    {getRelativeDate(format(item.liveDate, "yyyy-MM-dd"))}
-                  </Typography>
-                </Box>
-
-                <Button
-                  sx={{
-                    backgroundColor: "#cccccc",
-                    color: "white",
-                    fontSize: 12,
-                    borderRadius: 2,
-                    justifyContent: "flex-start",
+                    justifyContent: "space-between",
                     alignItems: "center",
                     display: "flex",
+                    gap: 1,
+                    width: "95%",
                   }}
                 >
-                  상세보기
-                </Button>
+                  <Box
+                    sx={{
+                      flexDirection: "column",
+                      justifyContent: "flex-start",
+                      alignItems: "flex-start",
+                      display: "flex",
+                      gap: 0.5,
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        color: "black",
+                        fontSize: 17,
+                      }}
+                    >
+                      {item.title}
+                    </Typography>
+
+                    <Typography
+                      sx={{
+                        alignSelf: "stretch",
+                        color: "rgba(128, 128, 128, 0.55)",
+                        fontSize: 11,
+                        wordWrap: "break-word",
+                      }}
+                    >
+                      {item.dongName} ·
+                      {getRelativeDate(format(item.liveDate, "yyyy-MM-dd"))}
+                    </Typography>
+                  </Box>
+
+                  <Button
+                    sx={{
+                      backgroundColor: "#cccccc",
+                      color: "white",
+                      fontSize: 12,
+                      borderRadius: 2,
+                      justifyContent: "flex-start",
+                      alignItems: "center",
+                      display: "flex",
+                    }}
+                  >
+                    상세보기
+                  </Button>
+                </Box>
               </Box>
-            </Box>
-          ))}
+            ))}
+          </Box>
         </Box>
       )}
       {upcomingItems.length === 0 && completedItems.length === 0 && (
