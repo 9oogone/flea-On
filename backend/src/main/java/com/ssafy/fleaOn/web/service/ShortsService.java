@@ -20,131 +20,134 @@ import java.util.*;
 @Service
 public class ShortsService {
 
-    private final ShortsRepository shortsRepository;
-    private final ProductRepository productRepository;
-    private final UserRepository userRepository;
-    private final ShortsScrapRepository shortsScrapRepository;
-    private final ShortsChattingRepository shortsChattingRepository;
-    private final TradeRepository tradeRepository;
+        private final ShortsRepository shortsRepository;
+        private final ProductRepository productRepository;
+        private final UserRepository userRepository;
+        private final ShortsScrapRepository shortsScrapRepository;
+        private final ShortsChattingRepository shortsChattingRepository;
+        private final TradeRepository tradeRepository;
 
-    @Autowired
-    public ShortsService(ShortsRepository shortsRepository, ProductRepository productRepository, UserRepository userRepository, ShortsScrapRepository shortsScrapRepository, ShortsChattingRepository shortsChattingRepository, TradeRepository tradeRepository) {
-        this.shortsRepository = shortsRepository;
-        this.productRepository = productRepository;
-        this.userRepository = userRepository;
-        this.shortsScrapRepository = shortsScrapRepository;
-        this.shortsChattingRepository = shortsChattingRepository;
-        this.tradeRepository = tradeRepository;
-    }
-
-    @Transactional
-    public int saveShorts(ShortsRequest request) {
-        Product product = productRepository.findById(request.getProductId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
-
-        User seller = userRepository.findById(product.getSeller().getUserId()).orElseThrow(() -> new IllegalArgumentException("Invalid seller"));
-        Shorts shorts = request.toEntity(product, seller);
-        shortsRepository.save(shorts);
-
-        product.sellEnd();
-        productRepository.save(product);
-
-        Optional<Trade> trade = tradeRepository.findByProduct_productId(shorts.getProduct().getProductId());
-        trade.ifPresent(value -> value.uploadShorts(shorts));
-        saveShortsChatting(request.getShortsChatRequests(),shorts.getShortsId());
-
-        return shorts.getShortsId();
-    }
-
-    public ShortsResponse getShorts(int shortsId) {
-        Shorts shorts = shortsRepository.findById(shortsId).orElseThrow(()->new IllegalArgumentException("Cannot found shorts"));
-        Optional<List<ShortsChatting>> shortsChattings = shortsChattingRepository.findByShorts_ShortsId(shortsId);
-        List<ShortsChatResponse> shortsChatResponseList = new ArrayList<>();
-        String liveTitle;
-        boolean isTradeNow = false;
-        if (shortsChattings.isPresent()){
-            Product product = shorts.getProduct();
-            liveTitle = product.getLive().getTitle();
-            for (ShortsChatting shortsChatting : shortsChattings.get()) {
-                User writer = shortsChatting.getUser();
-                ShortsChatResponse shortsChatResponse = new ShortsChatResponse(
-                        writer.getProfilePicture(),
-                        writer.getNickname(),
-                        shortsChatting.getContent(),
-                        shortsChatting.getTime()
-                );
-                shortsChatResponseList.add(shortsChatResponse);
-            }
-            isTradeNow = tradeRepository.findByProductId(product.getProductId()).isPresent();
-        } else {
-            liveTitle = "";
+        @Autowired
+        public ShortsService(ShortsRepository shortsRepository, ProductRepository productRepository, UserRepository userRepository, ShortsScrapRepository shortsScrapRepository, ShortsChattingRepository shortsChattingRepository, TradeRepository tradeRepository) {
+            this.shortsRepository = shortsRepository;
+            this.productRepository = productRepository;
+            this.userRepository = userRepository;
+            this.shortsScrapRepository = shortsScrapRepository;
+            this.shortsChattingRepository = shortsChattingRepository;
+            this.tradeRepository = tradeRepository;
         }
 
-        return new ShortsResponse(shorts, liveTitle, isTradeNow, shortsChatResponseList);
-    }
+        @Transactional
+        public int saveShorts(ShortsRequest request) {
+            Product product = productRepository.findById(request.getProductId())
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
 
-    public void addUserShortsScrap(int userId, int shortsId) {
-        User findUser = userRepository.findById(userId).orElseThrow(()->new IllegalArgumentException("Cannot found user"));
-        Shorts findShorts = shortsRepository.findById(shortsId).orElseThrow(()-> new IllegalArgumentException("Cannot found shorts"));
-        if (userId==findShorts.getUser().getUserId())
-            new IllegalArgumentException("Cannot add shorts to user");
-        ShortsScrap shortsScrap = ShortsScrap.builder()
-                .shorts(findShorts)
-                .user(findUser)
-                .build();
-        shortsScrapRepository.save(shortsScrap);
-    }
-    public void deleteUserShortsScrap(int userId, int shortsId) {
-        try {
-            Optional<ShortsScrap> findShortsScrap = shortsScrapRepository.findByUser_userIdAndShorts_shortsId(userId, shortsId);
-            if (findShortsScrap.isPresent()) {
-                shortsScrapRepository.delete(findShortsScrap.get());
+            User seller = userRepository.findById(product.getSeller().getUserId()).orElseThrow(() -> new IllegalArgumentException("Invalid seller"));
+            Shorts shorts = request.toEntity(product, seller);
+            shortsRepository.save(shorts);
+
+            product.sellEnd();
+            productRepository.save(product);
+
+            Optional<Trade> trade = tradeRepository.findByProduct_productId(shorts.getProduct().getProductId());
+            trade.ifPresent(value -> value.uploadShorts(shorts));
+            saveShortsChatting(request.getShortsChatRequests(),shorts.getShortsId());
+
+            return shorts.getShortsId();
+        }
+        public int getRandomShorts(){
+            return shortsRepository.getRandomShorts().orElse(0);
+        }
+        public ShortsResponse getShorts(int shortsId) {
+            Shorts shorts = shortsRepository.findById(shortsId).orElseThrow(()->new IllegalArgumentException("Cannot found shorts"));
+            Optional<List<ShortsChatting>> shortsChattings = shortsChattingRepository.findByShorts_ShortsId(shortsId);
+            List<ShortsChatResponse> shortsChatResponseList = new ArrayList<>();
+            String liveTitle;
+            boolean isTradeNow = false;
+            if (shortsChattings.isPresent()){
+                Product product = shorts.getProduct();
+                liveTitle = product.getLive().getTitle();
+                for (ShortsChatting shortsChatting : shortsChattings.get()) {
+                    User writer = shortsChatting.getUser();
+                    ShortsChatResponse shortsChatResponse = new ShortsChatResponse(
+                            writer.getProfilePicture(),
+                            writer.getNickname(),
+                            shortsChatting.getContent(),
+                            shortsChatting.getTime()
+                    );
+                    shortsChatResponseList.add(shortsChatResponse);
+                }
+                isTradeNow = tradeRepository.findByProductId(product.getProductId()).isPresent();
             } else {
-                throw new IllegalArgumentException("Cannot find shorts scrap");
+                liveTitle = "";
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
-    }
-    public Map<String, Object> getShortsDetails(int shortsId){
-        Optional<Shorts> shorts = shortsRepository.findById(shortsId);
-        Map<String, Object> shortsDetails = new HashMap<>();
-        if (shorts.isPresent()) {
-            shortsDetails.put("product_id", shorts.get().getProduct().getProductId());
-            shortsDetails.put("shorts_id", shorts.get().getShortsId());
-            shortsDetails.put("upload_date", shorts.get().getUploadDate());
-            shortsDetails.put("thumbnail", shorts.get().getShortsThumbnail());
-            shortsDetails.put("video_address", shorts.get().getVideoAddress());
-            shortsDetails.put("user_id", shorts.get().getUser().getUserId());
-        }
-        return shortsDetails;
-    }
 
-    public void saveShortsChatting(List<ShortsChatRequest> request, int shortsId) {
-        for (ShortsChatRequest shortsChatRequest : request) {
-            Shorts shorts = shortsRepository.findById(shortsId).orElseThrow(() -> new IllegalArgumentException("Invalid shorts ID"));
-            User user = userRepository.findById(shortsChatRequest.getUserId()).orElseThrow(() -> new IllegalArgumentException("Invalid user"));
-            ShortsChatting shortsChatting = shortsChatRequest.toEntity(shorts, user);
-            shortsChattingRepository.save(shortsChatting);
+            return new ShortsResponse(shorts, liveTitle, isTradeNow, shortsChatResponseList);
         }
-    }
 
-    @Transactional
-    public void startSell(int productId) {
-        Product product = productRepository.findByProductId(productId).orElseThrow(() -> new IllegalArgumentException("no product found for product id: " + productId));
-        Live live = product.getLive();
-        authorizeArticleAuthor(live);
-        product.sellStart();
-        productRepository.save(product);
-    }
 
-    private static void authorizeArticleAuthor(Live live) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
-        String userEmail = oAuth2User.getEmail();
-        if (!live.getSeller().getEmail().equals(userEmail)) {
-            throw new IllegalArgumentException("not authorized");
+        public void addUserShortsScrap(int userId, int shortsId) {
+            User findUser = userRepository.findById(userId).orElseThrow(()->new IllegalArgumentException("Cannot found user"));
+            Shorts findShorts = shortsRepository.findById(shortsId).orElseThrow(()-> new IllegalArgumentException("Cannot found shorts"));
+            if (userId==findShorts.getUser().getUserId())
+                new IllegalArgumentException("Cannot add shorts to user");
+            ShortsScrap shortsScrap = ShortsScrap.builder()
+                    .shorts(findShorts)
+                    .user(findUser)
+                    .build();
+            shortsScrapRepository.save(shortsScrap);
         }
-    }
+        public void deleteUserShortsScrap(int userId, int shortsId) {
+            try {
+                Optional<ShortsScrap> findShortsScrap = shortsScrapRepository.findByUser_userIdAndShorts_shortsId(userId, shortsId);
+                if (findShortsScrap.isPresent()) {
+                    shortsScrapRepository.delete(findShortsScrap.get());
+                } else {
+                    throw new IllegalArgumentException("Cannot find shorts scrap");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw e;
+            }
+        }
+        public Map<String, Object> getShortsDetails(int shortsId){
+            Optional<Shorts> shorts = shortsRepository.findById(shortsId);
+            Map<String, Object> shortsDetails = new HashMap<>();
+            if (shorts.isPresent()) {
+                shortsDetails.put("product_id", shorts.get().getProduct().getProductId());
+                shortsDetails.put("shorts_id", shorts.get().getShortsId());
+                shortsDetails.put("upload_date", shorts.get().getUploadDate());
+                shortsDetails.put("thumbnail", shorts.get().getShortsThumbnail());
+                shortsDetails.put("video_address", shorts.get().getVideoAddress());
+                shortsDetails.put("user_id", shorts.get().getUser().getUserId());
+            }
+            return shortsDetails;
+        }
+
+        public void saveShortsChatting(List<ShortsChatRequest> request, int shortsId) {
+            for (ShortsChatRequest shortsChatRequest : request) {
+                Shorts shorts = shortsRepository.findById(shortsId).orElseThrow(() -> new IllegalArgumentException("Invalid shorts ID"));
+                User user = userRepository.findById(shortsChatRequest.getUserId()).orElseThrow(() -> new IllegalArgumentException("Invalid user"));
+                ShortsChatting shortsChatting = shortsChatRequest.toEntity(shorts, user);
+                shortsChattingRepository.save(shortsChatting);
+            }
+        }
+
+        @Transactional
+        public void startSell(int productId) {
+            Product product = productRepository.findByProductId(productId).orElseThrow(() -> new IllegalArgumentException("no product found for product id: " + productId));
+            Live live = product.getLive();
+            authorizeArticleAuthor(live);
+            product.sellStart();
+            productRepository.save(product);
+        }
+
+        private static void authorizeArticleAuthor(Live live) {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
+            String userEmail = oAuth2User.getEmail();
+            if (!live.getSeller().getEmail().equals(userEmail)) {
+                throw new IllegalArgumentException("not authorized");
+            }
+        }
 }
