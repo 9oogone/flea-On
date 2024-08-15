@@ -43,10 +43,7 @@ const initialState = loadState() || {
 // Async thunk for updating user info
 export const updateUserInfo = createAsyncThunk(
   "auth/updateUserInfo",
-  async ({ email, data }, { getState }) => {
-    const state = getState();
-    const token = state.auth.token;
-
+  async ({ email, data }) => {
     const response = await baseAxios().put(`/fleaon/users/${email}/info`, data);
     return response.data;
   }

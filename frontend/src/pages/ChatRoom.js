@@ -73,6 +73,7 @@ const ChatRoom = () => {
       console.log(11);
       console.log(data);
       if (data.payload && data.payload.messageResponses) {
+        console.log(data);
         const updatedMessages = data.payload.messageResponses.map((message) => {
           let isSent = message.writerId === user.userId;
           return {
@@ -401,8 +402,7 @@ const ChatRoom = () => {
       </ul>
       <ChatInput
         chatID={chatID}
-        // liveID={liveID}
-        // productID={productID}
+        // products={products}
         message={newMessage}
         setMessage={setNewMessage}
         handleSendMessage={sendMessage}

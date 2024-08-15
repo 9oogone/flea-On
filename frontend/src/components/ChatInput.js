@@ -7,6 +7,8 @@ import CancelTrade from "./CancelTrade";
 import ChatTradeDetail from "./ChatTradeDetail";
 import ChangeTime from "../components/ChangeTime";
 import baseAxios from "../utils/httpCommons";
+import { getTradeDetail } from "../features/chat/ChatApi";
+
 const ChatInput = ({
   chatID,
   message,
@@ -15,14 +17,14 @@ const ChatInput = ({
   setFocus,
   isChatNavOpen,
   setIsChatNavOpen,
-  liveID,
-  productID,
+
   // isSeller, // 일단은 사용하지 않음
   isBuyer,
 }) => {
   const [isCancelTradeOpen, setIsCancelTradeOpen] = useState(false);
   const [isTradeDetailOpen, setIsTradeDetailOpen] = useState(false);
   const [isChangeTimeOpen, setIsChangeTimeOpen] = useState(false);
+  const [productIds, setProductIds] = useState([]);
   const inputRef = useRef(null);
 
   useEffect(() => {
@@ -38,6 +40,15 @@ const ChatInput = ({
         setFocus(false);
       });
     }
+    const fetchDetail = () => {
+      getTradeDetail(chatID).then((res) => {
+        console.log("product 나오나요?", res);
+        const ids = res.buyProduct.map((product) => product.productId);
+        setProductIds(ids);
+      });
+    };
+
+    fetchDetail();
   }, [setFocus]);
 
   const handlePlusIconClick = () => {
@@ -81,8 +92,7 @@ const ChatInput = ({
       )}
       <CancelTrade
         chatID={chatID}
-        liveID={liveID}
-        productID={productID}
+        products={productIds}
         setIsOpen={setIsCancelTradeOpen}
         isOpen={isCancelTradeOpen}
         onClose={() => setIsCancelTradeOpen(false)}
