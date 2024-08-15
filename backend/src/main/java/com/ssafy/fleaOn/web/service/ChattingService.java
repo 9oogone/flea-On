@@ -70,8 +70,9 @@ public class ChattingService {
 
         List<MessageResponse> messages = new ArrayList<>();
         for (ChattingList chattingList : chattingLists) {
-            if (chattingList.isBot())
-                messages.add(new MessageResponse(chattingList));
+            if(chatting.getSeller().equals(user) && !chattingList.isBot())
+                continue;
+            messages.add(new MessageResponse(chattingList));
         }
 
         User otherUser;
