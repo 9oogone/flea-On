@@ -13,8 +13,8 @@ const InitialPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user.phone !== "") setStep(1);
-    else if (user.nickname !== "") setStep(2);
+    if (user.phone) setStep(1);
+    else if (user.nickname) setStep(2);
     else if (user.dongName?.length) {
       navigate("/");
     }
