@@ -14,7 +14,7 @@ public class FirebaseConfig {
     @PostConstruct
     public void init(){
         try{
-            InputStream serviceAccount = new ClassPathResource("firebase/fleaon-d171c-firebase-adminsdk-dhf82-463da3a7a7.json").getInputStream();
+            InputStream serviceAccount = new ClassPathResource("firebase/firebasePushAlarm.json").getInputStream();
             FirebaseOptions options = new FirebaseOptions.Builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                     .build();

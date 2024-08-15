@@ -32,33 +32,38 @@ public class MainService {
     private final ShortsScrapRepository shortsScrapRepository;
 
     public Slice<MainLiveResponse> getMainLiveListByRegionCode(int userId, List<UserRegion> findUserRegionList, int page) {
-        Pageable pageable = PageRequest.of(page, 10);
-        List<MainLiveResponse> mainLiveResponseList = new ArrayList<>();
+        // 모든 데이터를 수집할 리스트
+        List<MainLiveResponse> allLiveResponses = new ArrayList<>();
 
+        // 모든 지역 코드를 탐색하여 데이터를 수집
         for (UserRegion userRegion : findUserRegionList) {
             String regionCode = userRegion.getRegion().getRegionCode();
-            Slice<Live> livePage = liveRepository.findByRegionCodeAndIsLiveOrderByIsLiveDescLiveDateAsc(regionCode, pageable);
+            List<Live> liveList = liveRepository.findByRegionCodeAndIsLiveOrderByIsLiveDescLiveDateAsc(regionCode);
 
-            for (Live live : livePage) {
+            for (Live live : liveList) {
                 Optional<List<Product>> findProductList = productRepository.findByLive_LiveId(live.getLiveId());
                 Optional<LiveScrap> findLiveScrap = liveScrapRepository.findByUser_userIdAndLive_liveId(userId, live.getLiveId());
                 if (findProductList.isPresent()) {
                     boolean isScrap = findLiveScrap.isPresent();
                     MainLiveResponse mainLiveResponse = MainLiveResponse.fromEntity(live, findProductList.get(), isScrap);
-                    mainLiveResponseList.add(mainLiveResponse);
+                    allLiveResponses.add(mainLiveResponse);
                 }
             }
         }
 
+        // 페이지네이션 설정
+        Pageable pageable = PageRequest.of(page, 10);
+
+        // 전체 데이터를 페이지네이션 처리하여 특정 페이지의 데이터를 추출
         int start = (int) pageable.getOffset();
-        int end = Math.min((start + pageable.getPageSize()), mainLiveResponseList.size());
-        boolean hasNext = mainLiveResponseList.size() > end;
-        List<MainLiveResponse> content = mainLiveResponseList.subList(start, end);
+        int end = Math.min((start + pageable.getPageSize()), allLiveResponses.size());
+        List<MainLiveResponse> content = allLiveResponses.subList(start, end);
+
+        // 다음 페이지가 있는지 여부를 판단
+        boolean hasNext = end < allLiveResponses.size();
 
         return new SliceImpl<>(content, pageable, hasNext);
     }
-
-
 
     public List<UserRegion> getUserRegionByUserId(int userId) {
         Optional<List<UserRegion>> userRegionList = userRegionRepository.findByUser_userId(userId);
@@ -71,6 +76,7 @@ public class MainService {
 
         // Shorts 데이터 가져오기 (Slice로)
         Slice<Shorts> shortsSlice = shortsRepository.findAllByOrderByUploadDateDesc(pageable);
+
         for (Shorts shorts : shortsSlice) {
             Optional<Product> product = productRepository.findByProductId(shorts.getProduct().getProductId());
             Optional<Live> live = liveRepository.findByLiveId(product.get().getLive().getLiveId());
@@ -82,13 +88,12 @@ public class MainService {
             }
         }
 
-        int start = (int) pageable.getOffset();
-        int end = Math.min((start + pageable.getPageSize()), mainShortsResponseList.size());
-        boolean hasNext = mainShortsResponseList.size() > end;
-        List<MainShortsResponse> content = mainShortsResponseList.subList(start, end);
+        // hasNext를 shortsSlice에서 직접 가져옴
+        boolean hasNext = shortsSlice.hasNext();
 
-        return new SliceImpl<>(content, pageable, hasNext);
+        return new SliceImpl<>(mainShortsResponseList, pageable, hasNext);
     }
+
 
     public Optional<List<Category>> getMainCategoryList() {
         return Optional.of(categoryRepository.findAll());
