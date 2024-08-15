@@ -26,11 +26,19 @@ messaging.onBackgroundMessage((payload) => {
     "[firebase-messaging-sw.js] Received background message ",
     payload
   );
-  const notificationTitle = payload.notification.title;
+  const notificationTitle = payload.data.title;
   const notificationOptions = {
-    body: payload.notification.body,
+    body: payload.data.body,
     icon: "./icons/icon-144x144.png",
+    data: {
+      url: payload.data.redirect_url || "/",
+    },
   };
-
   self.registration.showNotification(notificationTitle, notificationOptions);
+});
+
+self.addEventListener("notificationclick", (event) => {
+  const url = event.notification.data.url;
+  event.notification.close(); // 알림 닫기
+  event.waitUntil(clients.openWindow(url)); // URL 열기
 });
