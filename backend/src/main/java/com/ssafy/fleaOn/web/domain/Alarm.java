@@ -33,6 +33,15 @@ public class Alarm {
     @Column(name = "is_read")
     private boolean isRead;
 
+    @Column(name = "type")
+    private int type;
+
+    @Column(name = "product_id")
+    private int productId;
+
+    @Column(name = "live_id")
+    private int liveId;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;

@@ -2,12 +2,15 @@ package com.ssafy.fleaOn.web.service;
 
 import com.google.firebase.messaging.*;
 import com.ssafy.fleaOn.web.domain.Alarm;
+import com.ssafy.fleaOn.web.domain.Live;
+import com.ssafy.fleaOn.web.domain.Product;
 import com.ssafy.fleaOn.web.domain.User;
 import com.ssafy.fleaOn.web.dto.ChatAlarmRequest;
 import com.ssafy.fleaOn.web.dto.CustomOAuth2User;
 import com.ssafy.fleaOn.web.dto.NextAlarmRequest;
 import com.ssafy.fleaOn.web.dto.UserFcmResponse;
 import com.ssafy.fleaOn.web.repository.AlarmRepository;
+import com.ssafy.fleaOn.web.repository.LiveRepository;
 import com.ssafy.fleaOn.web.repository.ProductRepository;
 import com.ssafy.fleaOn.web.repository.UserRepository;
 import org.springframework.security.core.Authentication;
@@ -27,12 +30,14 @@ public class FcmService {
     private final UserRepository userRepository;
     private final AlarmRepository alarmRepository;
     private final ProductRepository productRepository;
+    private final LiveRepository liveRepository;
 
-    public FcmService(UserService userService, UserRepository userRepository, AlarmRepository alarmRepository, ProductRepository productRepository) {
+    public FcmService(UserService userService, UserRepository userRepository, AlarmRepository alarmRepository, ProductRepository productRepository, LiveRepository liveRepository) {
         this.userService = userService;
         this.userRepository = userRepository;
         this.alarmRepository = alarmRepository;
         this.productRepository = productRepository;
+        this.liveRepository = liveRepository;
     }
 
     public void sendMessageToNextPerson(NextAlarmRequest nextAlarmRequest) {
@@ -41,24 +46,28 @@ public class FcmService {
         String token = user.getFcm();
         System.out.println(token);
         String profilePic = userService.getProfile(nextAlarmRequest.getProductId());
-        String productName = productRepository.findByProductId(nextAlarmRequest.getProductId()).orElseThrow(()->new IllegalArgumentException("찾을 수 없는 상품입니다.")).getName();
+        Product product = productRepository.findByProductId(nextAlarmRequest.getProductId()).orElseThrow(()->new IllegalArgumentException("찾을 수 없는 상품입니다."));
 
         Alarm alarm = Alarm.builder()
                 .user(user)
                 .date(Timestamp.valueOf(LocalDateTime.now()))
                 .isRead(false)
-                .content(productName+" 구매하시겠습니까?")
+                .content(product.getName()+" 구매하시겠습니까?")
                 .profilePic(profilePic)
+                .type(nextAlarmRequest.getType())
+                .liveId(nextAlarmRequest.getLiveId())
+                .productId(nextAlarmRequest.getProductId())
                 .build();
         alarmRepository.save(alarm);
         Message message = Message.builder()
                 .setToken(token)
                 .putData("body","구매하러가기")
-                .putData("title",productName+"이 구매 가능합니다!")
+                .putData("title",product.getName()+"이 구매 가능합니다!")
                 .putData("redirect_url", "https://fleaon.shop/notifications")
                 .putData("userId", String.valueOf(nextAlarmRequest.getNextId()))
                 .putData("liveId", String.valueOf(nextAlarmRequest.getLiveId()))
                 .putData("productId", String.valueOf(nextAlarmRequest.getProductId()))
+                .putData("type", String.valueOf(nextAlarmRequest.getType()))
                 .build();
 
         try {
@@ -68,7 +77,7 @@ public class FcmService {
             e.printStackTrace();
         }
     }
-    public void sendMessageToMultipleTokens(List<UserFcmResponse> tokens, String title) throws FirebaseMessagingException {
+    public void sendMessageToMultipleTokens(List<UserFcmResponse> tokens, String title, int type, int liveId) throws FirebaseMessagingException {
         // 유효한 토큰 필터링
         List<String> validTokens = tokens.stream()
                 .map(UserFcmResponse::getFcmToken)
@@ -80,12 +89,16 @@ public class FcmService {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
             User sender = userRepository.findByEmail(oAuth2User.getEmail()).orElseThrow(()-> new IllegalArgumentException("찾을 수 없는 발신자입니다."));
+            Live live = liveRepository.findById(liveId).orElseThrow(()->new IllegalArgumentException("not found live"));
             Alarm alarm = Alarm.builder()
                     .user(user)
                     .date(Timestamp.valueOf(LocalDateTime.now()))
                     .isRead(false)
                     .content(title+" 방송이 시작되었습니다!")
                     .profilePic(sender.getProfilePicture())
+                    .type(type)
+                    .liveId(liveId)
+                    .productId(0)
                     .build();
             alarmRepository.save(alarm);
         }
@@ -99,6 +112,9 @@ public class FcmService {
                 .putData("body","방송 참여하기")
                 .putData("title",title+" 방송이 시작되었습니다!")
                 .putData("redirect_url", "https://fleaon.shop/mypage/scrap-list")
+                .putData("liveId", String.valueOf(liveId))
+                .putData("productId", "0")
+                .putData("type", String.valueOf(type))
                 .addAllTokens(validTokens)
                 .build();
 
@@ -124,6 +140,9 @@ public class FcmService {
                 .isRead(false)
                 .content(chatAlarmRequest.getContent())
                 .profilePic(sender.getProfilePicture())
+                .type(chatAlarmRequest.getType())
+                .productId(chatAlarmRequest.getProductId())
+                .liveId(chatAlarmRequest.getLiveId())
                 .build();
         alarmRepository.save(alarm);
 
@@ -133,6 +152,9 @@ public class FcmService {
                 .putData("title",sender.getName())
                 .putData("redirect_url", "https://fleaon.shop/chat/"+chatAlarmRequest.getChatId())
                 .putData("icon", sender.getProfilePicture())
+                .putData("liveId", String.valueOf(chatAlarmRequest.getLiveId()))
+                .putData("productId", String.valueOf(chatAlarmRequest.getProductId()))
+                .putData("type", String.valueOf(chatAlarmRequest.getType()))
                 .build();
         try {
             String response = FirebaseMessaging.getInstance().send(message);

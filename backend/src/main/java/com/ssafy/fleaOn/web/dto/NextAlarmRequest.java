@@ -12,4 +12,5 @@ public class NextAlarmRequest {
     int nextId;
     int liveId;
     int productId;
+    int type;
 }
