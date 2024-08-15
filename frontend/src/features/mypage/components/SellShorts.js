@@ -70,7 +70,7 @@ const Shorts = ({ items }) => {
                     width: "90%",
                     height: "100%",
                     py: 2,
-                    borderTop: "0.33px solid rgba(84, 84, 86, 0.34)",
+                    borderBottom: "0.33px solid rgba(84, 84, 86, 0.34)",
                     justifyContent: "center",
                     alignItems: "center",
                     display: "flex",

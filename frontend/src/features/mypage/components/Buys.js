@@ -9,7 +9,6 @@ import { formatPrice, getRelativeDate } from "../../../utils/cssUtils";
 const Buys = ({ items }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const buyerId = useSelector((state) => state.auth.user.userId);
   // console.log(buyerId, "구매자 아이디입니당");
   const { chats, status } = useSelector((state) => state.chat);
   const [buy, setBuy] = useState();
@@ -18,7 +17,7 @@ const Buys = ({ items }) => {
     setBuy(items.purchases);
     setBuyDone(items.tradeDoneResponses);
   }, [items]);
-  // console.log(buy, "거래예정입니다.");
+  console.log(buy, "거래예정입니다.");
   // console.log(buyDone, "거래완료입니다.");
 
   // 채팅하기
@@ -32,8 +31,9 @@ const Buys = ({ items }) => {
   }, [status, dispatch]);
   // console.log(chats, status, "챗 디스패치입니다");
 
-  const goToChatRoom = (chats, buyerId) => {
-    const chat = chats.find((chat) => chat.buyerId === buyerId);
+  const goToChatRoom = (chats, liveId) => {
+    const chat = chats.find((chat) => chat.liveId === liveId);
+    // console.log(liveId, chat.liveId, "이건가 잘 가는 중");
 
     if (chat) {
       // 채팅 객체가 존재하면 해당 채팅방으로 이동
@@ -177,7 +177,7 @@ const Buys = ({ items }) => {
                         alignItems: "center",
                         display: "flex",
                       }}
-                      onClick={() => goToChatRoom(chats, buyerId)}
+                      onClick={() => goToChatRoom(chats, item.liveId)}
                     >
                       <Typography
                         sx={{

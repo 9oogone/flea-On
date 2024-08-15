@@ -58,7 +58,7 @@ const ShortsPage = () => {
         setSubList(response.data.shortsChatResponseList);
         // setComments(response.data.shortsChatResponseList);
         setProduct(response.data.product);
-        setTradeNow();
+        setTradeNow(response.data.tradeNow);
       } catch (error) {
         console.error("Error fetching short data:", error);
       }
@@ -280,6 +280,17 @@ const ShortsPage = () => {
               onClick={handelBoostShorts}
             >
               구매하기
+            </Button>
+          ) : tradeNow ? (
+            <Button
+              variant="contained"
+              sx={{
+                height: "50px",
+                width: "60%",
+              }}
+              color="secondary"
+            >
+              거래 중인 상품
             </Button>
           ) : (
             <Button
