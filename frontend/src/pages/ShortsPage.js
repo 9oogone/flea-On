@@ -42,6 +42,7 @@ const ShortsPage = () => {
   const [subList, setSubList] = useState([]);
   const [isBoostModalOpen, setIsBoostModalOpen] = useState(false);
   const [tradeNow, setTradeNow] = useState(true);
+  const [discountedPrice, setDiscountedPrice] = useState(0);
 
   const videoRef = useRef(null);
   useDidMountEffect(() => {
@@ -117,23 +118,6 @@ const ShortsPage = () => {
     trackMouse: true,
   });
 
-  // useDidMountEffect(() => {
-  //   const handleBoostProduct = async (productId) => {
-  //     try {
-  //       const response = await baseAxios().put(`/fleaon/purchase/reUpload`, {
-  //         params: { productId: productId },
-  //       });
-  //       console.log("끌어올리기 성공:", response.data);
-  //       return response.data;
-  //     } catch (error) {
-  //       console.error("끌어올리기 실패:", error);
-  //     }
-  //   };
-  //   if (product.productId) {
-  //     handleBoostProduct(product.productId);
-  //   }
-  // }, [product.productId]);
-
   // 끌어올리기 모달
   const handelBoostShorts = () => {
     setIsBoostModalOpen(true);
@@ -144,19 +128,30 @@ const ShortsPage = () => {
   };
 
   const handleConfirmBoost = async () => {
+    const calculatedDiscountedPrice = Math.floor(product.price * 0.9);
+    setDiscountedPrice(calculatedDiscountedPrice);
     setIsBoostModalOpen(false);
     if (product.productId) {
       console.log(product.pro);
       try {
+        // 프론트에서 10% 할인된 가격을 먼저 계산
         const response = await baseAxios().put(
           `/fleaon/purchase/reUpload?productId=${product.productId}`
         );
+        const discountedPrice = (product.price * 0.9) | 0;
+
+        // 할인된 가격을 프론트에서 먼저 반영
+        setProduct((prevProduct) => ({
+          ...prevProduct,
+          price: discountedPrice,
+        }));
         console.log("끌어올리기 성공:", response.data);
       } catch (error) {
         console.error("끌어올리기 실패:", error);
       }
     }
   };
+
   if (!currentShort) return <Typography>Loading...</Typography>;
 
   return (
@@ -304,20 +299,101 @@ const ShortsPage = () => {
             </Button>
           )}
           {/* 거래 확정 다이얼로그 */}
-          <Dialog open={isBoostModalOpen} onClose={handleCloseBoostModal}>
-            <DialogTitle>상품 끌어올리기</DialogTitle>
-            <DialogContent>
-              <Typography>이 상품을 끌어올리시겠습니까?</Typography>
-              <Typography sx={{ fontSize: 12, mt: 1 }}>
+          <Dialog
+            open={isBoostModalOpen}
+            onClose={handleCloseBoostModal}
+            PaperProps={{
+              sx: {
+                borderRadius: "12px",
+                padding: "20px",
+                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+              },
+            }}
+          >
+            <DialogTitle
+              sx={{
+                fontWeight: "bold",
+                fontSize: "1.25rem",
+                color: "#333",
+              }}
+            >
+              상품 끌어올리기
+            </DialogTitle>
+            <DialogContent
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "16px",
+              }}
+            >
+              <Typography
+                sx={{
+                  fontSize: "1rem",
+                  color: "#555",
+                }}
+              >
+                이 상품을 끌어올리시겠습니까?
+              </Typography>
+              {discountedPrice !== 0 && (
+                <Typography
+                  sx={{
+                    fontSize: "1rem",
+                    fontWeight: "bold",
+                    color: "#FF0B55",
+                    backgroundColor: "#fbe9e7",
+                    padding: "8px",
+                    borderRadius: "4px",
+                    textAlign: "center",
+                  }}
+                >
+                  할인 예정 가격: {formatPrice(discountedPrice)}
+                </Typography>
+              )}
+              <Typography
+                sx={{
+                  fontSize: "0.875rem",
+                  color: "#777",
+                }}
+              >
                 (끌어올리기를 하면 상품이 목록의 상단으로 이동하며, 10% 비율로
-                가격이 할인됩니다.)
+                가격이 할인됩니다.) <br />
+                <br />
+                ♥무료나눔은 언제든 끌올 가능♥
               </Typography>
             </DialogContent>
-            <DialogActions>
-              <Button onClick={handleConfirmBoost} color="primary">
+            <DialogActions
+              sx={{
+                justifyContent: "flex-end",
+                padding: "16px",
+              }}
+            >
+              <Button
+                onClick={handleConfirmBoost}
+                color="primary"
+                variant="contained"
+                sx={{
+                  backgroundColor: "#FF0B55",
+                  color: "white",
+                  boxShadow: "none",
+                }}
+              >
                 끌어올리기
               </Button>
-              <Button onClick={handleCloseBoostModal}>취소</Button>
+              <Button
+                onClick={handleCloseBoostModal}
+                color="inherit"
+                variant="outlined"
+                sx={{
+                  marginLeft: "8px",
+                  color: "FF0B55",
+                  borderColor: "#FF0B55",
+                  "&:hover": {
+                    borderColor: "#1565c0",
+                  },
+                }}
+              >
+                취소
+              </Button>
             </DialogActions>
           </Dialog>
         </Box>

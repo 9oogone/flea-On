@@ -323,20 +323,94 @@ const CalendarTrade = ({ userId, selectedDate, dateTrade }) => {
         ))}
 
       {/* 거래 확정 다이얼로그 */}
-      <Dialog open={isModalOpen} onClose={handleCloseModal}>
-        <DialogTitle>거래 확정</DialogTitle>
-        <DialogContent>
-          <Typography>거래를 확정하시겠습니까?</Typography>
-          <Typography sx={{ fontSize: 12 }}>
+      <Dialog
+        open={isModalOpen}
+        onClose={handleCloseModal}
+        sx={{ "& .MuiDialog-paper": { borderRadius: "16px" } }}
+      >
+        <DialogTitle
+          sx={{
+            backgroundColor: "#FF0B55",
+            color: "white",
+            borderBottom: "1px solid #FF0B55",
+            fontWeight: "bold",
+            textAlign: "center",
+          }}
+        >
+          거래 확정
+        </DialogTitle>
+        <DialogContent
+          sx={{
+            backgroundColor: "#f5f5f5",
+            padding: "24px",
+            textAlign: "center",
+          }}
+        >
+          <Typography variant="body1" sx={{ mb: 2 }}>
+            거래를 확정하시겠습니까?
+          </Typography>
+          <Typography variant="body2" sx={{ color: "#888888" }}>
             (거래를 확정 시 판매한 상품의 쇼츠와 생성된 채팅방이 사라집니다.)
           </Typography>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleConfirmTrade}>거래확정</Button>
-          <Button onClick={handleChat}>채팅하기</Button>
-          <Button onClick={handleCloseModal}>취소</Button>
+        <DialogActions
+          sx={{
+            justifyContent: "center",
+            backgroundColor: "#f5f5f5",
+            borderTop: "1px solid #ddd",
+          }}
+        >
+          <Button
+            onClick={handleConfirmTrade}
+            variant="contained"
+            color="primary"
+            sx={{
+              backgroundColor: "#FF0B55",
+              color: "white",
+              "&:hover": {
+                backgroundColor: "#e6004c",
+              },
+              boxShadow: "none",
+              borderRadius: "8px",
+              margin: "0 8px",
+            }}
+          >
+            거래확정
+          </Button>
+          <Button
+            onClick={handleChat}
+            variant="outlined"
+            color="primary"
+            sx={{
+              borderColor: "#FF0B55",
+              color: "#FF0B55",
+              "&:hover": {
+                borderColor: "#e6004c",
+                color: "#e6004c",
+              },
+              borderRadius: "8px",
+              margin: "0 8px",
+            }}
+          >
+            채팅하기
+          </Button>
+          <Button
+            onClick={handleCloseModal}
+            variant="outlined"
+            color="secondary"
+            sx={{
+              borderColor: "#ccc",
+              color: "#333",
+
+              borderRadius: "8px",
+              margin: "0 8px",
+            }}
+          >
+            취소
+          </Button>
         </DialogActions>
       </Dialog>
+
       {/* 채팅방 미생성 알림 */}
       <Snackbar
         open={openSnackbar}
