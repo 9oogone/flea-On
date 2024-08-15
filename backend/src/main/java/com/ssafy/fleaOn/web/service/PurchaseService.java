@@ -194,8 +194,8 @@ public class PurchaseService {
 
 //        // 5. 채팅방 및 채팅 메시지 삭제
 //        logger.info("Deleting all chatting lists and chat rooms for live ID: {}", liveId);
-//        chattingListRepository.deleteByChatting_ChattingId(liveId);
-//        chattingRepository.deleteById(liveId);
+        chattingListRepository.deleteByChatting_ChattingId(liveId);
+        chattingRepository.deleteById(liveId);
 
         return cancelResponses;
     }
