@@ -12,7 +12,7 @@ export async function sendMessageDB(chatId, contents) {
     const data = {
       chattingId: chatId,
       contents: contents,
-      bot: isSystemMessage, // 시스템 메시지이면 bot을 true로 설정
+      bot: true, // 시스템 메시지이면 bot을 true로 설정
     };
     console.log("Request data:", JSON.stringify(data));
 

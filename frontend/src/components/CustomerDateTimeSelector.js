@@ -171,7 +171,7 @@ const CustomerDateTimeSelector = ({
           거래 장소 :  ${place}<br/>
           거래 예정입니다!<br/>
           늦지 않게 약속된 장소에서 만나요~`,
-          bot: true,
+          bot: false,
         };
         console.log("chatting Id : ", response.data);
         console.log(
