@@ -45,7 +45,7 @@ const Shorts = ({ items: initialItems }) => {
   };
 
   if (!items || items.length === 0) {
-    return <div> 숏츠가 없습니다.</div>;
+    return <div></div>;
   }
 
   return (
@@ -207,7 +207,7 @@ const Shorts = ({ items: initialItems }) => {
         ) : (
           <Grid item xs={12} sx={{ textAlign: "center", mt: 4 }}>
             <Typography variant="h6" sx={{ textAlign: "center" }}>
-              쇼츠가 없습니다.
+              {/* 쇼츠가 없습니다. */}
             </Typography>
           </Grid>
         )}
