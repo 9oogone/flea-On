@@ -148,7 +148,7 @@ const ChatRoom = () => {
     return <div>Error: {error}</div>;
   }
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
     if (session.current && newMessage.trim() !== "") {
       const messageData = {
         message: filter.clean(newMessage),
@@ -162,7 +162,18 @@ const ChatRoom = () => {
         data: JSON.stringify(messageData),
         type: "chat",
       });
-      sendMessageDB(chatID, filter.clean(newMessage));
+      await sendMessageDB(chatID, filter.clean(newMessage));
+      setMessageList((prevMessages) => [
+        ...prevMessages,
+        {
+          chatContent: filter.clean(newMessage),
+          writerId: user.userId,
+          isSent: true,
+          chatTime: new Date().toISOString(),
+          isSystemMessage: false,
+          buttonsDisabled: false,
+        },
+      ]);
       setNewMessage("");
     }
   };
@@ -175,7 +186,7 @@ const ChatRoom = () => {
       /(\d{2}월 \d{2}일 (오전|오후) \d{2}시 \d{2}분)/
     );
     const dateTimeString = match ? match[1] : null;
-    
+
     function transformDateTime(dateTimeString) {
       if (!dateTimeString) {
         console.error("dateTimeString is null or undefined");
