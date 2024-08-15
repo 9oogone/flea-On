@@ -26,4 +26,6 @@ public interface ShortsRepository extends JpaRepository<Shorts, Integer> {
     @Query("SELECT s.shortsId FROM Shorts s ORDER BY RAND() LIMIT 1")
     Optional<Integer> getRandomShorts();
 
+    long countByProduct_productId(int productId);
+
 }
