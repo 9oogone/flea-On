@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class FcmService {
-
     public void sendMessageToMultipleTokens(List<UserFcmResponse> tokens, String title) throws FirebaseMessagingException {
         // 유효한 토큰 필터링
         List<String> validTokens = tokens.stream()
@@ -24,10 +23,8 @@ public class FcmService {
         }
 
         MulticastMessage message = MulticastMessage.builder()
-                .setNotification(Notification.builder()
-                        .setTitle(title+" 방송이 시작되었습니다!")
-                        .setBody("방송 참여하기")
-                        .build())
+                .putData("body","방송 참여하기")
+                .putData("title",title+" 방송이 시작되었습니다!")
                 .putData("redirect_url", "https://fleaon.shop/mypage/scrap-list")
                 .addAllTokens(validTokens)
                 .build();
