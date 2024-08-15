@@ -171,6 +171,10 @@ const ChatRoom = () => {
     const dateTimeString = newTime.split(": ")[1];
     const [tradeDate, tradeTime] = dateTimeString.split(" ");
 
+  console.log("dateTimeString:", dateTimeString); // dateTimeString 출력
+  console.log("tradeDate:", tradeDate); // tradeDate 출력
+  console.log("tradeTime:", tradeTime); // tradeTime 출력
+
     const message = `[System Message]<br/>
     거래 시간이 변경되었습니다.<br/>
     ${dateTimeString}에 만나요!`;
