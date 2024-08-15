@@ -46,7 +46,26 @@ export function onMessageListener() {
   return new Promise((resolve) => {
     onMessage(messaging, (payload) => {
       console.log("Message received. ", payload);
-      //   resolve(payload);
+
+      const notificationOptions = {
+        body: payload.data.body,
+        icon: "../public/icons/icon-144x144.png",
+        data: {
+          url: payload.data.redirect_url, // redirect_url 추가
+        },
+      };
+
+      const notification = new Notification(
+        payload.data.title,
+        notificationOptions
+      );
+
+      notification.onclick = (event) => {
+        event.preventDefault(); // Prevent the browser from focusing the Notification's tab
+        window.open(notificationOptions.data.url, "_blank");
+      };
+
+      resolve(payload);
     });
   });
 }

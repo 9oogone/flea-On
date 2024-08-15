@@ -80,7 +80,7 @@ const ChatRoom = () => {
             isSent: isSent,
             isSystemMessage: message.chatContent.startsWith("[System Message]"),
             buttonsDisabled: false, // 버튼 비활성화 상태 추가
-          };
+          };  
         });
         setMessageList(updatedMessages);
       }
@@ -168,19 +168,16 @@ const ChatRoom = () => {
   };
 
   const handleAcceptTimeChange = async (messageId, newTime) => {
-    // 문자열에서 날짜와 시간 부분 추출
     const dateTimeString = newTime.split(": ")[1];
-
-    // 날짜와 시간을 분리
     const [tradeDate, tradeTime] = dateTimeString.split(" ");
 
     const message = `[System Message]<br/>
     거래 시간이 변경되었습니다.<br/>
     ${dateTimeString}에 만나요!`;
+    
     try {
-      await changeTradeTime(chatID, tradeDate, tradeTime); // API 호출
+      await changeTradeTime(chatID, tradeDate, tradeTime);
 
-      // 성공적으로 변경되면 메시지 목록에 바로 추가
       setMessageList((prevMessages) => [
         ...prevMessages,
         {
@@ -189,15 +186,14 @@ const ChatRoom = () => {
           isSent: true,
           chatTime: new Date().toISOString(),
           isSystemMessage: true,
-          buttonsDisabled: false,
         },
       ]);
 
-      await sendMessageDB(chatID, message); // 메시지 저장
+      await sendMessageDB(chatID, message);
+
       setMessageList((prevMessages) =>
-        prevMessages.map(
-          (msg) =>
-            msg.id === messageId ? { ...msg, buttonsDisabled: true } : msg // 버튼 비활성화 설정
+        prevMessages.map((msg) =>
+          msg.id === messageId ? { ...msg, buttonsDisabled: true } : msg
         )
       );
 
@@ -220,10 +216,10 @@ const ChatRoom = () => {
   const handleRejectTimeChange = async (messageId) => {
     const message = `[System Message]<br/>
     거래 시간 변경이 거절되었습니다.`;
+    
     try {
       await sendMessageDB(chatID, message);
 
-      // 성공적으로 거절되면 메시지 목록에 바로 추가
       setMessageList((prevMessages) => [
         ...prevMessages,
         {
@@ -232,14 +228,12 @@ const ChatRoom = () => {
           isSent: true,
           chatTime: new Date().toISOString(),
           isSystemMessage: true,
-          buttonsDisabled: false,
         },
       ]);
 
       setMessageList((prevMessages) =>
-        prevMessages.map(
-          (msg) =>
-            msg.id === messageId ? { ...msg, buttonsDisabled: true } : msg // 버튼 비활성화 설정
+        prevMessages.map((msg) =>
+          msg.id === messageId ? { ...msg, buttonsDisabled: true } : msg
         )
       );
 
@@ -267,7 +261,14 @@ const ChatRoom = () => {
       new Date(currentMessage.chatTime).toTimeString().slice(0, 5) !==
         new Date(nextMessage.chatTime).toTimeString().slice(0, 5)
     );
-  }; // 같은 시간이면서 같은 사람이 보낸 메시지에는 마지막 메시지에만 시간이 나타나도록 함
+  };
+
+  const getDisplayContent = (message) => {
+    if (message.isSystemMessage) {
+      return message.chatContent.replace("[System Message]<br/>", "");
+    }
+    return message.chatContent;
+  };
 
   return (
     <div className={styles.chatRoom}>
@@ -284,13 +285,17 @@ const ChatRoom = () => {
           >
             <div
               className={
-                msg.isSent ? styles.defaultbaloon : styles.receivedbaloon
+                msg.isSystemMessage
+                  ? styles.systemMessageBaloon
+                  : msg.isSent
+                  ? styles.defaultbaloon
+                  : styles.receivedbaloon
               }
             >
               {msg.isSystemMessage ? (
                 <div
                   className={`${styles.msg} ${styles.systemMessage}`}
-                  dangerouslySetInnerHTML={{ __html: msg.chatContent }}
+                  dangerouslySetInnerHTML={{ __html: getDisplayContent(msg) }}
                 />
               ) : (
                 <div className={styles.msg}>{msg.chatContent}</div>
@@ -311,11 +316,13 @@ const ChatRoom = () => {
                     </Button>
                   </div>
                 )}
-              <img
-                className={styles.tailIcon}
-                alt=""
-                src={msg.isSent ? tailSent : tailReceived}
-              />
+              {!msg.isSystemMessage && (
+                <img
+                  className={styles.tailIcon}
+                  alt=""
+                  src={msg.isSent ? tailSent : tailReceived}
+                />
+              )}
             </div>
             {shouldShowTime(index, msg) && (
               <div className={styles.time}>

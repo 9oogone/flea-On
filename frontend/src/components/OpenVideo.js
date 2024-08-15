@@ -829,7 +829,7 @@ const OpenVideo = () => {
                   <Button
                     color="google"
                     onClick={() => navigate(`/shorts/${product.shortsId}`)}
-                    disabled={product.shortsId === 0}
+                    disabled={product.shortsId}
                   >
                     <ReplayIcon />
                   </Button>
