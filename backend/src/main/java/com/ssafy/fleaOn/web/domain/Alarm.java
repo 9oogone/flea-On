@@ -37,10 +37,10 @@ public class Alarm {
     private int type;
 
     @Column(name = "product_id")
-    private int productId;
+    private Integer productId;
 
     @Column(name = "live_id")
-    private int liveId;
+    private Integer liveId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
