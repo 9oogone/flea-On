@@ -209,21 +209,20 @@ const OpenVideo = () => {
       const videoDevices = devices.filter(
         (device) => device.kind === "videoinput"
       );
-      // var len = videoDevices.length;
-      
-      if (videoDevices.length > 1) {
-        // if(videoIndex+1>=len){
-        //   setVideoIndex(0)
-        // }else{
-        //   setVideoIndex(videoIndex+1)
-        // }
+  
+      // "front"가 포함된 첫 번째 장치 찾기
+      const frontCamera = videoDevices.find((device) =>
+        device.label.toLowerCase().includes("front")
+      );
+  
+      // "back"이 포함된 첫 번째 장치 찾기
+      const backCamera = videoDevices.find((device) =>
+        device.label.toLowerCase().includes("back")
+      );
+  
+      if (frontCamera && backCamera) {
         const newPublisher = OV.current.initPublisher("htmlVideo", {
-          videoSource: 
-          // videoDevices[videoIndex].deviceId,
-          // vidoeIndex+1>len?
-          isFrontCamera
-            ? videoDevices[0].deviceId
-            : videoDevices[3].deviceId,
+          videoSource: isFrontCamera ? frontCamera.deviceId : backCamera.deviceId,
           publishAudio: true,
           publishVideo: true,
           mirror: isFrontCamera,
@@ -231,18 +230,21 @@ const OpenVideo = () => {
           frameRate: 30,
           insertMode: "APPEND",
         });
-
+  
         setIsFrontCamera(!isFrontCamera);
-
+  
         session.current.unpublish(publisher.current).then(() => {
           publisher.current = newPublisher;
           session.current.publish(newPublisher).then(() => {
             publisher.current.addVideoElement(videoRef.current);
           });
         });
+      } else {
+        console.error("Front or back camera not found");
       }
     });
   };
+  
 
   const { listen, listening, stop } = useSpeechRecognition({
     onResult: (result) => {
