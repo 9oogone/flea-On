@@ -82,12 +82,10 @@ public class ChatBotApiController {
     public ResponseEntity<?> changeTradeTime(@AuthenticationPrincipal CustomOAuth2User principal, @RequestBody ChangeTimeRequest changeTimeRequest) {
         try {
             String userEmail = principal.getEmail(); // 현재 인증된 사용자의 이메일 가져오기
-
             User user = userService.findByEmail(userEmail); // 이메일로 userId 가져오기
             if (user == null) {
                 return new ResponseEntity<>("사용자를 찾을 수 없습니다.", HttpStatus.UNAUTHORIZED);
             }
-
             chatBotService.updateTradeTime(changeTimeRequest);
             return ResponseEntity.ok().build();
         }
