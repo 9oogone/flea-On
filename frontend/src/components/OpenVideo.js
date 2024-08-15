@@ -23,8 +23,9 @@ import FlipCameraAndroidIcon from "@mui/icons-material/FlipCameraAndroid";
 import SendIcon from "@mui/icons-material/Send";
 import CloseIcon from "@mui/icons-material/Close";
 import swipeLeftImage from "../assets/images/swipe_left.svg";
-
+import Filter from "badwords-ko";
 const OpenVideo = () => {
+  const filter = new Filter();
   const videoRef = useRef(null);
   const [isRecording, setIsRecording] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -352,7 +353,7 @@ const OpenVideo = () => {
               )
                 .toString()
                 .padStart(2, "0");
-              const messageSeconds = Math.floor(timeDifferenceInMs % 60000)
+              const messageSeconds = Math.floor(timeDifferenceInMs / 1000)
                 .toString()
                 .padStart(2, "0");
 
@@ -492,7 +493,7 @@ const OpenVideo = () => {
       const messageData = {
         type: 1,
         userId: user.userId,
-        message: newMessage,
+        message: filter.clean(newMessage),
         from: user.nickname,
         profile: user.profilePicture,
         time: new Date(),
@@ -775,6 +776,7 @@ const OpenVideo = () => {
               )}
             </Box>
           </Box>
+
           <Box
             sx={{
               backgroundColor: "rgba(0, 0, 0, 0.12)",
