@@ -28,7 +28,7 @@ const theme = createTheme({
       main: "#ffffff",
     },
     orange: {
-      main: "#FF5757",
+      main: "rgba(255, 87, 87, 0.9)",
     },
   },
 });

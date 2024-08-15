@@ -43,7 +43,7 @@ const ScrapList = () => {
           justifyContent: "center",
           position: "fixed",
           width: "100%",
-          pt: 6,
+          pt: 2,
           pb: 3,
           left: 0,
           backgroundColor: "white",
@@ -72,7 +72,7 @@ const ScrapList = () => {
       </Box>
 
       <Grid>
-        <Grid container sx={{ paddingTop: "12vh" }}>
+        <Grid container sx={{ paddingTop: 10 }}>
           {selectedTab === "live" && <ScrapLive items={liveScrap} />}
           {selectedTab === "shorts" && <ScrapShorts items={shortsScrap} />}
           <Box

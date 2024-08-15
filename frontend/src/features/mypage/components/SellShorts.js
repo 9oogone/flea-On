@@ -21,7 +21,7 @@ const Shorts = ({ items }) => {
 
   return (
     <Box>
-      <Box sx={{ pb: 4 }}>
+      <Box>
         {sell?.length === 0 && sellDone?.length === 0 ? (
           <Box
             sx={{
@@ -38,15 +38,23 @@ const Shorts = ({ items }) => {
             </Typography>
           </Box>
         ) : (
-          <Box>
+          <Box
+            sx={{
+              width: "100%",
+              justifyContent: "center",
+              alignItems: "center",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
             <Box
               sx={{
-                width: "100%",
+                width: "90%",
                 pb: 1,
-                borderBottom: "1px solid rgba(84, 84, 86, 0.34)",
                 backgroundColor: "white",
+                borderBottom: "1px solid rgba(84, 84, 86, 0.34)",
                 position: "sticky",
-                top: "109px",
+                top: "79px",
                 zIndex: 100,
               }}
             >
@@ -59,9 +67,8 @@ const Shorts = ({ items }) => {
                 <Box
                   key={index}
                   sx={{
-                    width: "100%",
+                    width: "90%",
                     height: "100%",
-                    // px: 2,
                     py: 2,
                     borderTop: "0.33px solid rgba(84, 84, 86, 0.34)",
                     justifyContent: "center",
@@ -75,7 +82,7 @@ const Shorts = ({ items }) => {
                       justifyContent: "space-between",
                       alignItems: "center",
                       display: "flex",
-                      width: "90%",
+                      width: "95%",
                       gap: 1,
                     }}
                   >
@@ -105,7 +112,8 @@ const Shorts = ({ items }) => {
                             alignItems: "center",
                             display: "flex",
                             backgroundColor: item.tradeNow
-                              ? "#FF5757"
+                              ? // ? "#FF5757"
+                                "rgba(255, 87, 87, 0.9)"
                               : "#FF0B55",
                           }}
                         >
@@ -122,7 +130,7 @@ const Shorts = ({ items }) => {
                         <Typography
                           sx={{
                             color: "black",
-                            fontSize: 18,
+                            fontSize: 17,
                             wordWrap: "break-word",
                           }}
                         >
@@ -137,7 +145,7 @@ const Shorts = ({ items }) => {
                           wordWrap: "break-word",
                         }}
                       >
-                        {item.productName} ·
+                        {item.dongName} ·
                         {getRelativeDate(format(item.liveDate, "yyyy-MM-dd"))}
                       </Typography>
                     </Box>
@@ -152,7 +160,7 @@ const Shorts = ({ items }) => {
                     >
                       <Typography
                         sx={{
-                          pr: 2,
+                          pr: 1,
                           fontSize: 17,
                         }}
                       >
@@ -188,9 +196,8 @@ const Shorts = ({ items }) => {
                 <Box
                   key={index}
                   sx={{
-                    width: "100%",
+                    width: "90%",
                     height: "100%",
-                    // px: 2,
                     py: 2,
                     borderTop: "0.33px solid rgba(84, 84, 86, 0.34)",
                     justifyContent: "center",
@@ -204,7 +211,7 @@ const Shorts = ({ items }) => {
                       justifyContent: "space-between",
                       alignItems: "center",
                       display: "flex",
-                      width: "90%",
+                      width: "95%",
                       gap: 1,
                     }}
                   >
@@ -250,7 +257,7 @@ const Shorts = ({ items }) => {
                         <Typography
                           sx={{
                             color: "black",
-                            fontSize: 18,
+                            fontSize: 17,
                           }}
                         >
                           {item.productName}
@@ -278,7 +285,7 @@ const Shorts = ({ items }) => {
                     >
                       <Typography
                         sx={{
-                          pr: 2,
+                          pr: 1,
                           fontSize: 17,
                         }}
                       >

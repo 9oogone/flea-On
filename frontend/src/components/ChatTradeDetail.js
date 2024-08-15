@@ -173,13 +173,13 @@ const ChatTradeDetail = ({ chatID, isOpen, onClose }) => {
             sx={{
               width: "100%",
               backgroundColor:
-                product.currentBuyerId == 0
+                product.currentBuyerId === 0
                   ? "#FF0B55"
                   : product.reservationCount > 5
                   ? "gray"
-                  : product.current == -3
+                  : product.current === -3
                   ? "red"
-                  : "#FF5757",
+                  : "rgba(255, 87, 87, 0.9)",
               borderRadius: 2,
               justifyContent: "center",
               alignItems: "center",
