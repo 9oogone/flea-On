@@ -50,6 +50,9 @@ public class AlarmService {
                 .date(alarm.getDate())
                 .profilePic(alarm.getProfilePic())
                 .isRead(alarm.isRead())
+                .type(alarm.getType())
+                .liveId(alarm.getLiveId())
+                .productId(alarm.getProductId())
                 .build();
     }
 }

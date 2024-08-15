@@ -5,12 +5,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class NextAlarmRequest {
-    int nextId;
-    int liveId;
-    int productId;
-    int type;
+@Builder
+public class ProductIdsRequest {
+    List<Integer> productIds;
 }

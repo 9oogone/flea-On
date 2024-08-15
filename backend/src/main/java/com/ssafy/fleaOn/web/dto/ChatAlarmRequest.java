@@ -12,4 +12,7 @@ public class ChatAlarmRequest {
     int recipient;
     int chatId;
     String content;
+    int type;
+    int productId;
+    int liveId;
 }
