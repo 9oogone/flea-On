@@ -97,12 +97,12 @@ const UpcomingModal = ({
                 <Button
                   onClick={handleEditLive}
                   sx={{
-                    backgroundColor: "#FF0B55",
+                    backgroundColor: "orange",
                     color: "white",
                     letterSpacing: "-0.5px",
                   }}
                 >
-                  라이브 수정하기
+                  나의 라이브
                 </Button>
               ) : (
                 <Button

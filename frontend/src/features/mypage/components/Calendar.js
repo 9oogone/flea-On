@@ -31,7 +31,7 @@ const Calendar = () => {
   const weekTradeInfo = useSelector((state) => state.calendar.week.tradeInfo);
   const weekTradeList = useSelector((state) => state.calendar.week.tradeList);
   const dateTrade = useSelector((state) => state.calendar.date.data);
-
+  console.log(dateTrade);
   const [currentWeek, setCurrentWeek] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(null);
 
@@ -91,7 +91,28 @@ const Calendar = () => {
     if (startDateStr !== undefined) {
       dispatch(fetchCalendarWeek({ email: user.email, today: startDateStr }));
     }
-  }, [startDateStr]);
+  }, [startDateStr, dispatch]);
+
+  useEffect(() => {
+    if (selectedDate) {
+      dispatch(
+        fetchCalendarDate({ email: user.email, tradeDate: selectedDate })
+      );
+    }
+  }, [selectedDate, dispatch]);
+
+  useEffect(() => {
+    if (dateTrade) {
+      // 완료된 거래 수 업데이트
+      const totalTrades = dateTrade?.dayTradeResponses?.length || 0;
+      const completedTrades = dateTrade?.tradeDoneSchedules?.length || 0;
+
+      // 아이콘 변경 로직
+      if (totalTrades === completedTrades) {
+        // 아이콘 변경 코드
+      }
+    }
+  }, [dateTrade]);
 
   return (
     <Box className="calendar-container">

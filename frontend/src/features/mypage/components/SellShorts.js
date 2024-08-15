@@ -34,7 +34,7 @@ const Shorts = ({ items }) => {
             }}
           >
             <Typography sx={{ textAlign: "center" }}>
-              아직 판매 쇼츠가 없어요.
+              판매 쇼츠가 없어요.
             </Typography>
           </Box>
         ) : (

@@ -1,7 +1,7 @@
 // src/features/mypage/calendarSlice.js
 
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchCalendarWeek, fetchCalendarDate } from "./actions";
+import { fetchCalendarWeek, fetchCalendarDate, confirmTrade } from "./actions";
 
 const initialState = {
   week: {
@@ -18,6 +18,11 @@ const initialState = {
   date: {
     loading: false,
     data: {},
+    error: null,
+  },
+  confirm: {
+    loading: false,
+    success: false,
     error: null,
   },
 };
@@ -49,6 +54,18 @@ const calendarSlice = createSlice({
       .addCase(fetchCalendarDate.rejected, (state, action) => {
         state.date.loading = false;
         state.date.error = action.error.message;
+      })
+      // 거래 확정 처리
+      .addCase(confirmTrade.pending, (state) => {
+        state.confirm.loading = true;
+      })
+      .addCase(confirmTrade.fulfilled, (state, action) => {
+        state.confirm.loading = false;
+        state.confirm.success = true;
+      })
+      .addCase(confirmTrade.rejected, (state, action) => {
+        state.confirm.loading = false;
+        state.confirm.error = action.error.message;
       });
   },
 });

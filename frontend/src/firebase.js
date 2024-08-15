@@ -42,30 +42,36 @@ export function requestPermission() {
   });
 }
 
+let messageHandlerRegistered = false;
+
 export function onMessageListener() {
   return new Promise((resolve) => {
-    onMessage(messaging, (payload) => {
-      console.log("Message received. ", payload);
+    if (!messageHandlerRegistered) {
+      onMessage(messaging, (payload) => {
+        console.log("Message received. ", payload);
 
-      const notificationOptions = {
-        body: payload.data.body,
-        icon: "../public/icons/icon-144x144.png",
-        data: {
-          url: payload.data.redirect_url, // redirect_url 추가
-        },
-      };
+        const notificationOptions = {
+          body: payload.data.body,
+          icon: "../public/icons/icon-144x144.png",
+          data: {
+            url: payload.data.redirect_url,
+          },
+        };
 
-      const notification = new Notification(
-        payload.data.title,
-        notificationOptions
-      );
+        const notification = new Notification(
+          payload.data.title,
+          notificationOptions
+        );
 
-      notification.onclick = (event) => {
-        event.preventDefault(); // Prevent the browser from focusing the Notification's tab
-        window.open(notificationOptions.data.url, "_blank");
-      };
+        notification.onclick = (event) => {
+          event.preventDefault(); // Prevent the browser from focusing the Notification's tab
+          window.open(notificationOptions.data.url, "_blank");
+        };
 
-      resolve(payload);
-    });
+        resolve(payload);
+      });
+
+      messageHandlerRegistered = true;
+    }
   });
 }

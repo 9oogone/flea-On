@@ -5,7 +5,11 @@ import dayjs from "dayjs";
 import "dayjs/locale/ko";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { TimePicker, DatePicker, DesktopDateTimePicker } from "@mui/x-date-pickers";
+import {
+  TimePicker,
+  DatePicker,
+  DesktopDateTimePicker,
+} from "@mui/x-date-pickers";
 import TextField from "@mui/material/TextField";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import IconButton from "@mui/material/IconButton";
@@ -24,11 +28,15 @@ const SellerformSelect = ({ onClose }) => {
   const [thumbnail, setThumbnail] = useState(null);
   const [thumbnailPreview, setThumbnailPreview] = useState(null);
   const [startDate, setStartDate] = useState(dayjs());
-  const [transactionTimes, setTransactionTimes] = useState([{ date: dayjs(), from: dayjs(), to: dayjs() }]);
+  const [transactionTimes, setTransactionTimes] = useState([
+    { date: dayjs(), from: dayjs(), to: dayjs() },
+  ]);
   const [address, setAddress] = useState("");
   const [bcode, setBcode] = useState("");
   const [detailedAddress, setDetailedAddress] = useState("");
-  const [items, setItems] = useState([{ name: "", price: "", firstCategoryId: 0, secondCategoryId: 0 }]);
+  const [items, setItems] = useState([
+    { name: "", price: "", firstCategoryId: 0, secondCategoryId: 0 },
+  ]);
 
   const handleThumbnailChange = (event) => {
     const file = event.target.files[0];
@@ -39,7 +47,10 @@ const SellerformSelect = ({ onClose }) => {
   };
 
   const handleAddTransactionTime = () => {
-    setTransactionTimes([...transactionTimes, { date: dayjs(), from: dayjs(), to: dayjs() }]);
+    setTransactionTimes([
+      ...transactionTimes,
+      { date: dayjs(), from: dayjs(), to: dayjs() },
+    ]);
   };
 
   const handleRemoveTransactionTime = (index) => {
@@ -56,7 +67,11 @@ const SellerformSelect = ({ onClose }) => {
   };
 
   const handleOpenAddressSearch = () => {
-    window.open("/address-search", "popup", "width=600,height=400,scrollbars=yes,resizable=yes");
+    window.open(
+      "/address-search",
+      "popup",
+      "width=600,height=400,scrollbars=yes,resizable=yes"
+    );
   };
 
   const handleInputChange = (index, field, value) => {
@@ -78,7 +93,10 @@ const SellerformSelect = ({ onClose }) => {
   };
 
   const handleAddItem = () => {
-    setItems([...items, { name: "", price: "", firstCategoryId: 0, secondCategoryId: 0 }]);
+    setItems([
+      ...items,
+      { name: "", price: "", firstCategoryId: 0, secondCategoryId: 0 },
+    ]);
   };
 
   const handleRemoveItem = (index) => {
@@ -125,7 +143,7 @@ const SellerformSelect = ({ onClose }) => {
     const liveData = {
       title: document.getElementById("outlined-basic").value,
       liveDate: dayjs(startDate).format("YYYY-MM-DDTHH:mm:ss"),
-      liveThumbnail: "", 
+      liveThumbnail: "",
       tradePlace: `${address} ${detailedAddress}`,
       regionCode: bcode,
       product: items.map((item) => ({
@@ -136,20 +154,23 @@ const SellerformSelect = ({ onClose }) => {
       })),
       liveTradeTime: formatLiveTradeTimes(transactionTimes),
     };
-
+    console.log(liveData);
     const formData = new FormData();
     formData.append("photoFile", thumbnail);
-    formData.append("data", new Blob([JSON.stringify(liveData)], { type: "application/json" }));
+    formData.append(
+      "data",
+      new Blob([JSON.stringify(liveData)], { type: "application/json" })
+    );
 
     // 디버깅 출력
     for (let pair of formData.entries()) {
-      console.log(pair[0] + ', ' + pair[1]);
+      console.log(pair[0] + ", " + pair[1]);
     }
 
     try {
       await dispatch(createLiveBroadcast(formData));
       alert("라이브 방송이 성공적으로 등록되었습니다!");
-      onClose(); 
+      onClose();
     } catch (error) {
       console.error("에러 발생:", error);
       alert("라이브 방송 등록 중 에러가 발생했습니다.");
@@ -166,7 +187,9 @@ const SellerformSelect = ({ onClose }) => {
           <div className={styles.input}>
             <label className={styles.label}></label>
           </div>
-          <div style={{ display: "flex", alignItems: "flex-start", gap: "10px" }}>
+          <div
+            style={{ display: "flex", alignItems: "flex-start", gap: "10px" }}
+          >
             <div style={{ flex: 1 }}>
               <TextField
                 id="outlined-basic"
@@ -177,13 +200,18 @@ const SellerformSelect = ({ onClose }) => {
                 sx={{ marginBottom: "10px", marginTop: "10px" }}
               />
               <div className="livestarttime" style={{ marginBottom: "10px" }}>
-                <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="ko">
+                <LocalizationProvider
+                  dateAdapter={AdapterDayjs}
+                  adapterLocale="ko"
+                >
                   <DemoContainer components={["DesktopDateTimePicker"]}>
                     <DesktopDateTimePicker
                       label="라이브 방송 시간"
                       value={startDate}
                       onChange={(newValue) => setStartDate(newValue)}
-                      renderInput={(params) => <TextField {...params} fullWidth />}
+                      renderInput={(params) => (
+                        <TextField {...params} fullWidth />
+                      )}
                       ampm={true}
                       disablePast={true}
                       slotProps={{
@@ -284,24 +312,41 @@ const SellerformSelect = ({ onClose }) => {
           <div className={styles.sellerTimeContainer}>
             <div className={styles.sellerTime}>
               <div className={styles.div1}>거래 가능 시간</div>
-              <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="ko">
+              <LocalizationProvider
+                dateAdapter={AdapterDayjs}
+                adapterLocale="ko"
+              >
                 {transactionTimes.map((time, index) => (
-                  <div key={index} className={styles.dateParent} style={{ marginBottom: "20px" }}>
+                  <div
+                    key={index}
+                    className={styles.dateParent}
+                    style={{ marginBottom: "20px" }}
+                  >
                     <div>
                       <DatePicker
                         label="날짜"
                         value={time.date}
-                        onChange={(newValue) => handleTransactionTimeChange(index, "date", newValue)}
+                        onChange={(newValue) =>
+                          handleTransactionTimeChange(index, "date", newValue)
+                        }
                         renderInput={(params) => <TextField {...params} />}
                         inputFormat="YYYY년 MM월 DD일"
                       />
                     </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "10px",
+                      }}
+                    >
                       <DemoItem>
                         <TimePicker
                           label="부터"
                           value={time.from}
-                          onChange={(newValue) => handleTransactionTimeChange(index, "from", newValue)}
+                          onChange={(newValue) =>
+                            handleTransactionTimeChange(index, "from", newValue)
+                          }
                           renderInput={(params) => <TextField {...params} />}
                         />
                       </DemoItem>
@@ -310,12 +355,17 @@ const SellerformSelect = ({ onClose }) => {
                         <TimePicker
                           label="까지"
                           value={time.to}
-                          onChange={(newValue) => handleTransactionTimeChange(index, "to", newValue)}
+                          onChange={(newValue) =>
+                            handleTransactionTimeChange(index, "to", newValue)
+                          }
                           renderInput={(params) => <TextField {...params} />}
                         />
                       </DemoItem>
                       {transactionTimes.length > 1 && (
-                        <IconButton onClick={() => handleRemoveTransactionTime(index)} style={{ marginLeft: "10px" }}>
+                        <IconButton
+                          onClick={() => handleRemoveTransactionTime(index)}
+                          style={{ marginLeft: "10px" }}
+                        >
                           <CloseIcon />
                         </IconButton>
                       )}
@@ -329,7 +379,11 @@ const SellerformSelect = ({ onClose }) => {
             <Button
               color="primary"
               onClick={handleAddTransactionTime}
-              startIcon={<AddCircleOutlineIcon style={{ color: "gray", fontSize: "30" }} />}
+              startIcon={
+                <AddCircleOutlineIcon
+                  style={{ color: "gray", fontSize: "30" }}
+                />
+              }
               style={{ marginBottom: "10px", display: "flex" }}
             ></Button>
           </div>
@@ -346,7 +400,9 @@ const SellerformSelect = ({ onClose }) => {
                   <TextField
                     label="상품 이름"
                     value={item.name}
-                    onChange={(e) => handleInputChange(index, "name", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange(index, "name", e.target.value)
+                    }
                     variant="outlined"
                     size="small"
                     className={styles.itemName}
@@ -355,13 +411,18 @@ const SellerformSelect = ({ onClose }) => {
                   <TextField
                     label="가격"
                     value={item.price}
-                    onChange={(e) => handleInputChange(index, "price", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange(index, "price", e.target.value)
+                    }
                     variant="outlined"
                     size="small"
                     className={styles.itemPrice}
                   />
                   {items.length > 1 && (
-                    <IconButton onClick={() => handleRemoveItem(index)} style={{ marginLeft: "10px" }}>
+                    <IconButton
+                      onClick={() => handleRemoveItem(index)}
+                      style={{ marginLeft: "10px" }}
+                    >
                       <CloseIcon />
                     </IconButton>
                   )}
