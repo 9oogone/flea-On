@@ -29,117 +29,127 @@ const Waits = ({ items }) => {
           </Typography>
         </Box>
       ) : (
-        items.map((item, index) => {
-          return (
-            <Box
-              key={item.index}
-              sx={{
-                width: "100%",
-                height: "100%",
-                py: 2,
-                borderBottom: "0.33px solid rgba(84, 84, 86, 0.34)",
-                justifyContent: "center",
-                alignItems: "center",
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
+        <Box
+          sx={{
+            width: "100%",
+            justifyContent: "center",
+            alignItems: "center",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          {items.map((item, index) => {
+            return (
               <Box
+                key={index}
                 sx={{
-                  justifyContent: "space-between",
+                  width: "90%",
+                  height: "100%",
+                  py: 2,
+                  borderBottom: "0.33px solid rgba(84, 84, 86, 0.34)",
+                  justifyContent: "center",
                   alignItems: "center",
                   display: "flex",
-                  width: "90%",
+                  flexDirection: "column",
                 }}
               >
                 <Box
                   sx={{
-                    flexDirection: "column",
-                    justifyContent: "flex-start",
-                    alignItems: "flex-start",
+                    justifyContent: "space-between",
+                    alignItems: "center",
                     display: "flex",
-                    gap: 0.5,
+                    width: "95%",
                   }}
                 >
                   <Box
                     sx={{
-                      justifyContent: "center",
-                      alignItems: "center",
-                      gap: 0.6,
+                      flexDirection: "column",
+                      justifyContent: "flex-start",
+                      alignItems: "flex-start",
                       display: "flex",
+                      gap: 0.5,
                     }}
                   >
+                    <Box
+                      sx={{
+                        justifyContent: "center",
+                        alignItems: "center",
+                        gap: 0.6,
+                        display: "flex",
+                      }}
+                    >
+                      <Typography
+                        sx={{
+                          fontSize: 18,
+                          color: "black",
+                          wordWrap: "break-word",
+                        }}
+                      >
+                        {item.productName}
+                      </Typography>
+                      <Box
+                        sx={{
+                          width: 60,
+                          height: 24,
+                          borderRadius: 2,
+                          justifyContent: "center",
+                          alignItems: "center",
+                          display: "flex",
+                        }}
+                      ></Box>
+                    </Box>
                     <Typography
                       sx={{
-                        fontSize: 18,
-                        color: "black",
+                        alignSelf: "stretch",
+                        color: "rgba(128, 128, 128, 0.55)",
+                        fontSize: 11,
                         wordWrap: "break-word",
                       }}
                     >
-                      {item.productName}
+                      {item.dongName}
+                      {/* {getRelativeDate(item.trade_date)} */}
                     </Typography>
-                    <Box
-                      sx={{
-                        width: 60,
-                        height: 24,
-                        borderRadius: 2,
-                        justifyContent: "center",
-                        alignItems: "center",
-                        display: "flex",
-                      }}
-                    ></Box>
                   </Box>
-                  <Typography
-                    sx={{
-                      alignSelf: "stretch",
-                      color: "rgba(128, 128, 128, 0.55)",
-                      fontSize: 11,
-                      wordWrap: "break-word",
-                    }}
-                  >
-                    {item.dongName}
-                    {/* {getRelativeDate(item.trade_date)} */}
-                  </Typography>
-                </Box>
-                <Box
-                  sx={{
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    alignItems: "flex-end",
-                    gap: 0.5,
-                    display: "flex",
-                  }}
-                >
-                  <Typography
-                    sx={{
-                      fontSize: 17,
-                    }}
-                  >
-                    {formatPrice(item.productPrice)}
-                  </Typography>
                   <Box
                     sx={{
-                      justifyContent: "flex-start",
-                      alignItems: "center",
+                      flexDirection: "column",
+                      justifyContent: "center",
+                      alignItems: "flex-end",
+                      gap: 0.5,
                       display: "flex",
                     }}
                   >
                     <Typography
                       sx={{
-                        color: "black",
-                        fontSize: 12,
-                        letterSpacing: "0.1px",
+                        fontSize: 17,
                       }}
                     >
-                      {/* 쇼츠보기 */}
+                      {formatPrice(item.productPrice)}
                     </Typography>
-                    {/* <ChevronRight /> */}
+                    <Box
+                      sx={{
+                        justifyContent: "flex-start",
+                        alignItems: "center",
+                        display: "flex",
+                      }}
+                    >
+                      <Typography
+                        sx={{
+                          color: "black",
+                          fontSize: 12,
+                          letterSpacing: "0.1px",
+                        }}
+                      >
+                        {/* 쇼츠보기 */}
+                      </Typography>
+                      {/* <ChevronRight /> */}
+                    </Box>
                   </Box>
                 </Box>
               </Box>
-            </Box>
-          );
-        })
+            );
+          })}
+        </Box>
       )}
     </Box>
   );
