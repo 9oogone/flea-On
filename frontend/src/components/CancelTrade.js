@@ -1,38 +1,45 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
-import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from '@mui/material';
-import baseAxios from '../utils/httpCommons';
-import Spinner from "../components/Spinner.js"
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Button,
+} from "@mui/material";
+import baseAxios from "../utils/httpCommons";
+import Spinner from "../components/Spinner.js";
 
-
-const CancelTrade = ({ isOpen, onClose, chatID }) => {
-  const [loading, setLoading] = useState(false)
+const CancelTrade = ({ isOpen, onClose, chatID, products }) => {
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const baseURL = baseAxios();
   async function cancelTrade() {
     try {
-        setLoading(true)
-        await baseURL.delete("fleaon/purchase/break-trade/"+chatID);
-        setLoading(false)
-        navigate("/chat",{replace:true})
-        onClose();
+      setLoading(true);
+      await baseURL.delete("fleaon/purchase/break-trade/" + chatID);
+      await baseURL.post("/push/cancelAlarm", { productIds: products });
+      setLoading(false);
+      navigate("/chat", { replace: true });
+      onClose();
     } catch (error) {
-        console.error("Error cancelling trade:", error);
-        throw error;
+      console.error("Error cancelling trade:", error);
+      throw error;
     }
-}
+  }
 
   return (
-    <Dialog open={isOpen} onClose={onClose} aria-labelledby="cancel-trade-dialog-title">
+    <Dialog
+      open={isOpen}
+      onClose={onClose}
+      aria-labelledby="cancel-trade-dialog-title"
+    >
       <DialogTitle id="cancel-trade-dialog-title">거래 파기</DialogTitle>
       <DialogContent>
-        <DialogContentText>
-          거래를 파기하시겠습니까?
-        </DialogContentText>
-        <DialogContentText>
-          파기된 거래는 재개할 수 없습니다.
-        </DialogContentText>
+        <DialogContentText>거래를 파기하시겠습니까?</DialogContentText>
+        <DialogContentText>파기된 거래는 재개할 수 없습니다.</DialogContentText>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="primary">
@@ -42,11 +49,11 @@ const CancelTrade = ({ isOpen, onClose, chatID }) => {
           확인
         </Button>
       </DialogActions>
-      {loading?(
+      {loading ? (
         <div>
-        <Spinner/>
-      </div>
-        ):(null)}
+          <Spinner />
+        </div>
+      ) : null}
     </Dialog>
   );
 };

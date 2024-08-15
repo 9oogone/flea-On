@@ -155,7 +155,8 @@ const CustomerDateTimeSelector = ({
         // 요청 성공 시 처리
         const data = {
           chattingId: response.data,
-          contents: `안녕하세요 ${user.nickname}님!<br/>
+          contents: `[System Message]<br/>
+          안녕하세요 ${user.nickname}님!<br/>
         ${seller.nickname}의 마켓에 오신 것을 환영해요.<br/><br/>
           ✨ 거래 안내 <br/>
           거래 시간 :  ${selectedDate} ${selectedTime}<br/>
@@ -164,7 +165,7 @@ const CustomerDateTimeSelector = ({
           늦지 않게 약속된 장소에서 만나요~`,
           bot: true,
         };
-        await baseAxios().post("/fleaon/chat/messages", data);
+        await baseAxios().post("/fleaon/chat/messagesFromSeller", data);
         handleClose();
         console.log(response);
         console.log({

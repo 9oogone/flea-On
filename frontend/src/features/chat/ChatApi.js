@@ -8,7 +8,7 @@ export async function sendMessageDB(chatId, contents) {
 
     // 메시지가 [System Message]로 시작하는지 확인
     const isSystemMessage = contents.startsWith("[System Message]");
-    
+
     const data = {
       chattingId: chatId,
       contents: contents,
@@ -24,7 +24,6 @@ export async function sendMessageDB(chatId, contents) {
     throw error;
   }
 }
-
 
 export async function getTradeDetail(chatId) {
   try {
@@ -43,15 +42,12 @@ export async function changeTradeTime(chatId, tradeDate, tradeTime) {
   try {
     // 초 추가
     const tradeTimeWithSeconds = `${tradeTime}:00`;
-
-    const res = await baseURL.put(
-      `/fleaon/chatbot/changeTime/`,
-      {
-        chatId,
-        tradeDate,
-        tradeTime: tradeTimeWithSeconds
-      }
-    );
+    console.log(tradeDate, tradeTimeWithSeconds);
+    const res = await baseURL.put(`/fleaon/chatbot/changeTime`, {
+      chatId: Number(chatId),
+      tradeDate,
+      tradeTime: tradeTimeWithSeconds,
+    });
     console.log(res);
     return res.data;
   } catch (error) {

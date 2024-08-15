@@ -90,12 +90,13 @@ const ChatTradeDetail = ({ chatID, isOpen, onClose }) => {
   };
   const handleTradeCancel = async (id) => {
     //구매취소 로직
-    const response = await baseAxios().delete(`/fleaon/purchase/cancel`, {
+    await baseAxios().delete(`/fleaon/purchase/cancel`, {
       data: {
         productId: id,
         userId: user.userId,
       },
     });
+    await baseAxios().post("/push/cancelAlarm", { productIds: [id] });
   };
 
   const handleStatusClick = async (

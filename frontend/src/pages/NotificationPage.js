@@ -28,6 +28,15 @@ const Notification = () => {
   const handleBackButtonClick = () => {
     navigate("/");
   };
+  const handleAlarmClick = (alarm)=>{
+    if(alarm.type==1){
+      //구매 취소
+
+    }else if(alarm.type==2){
+      //스크랩 방송 알림
+      navigate("/live/"+alarm.liveId)
+    }
+  }
 
   return (
     <Box sx={{ minHeight: "100vh", bgcolor: "rgba(0, 0, 0, 0.03)" }}>
@@ -94,6 +103,7 @@ const Notification = () => {
                 width: "80%",
                 zIndex: 1,
               }}
+              onClick={() => handleAlarmClick(alarm)}  
             >
               <Avatar
                 alt="Profile Image"

@@ -24,6 +24,8 @@ import SendIcon from "@mui/icons-material/Send";
 import CloseIcon from "@mui/icons-material/Close";
 import swipeLeftImage from "../assets/images/swipe_left.svg";
 import ReplayIcon from "@mui/icons-material/Replay";
+import { formatPrice } from "../utils/cssUtils";
+
 const OpenVideo = () => {
   const videoRef = useRef(null);
   const [isRecording, setIsRecording] = useState(false);
@@ -34,7 +36,6 @@ const OpenVideo = () => {
   const [productList, setProductList] = useState([]);
   const [currentProductIndex, setCurrentProductIndex] = useState(0);
   const [selectedProductId, setSelectedProductId] = useState(null);
-  const [selectedProduct, setSelectedProduct] = useState({});
   const [isFirst, setIsFirst] = useState(true);
   const dispatch = useDispatch();
   const { sessionName } = useParams();
@@ -242,6 +243,7 @@ const OpenVideo = () => {
       const productsWithStatus = products.map((product) => ({
         ...product,
         status: 0,
+        shortsId: 0,
       }));
       for (let index = 0; index < productsWithStatus.length; index++) {
         const product = productsWithStatus[index];
@@ -379,7 +381,10 @@ const OpenVideo = () => {
                 type: "chat",
               });
             })
-            .catch((error) => {});
+            .catch((error) => {
+              console.log(error);
+              console.log(data);
+            });
         })
         .catch((error) => {
           dispatch(unSetLoading());
@@ -411,7 +416,6 @@ const OpenVideo = () => {
 
   const handleBuy = async (productId, productIndex) => {
     setSelectedProductId(productId);
-    setSelectedProduct(productList[productIndex]);
     try {
       const response = await baseAxios().post("/fleaon/purchase/buy", {
         productId: productId,
@@ -663,7 +667,7 @@ const OpenVideo = () => {
                 <Box sx={{ color: "white" }}>
                   <Typography variant="h5">{currentProduct.name}</Typography>
                   <Typography variant="body1">
-                    {currentProduct.price}원
+                    {formatPrice(currentProduct.price)}
                   </Typography>
                 </Box>
               )}
@@ -822,7 +826,7 @@ const OpenVideo = () => {
                     {product.name}
                   </Typography>
                   <Typography variant="body1" sx={{ color: "white" }}>
-                    가격: {product.price}원
+                    가격: {formatPrice(product.price)}
                   </Typography>
                 </Box>
                 <Box>
