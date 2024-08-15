@@ -114,12 +114,14 @@ public class ShortsService {
             Optional<Shorts> shorts = shortsRepository.findById(shortsId);
             Map<String, Object> shortsDetails = new HashMap<>();
             if (shorts.isPresent()) {
+                long reservationCount = shortsRepository.countByProduct_productId(shorts.get().getProduct().getProductId());
                 shortsDetails.put("product_id", shorts.get().getProduct().getProductId());
                 shortsDetails.put("shorts_id", shorts.get().getShortsId());
                 shortsDetails.put("upload_date", shorts.get().getUploadDate());
                 shortsDetails.put("thumbnail", shorts.get().getShortsThumbnail());
                 shortsDetails.put("video_address", shorts.get().getVideoAddress());
                 shortsDetails.put("user_id", shorts.get().getUser().getUserId());
+                shortsDetails.put("reservation", reservationCount);
             }
             return shortsDetails;
         }
