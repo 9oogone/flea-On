@@ -110,7 +110,7 @@ public class FcmService {
         MulticastMessage message = MulticastMessage.builder()
                 .putData("body","방송 참여하기")
                 .putData("title",title+" 방송이 시작되었습니다!")
-                .putData("redirect_url", "https://fleaon.shop/mypage/scrap-list")
+                .putData("redirect_url", "https://fleaon.shop/notifications")
                 .putData("liveId", String.valueOf(liveId))
                 .putData("productId", "0")
                 .addAllTokens(validTokens)
