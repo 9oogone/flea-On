@@ -148,7 +148,7 @@ const ChatRoom = () => {
     return <div>Error: {error}</div>;
   }
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
     if (session.current && newMessage.trim() !== "") {
       const messageData = {
         message: filter.clean(newMessage),
@@ -162,42 +162,104 @@ const ChatRoom = () => {
         data: JSON.stringify(messageData),
         type: "chat",
       });
-      sendMessageDB(chatID, filter.clean(newMessage));
+      await sendMessageDB(chatID, filter.clean(newMessage));
+      setMessageList((prevMessages) => [
+        ...prevMessages,
+        {
+          chatContent: filter.clean(newMessage),
+          writerId: user.userId,
+          isSent: true,
+          chatTime: new Date().toISOString(),
+          isSystemMessage: false,
+          buttonsDisabled: false,
+        },
+      ]);
       setNewMessage("");
     }
   };
 
   const handleAcceptTimeChange = async (messageId, newTime) => {
-    // 문자열에서 날짜와 시간 부분 추출
-    const dateTimeString = newTime.split(": ")[1];
+    console.log("이게 가:", newTime);
 
-    // 날짜와 시간을 분리
-    const [tradeDate, tradeTime] = dateTimeString.split(" ");
+    // 희망 거래 시간만 추출
+    const match = newTime.match(
+      /(\d{2}월 \d{2}일 (오전|오후) \d{2}시 \d{2}분)/
+    );
+    const dateTimeString = match ? match[1] : null;
+
+    function transformDateTime(dateTimeString) {
+      if (!dateTimeString) {
+        console.error("dateTimeString is null or undefined");
+        return { tradeDate: null, tradeTime: null };
+      }
+
+      const datePart = dateTimeString.match(/\d{2}월 \d{2}일/)[0];
+      const period = dateTimeString.match(/오전|오후/)[0];
+      const timePart = dateTimeString.match(/\d{2}시 \d{2}분/)[0];
+
+      const [month, day] = datePart
+        .split("월 ")
+        .map((part) => part.replace("일", "").trim());
+      let [hour, minute] = timePart
+        .split("시 ")
+        .map((part) => part.replace("분", "").trim());
+
+      const now = new Date();
+      const currentYear = now.getFullYear();
+      const currentMonth = now.getMonth() + 1; // getMonth() returns 0-based month
+
+      let year = currentYear;
+      if (parseInt(month, 10) < currentMonth) {
+        year += 1; // Next year if the month is earlier than the current month
+      }
+
+      hour = parseInt(hour, 10);
+      if (period === "오후" && hour !== 12) {
+        hour += 12; // Convert PM to 24-hour format
+      } else if (period === "오전" && hour === 12) {
+        hour = 0; // Midnight case
+      }
+
+      const tradeDate = `${year}-${month.padStart(2, "0")}-${day.padStart(
+        2,
+        "0"
+      )}`;
+      const tradeTime = `${hour.toString().padStart(2, "0")}:${minute.padStart(
+        2,
+        "0"
+      )}`;
+
+      return { tradeDate, tradeTime };
+    }
+
+    const { tradeDate, tradeTime } = transformDateTime(dateTimeString);
+
+    console.log("tradeDate:", tradeDate); // Output: tradeDate: 2023-12-24 or 2024-12-24 depending on current date
+    console.log("tradeTime:", tradeTime); // Output: tradeTime: 21:24
 
     const message = `[System Message]<br/>
     거래 시간이 변경되었습니다.<br/>
     ${dateTimeString}에 만나요!`;
+
     try {
-      await changeTradeTime(chatID, tradeDate, tradeTime); // API 호출
+      await changeTradeTime(chatID, tradeDate, tradeTime);
 
-      // 성공적으로 변경되면 메시지 목록에 바로 추가
-      setMessageList((prevMessages) => [
-        ...prevMessages,
-        {
-          chatContent: message,
-          writerId: user.userId,
-          isSent: true,
-          chatTime: new Date().toISOString(),
-          isSystemMessage: true,
-          buttonsDisabled: false,
-        },
-      ]);
+      const newSystemMessage = {
+        chatContent: message,
+        writerId: user.userId,
+        isSent: true,
+        chatTime: new Date().toISOString(),
+        isSystemMessage: true,
+      };
 
-      await sendMessageDB(chatID, message); // 메시지 저장
+      // 상태를 즉시 업데이트하여 화면에 반영
+      setMessageList((prevMessages) => [...prevMessages, newSystemMessage]);
+
+      await sendMessageDB(chatID, message);
+
       setMessageList((prevMessages) =>
-        prevMessages.map(
-          (msg) =>
-            msg.id === messageId ? { ...msg, buttonsDisabled: true } : msg // 버튼 비활성화 설정
+        prevMessages.map((msg) =>
+          msg.id === messageId ? { ...msg, buttonsDisabled: true } : msg
         )
       );
 
@@ -220,26 +282,24 @@ const ChatRoom = () => {
   const handleRejectTimeChange = async (messageId) => {
     const message = `[System Message]<br/>
     거래 시간 변경이 거절되었습니다.`;
+
     try {
+      const newSystemMessage = {
+        chatContent: message,
+        writerId: user.userId,
+        isSent: true,
+        chatTime: new Date().toISOString(),
+        isSystemMessage: true,
+      };
+
+      // 상태를 즉시 업데이트하여 화면에 반영
+      setMessageList((prevMessages) => [...prevMessages, newSystemMessage]);
+
       await sendMessageDB(chatID, message);
 
-      // 성공적으로 거절되면 메시지 목록에 바로 추가
-      setMessageList((prevMessages) => [
-        ...prevMessages,
-        {
-          chatContent: message,
-          writerId: user.userId,
-          isSent: true,
-          chatTime: new Date().toISOString(),
-          isSystemMessage: true,
-          buttonsDisabled: false,
-        },
-      ]);
-
       setMessageList((prevMessages) =>
-        prevMessages.map(
-          (msg) =>
-            msg.id === messageId ? { ...msg, buttonsDisabled: true } : msg // 버튼 비활성화 설정
+        prevMessages.map((msg) =>
+          msg.id === messageId ? { ...msg, buttonsDisabled: true } : msg
         )
       );
 
@@ -267,7 +327,14 @@ const ChatRoom = () => {
       new Date(currentMessage.chatTime).toTimeString().slice(0, 5) !==
         new Date(nextMessage.chatTime).toTimeString().slice(0, 5)
     );
-  }; // 같은 시간이면서 같은 사람이 보낸 메시지에는 마지막 메시지에만 시간이 나타나도록 함
+  };
+
+  const getDisplayContent = (message) => {
+    if (message.isSystemMessage) {
+      return message.chatContent.replace("[System Message]<br/>", "");
+    }
+    return message.chatContent;
+  };
 
   return (
     <div className={styles.chatRoom}>
@@ -284,13 +351,17 @@ const ChatRoom = () => {
           >
             <div
               className={
-                msg.isSent ? styles.defaultbaloon : styles.receivedbaloon
+                msg.isSystemMessage
+                  ? styles.systemMessageBaloon
+                  : msg.isSent
+                  ? styles.defaultbaloon
+                  : styles.receivedbaloon
               }
             >
               {msg.isSystemMessage ? (
                 <div
                   className={`${styles.msg} ${styles.systemMessage}`}
-                  dangerouslySetInnerHTML={{ __html: msg.chatContent }}
+                  dangerouslySetInnerHTML={{ __html: getDisplayContent(msg) }}
                 />
               ) : (
                 <div className={styles.msg}>{msg.chatContent}</div>
@@ -311,11 +382,13 @@ const ChatRoom = () => {
                     </Button>
                   </div>
                 )}
-              <img
-                className={styles.tailIcon}
-                alt=""
-                src={msg.isSent ? tailSent : tailReceived}
-              />
+              {!msg.isSystemMessage && (
+                <img
+                  className={styles.tailIcon}
+                  alt=""
+                  src={msg.isSent ? tailSent : tailReceived}
+                />
+              )}
             </div>
             {shouldShowTime(index, msg) && (
               <div className={styles.time}>

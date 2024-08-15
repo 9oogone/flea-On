@@ -35,9 +35,18 @@ const ChangeTime = ({ open, handleClose, chatID }) => {
   }, [chatID]);
 
   const handleRequestChangeTime = async () => {
-    const messageContent = `거래 시간 변경 요청: ${selectedDate.format(
-      "YYYY-MM-DD HH:mm"
-    )}`;
+    const formattedCurrentTradeTime = currentTradeTime
+      ? currentTradeTime.format("MM월 DD일 A hh시 mm분").replace("AM", "오전").replace("PM", "오후")
+      : "알 수 없음";
+
+    const formattedSelectedDate = selectedDate.format("MM월 DD일 A hh시 mm분").replace("AM", "오전").replace("PM", "오후");
+
+    const messageContent = `[System Message]<br/>거래 시간 변경 요청합니다!<br/><br/>
+    <b>현재 약속 시간</b><br/>
+    ${formattedCurrentTradeTime}<br/><br/>
+    <b>희망 거래 시간</b><br/>
+    ${formattedSelectedDate}`;
+    
     try {
       await sendMessageDB(chatID, messageContent);
       handleClose(); // 모달 닫기
@@ -103,7 +112,7 @@ const ChangeTime = ({ open, handleClose, chatID }) => {
             현재 약속 시간
             <br />
             {currentTradeTime
-              ? currentTradeTime.format("YYYY년 MM월 DD일 A hh시 mm분")
+              ? currentTradeTime.format("YYYY년 MM월 DD일 A hh시 mm분").replace("AM", "오전").replace("PM", "오후")
               : "로딩 중..."}
           </Typography>
           <Typography
@@ -119,31 +128,29 @@ const ChangeTime = ({ open, handleClose, chatID }) => {
             변경 희망 시간
           </Typography>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
-  <Box sx={{ width: '72%', ml: 7 }}>
-    <DateTimePicker
-      value={selectedDate}
-      onChange={handleDateChange}
-      slots={{
-        textField: (params) => (
-          <TextField
-            {...params}
-            fullWidth
-            sx={{ marginBottom: "1px" }}
-            InputProps={{
-              sx: { 
-                '& input': { 
-                  textAlign: 'center' 
-                }
-              }
-            }}
-          />
-        ),
-      }}
-    />
-  </Box>
-</LocalizationProvider>
-
-
+            <Box sx={{ width: '72%', ml: 7 }}>
+              <DateTimePicker
+                value={selectedDate}
+                onChange={handleDateChange}
+                slots={{
+                  textField: (params) => (
+                    <TextField
+                      {...params}
+                      fullWidth
+                      sx={{ marginBottom: "1px" }}
+                      InputProps={{
+                        sx: { 
+                          '& input': { 
+                            textAlign: 'center' 
+                          }
+                        }
+                      }}
+                    />
+                  ),
+                }}
+              />
+            </Box>
+          </LocalizationProvider>
           <Typography
             variant="body2"
             gutterBottom

@@ -2,7 +2,7 @@ import React from "react";
 import { Box, Typography } from "@mui/material";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 
-const UpcomingFooter = ({ name, tradePlace, title, price }) => {
+const UpcomingFooter = ({ name, dongName, title, price }) => {
   return (
     <Box
       sx={{
@@ -20,7 +20,7 @@ const UpcomingFooter = ({ name, tradePlace, title, price }) => {
         }}
       >
         <LocationOnIcon sx={{ fontSize: "8px" }} />
-        {tradePlace}
+        {dongName}
       </Typography>
 
       <Typography

@@ -15,6 +15,9 @@ const InitialPage = () => {
   useEffect(() => {
     if (user.phone) setStep(1);
     if (user.nickname) setStep(2);
+    if (user.dongName) {
+      navigate("/");
+    }
   }, [user]);
 
   const nextStep = () => {
@@ -34,7 +37,7 @@ const InitialPage = () => {
           color: "rgba(44, 44, 46, 3)",
           fontSize: "24px",
           letterSpacing: "-1px",
-          boxShadow: "none"
+          boxShadow: "none",
         }}
       >
         추가 정보를 입력해 주세요!
@@ -46,7 +49,7 @@ const InitialPage = () => {
           mb: -0.1,
           color: "gray",
           letterSpacing: "-0.5px",
-          boxShadow: "none"
+          boxShadow: "none",
         }}
       >
         몇 가지 정보를 입력해 주시면,
@@ -57,7 +60,7 @@ const InitialPage = () => {
           color: "gray",
           mb: 4,
           letterSpacing: "-0.5px",
-          boxShadow: "none"
+          boxShadow: "none",
         }}
       >
         flea:ON을 더욱 편리하게 이용할 수 있습니다.
@@ -65,26 +68,31 @@ const InitialPage = () => {
       {step === 0 && !user.phone && <PhoneInput onNext={nextStep} />}
       {step === 1 && !user.nickname && <NicknameInput onNext={nextStep} />}
       {step === 2 && <UserRegionInput />}
-      <Box sx={{ display: "flex", justifyContent: "center", mt: 2,
-       }}>
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
         {step === 2 && (
           <Button
             onClick={handleFinalSubmit}
             variant={
               step === 2 &&
-              (!user.dongName || user.dongName.length === 0 || user.dongName.length > 3)
+              (!user.dongName ||
+                user.dongName.length === 0 ||
+                user.dongName.length > 3)
                 ? "outlined"
                 : "contained"
             }
             color={
               step === 2 &&
-              (!user.dongName || user.dongName.length === 0 || user.dongName.length > 3)
+              (!user.dongName ||
+                user.dongName.length === 0 ||
+                user.dongName.length > 3)
                 ? "primary"
                 : "secondary"
             }
             disabled={
               step === 2 &&
-              (!user.dongName || user.dongName.length === 0 || user.dongName.length > 3)
+              (!user.dongName ||
+                user.dongName.length === 0 ||
+                user.dongName.length > 3)
             }
             fullWidth
             sx={{
@@ -101,8 +109,8 @@ const InitialPage = () => {
                     width: "100%",
                     height: "46px",
                     letterSpacing: "-0.5px",
-                  }
-                })
+                  },
+                }),
             }}
           >
             계속하기

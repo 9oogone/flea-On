@@ -61,7 +61,6 @@ const LiveBroadcasts = ({ items: initialItems }) => {
         {items && items.length > 0 ? (
           items.map((item) => (
             <Grid key={item.id} item xs={6} sx={{ textAlign: "center" }}>
-              {item.tradePlace}
               <Button onClick={() => handleButtonClick(item)}>
                 <Box
                   sx={{
@@ -96,14 +95,15 @@ const LiveBroadcasts = ({ items: initialItems }) => {
                   </Box>
                   {item.isLive ? (
                     <LiveFooter
+                      id={item.id}
                       name={item.productNames}
-                      tradePlace={item.tradePlace}
+                      dongName={item.dongName}
                       title={item.title}
                       price={item.productPrices}
                     />
                   ) : (
                     <UpcomingFooter
-                      tradePlace={item.tradePlace}
+                      dongName={item.dongName}
                       title={item.title}
                     />
                   )}

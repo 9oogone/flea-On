@@ -379,7 +379,10 @@ const OpenVideo = () => {
                 type: "chat",
               });
             })
-            .catch((error) => {});
+            .catch((error) => {
+              console.log(error);
+              console.log(data);
+            });
         })
         .catch((error) => {
           dispatch(unSetLoading());
@@ -828,7 +831,7 @@ const OpenVideo = () => {
                   <Button
                     color="google"
                     onClick={() => navigate(`/shorts/${product.shortsId}`)}
-                    disabled={product.shortsId === 0}
+                    disabled={product.shortsId}
                   >
                     <ReplayIcon />
                   </Button>
