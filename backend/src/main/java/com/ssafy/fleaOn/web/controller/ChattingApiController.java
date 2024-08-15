@@ -100,4 +100,28 @@ public class ChattingApiController {
             return new ResponseEntity<>("메시지 생성 중 오류가 발생하였습니다: " + ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+
+    @PostMapping("/messagesFromSeller")
+    @Operation(summary = "초기 메시지 생성", description = "첫 거래시 안내 메세지 발송")
+    public ResponseEntity<?> createMessageFromSeller(@AuthenticationPrincipal CustomOAuth2User principal, @RequestBody ChattingMessageRequest chattingMessageRequest) {
+        if (principal == null) {
+            return new ResponseEntity<>("인증된 사용자가 없습니다.", HttpStatus.UNAUTHORIZED);
+        }
+        try {
+            String userEmail = principal.getEmail(); // 현재 인증된 사용자의 이메일 가져오기
+
+            User user = userService.findByEmail(userEmail); // 이메일로 userId 가져오기
+            if (user == null) {
+                return new ResponseEntity<>("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
+            }
+
+            Chatting chatting = chattingService.getChatByChattingId(chattingMessageRequest.getChattingId());
+            ChattingList message = chattingService.createMessage(chatting, chatting.getSeller().getUserId(),chattingMessageRequest);
+            return ResponseEntity.status(HttpStatus.CREATED).body(message);
+        } catch (Exception ex) {
+            log.error("메시지 생성 중 오류가 발생하였습니다: ", ex);
+            return new ResponseEntity<>("메시지 생성 중 오류가 발생하였습니다: " + ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
 }

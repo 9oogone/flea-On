@@ -2,7 +2,9 @@ package com.ssafy.fleaOn.web.controller;
 
 import com.ssafy.fleaOn.web.dto.ChatAlarmRequest;
 import com.ssafy.fleaOn.web.dto.NextAlarmRequest;
+import com.ssafy.fleaOn.web.dto.ProductIdsRequest;
 import com.ssafy.fleaOn.web.dto.UserFcmResponse;
+import com.ssafy.fleaOn.web.repository.ProductRepository;
 import com.ssafy.fleaOn.web.service.FcmService;
 import com.ssafy.fleaOn.web.service.PurchaseService;
 import com.ssafy.fleaOn.web.service.UserService;
@@ -12,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -31,15 +34,14 @@ public class PushController {
     @GetMapping("/scrap/{liveId}")
     public ResponseEntity<?> scrapNotification(
             @PathVariable("liveId") int liveId,
-            @RequestParam("title") String title,
-            @RequestParam("type") int type) {
+            @RequestParam("title") String title){
         try {
             // liveId를 기반으로 FCM 정보를 가져옴
             List<UserFcmResponse> liveScrapUserInfo = userService.getUserFcmByLiveId(liveId);
 
             if (!liveScrapUserInfo.isEmpty()) {
                 // FCM 메시지 전송
-                fcmService.sendMessageToMultipleTokens(liveScrapUserInfo, title, type, liveId);
+                fcmService.sendMessageToMultipleTokens(liveScrapUserInfo, title, liveId);
 
                 // 성공적으로 전송되었을 때, 사용자 정보를 반환
                 return ResponseEntity.status(HttpStatus.OK).body(liveScrapUserInfo);
@@ -54,14 +56,17 @@ public class PushController {
     }
 
     @PostMapping("/cancelAlarm")
-    public ResponseEntity<?> cancelAlarm(@RequestBody NextAlarmRequest nextAlarmRequest) {
-        if(nextAlarmRequest.getNextId()==0){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }else{
-
-            fcmService.sendMessageToNextPerson(nextAlarmRequest);
+    public ResponseEntity<?> cancelAlarm(@RequestParam("productId") int productId) {
+            fcmService.sendMessageToNextPerson(productId);
             return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @PostMapping("/cancelAlarmBatch")
+    public ResponseEntity<?> cancelAlarmBatch(@RequestBody ProductIdsRequest productIdsRequest) {
+        for( int productId : productIdsRequest.getProductIds()) {
+            fcmService.sendMessageToNextPerson(productId);
         }
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @PostMapping("/chatAlarm")

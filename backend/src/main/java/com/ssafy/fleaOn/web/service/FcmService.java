@@ -2,6 +2,7 @@ package com.ssafy.fleaOn.web.service;
 
 import com.google.firebase.messaging.*;
 import com.ssafy.fleaOn.web.domain.Alarm;
+import com.ssafy.fleaOn.web.domain.Product;
 import com.ssafy.fleaOn.web.domain.Live;
 import com.ssafy.fleaOn.web.domain.Product;
 import com.ssafy.fleaOn.web.domain.User;
@@ -25,7 +26,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class FcmService {
-
     private final UserService userService;
     private final UserRepository userRepository;
     private final AlarmRepository alarmRepository;
@@ -39,37 +39,36 @@ public class FcmService {
         this.productRepository = productRepository;
         this.liveRepository = liveRepository;
     }
-
-    public void sendMessageToNextPerson(NextAlarmRequest nextAlarmRequest) {
-
-        User user = userRepository.findById(nextAlarmRequest.getNextId()).orElseThrow(()->new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+    public void sendMessageToNextPerson(int productId) {
+        Product product = productRepository.findByProductId(productId).orElseThrow(() -> new RuntimeException("Product not found"));
+        User user = userRepository.findById(product.getCurrentBuyerId()).orElseThrow(()->new IllegalArgumentException("구매자를 찾을 수 없습니다."));
+        User seller = userRepository.findById(product.getSeller().getUserId()).orElseThrow(()->new IllegalArgumentException("판매자를 찾을 수 없습니다."));
         String token = user.getFcm();
         System.out.println(token);
-        String profilePic = userService.getProfile(nextAlarmRequest.getProductId());
-        Product product = productRepository.findByProductId(nextAlarmRequest.getProductId()).orElseThrow(()->new IllegalArgumentException("찾을 수 없는 상품입니다."));
+        String profilePic = seller.getProfilePicture();
+        String productName = product.getName();
 
         Alarm alarm = Alarm.builder()
                 .user(user)
                 .date(Timestamp.valueOf(LocalDateTime.now()))
                 .isRead(false)
-                .content(product.getName()+" 구매하시겠습니까?")
+                .content(productName+" 구매하시겠습니까?")
                 .profilePic(profilePic)
-                .type(nextAlarmRequest.getType())
-                .liveId(nextAlarmRequest.getLiveId())
-                .productId(nextAlarmRequest.getProductId())
+                .type(1)
+                .liveId(product.getLive().getLiveId())
+                .productId(product.getProductId())
                 .build();
         alarmRepository.save(alarm);
+
         Message message = Message.builder()
                 .setToken(token)
                 .putData("body","구매하러가기")
-                .putData("title",product.getName()+"이 구매 가능합니다!")
+                .putData("title",productName+"이 구매 가능합니다!")
                 .putData("redirect_url", "https://fleaon.shop/notifications")
-                .putData("userId", String.valueOf(nextAlarmRequest.getNextId()))
-                .putData("liveId", String.valueOf(nextAlarmRequest.getLiveId()))
-                .putData("productId", String.valueOf(nextAlarmRequest.getProductId()))
-                .putData("type", String.valueOf(nextAlarmRequest.getType()))
+                .putData("userId", String.valueOf(user.getUserId()))
+                .putData("liveId", String.valueOf(product.getLive().getLiveId()))
+                .putData("productId", String.valueOf(product.getProductId()))
                 .build();
-
         try {
             String response = FirebaseMessaging.getInstance().send(message);
             System.out.println("Successfully sent message: " + response);
@@ -77,7 +76,8 @@ public class FcmService {
             e.printStackTrace();
         }
     }
-    public void sendMessageToMultipleTokens(List<UserFcmResponse> tokens, String title, int type, int liveId) throws FirebaseMessagingException {
+
+    public void sendMessageToMultipleTokens(List<UserFcmResponse> tokens, String title, int liveId) throws FirebaseMessagingException {
         // 유효한 토큰 필터링
         List<String> validTokens = tokens.stream()
                 .map(UserFcmResponse::getFcmToken)
@@ -96,9 +96,8 @@ public class FcmService {
                     .isRead(false)
                     .content(title+" 방송이 시작되었습니다!")
                     .profilePic(sender.getProfilePicture())
-                    .type(type)
+                    .type(2)
                     .liveId(liveId)
-                    .productId(0)
                     .build();
             alarmRepository.save(alarm);
         }
@@ -111,10 +110,9 @@ public class FcmService {
         MulticastMessage message = MulticastMessage.builder()
                 .putData("body","방송 참여하기")
                 .putData("title",title+" 방송이 시작되었습니다!")
-                .putData("redirect_url", "https://fleaon.shop/mypage/scrap-list")
+                .putData("redirect_url", "https://fleaon.shop/notifications")
                 .putData("liveId", String.valueOf(liveId))
                 .putData("productId", "0")
-                .putData("type", String.valueOf(type))
                 .addAllTokens(validTokens)
                 .build();
 
@@ -133,18 +131,6 @@ public class FcmService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
         User sender = userRepository.findByEmail(oAuth2User.getEmail()).orElseThrow(()-> new IllegalArgumentException("찾을 수 없는 발신자입니다."));
-        System.out.println(user.getFcm());
-        Alarm alarm = Alarm.builder()
-                .user(user)
-                .date(Timestamp.valueOf(LocalDateTime.now()))
-                .isRead(false)
-                .content(chatAlarmRequest.getContent())
-                .profilePic(sender.getProfilePicture())
-                .type(chatAlarmRequest.getType())
-                .productId(chatAlarmRequest.getProductId())
-                .liveId(chatAlarmRequest.getLiveId())
-                .build();
-        alarmRepository.save(alarm);
 
         Message message = Message.builder()
                 .setToken(user.getFcm())
@@ -152,8 +138,6 @@ public class FcmService {
                 .putData("title",sender.getName())
                 .putData("redirect_url", "https://fleaon.shop/chat/"+chatAlarmRequest.getChatId())
                 .putData("icon", sender.getProfilePicture())
-                .putData("liveId", String.valueOf(chatAlarmRequest.getLiveId()))
-                .putData("productId", String.valueOf(chatAlarmRequest.getProductId()))
                 .putData("type", String.valueOf(chatAlarmRequest.getType()))
                 .build();
         try {
