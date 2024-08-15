@@ -332,9 +332,9 @@ const CalendarTrade = ({ userId, selectedDate, dateTrade }) => {
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseModal}>취소</Button>
-          <Button onClick={handleChat}>채팅하기</Button>
           <Button onClick={handleConfirmTrade}>거래확정</Button>
+          <Button onClick={handleChat}>채팅하기</Button>
+          <Button onClick={handleCloseModal}>취소</Button>
         </DialogActions>
       </Dialog>
       {/* 채팅방 미생성 알림 */}
