@@ -26,7 +26,7 @@ const Notification = () => {
   }, []);
 
   const handleBackButtonClick = () => {
-    navigate("/mypage");
+    navigate("/");
   };
   const handleAlarmClick = (alarm)=>{
     if(alarm.type==1){
@@ -39,7 +39,7 @@ const Notification = () => {
   }
 
   return (
-    <Box sx={{ minHeight: "100vh", bgcolor: "rgba(0, 0, 0, 0.04)" }}>
+    <Box sx={{ minHeight: "100vh", bgcolor: "rgba(0, 0, 0, 0.03)" }}>
       <Box sx={{ mb: 7 }}>
         <Box
           sx={{

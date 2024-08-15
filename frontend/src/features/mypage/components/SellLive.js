@@ -1,14 +1,30 @@
-import React from "react";
+import React, { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchLiveDetail } from "../../live/actions";
 import { Box, Typography, Button } from "@mui/material";
 import { format } from "date-fns";
-import { ko } from "date-fns/locale";
-import { extractDong, getRelativeDate } from "../../../utils/cssUtils";
-import { StickyNote2 } from "@mui/icons-material";
+import { getRelativeDate } from "../../../utils/cssUtils";
+import UpcomingModal from "../../../components/UpcomingModal";
+import { ChevronRight } from "@mui/icons-material";
 
 const Live = ({ items }) => {
   console.log(items);
+  const dispatch = useDispatch();
   const upcomingItems = items.filter((item) => item.isLive === 0);
   const completedItems = items.filter((item) => item.isLive === 2);
+
+  const [open, setOpen] = useState(false);
+  const liveDetail = useSelector((state) => state.live.liveDetail);
+
+  const handleButtonClick = async (item) => {
+    try {
+      await dispatch(fetchLiveDetail(item.liveId));
+      setOpen(true);
+    } catch (error) {
+      console.error("Live detail fetch error:", error);
+    }
+  };
+  const handleClose = () => setOpen(false);
 
   return (
     <Box
@@ -115,7 +131,7 @@ const Live = ({ items }) => {
                     </Typography>
                   </Box>
 
-                  <Button
+                  {/* <Button
                     sx={{
                       backgroundColor: "#FF0B55",
                       color: "white",
@@ -127,7 +143,26 @@ const Live = ({ items }) => {
                     }}
                   >
                     수정하기
-                  </Button>
+                  </Button> */}
+                  <Box
+                    sx={{
+                      justifyContent: "flex-start",
+                      alignItems: "center",
+                      display: "flex",
+                    }}
+                    onClick={() => handleButtonClick(item)}
+                  >
+                    <Typography
+                      sx={{
+                        color: "rgba(0, 0, 0, 0.90)",
+                        fontSize: 14,
+                        letterSpacing: "0.1px",
+                      }}
+                    >
+                      상세보기
+                    </Typography>
+                    <ChevronRight />
+                  </Box>
                 </Box>
               </Box>
             ))}
@@ -223,7 +258,7 @@ const Live = ({ items }) => {
                     </Typography>
                   </Box>
 
-                  <Button
+                  {/* <Button
                     sx={{
                       backgroundColor: "#cccccc",
                       color: "white",
@@ -233,9 +268,37 @@ const Live = ({ items }) => {
                       alignItems: "center",
                       display: "flex",
                     }}
+                    onClick={() => handleButtonClick(item)}
                   >
                     상세보기
-                  </Button>
+                  </Button> */}
+                  <Box
+                    sx={{
+                      justifyContent: "flex-start",
+                      alignItems: "center",
+                      display: "flex",
+                    }}
+                    onClick={() => handleButtonClick(item)}
+                  >
+                    <Typography
+                      sx={{
+                        color: "rgba(0, 0, 0, 0.90)",
+                        fontSize: 14,
+                        letterSpacing: "0.1px",
+                      }}
+                    >
+                      상세보기
+                    </Typography>
+                    <ChevronRight />
+                  </Box>
+                  {liveDetail.liveId && (
+                    <UpcomingModal
+                      id={index}
+                      open={open}
+                      handleClose={handleClose}
+                      liveDetail={liveDetail}
+                    />
+                  )}
                 </Box>
               </Box>
             ))}
@@ -252,7 +315,8 @@ const Live = ({ items }) => {
           }}
         >
           <Typography sx={{ textAlign: "center" }}>
-            아직 라이브를 한 적이 없어요.
+            현재 판매 중인 라이브 방송이 없습니다. <br />
+            새로운 라이브를 시작해 볼까요?"
           </Typography>
         </Box>
       )}
