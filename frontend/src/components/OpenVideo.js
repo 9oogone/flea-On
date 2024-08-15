@@ -50,9 +50,10 @@ const OpenVideo = () => {
   const [open, setOpen] = useState(false);
   const [place, setPlace] = useState("");
   const [liveDate, setLiveDate] = useState("");
-  const [shortsId, setShortsId] = useState();
+  const [shortsId, setShortsId] = useState({ shortsId: 0, index: 0 });
   const [times, setTimes] = useState([]);
   const [isFrontCamera, setIsFrontCamera] = useState(false);
+  const [soldIndex, setSoldIndex] = useState(0);
   const navigate = useNavigate();
 
   const handleCustomerClick = () => {
@@ -153,11 +154,14 @@ const OpenVideo = () => {
         setIsRecording(data.isRecording);
         setIsFirst(false);
       } else if (type === 3) {
-        productList[data.index].status += 1;
+        // productList[data.index].status += 1;
+        setSoldIndex(data.index);
       } else if (type === 4) {
-        console.log("currentProductIndex : ", currentProductIndex);
-        console.log("productList : ", productList);
-        setShortsId(data.shortsId);
+        setTimeout(() => {
+          setShortsId({ shortsId: data.shortsId, index: data.index });
+          console.log("currentProductIndex : ", currentProductIndex);
+          console.log("productList : ", productList);
+        }, 300);
         // productList[currentProductIndex].shortsId = data.shortsId;
       } else if (type === 5) {
         navigate("/");
@@ -387,6 +391,7 @@ const OpenVideo = () => {
               const messageData = {
                 type: 4,
                 shortsId: response.data,
+                index: currentProductIndex,
               };
 
               session.current.signal({
@@ -410,7 +415,6 @@ const OpenVideo = () => {
   useEffect(() => {
     console.log("들어왔니?", isRecording);
     if (!isRecording && !isFirst) {
-      productList[currentProductIndex].shortsId = shortsId;
       setCurrentProductIndex((prevIndex) => {
         const newIndex = prevIndex + 1;
         if (newIndex < productList.length) {
@@ -420,6 +424,18 @@ const OpenVideo = () => {
       });
     }
   }, [isRecording, productList, isFirst]);
+
+  useEffect(() => {
+    if (soldIndex !== 0) {
+      productList[soldIndex].status += 1;
+    }
+  }, [soldIndex]);
+  useEffect(() => {
+    if (shortsId.index !== 0) {
+      console.log(shortsId);
+      productList[shortsId.index].shortsId = shortsId.shortsId;
+    }
+  }, [shortsId]);
 
   const handlePrepareProduct = (index) => {
     const newProductList = [...productList];
@@ -846,8 +862,11 @@ const OpenVideo = () => {
                 <Box>
                   <Button
                     color="google"
-                    onClick={() => navigate(`/shorts/${product.shortsId}`)}
-                    disabled={product.shortsId}
+                    onClick={() =>
+                      product.shortsId === 0
+                        ? ""
+                        : navigate(`/shorts/${product.shortsId}`)
+                    }
                   >
                     <ReplayIcon />
                   </Button>

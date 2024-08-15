@@ -26,11 +26,11 @@ root.render(
 requestPermission();
 
 // 메시지 리스너 설정
-onMessageListener()
-  .then((payload) => {
-    console.log("Received foreground message: ", payload);
-  })
-  .catch((err) => console.log("Error in receiving message: ", err));
+// onMessageListener()
+//   .then((payload) => {
+//     console.log("Received foreground message: ", payload);
+//   })
+//   .catch((err) => console.log("Error in receiving message: ", err));
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
