@@ -135,7 +135,7 @@ const ChatTradeDetail = ({ chatID, isOpen, onClose }) => {
             fontSize: 18,
           }}
         >
-          {product.productId} {product.name}
+          {product.name}
         </Typography>
         <Typography
           sx={{
