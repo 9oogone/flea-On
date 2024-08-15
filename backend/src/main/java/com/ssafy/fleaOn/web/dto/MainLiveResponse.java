@@ -23,7 +23,7 @@ public class MainLiveResponse {
     private List<Integer> productPrices;
     private String dongName;
     private int isLive;
-    private String liveThumbnail;
+    private String thumbnail;
     private boolean isScrap;
     private LocalDateTime liveDate;
     private int viewCount;
@@ -36,7 +36,7 @@ public class MainLiveResponse {
                 .productPrices(products.stream().map(Product::getPrice).collect(Collectors.toList()))
                 .dongName(live.getRegionInfo().getEupmyeon())
                 .isLive(live.getIsLive())
-                .liveThumbnail(live.getLiveThumbnail())
+                .thumbnail(live.getLiveThumbnail())
                 .isScrap(isScrap)
                 .liveDate(live.getLiveDate())
                 .viewCount(live.getViewCount())
