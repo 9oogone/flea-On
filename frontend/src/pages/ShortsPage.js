@@ -120,7 +120,10 @@ const ShortsPage = () => {
 
   const handleSwipe = async (eventData) => {
     const res = await baseAxios().get("fleaon/shorts/random");
-    navigate(`/shorts/${res.data}`, { state: { dir: eventData.dir } });
+    navigate(`/shorts/${res.data}`, {
+      state: { dir: eventData.dir },
+      replace: true,
+    });
   };
   const handlers = useSwipeable({
     onSwipedUp: handleSwipe,
