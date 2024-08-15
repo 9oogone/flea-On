@@ -3,6 +3,7 @@ package com.ssafy.fleaOn.web.controller;
 import com.ssafy.fleaOn.web.dto.ChatAlarmRequest;
 import com.ssafy.fleaOn.web.dto.NextAlarmRequest;
 import com.ssafy.fleaOn.web.dto.UserFcmResponse;
+import com.ssafy.fleaOn.web.repository.ProductRepository;
 import com.ssafy.fleaOn.web.service.FcmService;
 import com.ssafy.fleaOn.web.service.PurchaseService;
 import com.ssafy.fleaOn.web.service.UserService;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -53,14 +55,17 @@ public class PushController {
     }
 
     @PostMapping("/cancelAlarm")
-    public ResponseEntity<?> cancelAlarm(@RequestBody NextAlarmRequest nextAlarmRequest) {
-        if(nextAlarmRequest.getNextId()==0){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }else{
-
-            fcmService.sendMessageToNextPerson(nextAlarmRequest);
+    public ResponseEntity<?> cancelAlarm(@RequestParam("productId") int productId) {
+            fcmService.sendMessageToNextPerson(productId);
             return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @PostMapping("/cancelAlarmBatch")
+    public ResponseEntity<?> cancelAlarmBatch(@RequestParam("productId") Map<String,List<Integer>> productIds) {
+        for( int productId : productIds.get("productIds") ) {
+            fcmService.sendMessageToNextPerson(productId);
         }
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @PostMapping("/chatAlarm")

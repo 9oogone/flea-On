@@ -162,7 +162,6 @@ public class PurchaseService {
         return new PurchaseCancleResponse(product.getProductId(), chatExit, next, isBuyer);
     }
 
-
     // 거래 파기 메서드
     @Transactional
     public List<PurchaseCancleResponse> breakTrade(int chatId, int userId) { // 거래 파기
