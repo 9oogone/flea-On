@@ -379,7 +379,10 @@ const OpenVideo = () => {
                 type: "chat",
               });
             })
-            .catch((error) => {});
+            .catch((error) => {
+              console.log(error);
+              console.log(data);
+            });
         })
         .catch((error) => {
           dispatch(unSetLoading());

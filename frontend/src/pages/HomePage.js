@@ -15,6 +15,7 @@ const HomePage = () => {
   const selectedTab = useSelector((state) => state.content.selectedTab);
   const [hasLive, setHasLive] = useState(false);
   const [liveId, setLiveId] = useState(null);
+  const [liveTitle, setLiveTitle] = useState(null);
   const [shorts, setShorts] = useState([]);
   const [live, setLive] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -36,6 +37,7 @@ const HomePage = () => {
         );
         // setHasLive(response.data.exist);
         setLiveId(response.data.liveId);
+        setLiveTitle(response.data.liveTitle);
         if (response.data.liveId !== 0) {
           setHasLive(true);
         }
@@ -66,9 +68,14 @@ const HomePage = () => {
   //   }
   // };
 
-  const startLiveBroadcast = async (liveId) => {
+  const startLiveBroadcast = async (liveId, liveTitle) => {
     try {
       await baseAxios().put(`/fleaOn/live/${liveId}/on`);
+      try {
+        await baseAxios().get(`/push/scrap/${liveId}?title=${liveTitle}`);
+      } catch (error) {
+        console.error("Failed to start live broadcast", error);
+      }
       navigate(`/live/${liveId}`);
     } catch (error) {
       console.error("Failed to start live broadcast", error);
@@ -111,7 +118,7 @@ const HomePage = () => {
         tradePlace: liveItem.tradePlace,
         dongName: liveItem.dongName,
         isLive: liveItem.isLive,
-        thumbnail: liveItem.liveThumbnail,
+        thumbnail: liveItem.thumbnail,
         scrap: liveItem.scrap,
         liveDate: liveItem.liveDate,
       }));
@@ -194,7 +201,7 @@ const HomePage = () => {
                 <Button
                   variant="contained"
                   color="secondary"
-                  onClick={() => startLiveBroadcast(liveId)}
+                  onClick={() => startLiveBroadcast(liveId, liveTitle)}
                 >
                   시작하기
                 </Button>

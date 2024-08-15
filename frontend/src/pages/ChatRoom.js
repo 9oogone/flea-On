@@ -80,7 +80,7 @@ const ChatRoom = () => {
             isSent: isSent,
             isSystemMessage: message.chatContent.startsWith("[System Message]"),
             buttonsDisabled: false, // 버튼 비활성화 상태 추가
-          };  
+          };
         });
         setMessageList(updatedMessages);
       }
@@ -178,7 +178,7 @@ const ChatRoom = () => {
     }
   };
 
-    const handleAcceptTimeChange = async (messageId, newTime) => {
+  const handleAcceptTimeChange = async (messageId, newTime) => {
     console.log("이게 가:", newTime);
 
     // 희망 거래 시간만 추출
@@ -186,7 +186,7 @@ const ChatRoom = () => {
       /(\d{2}월 \d{2}일 (오전|오후) \d{2}시 \d{2}분)/
     );
     const dateTimeString = match ? match[1] : null;
-    
+
     function transformDateTime(dateTimeString) {
       if (!dateTimeString) {
         console.error("dateTimeString is null or undefined");
@@ -276,6 +276,46 @@ const ChatRoom = () => {
       }
     } catch (error) {
       console.error("Error accepting time change:", error);
+    }
+  };
+
+  const handleRejectTimeChange = async (messageId) => {
+    const message = `[System Message]<br/>
+    거래 시간 변경이 거절되었습니다.`;
+
+    try {
+      const newSystemMessage = {
+        chatContent: message,
+        writerId: user.userId,
+        isSent: true,
+        chatTime: new Date().toISOString(),
+        isSystemMessage: true,
+      };
+
+      // 상태를 즉시 업데이트하여 화면에 반영
+      setMessageList((prevMessages) => [...prevMessages, newSystemMessage]);
+
+      await sendMessageDB(chatID, message);
+
+      setMessageList((prevMessages) =>
+        prevMessages.map((msg) =>
+          msg.id === messageId ? { ...msg, buttonsDisabled: true } : msg
+        )
+      );
+
+      if (session.current) {
+        session.current.signal({
+          data: JSON.stringify({
+            message: message,
+            from: user.userId,
+            type: 1,
+            chatTime: new Date().toISOString(),
+          }),
+          type: "chat",
+        });
+      }
+    } catch (error) {
+      console.error("Error rejecting time change:", error);
     }
   };
 
