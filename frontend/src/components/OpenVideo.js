@@ -155,6 +155,8 @@ const OpenVideo = () => {
         // setIsPurchaseCompleted(true); // 추가
       } else if (type === 4) {
         setReserveCount(data.reserveCount);
+      } else if (type === 5) {
+        navigate("/");
       }
     });
     try {
