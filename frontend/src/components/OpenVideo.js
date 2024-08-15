@@ -209,20 +209,21 @@ const OpenVideo = () => {
       const videoDevices = devices.filter(
         (device) => device.kind === "videoinput"
       );
-      var len = videoDevices.length;
+      // var len = videoDevices.length;
       
       if (videoDevices.length > 1) {
-        if(videoIndex+1>=len){
-          setVideoIndex(0)
-        }else{
-          setVideoIndex(videoIndex+1)
-        }
+        // if(videoIndex+1>=len){
+        //   setVideoIndex(0)
+        // }else{
+        //   setVideoIndex(videoIndex+1)
+        // }
         const newPublisher = OV.current.initPublisher("htmlVideo", {
-          videoSource: videoDevices[videoIndex].deviceId,
+          videoSource: 
+          // videoDevices[videoIndex].deviceId,
           // vidoeIndex+1>len?
-          // isFrontCamera
-          //   ? videoDevices[0].deviceId
-          //   : videoDevices[2].deviceId,
+          isFrontCamera
+            ? videoDevices[0].deviceId
+            : videoDevices[3].deviceId,
           publishAudio: true,
           publishVideo: true,
           mirror: isFrontCamera,
