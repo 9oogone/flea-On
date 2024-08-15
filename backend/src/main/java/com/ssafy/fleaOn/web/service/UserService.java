@@ -383,14 +383,11 @@ public class UserService {
     }
 
     public void addUserExtraInfo(Map<String, Object> extraInfo, String email) {
-        Optional<User> findUser = userRepository.findByEmail(email);
-        if (findUser.isPresent()) {
-            User user = User.builder()
-                    .nickname(extraInfo.get("nickname").toString())
-                    .phone(extraInfo.get("phone").toString())
-                    .build();
-            userRepository.save(user);
-        }
+        System.out.println("email : "+ email);
+        User findUser = userRepository.findByEmail(email).orElseThrow(()->new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        System.out.println("user.getEmail : " + findUser.getEmail());
+        findUser.updateDate(extraInfo.get("nickname").toString(), extraInfo.get("phone").toString());
+        userRepository.save(findUser);
     }
 
     @Transactional

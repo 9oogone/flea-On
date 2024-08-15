@@ -27,7 +27,7 @@ public class User {
     @Column(name = "user_identifier", nullable = false)
     private String userIdentifier;
 
-    @Column(name = "profile_picture", nullable = false)
+    @Column(name = "profile_picture")
     private String profilePicture;
 
     @Column(name = "name", nullable = false)
@@ -54,5 +54,10 @@ public class User {
 
     public void updateLevel() {
         this.level++;
+    }
+
+    public void updateDate(String nickname, String Phone){
+        this.nickname = nickname;
+        this.phone = Phone;
     }
 }
