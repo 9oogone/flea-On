@@ -57,6 +57,27 @@
   max-width: 80%;
 }
 
+.systemMessageBaloon {
+  position: relative;
+  border-radius: 13.5px;
+  background-color: #fff;
+  border: 1px solid #ff0b55;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 9px 10px 8px 12px;
+  box-sizing: border-box;
+  color: #3F3F3F;
+  font-family: ABeeZee;
+  max-width: 80%;
+  margin-top: 10px;
+}
+
+.systemMessage {
+  font-style: normal;
+  text-align: center;
+}
+
 .msg {
   position: relative;
   z-index: 1;
@@ -135,4 +156,26 @@
 .receivedMessageContainer .time {
   align-self: flex-start; /* 왼쪽 정렬 */
   padding-left: 5px;
+}
+
+.timeChangeButtons {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 10px;
+  width: 100%;
+}
+
+.timeChangeButtons button {
+  background-color: #fff;
+  color: #ff0b55;
+  border: 1px solid #ff0b55;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.timeChangeButtons button:hover {
+  background-color: #ff0b55;
+  color: #fff;
 }
