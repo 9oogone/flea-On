@@ -30,6 +30,19 @@ public interface LiveRepository extends JpaRepository<Live, Integer> {
             "ORDER BY l.isLive DESC, l.liveDate ASC")
     List<Live> findByRegionCodeAndIsLiveOrderByIsLiveDescLiveDateAsc(@Param("regionCode") String regionCode);
 
+    List<Live> findByRegionInfo_regionCode(String regionCode);
+
+
+//    @Query("SELECT l FROM Live l WHERE l.regionInfo.regionCode = :regionCode AND l.isLive = 1 " +
+//            "ORDER BY l.liveDate ASC")
+//    List<Live> findByRegionCodeAndIsLive1OrderByLiveDateAsc(@Param("regionCode") String regionCode);
+//
+//    @Query("SELECT l FROM Live l WHERE l.regionInfo.regionCode = :regionCode AND l.isLive = 0 " +
+//            "ORDER BY l.liveDate ASC")
+//    List<Live> findByRegionCodeAndIsLive0OrderByLiveDateAsc(@Param("regionCode") String regionCode);
+
+
+
 
     @Query("SELECT l FROM Live l WHERE l.seller.userId = :userId AND l.isLive = :isLive AND l.liveDate < now() ORDER BY l.liveDate ASC LIMIT 1")
     Optional<Live> findFirstLiveBySellerAndIsLiveAndPastDate(

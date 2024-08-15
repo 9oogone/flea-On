@@ -9,6 +9,7 @@ import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,20 +35,30 @@ public class MainService {
     public Slice<MainLiveResponse> getMainLiveListByRegionCode(int userId, List<UserRegion> findUserRegionList, int page) {
         // 모든 데이터를 수집할 리스트
         List<MainLiveResponse> allLiveResponses = new ArrayList<>();
+        List<Live> resultLiveList = new ArrayList<>();
 
         // 모든 지역 코드를 탐색하여 데이터를 수집
         for (UserRegion userRegion : findUserRegionList) {
             String regionCode = userRegion.getRegion().getRegionCode();
-            List<Live> liveList = liveRepository.findByRegionCodeAndIsLiveOrderByIsLiveDescLiveDateAsc(regionCode);
+            // 해당 지역 코드의 모든 Live 데이터를 가져오고, isLive가 0 또는 1인 항목만 추가
+            List<Live> findLiveList = liveRepository.findByRegionInfo_regionCode(regionCode);
+            resultLiveList.addAll(findLiveList.stream()
+                    .filter(live -> live.getIsLive() == 0 || live.getIsLive() == 1)
+                    .collect(Collectors.toList()));
+        }
 
-            for (Live live : liveList) {
-                Optional<List<Product>> findProductList = productRepository.findByLive_LiveId(live.getLiveId());
-                Optional<LiveScrap> findLiveScrap = liveScrapRepository.findByUser_userIdAndLive_liveId(userId, live.getLiveId());
-                if (findProductList.isPresent()) {
-                    boolean isScrap = findLiveScrap.isPresent();
-                    MainLiveResponse mainLiveResponse = MainLiveResponse.fromEntity(live, findProductList.get(), isScrap);
-                    allLiveResponses.add(mainLiveResponse);
-                }
+        // isLive가 1인 것들을 먼저, 그리고 isLive가 0인 것들을 나중에 정렬하고, 각 그룹 내에서 liveDate를 오름차순으로 정렬
+        resultLiveList.sort(Comparator.comparing(Live::getIsLive).reversed()
+                .thenComparing(Live::getLiveDate));
+
+        // 각 Live 객체에 대해 MainLiveResponse 객체를 생성하여 allLiveResponses 리스트에 추가
+        for (Live live : resultLiveList) {
+            Optional<List<Product>> findProductList = productRepository.findByLive_LiveId(live.getLiveId());
+            Optional<LiveScrap> findLiveScrap = liveScrapRepository.findByUser_userIdAndLive_liveId(userId, live.getLiveId());
+            if (findProductList.isPresent()) {
+                boolean isScrap = findLiveScrap.isPresent();
+                MainLiveResponse mainLiveResponse = MainLiveResponse.fromEntity(live, findProductList.get(), isScrap);
+                allLiveResponses.add(mainLiveResponse);
             }
         }
 
@@ -64,6 +75,8 @@ public class MainService {
 
         return new SliceImpl<>(content, pageable, hasNext);
     }
+
+
 
     public List<UserRegion> getUserRegionByUserId(int userId) {
         Optional<List<UserRegion>> userRegionList = userRegionRepository.findByUser_userId(userId);
