@@ -310,7 +310,7 @@ public class UserApiController {
                 System.out.println("해당 회원 찾음 : " + user);
 
                 if (user != null) {
-                    userService.addUserExtraInfo(extraInfo, user.getEmail());
+                    userService.addUserExtraInfo(extraInfo, email);
                     return ResponseEntity.status(HttpStatus.OK).body(user);
                 } else {
                     return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
