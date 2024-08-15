@@ -135,8 +135,16 @@ const CustomerDateTimeSelector = ({
     setSelectedTime(time);
     setIsButtonVisible(true);
   };
-
   const handleConfirm = async () => {
+    console.log("user : ", {
+      buyerId: user.userId,
+      sellerId: seller.userId,
+      productId: Number(selectedProductId),
+      liveId: Number(liveId),
+      tradePlace: place,
+      tradeTime: `${selectedTime}:00`,
+      tradeDate: selectedDate,
+    });
     try {
       const response = await baseAxios().post(
         "/fleaon/purchase/confirmPurchase",
@@ -165,6 +173,18 @@ const CustomerDateTimeSelector = ({
           늦지 않게 약속된 장소에서 만나요~`,
           bot: true,
         };
+        console.log("chatting Id : ", response.data);
+        console.log(
+          "contents : ",
+          `[System Message]<br/>
+          안녕하세요 ${user.nickname}님!<br/>
+        ${seller.nickname}의 마켓에 오신 것을 환영해요.<br/><br/>
+          ✨ 거래 안내 <br/>
+          거래 시간 :  ${selectedDate} ${selectedTime}<br/>
+          거래 장소 :  ${place}<br/>
+          거래 예정입니다!<br/>
+          늦지 않게 약속된 장소에서 만나요~`
+        );
         await baseAxios().post("/fleaon/chat/messagesFromSeller", data);
         handleClose();
         console.log(response);
