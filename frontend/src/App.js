@@ -137,21 +137,21 @@ function App() {
       </div>
     );
   };
+
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     // 3초 후에 로딩 상태를 false로 설정 (GIF 재생 시간에 맞추기)
-    const timer = setTimeout(() => setIsLoading(false), 2000);
+    const timer = setTimeout(() => setIsLoading(false), 1100);
     return () => clearTimeout(timer);
   }, []);
-
   return (
     <div className="app-container">
       {isLoading ? (
         <div>
           <img
             style={{
-              width: "100vw",
+              height: "100vh",
               objectFit: "contain",
             }}
             src="/icons/startup.gif"
