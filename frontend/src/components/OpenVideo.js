@@ -23,8 +23,13 @@ import FlipCameraAndroidIcon from "@mui/icons-material/FlipCameraAndroid";
 import SendIcon from "@mui/icons-material/Send";
 import CloseIcon from "@mui/icons-material/Close";
 import swipeLeftImage from "../assets/images/swipe_left.svg";
-import ReplayIcon from "@mui/icons-material/Replay";
 import { formatPrice } from "../utils/cssUtils";
+import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
+import { ReactComponent as LevelBaby } from "../assets/images/level_baby.svg";
+import { ReactComponent as LevelSmall } from "../assets/images/level_small.svg";
+import { ReactComponent as LevelMiddle } from "../assets/images/level_middle.svg";
+import { ReactComponent as LevelBig } from "../assets/images/level_big.svg";
+// import ReplayIcon from "@mui/icons-material/Replay";
 
 const OpenVideo = () => {
   const videoRef = useRef(null);
@@ -797,70 +802,125 @@ const OpenVideo = () => {
           </Box>
           <Box
             sx={{
-              backgroundColor: "rgba(0, 0, 0, 0.12)",
+              backgroundColor: "rgba(0, 0, 0, 0.2)",
               height: "100vh",
               backdropFilter: "blur(10px)",
-              display: "flex",
+              display: "fixed",
               flexDirection: "column",
-              justifyContent: "flex-start",
+              justifyContent: "center",
               alignItems: "center",
+              width: "100%",
               pr: 5,
-              pl: 5,
-              pt: 15,
             }}
           >
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                marginBottom: 2,
-              }}
-            >
-              <Avatar
-                src={seller.profilePicture}
-                alt={seller.nickname}
-                sx={{ marginRight: 2, width: 32, height: 32 }}
-              />
-              <Box>
-                <Typography
-                  variant="body2"
-                  sx={{ fontWeight: "bold", color: "white" }}
-                >
-                  {seller.nickname}
-                </Typography>
-                <Typography variant="body1" sx={{ color: "white" }}>
-                  {title}
-                </Typography>
-              </Box>
-            </Box>
-            <Typography variant="h6" sx={{ color: "white", marginBottom: 5 }}>
-              상품 목록
-            </Typography>
-            {productList.map((product, index) => (
+            <Box sx={{ display: "flex", alignItems: "center", gap: 2, mt: 15 }}>
+              <ArrowBackIosNewIcon sx={{ color: "white", fontSize: 28 }} />
               <Box
-                key={index}
                 sx={{
-                  marginBottom: 2,
                   display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  width: "80%",
+
+                  marginBottom: 2,
+                  flexDirection: "column",
+                  gap: 1,
                 }}
               >
-                <Box>
+                <Box
+                  sx={{
+                    gap: 0.8,
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <Typography sx={{ color: "white", fontSize: 25 }}>
+                    {title}
+                  </Typography>
+                  {seller.level < 2 ? (
+                    <LevelBaby />
+                  ) : seller.level < 7 ? (
+                    <LevelSmall />
+                  ) : seller.level < 26 ? (
+                    <LevelMiddle />
+                  ) : (
+                    <LevelBig />
+                  )}
+                </Box>
+
+                <Box sx={{ display: "flex", alignItems: "center" }}>
+                  <Avatar
+                    src={seller.profilePicture}
+                    alt={seller.nickname}
+                    sx={{ marginRight: 1.5, width: 24, height: 24 }}
+                  />
                   <Typography
                     variant="body2"
                     sx={{ fontWeight: "bold", color: "white" }}
                   >
-                    {product.name}
-                  </Typography>
-                  <Typography variant="body1" sx={{ color: "white" }}>
-                    가격: {formatPrice(product.price)}
+                    {seller.name}
                   </Typography>
                 </Box>
-                <Box>
-                  <Button
+              </Box>
+            </Box>
+            <Box
+              sx={{
+                width: "100%",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <Typography variant="h6" sx={{ color: "white", my: 3, pl: 5 }}>
+                상품 목록
+              </Typography>
+              <Box
+                sx={{
+                  display: "flex",
+                  width: "100%",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                {productList.map((product, index) => (
+                  <Box
+                    sx={{
+                      width: "90%",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      display: "flex",
+                      flexDirection: "column",
+                      borderBottom: "0.33px solid rgba(240, 240, 240, 0.5)",
+                      py: 1.5,
+                    }}
+                  >
+                    <Box
+                      key={index}
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        width: "95%",
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          flexDirection: "column",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          display: "flex",
+                        }}
+                      >
+                        <Box>
+                          <Typography
+                            sx={{ fontWeight: "bold", color: "white" }}
+                          >
+                            {product.name}
+                          </Typography>
+                          <Typography sx={{ color: "white" }}>
+                            {formatPrice(product.price)}
+                          </Typography>
+                        </Box>
+                      </Box>
+                      <Box>
+                        {/* <Button
                     color="google"
                     onClick={() =>
                       product.shortsId === 0
@@ -869,157 +929,172 @@ const OpenVideo = () => {
                     }
                   >
                     <ReplayIcon />
-                  </Button>
-                </Box>
-                {isPublisher ? (
-                  <Button
-                    variant="contained"
-                    color={
-                      index <= currentProductIndex ? "primary" : "secondary"
-                    }
-                    onClick={() =>
-                      handlePrepareProduct(index + currentProductIndex + 1)
-                    }
-                    disabled={index <= currentProductIndex}
-                    sx={{
-                      width: "36vw",
-                      color: "white",
-                      "&.Mui-disabled": {
-                        color: "white",
-                      },
-                    }}
-                  >
-                    {index < currentProductIndex
-                      ? "방송 종료"
-                      : index === currentProductIndex
-                      ? "방송 중"
-                      : "이 상품 준비하기"}
-                  </Button>
-                ) : index === currentProductIndex ? (
-                  <Box>
-                    {currentProduct.status > 99 ? (
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        disabled
-                        onClick={() => handleReserve(currentProductIndex)}
-                        sx={{ width: "36vw", color: "white" }}
-                      >
-                        구매완료
-                      </Button>
-                    ) : currentProduct.status > 49 ? (
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        disabled
-                        onClick={() => handleReserve(currentProductIndex)}
-                        sx={{ width: "36vw", color: "white" }}
-                      >
-                        예약 완료
-                      </Button>
-                    ) : currentProduct.status > 0 &&
-                      currentProduct.status < 6 ? (
-                      <Button
-                        variant="contained"
-                        color="orange"
-                        onClick={() => handleReserve(currentProductIndex)}
-                        sx={{ width: "36vw", color: "white" }}
-                      >
-                        줄서기
-                      </Button>
-                    ) : currentProduct.status == 0 ? (
-                      <Button
-                        variant="contained"
-                        color="secondary"
-                        disabled={!isRecording}
-                        onClick={() =>
-                          handleBuy(
-                            currentProduct.productId,
-                            currentProductIndex
-                          )
-                        }
-                        sx={{ width: "36vw", color: "white" }}
-                      >
-                        {isRecording ? "구매하기" : "상품 준비중"}
-                      </Button>
-                    ) : (
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        disabled
-                        onClick={() =>
-                          handleBuy(
-                            currentProduct.productId,
-                            currentProductIndex
-                          )
-                        }
-                        sx={{ width: "36vw", color: "white" }}
-                      >
-                        구매 불가
-                      </Button>
-                    )}
+                  </Button> */}
+                        {isPublisher ? (
+                          <Button
+                            variant="contained"
+                            color={
+                              index <= currentProductIndex
+                                ? "primary"
+                                : "secondary"
+                            }
+                            onClick={() =>
+                              handlePrepareProduct(
+                                index + currentProductIndex + 1
+                              )
+                            }
+                            disabled={index <= currentProductIndex}
+                            sx={{
+                              width: "36vw",
+                              color: "white",
+                              "&.Mui-disabled": {
+                                color: "white",
+                              },
+                            }}
+                          >
+                            {index < currentProductIndex
+                              ? "방송 종료"
+                              : index === currentProductIndex
+                              ? "방송 중"
+                              : "이 상품 준비하기"}
+                          </Button>
+                        ) : index === currentProductIndex ? (
+                          <Box>
+                            {currentProduct.status > 99 ? (
+                              <Button
+                                variant="contained"
+                                color="primary"
+                                disabled
+                                onClick={() =>
+                                  handleReserve(currentProductIndex)
+                                }
+                                sx={{ width: "36vw", color: "white" }}
+                              >
+                                구매완료
+                              </Button>
+                            ) : currentProduct.status > 49 ? (
+                              <Button
+                                variant="contained"
+                                color="primary"
+                                disabled
+                                onClick={() =>
+                                  handleReserve(currentProductIndex)
+                                }
+                                sx={{ width: "36vw", color: "white" }}
+                              >
+                                예약 완료
+                              </Button>
+                            ) : currentProduct.status > 0 &&
+                              currentProduct.status < 6 ? (
+                              <Button
+                                variant="contained"
+                                color="orange"
+                                onClick={() =>
+                                  handleReserve(currentProductIndex)
+                                }
+                                sx={{ width: "36vw", color: "white" }}
+                              >
+                                줄서기
+                              </Button>
+                            ) : currentProduct.status == 0 ? (
+                              <Button
+                                variant="contained"
+                                color="secondary"
+                                disabled={!isRecording}
+                                onClick={() =>
+                                  handleBuy(
+                                    currentProduct.productId,
+                                    currentProductIndex
+                                  )
+                                }
+                                sx={{ width: "36vw", color: "white" }}
+                              >
+                                {isRecording ? "구매하기" : "상품 준비중"}
+                              </Button>
+                            ) : (
+                              <Button
+                                variant="contained"
+                                color="primary"
+                                disabled
+                                onClick={() =>
+                                  handleBuy(
+                                    currentProduct.productId,
+                                    currentProductIndex
+                                  )
+                                }
+                                sx={{ width: "36vw", color: "white" }}
+                              >
+                                구매 불가
+                              </Button>
+                            )}
+                          </Box>
+                        ) : index < currentProductIndex ? (
+                          <Box>
+                            {product.status > 99 ? (
+                              <Button
+                                variant="contained"
+                                color="primary"
+                                disabled
+                                sx={{ width: "36vw", color: "white" }}
+                              >
+                                구매완료
+                              </Button>
+                            ) : product.status > 49 ? (
+                              <Button
+                                variant="contained"
+                                color="primary"
+                                disabled
+                                sx={{ width: "36vw", color: "white" }}
+                              >
+                                예약 완료
+                              </Button>
+                            ) : product.status === 0 ? (
+                              <Button
+                                variant="contained"
+                                color="secondary"
+                                onClick={() =>
+                                  handleBuy(product.productId, index)
+                                }
+                                sx={{ width: "36vw", color: "white" }}
+                              >
+                                구매하기
+                              </Button>
+                            ) : product.status > 0 && product.status < 6 ? (
+                              <Button
+                                variant="contained"
+                                color="orange"
+                                onClick={() => handleReserve(index)}
+                                sx={{ width: "36vw", color: "white" }}
+                              >
+                                줄서기
+                              </Button>
+                            ) : (
+                              <Button
+                                variant="contained"
+                                color="secondary"
+                                disabled={true}
+                                sx={{ width: "36vw", color: "white" }}
+                              >
+                                구매 불가
+                              </Button>
+                            )}
+                          </Box>
+                        ) : (
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            disabled={true}
+                            sx={{ width: "36vw", color: "white" }}
+                          >
+                            방송예정
+                          </Button>
+                        )}
+                      </Box>
+                    </Box>
                   </Box>
-                ) : index < currentProductIndex ? (
-                  <Box>
-                    {product.status > 99 ? (
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        disabled
-                        sx={{ width: "36vw", color: "white" }}
-                      >
-                        구매완료
-                      </Button>
-                    ) : product.status > 49 ? (
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        disabled
-                        sx={{ width: "36vw", color: "white" }}
-                      >
-                        예약 완료
-                      </Button>
-                    ) : product.status === 0 ? (
-                      <Button
-                        variant="contained"
-                        color="secondary"
-                        onClick={() => handleBuy(product.productId, index)}
-                        sx={{ width: "36vw", color: "white" }}
-                      >
-                        구매하기
-                      </Button>
-                    ) : product.status > 0 && product.status < 6 ? (
-                      <Button
-                        variant="contained"
-                        color="orange"
-                        onClick={() => handleReserve(index)}
-                        sx={{ width: "36vw", color: "white" }}
-                      >
-                        줄서기
-                      </Button>
-                    ) : (
-                      <Button
-                        variant="contained"
-                        color="secondary"
-                        disabled={true}
-                        sx={{ width: "36vw", color: "white" }}
-                      >
-                        구매 불가
-                      </Button>
-                    )}
-                  </Box>
-                ) : (
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    disabled={true}
-                    sx={{ width: "36vw", color: "white" }}
-                  >
-                    방송예정
-                  </Button>
-                )}
+                ))}
               </Box>
-            ))}
+            </Box>
           </Box>
         </Slider>
       </Box>

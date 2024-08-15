@@ -97,9 +97,9 @@ const UpcomingModal = ({
                 <Button
                   onClick={handleEditLive}
                   sx={{
-                    backgroundColor: "orange",
-                    color: "white",
-                    letterSpacing: "-0.5px",
+                    backgroundColor: "#fbe9e7",
+                    color: "#FF0B55",
+                    borderRadius: 1,
                   }}
                 >
                   나의 라이브
@@ -110,6 +110,7 @@ const UpcomingModal = ({
                     setScrap();
                   }}
                   sx={{
+                    borderRadius: 1,
                     bgcolor: scrap ? "#EEEEEF" : "#FF0B55",
                     color: scrap ? "rgba(0, 0, 0, 0.52)" : "#FFFFFF",
                   }}

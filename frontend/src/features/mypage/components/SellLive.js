@@ -15,8 +15,10 @@ const Live = ({ items }) => {
 
   const [open, setOpen] = useState(false);
   const liveDetail = useSelector((state) => state.live.liveDetail);
+  // console.log("0000", liveDetail);
 
   const handleButtonClick = async (item) => {
+    // console.log("1", item);
     try {
       await dispatch(fetchLiveDetail(item.liveId));
       setOpen(true);
@@ -163,6 +165,14 @@ const Live = ({ items }) => {
                     </Typography>
                     <ChevronRight />
                   </Box>
+                  {liveDetail.liveId && (
+                    <UpcomingModal
+                      id={index}
+                      open={open}
+                      handleClose={handleClose}
+                      liveDetail={liveDetail}
+                    />
+                  )}
                 </Box>
               </Box>
             ))}
