@@ -118,7 +118,7 @@ const HomePage = () => {
         tradePlace: liveItem.tradePlace,
         dongName: liveItem.dongName,
         isLive: liveItem.isLive,
-        thumbnail: liveItem.liveThumbnail,
+        thumbnail: liveItem.thumbnail,
         scrap: liveItem.scrap,
         liveDate: liveItem.liveDate,
       }));

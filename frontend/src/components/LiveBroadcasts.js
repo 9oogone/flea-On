@@ -95,6 +95,7 @@ const LiveBroadcasts = ({ items: initialItems }) => {
                   </Box>
                   {item.isLive ? (
                     <LiveFooter
+                      id={item.id}
                       name={item.productNames}
                       dongName={item.dongName}
                       title={item.title}
