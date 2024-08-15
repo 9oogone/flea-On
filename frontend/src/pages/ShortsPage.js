@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { setCurrentShort } from "../features/shorts/shortsSlice";
 import CustomVideoPlayer from "../components/CustomVideoPlayer";
 import baseAxios from "../utils/httpCommons";
@@ -25,8 +25,12 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import ShareIcon from "@mui/icons-material/Share";
 import useDidMountEffect from "../utils/useDidMountEffect";
 import { formatPrice } from "../utils/cssUtils";
+import ArrowCircleDownIcon from '@mui/icons-material/ArrowCircleDown';
+import ArrowCircleUpIcon from '@mui/icons-material/ArrowCircleUp';
 
 const ShortsPage = () => {
+  const location = useLocation();
+  const dir = location.state;
   const { shortsId } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -42,6 +46,7 @@ const ShortsPage = () => {
   const [subList, setSubList] = useState([]);
   const [isBoostModalOpen, setIsBoostModalOpen] = useState(false);
   const [tradeNow, setTradeNow] = useState(true);
+  const [shortList, setAShortLIst] = useState([]);
 
   const videoRef = useRef(null);
   useDidMountEffect(() => {
@@ -98,18 +103,9 @@ const ShortsPage = () => {
   //   return commentTime <= videoTime;
   // });
 
-  const handleSwipe = (eventData) => {
-    if (eventData.dir === "Up") {
-      // 다음 비디오로 이동
-      const nextShortId = parseInt(shortsId) + 1;
-      navigate(`/shorts/${nextShortId}`);
-    } else if (eventData.dir === "Down") {
-      // 이전 비디오로 이동
-      const prevShortId = parseInt(shortsId) - 1;
-      if (prevShortId > 0) {
-        navigate(`/shorts/${prevShortId}`);
-      }
-    }
+  const handleSwipe = async (eventData) => {
+    const res = await baseAxios().get('fleaon/shorts/random')
+    navigate(`/shorts/${res.data}`,{state:{dir:eventData.dir}})
   };
   const handlers = useSwipeable({
     onSwipedUp: handleSwipe,
