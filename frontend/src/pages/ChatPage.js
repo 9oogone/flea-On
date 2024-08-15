@@ -31,6 +31,7 @@ const ChatPage = () => {
     const intervalId = setInterval(() => {
         dispatch(fetchChats());
     }, 1000);
+    fetchChats()
     return () => clearInterval(intervalId);
   }, [status, dispatch]);
 
