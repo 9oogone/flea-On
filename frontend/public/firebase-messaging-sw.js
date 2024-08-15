@@ -29,7 +29,7 @@ messaging.onBackgroundMessage((payload) => {
   const notificationTitle = payload.data.title;
   const notificationOptions = {
     body: payload.data.body,
-    icon: "./icons/icon-144x144.png",
+    icon: payload.data.icon || "./icons/icon-144x144.png",
     data: {
       url: payload.data.redirect_url || "/",
     },

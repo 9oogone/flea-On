@@ -401,6 +401,8 @@ const ChatRoom = () => {
       </ul>
       <ChatInput
         chatID={chatID}
+        // liveID={liveID}
+        // productID={productID}
         message={newMessage}
         setMessage={setNewMessage}
         handleSendMessage={sendMessage}

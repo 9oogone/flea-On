@@ -24,6 +24,8 @@ import SendIcon from "@mui/icons-material/Send";
 import CloseIcon from "@mui/icons-material/Close";
 import swipeLeftImage from "../assets/images/swipe_left.svg";
 import ReplayIcon from "@mui/icons-material/Replay";
+import { formatPrice } from "../utils/cssUtils";
+
 const OpenVideo = () => {
   const videoRef = useRef(null);
   const [isRecording, setIsRecording] = useState(false);
@@ -666,7 +668,7 @@ const OpenVideo = () => {
                 <Box sx={{ color: "white" }}>
                   <Typography variant="h5">{currentProduct.name}</Typography>
                   <Typography variant="body1">
-                    {currentProduct.price}원
+                    {formatPrice(currentProduct.price)}
                   </Typography>
                 </Box>
               )}
@@ -825,7 +827,7 @@ const OpenVideo = () => {
                     {product.name}
                   </Typography>
                   <Typography variant="body1" sx={{ color: "white" }}>
-                    가격: {product.price}원
+                    가격: {formatPrice(product.price)}
                   </Typography>
                 </Box>
                 <Box>

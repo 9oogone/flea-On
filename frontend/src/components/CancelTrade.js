@@ -13,7 +13,12 @@ const CancelTrade = ({ isOpen, onClose, chatID }) => {
   async function cancelTrade() {
     try {
         setLoading(true)
-        await baseURL.delete("fleaon/purchase/break-trade/"+chatID);
+        const response=await baseURL.delete("fleaon/purchase/break-trade/"+chatID)
+        await baseURL.post('/push/cancelAlarm',{
+          "nextId": response.data,
+          "liveId": 0,
+          "productId": 0
+        })
         setLoading(false)
         navigate("/chat",{replace:true})
         onClose();
