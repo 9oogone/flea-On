@@ -15,7 +15,7 @@ const InitialPage = () => {
   useEffect(() => {
     if (user.phone) setStep(1);
     if (user.nickname) setStep(2);
-    if (user.dongName) {
+    if (user.dongName.length) {
       navigate("/");
     }
   }, [user]);

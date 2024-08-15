@@ -3,7 +3,7 @@ import { Box, Typography } from "@mui/material";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import axios from "axios";
 import baseAxios from "../utils/httpCommons";
-
+import { formatPrice } from "../utils/cssUtils";
 const LiveFooter = ({ name, dongName, title, price, id }) => {
   const [index, setIndex] = useState(null);
 
@@ -89,7 +89,7 @@ const LiveFooter = ({ name, dongName, title, price, id }) => {
               fontWeight: 500,
             }}
           >
-            {price[index]}원
+            {formatPrice(price[index])}
           </Typography>
         </Box>
       </Box>

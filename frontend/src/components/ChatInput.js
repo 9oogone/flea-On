@@ -5,7 +5,9 @@ import { IconButton } from "@mui/material";
 import ChatNav from "./ChatNav";
 import CancelTrade from "./CancelTrade";
 import ChatTradeDetail from "./ChatTradeDetail";
-import ChangeTime from "../components/ChangeTime"; 
+import ChangeTime from "../components/ChangeTime";
+import baseAxios from "../utils/httpCommons";
+import { getTradeDetail } from "../features/chat/ChatApi";
 
 const ChatInput = ({
   chatID,
@@ -15,16 +17,18 @@ const ChatInput = ({
   setFocus,
   isChatNavOpen,
   setIsChatNavOpen,
-  // isSeller, // 일단은 사용하지 않음 
-  isBuyer   
+
+  // isSeller, // 일단은 사용하지 않음
+  isBuyer,
 }) => {
   const [isCancelTradeOpen, setIsCancelTradeOpen] = useState(false);
   const [isTradeDetailOpen, setIsTradeDetailOpen] = useState(false);
   const [isChangeTimeOpen, setIsChangeTimeOpen] = useState(false);
+  const [productIds, setProductIds] = useState([]);
   const inputRef = useRef(null);
 
   useEffect(() => {
-    console.log(isBuyer)
+    console.log(isBuyer);
     if (inputRef.current) {
       inputRef.current.addEventListener("focus", () => {
         setFocus(true);
@@ -36,6 +40,15 @@ const ChatInput = ({
         setFocus(false);
       });
     }
+    const fetchDetail = () => {
+      getTradeDetail(chatID).then((res) => {
+        console.log("product 나오나요?", res);
+        const ids = res.buyProduct.map((product) => product.productId);
+        setProductIds(ids);
+      });
+    };
+
+    fetchDetail();
   }, [setFocus]);
 
   const handlePlusIconClick = () => {
@@ -59,7 +72,9 @@ const ChatInput = ({
 
   return (
     <div
-      className={`${inputStyles.chatInputContainer} ${isChatNavOpen ? inputStyles.blurBackground : ""}`}
+      className={`${inputStyles.chatInputContainer} ${
+        isChatNavOpen ? inputStyles.blurBackground : ""
+      }`}
     >
       {isBuyer && ( // 구매자인 경우에만 + 아이콘을 표시합니다.
         <div className={inputStyles.plusIcon} onClick={handlePlusIconClick}>
@@ -77,7 +92,8 @@ const ChatInput = ({
       )}
       <CancelTrade
         chatID={chatID}
-        setIsOpen = {setIsCancelTradeOpen}
+        products={productIds}
+        setIsOpen={setIsCancelTradeOpen}
         isOpen={isCancelTradeOpen}
         onClose={() => setIsCancelTradeOpen(false)}
       />
