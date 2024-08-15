@@ -23,7 +23,7 @@ public class ChattingList {
     @Column(name = "writer_id")
     private int writerId;
 
-    @Column(name = "chat_content")
+    @Column(name = "chat_content", columnDefinition = "LONGTEXT")
     private String chatContent;
 
     @Column(name = "chat_time")

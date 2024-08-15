@@ -24,7 +24,7 @@ public class ShortsChatting {
     @Column(name = "live_chat_id")
     private int liveChatId;
 
-    @Column(name = "content")
+    @Column(name = "content", columnDefinition = "LONGTEXT")
     private String content;
 
     @Column(name = "time")
