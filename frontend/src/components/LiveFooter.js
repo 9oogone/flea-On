@@ -78,6 +78,9 @@ const LiveFooter = ({ name, dongName, title, price, id }) => {
               color: "white",
               fontSize: 10,
               fontWeight: 500,
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
             }}
           >
             {title}

@@ -379,22 +379,6 @@ const CalendarTrade = ({ userId, selectedDate, dateTrade }) => {
             justifyContent: "center",
           }}
         >
-          {/* <Button
-            variant="outlined"
-            color="primary"
-            sx={{
-              borderColor: "#FF0B55",
-              color: "#FF0B55",
-              "&:hover": {
-                borderColor: "#e6004c",
-                color: "#e6004c",
-              },
-              borderRadius: "8px",
-              margin: "0 8px",
-            }}
-          >
-            채팅하기
-          </Button> */}
           <Button
             onClick={handleCloseModal}
             variant="outlined"

@@ -46,7 +46,10 @@ const ScrapLive = ({ items }) => {
               textAlign: "center",
             }}
           >
-            <Typography variant="h6" sx={{ color: "grey.700" }}>
+            <Typography
+              variant="h6"
+              sx={{ color: "grey.700", textAlign: "center" }}
+            >
               관심있는 라이브가 없어요. <br />
               지금 라이브를 보러 갈까요?
             </Typography>
@@ -94,10 +97,7 @@ const ScrapLive = ({ items }) => {
                   >
                     <UpcomingHeader liveDate={item.liveDate} isScrap={true} />
                   </Box>
-                  <UpcomingFooter
-                    dongName={item.dongName}
-                    title={item.title}
-                  />
+                  <UpcomingFooter dongName={item.dongName} title={item.title} />
                 </Box>
               </Button>
               {liveDetail.liveId && (

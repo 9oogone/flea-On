@@ -120,8 +120,20 @@ const LiveBroadcasts = ({ items: initialItems }) => {
             </Grid>
           ))
         ) : (
-          <Grid item xs={12} sx={{ textAlign: "center", mt: 4 }}>
-            <Typography variant="h6" sx={{ textAlign: "center" }}>
+          <Grid
+            item
+            xs={12}
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              textAlign: "center",
+            }}
+          >
+            <Typography
+              variant="h6"
+              sx={{ color: "grey.700", textAlign: "center" }}
+            >
               라이브 방송이 없습니다.
             </Typography>
           </Grid>
