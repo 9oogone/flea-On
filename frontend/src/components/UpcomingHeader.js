@@ -1,36 +1,72 @@
 import React from "react";
-import { Box, Typography } from "@mui/material";
+import { Box, IconButton, Typography } from "@mui/material";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
-const UpcomingHeader = ({ liveDate, isScrap }) => (
-  <>
-    <Box
-      sx={{
-        padding: "3px",
-        position: "absolute",
-        background: "white",
-        borderRadius: 16,
-      }}
-    >
-      <Typography
+import { format, parseISO, isToday, isTomorrow } from "date-fns";
+import { formatDateTimeDistance } from "../utils/cssUtils";
+
+const UpcomingHeader = ({ liveDate, scrap, setScrap }) => {
+  let date;
+  let formattedDate;
+  let formattedTime;
+
+  try {
+    // console.log(liveDate, "홈 라이브 시간입니다");
+    date = parseISO(liveDate);
+    if (isNaN(date)) throw new Error("Invalid date");
+
+    if (isToday(date)) {
+      formattedDate = "오늘";
+    } else if (isTomorrow(date)) {
+      formattedDate = "내일";
+    } else {
+      formattedDate = format(date, "MM/dd");
+    }
+
+    formattedTime = format(date, "a hh시 mm분");
+  } catch (error) {
+    console.error("Invalid date format:", liveDate);
+    formattedDate = "Invalid date";
+    formattedTime = "";
+  }
+
+  return (
+    <Box>
+      <Box
         sx={{
-          color: "black",
-          fontSize: 8,
-          lineHeight: "8px",
+          padding: "3px",
+          position: "absolute",
+          background: "white",
+          borderRadius: 16,
         }}
       >
-        {liveDate}
-      </Typography>
+        <Typography
+          sx={{
+            color: "black",
+            fontSize: 8,
+            lineHeight: "8px",
+          }}
+        >
+          {formatDateTimeDistance(liveDate)}
+        </Typography>
+      </Box>
+      <IconButton
+        sx={{
+          display: "flex",
+          justifyContent: "flex-end",
+          color: "white",
+          width: "100%",
+          p: 0,
+        }}
+        onClick={(e) => {
+          e.stopPropagation();
+          setScrap();
+        }}
+      >
+        {scrap ? <BookmarkIcon /> : <BookmarkBorderIcon />}
+      </IconButton>
     </Box>
-    <Box
-      sx={{
-        textAlign: "end",
-        color: "white",
-      }}
-    >
-      {isScrap ? <BookmarkIcon /> : <BookmarkBorderIcon />}
-    </Box>
-  </>
-);
+  );
+};
 
 export default UpcomingHeader;

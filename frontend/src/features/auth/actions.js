@@ -1,6 +1,7 @@
 // src/features/auth/actions.js
 import { login, logout, setUser } from "./authSlice";
 import Cookies from "js-cookie";
+import baseAxios from "../../utils/httpCommons"; // Adjust the path according to your project structure
 
 export const performLogout = () => (dispatch) => {
   Cookies.remove("Authorization");
@@ -8,7 +9,9 @@ export const performLogout = () => (dispatch) => {
 };
 
 export const fetchUserInfo = () => async (dispatch, getState) => {
-  const { token } = getState().auth;
+  const token = process.env.REACT_APP_TOKEN
+    ? process.env.REACT_APP_TOKEN
+    : getState().auth.token;
 
   if (!token) {
     console.error("No token found, cannot fetch user info");
@@ -16,20 +19,25 @@ export const fetchUserInfo = () => async (dispatch, getState) => {
   }
 
   try {
-    const response = await fetch(
-      "http://i11b202.p.ssafy.io/fleaon/users/info",
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const response = await baseAxios().get("/fleaon/users/info");
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error("Failed to fetch user info");
     }
 
-    const userInfo = await response.json();
+    const userInfo = response.data;
+
+    // 로컬 스토리지에서 FCM 토큰 가져오기
+    const fcmToken = localStorage.getItem("fcmToken");
+
+    // FCM 토큰을 user 정보에 추가
+    if (fcmToken) {
+      userInfo.fcm = fcmToken;
+      await baseAxios().post(`/fleaon/users/fcm?fcmToken=${fcmToken}`);
+      console.log("FCM Token sent successfully.");
+    } else {
+      console.log("No FCM Token found in local storage.");
+    }
     dispatch(setUser({ user: userInfo }));
   } catch (error) {
     console.error("Failed to fetch user info:", error);

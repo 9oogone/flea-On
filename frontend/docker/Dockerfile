@@ -1,10 +1,10 @@
-FROM node:20:15.0-alpine
+FROM node:20.15.0-alpine
 
 WORKDIR /front
 
 COPY package.json .
 
-RUN npm install
+RUN npm install --force
 
 COPY . .
 

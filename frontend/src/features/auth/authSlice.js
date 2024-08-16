@@ -1,5 +1,6 @@
 // src/features/auth/authSlice.js
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import baseAxios from "../../utils/httpCommons";
 
 // Helper functions to handle localStorage
 const loadState = () => {
@@ -25,10 +26,39 @@ const saveState = (state) => {
 
 const initialState = loadState() || {
   isAuthenticated: false,
-  user: { phone: null, nickname: null, user_region: null },
+  user: {
+    userId: null,
+    email: null,
+    userIdentifier: null,
+    profilePicture: null,
+    name: null,
+    nickname: null,
+    role: null,
+    phone: null,
+    level: null,
+  },
   token: null,
 };
 
+export const updateUserInfo = createAsyncThunk(
+  "auth/updateUserInfo",
+  async ({ data }, { rejectWithValue }) => {
+    try {
+      const response = await baseAxios().post(`/fleaon/users/extraInfo`, data);
+      console.log("response : ", response);
+      return response.data;
+    } catch (error) {
+      console.error("Error in updateUserInfo:", error);
+      if (error.response && error.response.data) {
+        // 서버가 반환한 오류 메시지 처리
+        return rejectWithValue(error.response.data);
+      } else {
+        // 기타 오류 처리
+        return rejectWithValue(error.message);
+      }
+    }
+  }
+);
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -57,12 +87,32 @@ const authSlice = createSlice({
       saveState(state);
     },
     setUserRegion(state, action) {
-      state.user.user_region = action.payload;
+      state.user.dongName = action.payload.dongName;
+      state.user.regionCode = action.payload.regionCode;
       saveState(state);
     },
+    updateUserLevel(state, action) {
+      if (state.user) {
+        state.user.level = action.payload;
+        saveState(state);
+      }
+    },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(updateUserInfo.fulfilled, (state, action) => {
+      state.user = { ...state.user, ...action.payload };
+      saveState(state);
+    });
   },
 });
 
-export const { login, logout, setUser, setPhone, setNickname, setUserRegion } =
-  authSlice.actions;
+export const {
+  login,
+  logout,
+  setUser,
+  setPhone,
+  setNickname,
+  setUserRegion,
+  updateUserLevel,
+} = authSlice.actions;
 export default authSlice.reducer;

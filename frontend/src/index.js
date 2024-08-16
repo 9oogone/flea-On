@@ -7,6 +7,9 @@ import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import theme from "./theme";
 import { ThemeProvider } from "@mui/material/styles";
+import "./styles/global.css";
+
+import { requestPermission, onMessageListener } from "./firebase"; // Firebase 초기화 파일 임포트
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -18,6 +21,16 @@ root.render(
     </React.StrictMode>
   </Provider>
 );
+
+// Firebase 푸시 알림 권한 요청
+requestPermission();
+
+// 메시지 리스너 설정
+// onMessageListener()
+//   .then((payload) => {
+//     console.log("Received foreground message: ", payload);
+//   })
+//   .catch((err) => console.log("Error in receiving message: ", err));
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

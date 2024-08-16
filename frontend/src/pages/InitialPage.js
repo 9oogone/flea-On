@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import PhoneInput from "../features/auth/components/PhoneInput";
 import NicknameInput from "../features/auth/components/NicknameInput";
 import UserRegionInput from "../features/auth/components/UserRegionInput";
+import baseAxios from "../utils/httpCommons";
 
 const InitialPage = () => {
   const [step, setStep] = useState(0);
@@ -13,30 +14,56 @@ const InitialPage = () => {
 
   useEffect(() => {
     if (user.phone) setStep(1);
-    if (user.nickname) setStep(2);
+    else if (user.nickname) setStep(2);
+    else if (user.dongName?.length) {
+      navigate("/");
+    }
   }, [user]);
 
   const nextStep = () => {
     setStep((prev) => prev + 1);
   };
 
-  const handleFinalSubmit = () => {
+  const handleFinalSubmit = async () => {
     navigate("/welcome");
   };
 
   return (
     <Container>
       <Typography
-        variant="h5"
-        sx={{ fontWeight: 1000, mt: step < 2 ? 20 : 10 }}
+        sx={{
+          fontWeight: 1000,
+          mt: step < 2 ? 20 : 10,
+          color: "rgba(44, 44, 46, 3)",
+          fontSize: "24px",
+          letterSpacing: "-1px",
+          boxShadow: "none",
+        }}
       >
-        추가 정보를 입력해주세요!
+        추가 정보를 입력해 주세요!
       </Typography>
-      <Typography variant="body2" sx={{ mt: 2, color: "gray" }}>
-        몇 가지 정보를 더 입력해 주시면,
+      <Typography
+        variant="body2"
+        sx={{
+          mt: 2,
+          mb: -0.1,
+          color: "gray",
+          letterSpacing: "-0.5px",
+          boxShadow: "none",
+        }}
+      >
+        몇 가지 정보를 입력해 주시면,
       </Typography>
-      <Typography variant="body2" sx={{ color: "gray", mb: 4 }}>
-        flea:ON을 더욱 편리하게 이용하실 수 있습니다
+      <Typography
+        variant="body2"
+        sx={{
+          color: "gray",
+          mb: 4,
+          letterSpacing: "-0.5px",
+          boxShadow: "none",
+        }}
+      >
+        flea:ON을 더욱 편리하게 이용할 수 있습니다.
       </Typography>
       {step === 0 && !user.phone && <PhoneInput onNext={nextStep} />}
       {step === 1 && !user.nickname && <NicknameInput onNext={nextStep} />}
@@ -45,15 +72,46 @@ const InitialPage = () => {
         {step === 2 && (
           <Button
             onClick={handleFinalSubmit}
-            variant="contained"
-            color="primary"
+            variant={
+              step === 2 &&
+              (!user.dongName ||
+                user.dongName.length === 0 ||
+                user.dongName.length > 3)
+                ? "outlined"
+                : "contained"
+            }
+            color={
+              step === 2 &&
+              (!user.dongName ||
+                user.dongName.length === 0 ||
+                user.dongName.length > 3)
+                ? "primary"
+                : "secondary"
+            }
             disabled={
               step === 2 &&
-              (!user.user_region ||
-                user.user_region.length === 0 ||
-                user.user_region.length > 3)
+              (!user.dongName ||
+                user.dongName.length === 0 ||
+                user.dongName.length > 3)
             }
             fullWidth
+            sx={{
+              boxShadow: "none",
+              width: "100%",
+              height: "46px",
+              letterSpacing: "-0.5px",
+              ...(step === 2 &&
+                (!user.dongName ||
+                  user.dongName.length === 0 ||
+                  user.dongName.length > 3) && {
+                  "&.MuiButton-containedSecondary": {
+                    boxShadow: "none",
+                    width: "100%",
+                    height: "46px",
+                    letterSpacing: "-0.5px",
+                  },
+                }),
+            }}
           >
             계속하기
           </Button>
@@ -62,7 +120,7 @@ const InitialPage = () => {
       <Typography
         align="center"
         variant="body2"
-        sx={{ mt: 2, fontSize: "10px" }}
+        sx={{ mt: 2, fontSize: "10px", color: "rgba(44, 44, 46, 1)" }}
       >
         추가 정보를 입력하시고, 다양한 중고 물품 거래를 시작해보세요!
       </Typography>

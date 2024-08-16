@@ -1,27 +1,181 @@
-/* styles/ChatRoom.module.css */
 .chatRoom {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-  }
-  
-  .messageList {
-    flex: 1;
-    overflow-y: auto;
-  }
-  
-  .inputContainer {
-    display: flex;
-    padding: 10px;
-    border-top: 1px solid #ddd;
-  }
-  
-  .textField {
-    flex: 1;
-    margin-right: 10px;
-  }
-  
-  .sendButton {
-    flex-shrink: 0;
-  }
-  
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+.messageList {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 0;
+  list-style: none;
+  margin: 0;
+  margin-top: 3%;
+  margin-bottom: 5%;
+}
+
+.sentMessageContainer,
+.receivedMessageContainer {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+  margin-right: 10px;
+  margin-left: 10px;
+  position: relative;
+  align-items: flex-end; /* 기본적으로 오른쪽 정렬 */
+}
+
+.receivedMessageContainer {
+  align-items: flex-start; /* 왼쪽 정렬 */
+}
+
+.defaultbaloon {
+  position: relative;
+  border-radius: 13.5px;
+  background-color: #ff0b55;
+  display: flex;
+  align-items: center;
+  padding: 9px 10px 8px 12px;
+  box-sizing: border-box;
+  color: #fff;
+  font-family: ABeeZee;
+  max-width: 80%;
+}
+
+.receivedbaloon {
+  position: relative;
+  border-radius: 13.5px;
+  background-color: #F2F2F7;
+  display: flex;
+  align-items: center;
+  padding: 9px 10px 8px 12px;
+  box-sizing: border-box;
+  color: #3F3F3F;
+  font-family: ABeeZee;
+  max-width: 80%;
+}
+
+.systemMessageBaloon {
+  position: relative;
+  border-radius: 13.5px;
+  /* background-color: #fff; */
+  border: 1px solid #ff0b55;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 9px 10px 8px 12px;
+  box-sizing: border-box;
+  color: #ff0b55;
+  font-family: ABeeZee;
+  max-width: 80%;
+  margin-top: 10px;
+}
+
+.systemMessage {
+  font-style: normal;
+  text-align: center;
+}
+
+.msg {
+  position: relative;
+  z-index: 1;
+}
+
+.tailIcon {
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  z-index: 0;
+  top: 5px;
+  padding-right: 5px;
+  transform: translateY(-40%);
+}
+
+.sentMessageContainer .tailIcon {
+  right: -10px;
+}
+
+.receivedMessageContainer .tailIcon {
+  left: -5px;
+}
+
+.messageItem {
+  display: inline-block;
+  border-radius: 20px;
+  max-width: 80%;
+  min-width: 20px;
+  margin: 0;
+  padding: 10px 15px;
+  box-sizing: border-box;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.sent {
+  background-color: #dcf8c6;
+  color: #000;
+  align-self: flex-end;
+  margin-left: auto;
+}
+
+.received {
+  background-color: #fff;
+  color: #000;
+  text-align: left;
+  align-self: flex-start;
+  border: 1px solid #ddd;
+  margin-right: auto;
+}
+
+.inputContainer {
+  display: flex;
+  padding: 10px;
+  border-top: 1px solid #ddd;
+}
+
+.textField {
+  flex-grow: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  margin-right: 10px;
+  box-sizing: border-box;
+}
+
+.time {
+  font-size: 12px;
+  color: gray;
+  margin-top: 5px;
+  align-self: flex-end; /* 오른쪽 정렬 */
+  padding-right: 5px;
+}
+
+.receivedMessageContainer .time {
+  align-self: flex-start; /* 왼쪽 정렬 */
+  padding-left: 5px;
+}
+
+.timeChangeButtons {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 10px;
+  width: 100%;
+}
+
+.timeChangeButtons button {
+  background-color: #fff;
+  color: #ff0b55;
+  border: 1px solid #ff0b55;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.timeChangeButtons button:hover {
+  background-color: #ff0b55;
+  color: #fff;
+}

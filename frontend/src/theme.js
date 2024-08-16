@@ -3,7 +3,10 @@ import { createTheme } from "@mui/material/styles";
 
 const theme = createTheme({
   typography: {
-    fontFamily: "Noto Sans",
+    fontFamily: "Noto Sans KR",
+  },
+  allVariants: {
+    fontFamily: "Noto Sans KR",
   },
   palette: {
     primary: {
@@ -23,6 +26,9 @@ const theme = createTheme({
     },
     google: {
       main: "#ffffff",
+    },
+    orange: {
+      main: "rgba(255, 87, 87, 0.9)",
     },
   },
 });

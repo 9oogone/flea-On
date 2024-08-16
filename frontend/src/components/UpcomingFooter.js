@@ -2,15 +2,7 @@ import React from "react";
 import { Box, Typography } from "@mui/material";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 
-// 주소에서 '동' 부분만 추출하기
-const extractDong = (address) => {
-  const match = address.match(/(\S+동)/);
-  return match ? match[1] : "";
-};
-
-const UpcomingFooter = ({ name, tradePlace, title, price }) => {
-  const dongName = extractDong(tradePlace);
-
+const UpcomingFooter = ({ name, dongName, title, price }) => {
   return (
     <Box
       sx={{
@@ -36,6 +28,9 @@ const UpcomingFooter = ({ name, tradePlace, title, price }) => {
           color: "white",
           fontSize: 14,
           fontWeight: 600,
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
         }}
       >
         {title}

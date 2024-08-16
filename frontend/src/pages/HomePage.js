@@ -1,149 +1,172 @@
-// HomePage.js
-import React from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import Switch from "../components/Switch";
 import LiveBroadcasts from "../components/LiveBroadcasts";
 import Shorts from "../components/Shorts";
-import { Grid, Box, Container } from "@mui/material";
+import { Grid, Box, Button, Container } from "@mui/material";
+import baseAxios from "../utils/httpCommons";
+import { useNavigate } from "react-router-dom";
+import { fetchUserInfo } from "../features/auth/actions";
+import { fetchShortList } from "../features/shorts/actions";
+import useDidMountEffect from "../utils/useDidMountEffect";
+import { useInView } from 'react-intersection-observer';
+import Spinner from "../assets/images/spinner.svg"
+
 const HomePage = () => {
   const selectedTab = useSelector((state) => state.content.selectedTab);
-  // const contents = useSelector((state) => state.content.contents);
-  const contents = {
-    live: [
-      {
-        id: 2,
-        name: "웜업탑",
-        price: 5000,
-        title: "aloyoga 기능성",
-        trade_place: "덕명동",
-        thumbnail: "https://picsum.photos/160/250",
-        live_id: 1,
-        is_scrap: true,
-        is_live: true,
-        live_date: "오늘 오후 8시",
-      },
-      {
-        id: 3,
-        name: "웜업탑",
-        price: 5000,
-        title: "aloyoga 기능성",
-        trade_place: "덕명동",
-        thumbnail: "https://picsum.photos/160/250",
-        live_id: 2,
-        is_scrap: true,
-        is_live: true,
-        live_date: "오늘 오후 8시",products:[{name:"라면",price:3000}]
-      },
-      {
-        id: 4,
-        name: "웜업탑",
-        price: 5000,
-        title: "aloyoga 기능성",
-        trade_place: "덕명동",
-        thumbnail: "https://picsum.photos/160/250",
-        live_id: 3,
-        is_scrap: true,
-        is_live: true,
-        live_date: "오늘 오후 8시",products:[{name:"라면",price:3000}]
-      },
-      {
-        id: 1,
-        name: "웜업탑",
-        price: 5000,
-        title: "식료품 타이쿤 대방출",
-        trade_place: "대전광역시 동구 덕명동 삼성화재연수원 유성동캠퍼스 동원가든 경비실 앞 자전거 거치대",
-        thumbnail: "https://picsum.photos/160/250",
-        author: "초호기딸기왕",
-        live_id: 1,
-        is_scrap: true,
-        is_live: false,
-        live_date: "오늘 오후 8시",
-        products:[{name:"라면",price:3000}, {name:"젤리",price:3000}, {name:"푸딩",price:3000}]
-      },
-      {
-        id: 5,
-        name: "웜업탑",
-        price: 5000,
-        title: "aloyoga 기능성",
-        trade_place: "덕명동",
-        thumbnail: "https://picsum.photos/160/250",
-        live_id: 1,
-        is_scrap: true,
-        is_live: false,
-        live_date: "오늘 오후 8시",products:[{name:"라면",price:3000}]
-      },
-      {
-        id: 6,
-        name: "웜업탑",
-        price: 5000,
-        title: "aloyoga 기능성",
-        trade_place: "덕명동",
-        thumbnail: "https://picsum.photos/160/250",
-        live_id: 1,
-        is_scrap: true,
-        is_live: false,
-        live_date: "오늘 오후 8시",products:[{name:"라면",price:3000}]
-      },
-      {
-        id: 7,
-        name: "웜업탑",
-        price: 5000,
-        title: "aloyoga 기능성",
-        trade_place: "덕명동",
-        thumbnail: "https://picsum.photos/160/250",
-        live_id: 1,
-        is_scrap: true,
-        is_live: false,
-        live_date: "오늘 오후 8시",products:[{name:"라면",price:3000}]
-      },
-      {
-        id: 8,
-        name: "웜업탑",
-        price: 5000,
-        title: "aloyoga 기능성",
-        trade_place: "덕명동",
-        thumbnail: "https://picsum.photos/160/250",
-        live_id: 1,
-        is_scrap: true,
-        is_live: false,
-        live_date: "오늘 오후 8시",products:[{name:"라면",price:3000}]
-      },
-      {
-        id: 9,
-        name: "웜업탑",
-        price: 5000,
-        title: "aloyoga 기능성",
-        trade_place: "덕명동",
-        thumbnail: "https://picsum.photos/160/250",
-        live_id: 1,
-        is_scrap: true,
-        is_live: false,
-        live_date: "오늘 오후 8시",products:[{name:"라면",price:3000}]
-      },
-    ],
-    shorts: [
-      {
-        id: 2,
-        name: "키티템 정리",
-        price: 3000,
-        trade_place: "덕명동",
-        length: "01:30",
-        is_scrap: false,
-        thumbnail: "https://picsum.photos/160/250",
-        shorts_id: 1,
-      },
-      {
-        id: 2,
-        name: "키티템 정리",
-        price: 3000,
-        trade_place: "덕명동",
-        length: "01:30",
-        is_scrap: true,
-        thumbnail: "https://picsum.photos/160/250",
-        shorts_id: 2,
-      },
-    ],
+  const [hasLive, setHasLive] = useState(false);
+  const [liveId, setLiveId] = useState(null);
+  const [liveTitle, setLiveTitle] = useState(null);
+  const [shorts, setShorts] = useState([]);
+  const [live, setLive] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [scrollLoading, setScrollLoading] = useState();
+  const [error, setError] = useState(null);
+  const [page, setPage] = useState(0);
+  const navigate = useNavigate();
+  const [trigger, setTrigger] = useState(0);
+  const [isLast, setIsLast] = useState(true);
+  const [ref, inView] = useInView({
+    triggerOnce: false,
+    threshold: 0.5, // 화면에 절반 이상 보이면 트리거
+  });
+  useEffect(() => {
+    const checkLiveExistence = async () => {
+      try {
+        const response = await baseAxios().get(
+          "/fleaon/users/commerceLive/expected"
+        );
+        // setHasLive(response.data.exist);
+        setLiveId(response.data.liveId);
+        setLiveTitle(response.data.title);
+        if (response.data.liveId !== 0) {
+          setHasLive(true);
+        }
+      } catch (error) {
+        console.error("Error checking live existence", error);
+      }
+    };
+
+    checkLiveExistence();
+  }, []);
+
+  useEffect(() => {
+    if (inView && !scrollLoading) {
+      console.log(123123);
+      setPage((prevPage) => prevPage + 1);
+      setTrigger(trigger + 1);
+    }
+  }, [inView, scrollLoading]);
+
+  // const handleScroll = () => {
+  //   const scrollHeight = document.documentElement.scrollHeight;
+  //   const scrollTop = document.documentElement.scrollTop;
+  //   const clientHeight = window.innerHeight;
+
+  //   if (scrollTop + clientHeight >= scrollHeight - 5 && !loading) {
+  //     console.log(12345)
+  //     setPage((prevPage) => prevPage + 1);
+  //   }
+  // };
+
+  const startLiveBroadcast = async (liveId, liveTitle) => {
+    try {
+      await baseAxios().put(`/fleaOn/live/${liveId}/on`);
+      try {
+        await baseAxios().get(`/push/scrap/${liveId}?title=${liveTitle}`);
+      } catch (error) {
+        console.error("Failed to start live broadcast", error);
+      }
+      navigate(`/live/${liveId}`);
+    } catch (error) {
+      console.error("Failed to start live broadcast", error);
+    }
   };
+
+  const fetchShorts = async () => {
+    try {
+      const response = await baseAxios().get(`/fleaon/mainShorts?page=${page}`);
+      console.log(response);
+      const shortsData = response.data.content.map((short) => ({
+        id: short.shortsId,
+        productName: short.productName,
+        productPrice: short.productPrice,
+        tradePlace: short.tradePlace,
+        dongName: short.dongName,
+        length: short.length,
+        isScrap: short.isScrap,
+        shortsThumbnail: short.shortsThumbnail,
+        shortsId: short.shortsId,
+      }));
+      setIsLast(response.data.last);
+      setShorts((prevShorts) => [...prevShorts, ...shortsData]);
+      setScrollLoading(false);
+    } catch (error) {
+      console.error("Error fetching shorts:", error);
+      setError(error.message);
+      setScrollLoading(false);
+    }
+  };
+
+  const fetchLiveData = async () => {
+    try {
+      const response = await baseAxios().get(`/fleaon/mainLive?page=${page}`);
+      const liveData = response.data.content.map((liveItem) => ({
+        id: liveItem.liveId,
+        title: liveItem.liveTitle,
+        productNames: liveItem.productNames,
+        productPrices: liveItem.productPrices,
+        tradePlace: liveItem.tradePlace,
+        dongName: liveItem.dongName,
+        isLive: liveItem.isLive,
+        thumbnail: liveItem.thumbnail,
+        scrap: liveItem.scrap,
+        liveDate: liveItem.liveDate,
+      }));
+      setIsLast(response.data.last);
+      setLive((prevLive) => [...prevLive, ...liveData]);
+      console.log(liveData);
+      setScrollLoading(false);
+    } catch (error) {
+      console.error("Error fetching live data:", error);
+      setError(error.message);
+      setScrollLoading(false);
+    }
+  };
+
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(fetchUserInfo());
+    dispatch(fetchShortList());
+    // fetchShorts();
+    // fetchLiveData();
+  }, [dispatch]);
+
+  useDidMountEffect(() => {
+    if (trigger !== 0) {
+      console.log("22");
+      setScrollLoading(true);
+      if (selectedTab === "shorts") {
+        fetchShorts();
+      } else {
+        fetchLiveData();
+      }
+      setScrollLoading(false);
+    }
+  }, [trigger]);
+
+  const contents = {
+    live: live,
+    shorts: shorts,
+  };
+  useDidMountEffect(() => {
+    console.log("1231");
+    setShorts([]);
+    setLive([]);
+    setPage(0);
+    setTrigger(trigger + 1);
+  }, [selectedTab]);
+
   const switchOptions = [
     { value: "live", label: "Live" },
     { value: "shorts", label: "Shorts" },
@@ -151,9 +174,61 @@ const HomePage = () => {
 
   return (
     <Container>
-      <Grid container spacing={3} sx={{ marginTop: "12vh" }}>
+      <Grid container sx={{ marginTop: "12vh", marginBottom: "8vh" ,display:"flex",justifyContent:'center'}}>
+        {hasLive ? (
+          <Grid
+            item
+            xs={12}
+            sx={{
+              mr: 2,
+              p: 1,
+              ml: 2,
+              mb: 2,
+              borderRadius: 2,
+              background:
+                "linear-gradient(100deg, rgba(255, 87, 87, 0.18) 50%, rgba(255, 11, 85, 0.18) 100%)",
+            }}
+          >
+            <Grid container>
+              <Grid item xs={8}>
+                <Box>방송시간입니다</Box>
+                <Box>시청자들이 기다리고 있어요!</Box>
+              </Grid>
+              <Grid
+                item
+                xs={4}
+                sx={{ display: "flex", justifyContent: "center" }}
+              >
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => startLiveBroadcast(liveId, liveTitle)}
+                >
+                  시작하기
+                </Button>
+              </Grid>
+            </Grid>
+          </Grid>
+        ) : (
+          <Box></Box>
+        )}
         {selectedTab === "live" && <LiveBroadcasts items={contents.live} />}
         {selectedTab === "shorts" && <Shorts items={contents.shorts} />}
+        {!isLast && (
+      <div style={{ textAlign: 'center' }} ref={ref}>
+        <img
+          src={Spinner}
+          alt="Loading..."
+          style={{
+            display: 'block',
+            margin: '0 auto',
+            width: '80px',
+            height: '80px',
+          }}
+        />
+      </div>
+)}
+
         <Box
           sx={{
             position: "fixed",
@@ -162,7 +237,7 @@ const HomePage = () => {
             transform: "translateX(-50%)",
           }}
         >
-          <Switch options={switchOptions} />
+          <Switch options={switchOptions} type="content" />
         </Box>
       </Grid>
     </Container>

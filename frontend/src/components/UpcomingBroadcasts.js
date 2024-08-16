@@ -1,35 +1,56 @@
 import React, { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { Box, Typography, Container, Button } from "@mui/material";
 import UpcomingModal from "./UpcomingModal"; // 모달 컴포넌트 임포트
+import { formatPrice, formatDateTimeDistance } from "../utils/cssUtils";
+import { fetchLiveDetail } from "../features/live/actions";
 
-const UpcomingBroadcasts = ({ items }) => {
+const UpcomingBroadcasts = ({ items = [] }) => {
+  console.log("UpcomingBroadcasts items:", items);
+  const dispatch = useDispatch();
+  const liveDetail = useSelector((state) => state.live.liveDetail);
   const [open, setOpen] = useState(false);
-  const [modalLiveDate, setModalLiveDate] = useState("");
+  // const [modalLiveDate, setModalLiveDate] = useState("");
 
-  const handleOpen = (liveDate) => {
-    setModalLiveDate(liveDate);
+  const handleOpen = (liveId) => {
+    dispatch(fetchLiveDetail(liveId));
+    // setModalLiveDate(liveDate);
     setOpen(true);
   };
 
   const handleClose = () => setOpen(false);
 
   return (
-    <Container sx={{ margin: "8px" }}>
-      <Typography variant="h5" gutterBottom>
-        방송예정상품
+    <Container sx={{ margin: "8px", mt: 0 }}>
+      <Typography
+        gutterBottom
+        sx={{
+          marginTop: "12%",
+          fontSize: "20px",
+          fontWeight: "600",
+          letterSpacing: "-0.5px",
+          color: "#2E2E32",
+          fontFamily: "Noto Sans KR",
+          pl: 2.5,
+          position: "sticky",
+          top: "30px",
+        }}
+      >
+        UPCOMING LIVE!
       </Typography>
       <Box
         sx={{
           display: "flex",
-          overflow: "auto",
+          overflowX: "auto",
           whiteSpace: "nowrap",
           padding: "10px 0",
+          ml: 2,
         }}
       >
         {items.map((item) => (
           <Button
             key={item.id}
-            onClick={() => handleOpen(item.live_date)}
+            onClick={() => handleOpen(item.liveId)}
             sx={{
               padding: 0,
               margin: 0,
@@ -46,15 +67,17 @@ const UpcomingBroadcasts = ({ items }) => {
               justifyContent: "space-between",
               flexWrap: "wrap",
               flexShrink: 0,
-              mr: 3,
             }}
           >
             <Typography
               sx={{
                 color: "#FF0B55",
+                fontSize: "14px",
+                letterSpacing: "-0.5px",
+                fontWeight: "600",
               }}
             >
-              {item.live_date}
+              {formatDateTimeDistance(item.liveDate)}
             </Typography>
             <Typography
               sx={{
@@ -65,7 +88,7 @@ const UpcomingBroadcasts = ({ items }) => {
                 whiteSpace: "nowrap",
               }}
             >
-              {item.title}
+              {/* {item.title} */}
             </Typography>
             <Typography
               sx={{
@@ -73,25 +96,36 @@ const UpcomingBroadcasts = ({ items }) => {
                 textOverflow: "ellipsis",
                 overflow: "hidden",
                 whiteSpace: "nowrap",
+                letterSpacing: "-0.5px",
+                color: "rgba(44, 44, 46, 1)",
+                fontSize: "16px",
               }}
             >
-              {item.name}
+              {item.productName}
             </Typography>
             <Typography
               sx={{
                 fontWeight: 300,
+                overflow: "hidden",
+                whiteSpace: "nowrap",
+                letterSpacing: "-0.5px",
+                color: "rgba(44, 44, 46, 1)",
+                fontSize: "13px",
               }}
             >
-              {item.price}원
+              {formatPrice(item.productPrice)}
             </Typography>
           </Button>
         ))}
       </Box>
-      <UpcomingModal
-        open={open}
-        handleClose={handleClose}
-        liveDate={modalLiveDate}
-      />
+      {liveDetail.liveId && (
+        <UpcomingModal
+          open={open}
+          handleClose={handleClose}
+          liveDetail={liveDetail}
+          // liveDate={modalLiveDate}
+        />
+      )}
     </Container>
   );
 };

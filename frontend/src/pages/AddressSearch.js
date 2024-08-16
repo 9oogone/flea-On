@@ -4,15 +4,20 @@ const AddressSearch = () => {
     useEffect(() => {
         const scriptId = 'kakao-postcode-script';
         const loadPostcode = () => {
-            if (!document.getElementById('daum_postcode')) return;
+            const postcodeElement = document.getElementById('daum_postcode');
+            if (!postcodeElement) return;
+
             new window.daum.Postcode({
                 oncomplete: (data) => {
                     window.opener.postMessage({
-                        address: data.address
+                        address: data.address,
+                        bcode:data.bcode
                     }, "*");
                     window.close();
+              
                 }
-            }).embed(document.getElementById('daum_postcode'));
+            }).embed(postcodeElement);
+        
         };
 
         if (!document.getElementById(scriptId)) {

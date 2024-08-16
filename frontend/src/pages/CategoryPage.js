@@ -8,14 +8,12 @@ const CategoryPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { categories, loading, error } = useSelector((state) => state.category);
-  const token = useSelector((state) => state.auth.token); // 토큰 가져오기
+  // const token = useSelector((state) => state.auth.token); // 토큰 가져오기
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
 
   useEffect(() => {
-    if (token) {
-      dispatch(fetchCategories(token)); // 토큰을 전달하여 카테고리 가져오기
-    }
-  }, [dispatch, token]);
+    dispatch(fetchCategories()); // 토큰을 전달하여 카테고리 가져오기
+  }, [dispatch]); // 빈 배열을 추가하여 컴포넌트 마운트 시 한 번만 실행되도록 설정
 
   const onCategoryClick = useCallback((categoryId) => {
     setSelectedCategoryId(categoryId);
@@ -77,7 +75,7 @@ const CategoryPage = () => {
                 onClick={() => onCategoryClick(firstCategoryId)}
                 sx={{
                   cursor: "pointer",
-                  height: "7vh",
+                  height: "6.6vh",
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
@@ -88,10 +86,18 @@ const CategoryPage = () => {
                   color:
                     selectedCategoryId === firstCategoryId
                       ? "#FF0B55"
-                      : "black",
+                      : "#666666",
+                  // '#2E2E32'
                 }}
               >
-                <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                <Typography
+                  sx={{
+                    fontWeight: 600,
+                    fontSize: "18px",
+                    fontFamily: "Noto Sans KR",
+                    letterSpacing: "-0.5px",
+                  }}
+                >
                   {category.firstCategoryName}
                 </Typography>
               </Box>
@@ -110,7 +116,17 @@ const CategoryPage = () => {
                       textAlign="center"
                       sx={{ cursor: "pointer", mb: 1 }}
                     >
-                      <Typography variant="body1">
+                      <Typography
+                        sx={{
+                          fontSize: "16px",
+                          fontFamily: "Noto Sans KR",
+                          letterSpacing: "-0.5px",
+                          mt: "10px",
+                          mb: "10px",
+                          color: "#666666",
+                          fontWeight: 400,
+                        }}
+                      >
                         {subcategory.name}
                       </Typography>
                     </Box>
