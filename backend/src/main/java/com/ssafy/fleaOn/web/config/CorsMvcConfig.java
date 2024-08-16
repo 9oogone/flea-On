@@ -9,9 +9,13 @@ public class CorsMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry corsRegistry) {
-
-        corsRegistry.addMapping("/**")
-                .exposedHeaders("Set-Cookie")
-                .allowedOrigins("http://localhost:3000");
+        corsRegistry
+                .addMapping("/**")
+                .allowedOriginPatterns("http://localhost:3000","https://fleaon.shop", "https://fleaon.shop/", "https://i11b202.p.ssafy.io", "https://i11b202.p.ssafy.io/") // 명시적인 도메인
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedHeaders("*")
+                .exposedHeaders("Set-Cookie", "Authorization")
+                .allowCredentials(true)
+                .maxAge(3600);
     }
 }

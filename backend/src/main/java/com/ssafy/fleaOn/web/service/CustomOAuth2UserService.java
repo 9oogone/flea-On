@@ -41,6 +41,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             return null;
         }
         String userIdentifier = oAuth2Response.getProvider() + " " + oAuth2Response.getProviderId();
+
+        System.out.println(userIdentifier);
+        System.out.println(oAuth2User.getAttributes().get("email"));
         User existData = userRepository.findByUserIdentifier(userIdentifier);
 
         if (existData == null) {
@@ -53,6 +56,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .build();
 
             userRepository.save(user);
+            System.out.println("saved user " + user);
 
             User user2 = User.builder()
                     .userIdentifier(userIdentifier)
@@ -73,6 +77,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             userRepository.save(existData);
 
             User user = User.builder()
+                    .email(oAuth2Response.getEmail())
                     .userIdentifier(existData.getUserIdentifier())
                     .name(oAuth2Response.getName())
                     .profilePicture(oAuth2Response.getProfilePicture())

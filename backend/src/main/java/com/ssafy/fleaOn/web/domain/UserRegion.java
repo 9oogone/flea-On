@@ -3,6 +3,8 @@ package com.ssafy.fleaOn.web.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
+import javax.swing.plaf.synth.Region;
+
 @AllArgsConstructor
 @Table(name = "user_region")
 @Getter
@@ -16,16 +18,12 @@ public class UserRegion {
     @Column(name = "region_id", nullable = false)
     private int regionId;
 
-    @Column(name = "user_id", nullable = false)
-    private int userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "region_code")
+    private RegionInfo region;
 
-    @Column(name = "region_code", nullable = false)
-    private String regionCode;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private User user;
-
-
 
 }

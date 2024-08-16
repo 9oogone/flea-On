@@ -1,31 +1,42 @@
 package com.ssafy.fleaOn.web.dto;
 
 import com.ssafy.fleaOn.web.domain.Live;
+import com.ssafy.fleaOn.web.domain.RegionInfo;
 import com.ssafy.fleaOn.web.domain.User;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-@NoArgsConstructor // 기본 생성자 추가
-@AllArgsConstructor // 모든 필드 값을 파라미터로 받는 생성자 추가
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 public class AddLiveRequest {
     private String title;
-    private LocalDateTime live_date;
-    private String thumbnail;
-    private String trade_place;
+    private String liveDate;
+    private String liveThumbnail;
+    private String tradePlace;
+    private String regionCode;
     private List<AddProductRequest> product;
+    private List<AddLiveTradeRequest> liveTradeTime;
 
-    public Live toEntity(User user) {
+    public Live toEntity(User user, RegionInfo regionInfo,String filePath) {
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+        LocalDateTime parsedDate = LocalDateTime.parse(liveDate, formatter);
         return Live.builder()
                 .title(title)
-                .live_date(live_date)
-                .thumbnail(thumbnail)
-                .trade_place(trade_place)
-                .user(user)  // User 객체를 Live 객체에 설정합니다.
+                .liveDate(parsedDate)
+                .tradePlace(tradePlace)
+                .liveThumbnail(filePath)
+                .seller(user)
+                .viewCount(0)
+                .regionInfo(regionInfo)
                 .build();
     }
 }

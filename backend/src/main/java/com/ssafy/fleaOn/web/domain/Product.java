@@ -1,28 +1,23 @@
 package com.ssafy.fleaOn.web.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import lombok.*;
 
-@EntityListeners(AuditingEntityListener.class)
-@Entity // 엔티티로 지정
+@Entity
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "product")
 public class Product {
-    @Id // id 필드를 기본키로 지정
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // 기본키를 자동으로 1씩 증가
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "product_id", updatable = false)
-    private int product_id;
+    private int productId;
 
-    @Column(name="live_id", nullable = false)
-    private int live_id;
-
-    @Column(name="seller_id", nullable = false)
-    private int seller_id;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "seller_id", nullable = false)
+    private User seller;
 
     @Column(name="name", nullable = false)
     private String name;
@@ -31,34 +26,60 @@ public class Product {
     private int price;
 
     @Column(name="first_category", nullable = false)
-    private int first_category;
+    private int firstCategoryId;
 
     @Column(name="second_category", nullable = false)
-    private int second_category;
+    private int secondCategoryId;
 
-    @Column(name="cur_buyer_front", nullable = false)
-    private int cur_buyer_front;
+    @Column(name = "current_buyer_id", nullable = false)
+    private int currentBuyerId;
 
-    @Column(name="cur_buyer_rear", nullable = false)
-    private int cur_buyer_rear;
+    @Column(name = "reservation_count", nullable = false)
+    private int reservationCount;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", insertable = false, updatable = false)
-    private User user;
+    @Column(name = "start", nullable = false)
+    private boolean start;
 
-    @ManyToOne
-    @JoinColumn(name = "live_id", insertable = false, updatable = false)
+    @Column(name = "end", nullable = false)
+    private boolean end;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "live_id", nullable = false)
     private Live live;
 
+    @OneToOne(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
+    private Shorts shorts;
+
     @Builder
-    public Product(int live_id, int seller_id, String name, int price, int first_category, int second_category) {
-        this.live_id = live_id;
-        this.seller_id = seller_id;
+    public Product(Live live, User user, String name, int price, int firstCategoryId, int secondCategoryId) {
+        this.live = live;
+        this.seller = user;
         this.name = name;
         this.price = price;
-        this.first_category = first_category;
-        this.second_category = second_category;
-        this.cur_buyer_front = 0;
-        this.cur_buyer_rear = 0;
+        this.firstCategoryId = firstCategoryId;
+        this.secondCategoryId = secondCategoryId;
+        this.currentBuyerId = 0;
+        this.reservationCount = 0;
+        this.start = false;
+        this.end = false;
+    }
+
+    public void update(String name, int price, int firstCategoryId, int secondCategoryId) {
+        this.name = name;
+        this.price = price;
+        this.firstCategoryId = firstCategoryId;
+        this.secondCategoryId = secondCategoryId;
+    }
+
+    public void sellStart(){
+        this.start = true;
+    }
+
+    public void sellEnd(){
+        this.end = true;
+    }
+
+    public void discount(){
+        this.price = (int)(this.price*0.9);
     }
 }

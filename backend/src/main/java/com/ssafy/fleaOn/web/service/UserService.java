@@ -2,17 +2,19 @@ package com.ssafy.fleaOn.web.service;
 
 
 import com.ssafy.fleaOn.web.domain.*;
-import com.ssafy.fleaOn.web.repository.ProductRepository;
-import com.ssafy.fleaOn.web.repository.TradeRepository;
-import com.ssafy.fleaOn.web.repository.UserRegionRepository;
-import com.ssafy.fleaOn.web.repository.UserRepository;
+import com.ssafy.fleaOn.web.dto.*;
+import com.ssafy.fleaOn.web.repository.*;
+import com.ssafy.fleaOn.web.util.DateUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
+
 import com.ssafy.fleaOn.web.domain.User;
 
 @Service
@@ -28,9 +30,23 @@ public class UserService {
 
     private final ProductRepository productRepository;
 
+    private final LiveRepository liveRepository;
+
+    private final LiveScrapRepository liveScrapRepository;
+
+    private final ShortsScrapRepository shortsScrapRepository;
+
+    private final ShortsRepository shortsRepository;
+
+    private final RegionInfoRepository regionInfoRepository;
+
+    private final ReservationRepository reservationRepository;
+    private final TradeDoneRepository tradeDoneRepository;
+
     public User findByEmail(String email) {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + email));
+        Optional<User> user = userRepository.findByEmail(email);
+        System.out.println("user: " + user);
+        return user.orElse(null);
     }
 
     public int getUserIdByEmail(String email) {
@@ -43,138 +59,537 @@ public class UserService {
         userRepository.deleteByEmail(email);
     }
 
-    public void updateUserByEmail(String email, User user) {
-        User newUser = User.builder()
-                .nickname(user.getNickname())
-                .phone(user.getPhone())
-                .profilePicture(user.getProfilePicture())
-                .build();
-        userRepository.save(newUser);
-    }
+    public User updateUserByEmail(String email, ExtraInfoRequest extraInfoRequest, String profilePicture) {
+        // 이메일로 사용자 검색
+        Optional<User> optionalUser = userRepository.findByEmail(email);
 
-    public Map<String, Object> getUserInfoByEmail(String email) {
-        Optional<User> userOptional = userRepository.findByEmail(email);
-
-        if (userOptional.isEmpty()) {
+        // 사용자 존재 여부 확인 및 Optional 안전 처리
+        if (!optionalUser.isPresent()) {
             return null;
         }
 
-        User user = userOptional.get();
-        Map<String, Object> userInfo = new HashMap<>();
-        userInfo.put("nickname", user.getNickname());
-        userInfo.put("level", user.getLevel());
-        userInfo.put("profile_picture", user.getProfilePicture());
+        // 기존 유저 객체 가져오기
+        User existingUser = optionalUser.get();
 
-        // UserRegion 리스트 처리
-        Optional<List<UserRegion>> userRegionListOptional = userRegionRepository.findByUserId(user.getUserId());
-        userRegionListOptional.ifPresent(userRegionList -> {
-            List<String> regionList = userRegionList.stream()
-                    .map(UserRegion::getRegionCode)
-                    .collect(Collectors.toList());
-            userInfo.put("user_region", regionList);
-        });
+        // 기존 객체를 기반으로 업데이트
+        User updatedUser = User.builder()
+                .userId(existingUser.getUserId()) // 기존 ID를 명시적으로 보존
+                .email(existingUser.getEmail()) // 이메일 보존
+                .name(existingUser.getName()) // 기존 이름 보존
+                .nickname(extraInfoRequest.getNickname() == null ? existingUser.getNickname() : extraInfoRequest.getNickname())// 닉네임 업데이트
+                .phone(extraInfoRequest.getPhone() == null ? existingUser.getPhone() : extraInfoRequest.getPhone()) // 전화번호 업데이트
+                .profilePicture(profilePicture == null ? existingUser.getProfilePicture() : profilePicture) // 프로필 사진 보존
+                .level(existingUser.getLevel())
+                .role(existingUser.getRole())
+                .userIdentifier(existingUser.getUserIdentifier())// 레벨 보존
+                .build();
 
-        // Trade 리스트 처리
-        Optional<List<Trade>> tradeListOptional = tradeRepository.findByUser_UserId(user.getUserId());
-        tradeListOptional.ifPresent(tradeList -> {
-            List<LocalDate> tradeDates = tradeList.stream()
-                    .map(Trade::getTradeDate)
-                    .collect(Collectors.toList());
-            userInfo.put("trade", tradeDates);
-        });
-
-        return userInfo;
+        // 업데이트된 유저 정보 저장
+        userRepository.save(updatedUser);
+        return updatedUser;
     }
-    public Optional<List<Map<String, Object>>> getUserScheduleByIdAndDate(int userId, LocalDate tradeDate) {
-        LocalDate endDate = tradeDate.plusDays(6);
-        Optional<List<Trade>> tradesOptional = tradeRepository.findByTradeDateBetweenAndBuyerIdOrSellerId(tradeDate, endDate, userId, userId);
+    public UserFullInfoResponse getUserFullInfoByEmail(String email) {
+        Optional<User> userOptional = userRepository.findByEmail(email);
 
-        if (tradesOptional.isEmpty()) {
-            return Optional.empty();
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            Optional<List<UserRegion>> userRegionListOptional = userRegionRepository.findByUser_userId(user.getUserId());
+            List<String> eupmyeonList = new ArrayList<>();
+            List<String> regionCodes = new ArrayList<>();
+
+            if (userRegionListOptional.isPresent()) {
+                List<UserRegion> userRegionList = userRegionListOptional.get();
+
+                for (UserRegion userRegion : userRegionList) {
+                    // regionCode 리스트 생성
+                    String regionCode = userRegion.getRegion().getRegionCode();
+                    regionCodes.add(regionCode);
+
+                    // regionCode에 해당하는 Eupmyeon 가져오기
+                    String eupmyeon = userRegion.getRegion().getEupmyeon();
+                    eupmyeonList.add(eupmyeon);
+                }
+            }
+
+            // UserFullInfoResponse 객체 생성 및 반환
+            return UserFullInfoResponse.builder()
+                    .userId(user.getUserId())
+                    .email(user.getEmail())
+                    .profilePicture(user.getProfilePicture())
+                    .name(user.getName())
+                    .nickname(user.getNickname())
+                    .phone(user.getPhone())
+                    .level(user.getLevel())
+                    .dongName(eupmyeonList)  // Eupmyeon 리스트 추가
+                    .regionCode(regionCodes) // regionCodes 추가
+                    .build();
         }
 
-        List<Trade> trades = tradesOptional.get();
-        List<Map<String, Object>> tradeList = new ArrayList<>();
+        return null; // 또는 Optional<UserFullInfoResponse>를 반환하여 empty()로 반환
+    }
 
-        for (Trade trade : trades) {
-            Map<String, Object> tradeResult = new HashMap<>();
-            Optional<Product> productOptional = productRepository.findById(trade.getProductId());
+    public MyPageResponse getUserPageByEmail(String email, LocalDate startOfWeek) {
+        User userOptional = userRepository.findByEmail(email).orElseThrow(()->new IllegalArgumentException("User not found with email: " + email));
 
-            productOptional.ifPresent(product -> {
-                tradeResult.put("product_name", product.getName());
-                tradeResult.put("product_price", product.getPrice());
-            });
+        Optional<List<UserRegion>> userRegionListOptional = userRegionRepository.findByUser_userId(userOptional.getUserId());
+        if (userRegionListOptional.isPresent()) {
 
-            tradeResult.put("buyer_id", trade.getBuyerId());
-            tradeResult.put("seller_id", trade.getSellerId());
-            tradeResult.put("trade_place", trade.getTradePlace());
-            tradeResult.put("trade_time", trade.getTradeTime());
-            tradeList.add(tradeResult);
+            LocalDate endOfWeek = startOfWeek.plusDays(6);
+
+            int totalTrade = tradeRepository.countByBuyerIdOrSellerIdAndTradeDateBetween(
+                    userOptional.getUserId(), startOfWeek, endOfWeek)
+                    + tradeDoneRepository.countTradeDateBetween(
+                    userOptional.getUserId(), startOfWeek, endOfWeek);
+            int saleCount = tradeRepository.countBySellerIdAndTradeDateBetween(
+                    userOptional.getUserId(), startOfWeek, endOfWeek)
+                    + tradeDoneRepository.countBySellerIdAndTradeDateBetween(
+                    userOptional.getUserId(), startOfWeek, endOfWeek);
+            int purchaseCount = tradeRepository.countByBuyerIdAndTradeDateBetween(
+                    userOptional.getUserId(), startOfWeek, endOfWeek)
+                    + tradeDoneRepository.countByBuyerIdAndTradeDateBetween(
+                    userOptional.getUserId(), startOfWeek, endOfWeek);
+            int completedTrades = tradeDoneRepository.countCompletedTrades(
+                    userOptional.getUserId(), startOfWeek, endOfWeek);
+
+
+            // Create WeeklyTrade list
+            List<WeeklyTrade> weeklyTrades = new ArrayList<>();
+            LocalDate currentDate = startOfWeek;
+            while (!currentDate.isAfter(endOfWeek)) {
+                int dailyCompletedTrades = tradeDoneRepository.countCompletedTrades(
+                        userOptional.getUserId(), currentDate, currentDate);
+                int dailyTotalTrades = tradeRepository.countTradesByUserAndDate(
+                        userOptional.getUserId(), currentDate)
+                        + dailyCompletedTrades;
+                weeklyTrades.add(new WeeklyTrade(currentDate, dailyTotalTrades, dailyCompletedTrades));
+                currentDate = currentDate.plusDays(1);
+            }
+
+
+            return MyPageResponse.builder()
+                    .tradeInfo(new TradeCountResponse(totalTrade, saleCount, purchaseCount, completedTrades))
+                    .tradeList(weeklyTrades)
+                    .build();
+        }
+        return null;
+    }
+
+    public ScheduleResponse getUserScheduleListByUserIdAndDate(int userId, LocalDate tradeDate) {
+        Optional<List<Trade>> trades = tradeRepository.findByTradeDateAndBuyerIdOrSellerId(userId, tradeDate);
+        List<DayTradeResponse> tradeList = new ArrayList<>();
+
+        if (trades.isPresent()) {
+            for (Trade trade : trades.get()) {
+                Product product = productRepository.findByProductId(trade.getProduct().getProductId()).orElse(null);
+
+                DayTradeResponse dayTradeResponse = DayTradeResponse.builder()
+                        .productName(product.getName())
+                        .price(product.getPrice())
+                        .buyerId(trade.getBuyerId())
+                        .sellerId(trade.getSellerId())
+                        .dongName(product.getLive().getRegionInfo().getEupmyeon())
+                        .tradePlace(trade.getTradePlace())
+                        .tradeTime(trade.getTradeTime())
+                        .liveId(trade.getLive().getLiveId())
+                        .chattingId(trade.getChatting().getChattingId())
+                        .productId(product.getProductId())
+                        .build();
+                tradeList.add(dayTradeResponse);
+            }
         }
 
-        return Optional.of(tradeList);
+        Optional<List<TradeDone>> tradeDones = tradeDoneRepository.findByTradeDateAndBuyerIdOrSellerId(userId, tradeDate);
+        List<TradeDoneSchedule> tradeDoneSchedules = new ArrayList<>();
+        if (tradeDones.isPresent()) {
+            for (TradeDone tradeDone : tradeDones.get()) {
+                TradeDoneSchedule tradeDoneSchedule= TradeDoneSchedule.builder()
+                        .productId(tradeDone.getProductId())
+                        .productName(tradeDone.getProductName())
+                        .productPrice(tradeDone.getProductPrice())
+                        .buyerId(tradeDone.getBuyer().getUserId())
+                        .sellerId(tradeDone.getSeller().getUserId())
+                        .tradePlace(tradeDone.getTradePlace())
+                        .tradeTime(tradeDone.getTradeTime())
+                        .tradeDate(tradeDate)
+                        .build();
+                tradeDoneSchedules.add(tradeDoneSchedule);
+            }
+        }
+
+        return new ScheduleResponse(tradeList,tradeDoneSchedules);
     }
 
 
-    public Optional<List<Map<String, Object>>> getUserPurchaseListByUserId(int userId) {
-        Optional<List<Trade>> tradesOptional = tradeRepository.findByBuyerId(userId);
+    public PurchaseListResponse getUserPurchaseListByUserId(int userId) {
+        List<PurchaseResponse> purchaseResponseList = new ArrayList<>();
+        List<TradeDoneResponse> tradeDoneLists = new ArrayList<>();
+
+        Optional<List<Trade>> findTrades = tradeRepository.findByBuyerId(userId);
+        if (findTrades.isPresent()) {
+            for (Trade trade : findTrades.get()) {
+                Optional<Product> findProduct = productRepository.findByProductId(trade.getProduct().getProductId());
+                Optional<TradeDone> findTradeDone = tradeDoneRepository.findByProductId(trade.getProduct().getProductId());
+                boolean isDone = findTradeDone.isPresent();
+                ZonedDateTime zonedDateTime = ZonedDateTime.of(trade.getTradeDate(), trade.getTradeTime(), ZoneId.systemDefault());
+
+                PurchaseResponse purchaseResponse = PurchaseResponse.builder()
+                        .productId(findProduct.get().getProductId())
+                        .productName(findProduct.get().getName())
+                        .productPrice(findProduct.get().getPrice())
+                        .liveId(trade.getLive().getLiveId())
+                        .dongName(trade.getLive().getRegionInfo().getEupmyeon())
+                        .tradePlace(trade.getTradePlace())
+                        .tradeTime(zonedDateTime.toLocalTime())
+                        .tradeDate(zonedDateTime.toLocalDate())
+                        .isTradeDone(isDone)
+                        .build();
+                purchaseResponseList.add(purchaseResponse);
+            }
+        }
+
+        Optional<List<TradeDone>> findTradeDone = tradeDoneRepository.findByBuyer_UserId(userId);
+        if (findTradeDone.isPresent()) {
+            for (TradeDone tradeDone : findTradeDone.get()){
+                TradeDoneResponse tradeDoneResponse = TradeDoneResponse.builder()
+                        .productId(tradeDone.getProductId())
+                        .productName(tradeDone.getProductName())
+                        .productPrice(tradeDone.getProductPrice())
+                        .tradePlace(tradeDone.getTradePlace())
+                        .tradeDate(tradeDone.getTradeDate())
+                        .tradeTime(tradeDone.getTradeTime())
+                        .build();
+
+                tradeDoneLists.add(tradeDoneResponse);
+            }
+        }
+
+        PurchaseListResponse purchaseListResponse = PurchaseListResponse.builder()
+                .purchases(purchaseResponseList)
+                .tradeDoneResponses(tradeDoneLists)
+                .build();
+
+        return purchaseListResponse;
+    }
+
+
+    public List<ReservationListResponse> getUserReservationListByUserId(int userId) {
+        Optional<List<Reservation>> reservationOptional = reservationRepository.findByUser_userId(userId);
 
         // tradesOptional이 비어 있으면 Optional.empty() 반환
-        if (tradesOptional.isEmpty()) {
-            return Optional.empty();
+        if (reservationOptional.isEmpty()) {
+            return null;
+        }
+        List<Reservation> findReservationList = reservationOptional.get();
+        List<ReservationListResponse> reservationList = new ArrayList<>();
+
+        for (Reservation reservation : findReservationList) {
+            Product product = productRepository.findByProductId(reservation.getProduct().getProductId()).orElse(null);
+
+            ReservationListResponse reservationListResponse = ReservationListResponse.builder()
+                    .productId(product.getProductId())
+                    .productName(product.getName())
+                    .productPrice(product.getPrice())
+                    .liveId(product.getLive().getLiveId())
+                    .dongName(product.getLive().getRegionInfo().getEupmyeon())
+                    .build();
+
+            reservationList.add(reservationListResponse);
         }
 
-        List<Trade> trades = tradesOptional.get();
-        List<Map<String, Object>> purchaseList = new ArrayList<>();
-
-        for (Trade trade : trades) {
-            Map<String, Object> purchaseResult = new HashMap<>();
-            Optional<Product> productOptional = productRepository.findById(trade.getProductId());
-
-            // productOptional이 비어 있지 않으면 값을 가져와서 처리
-            productOptional.ifPresent(product -> {
-                purchaseResult.put("name", product.getName());
-                purchaseResult.put("price", product.getPrice());
-                purchaseResult.put("live_id", trade.getLiveId());
-            });
-
-            purchaseResult.put("product_id", trade.getProductId());
-            purchaseResult.put("trade_place", trade.getTradePlace());
-            purchaseResult.put("trade_time", trade.getTradeTime());
-            purchaseList.add(purchaseResult);
-        }
-
-        return Optional.of(purchaseList);
+        return reservationList;
     }
 
+    public List<LiveListResponse> getUserCommerceLiveListByUserId(int userId) {
+        List<Live> commerceLiveList = liveRepository.findBySeller_userId(userId).orElseThrow(()-> new IllegalArgumentException("Invalid user ID: " + userId));
+        List<LiveListResponse> userCommerceLiveList = new ArrayList<>();
 
-    public Optional<List<Map<String, Object>>> getUserReservationListByUserId(int userId) {
-        Optional<List<Trade>> tradesOptional = tradeRepository.findByBuyerId(userId);
+        for (Live live : commerceLiveList) {
+            Optional<Live> commerceLiveOptional = liveRepository.findById(live.getLiveId());
 
-        // tradesOptional이 비어 있으면 Optional.empty() 반환
-        if (tradesOptional.isEmpty()) {
-            return Optional.empty();
-        }
-
-        List<Trade> trades = tradesOptional.get();
-        List<Map<String, Object>> reservationList = new ArrayList<>();
-
-        for (Trade trade : trades) {
-            Map<String, Object> reservationResult = new HashMap<>();
-            Optional<Product> productOptional = productRepository.findById(trade.getProductId());
-
-            // productOptional이 비어 있지 않으면 값을 가져와서 처리
-            productOptional.ifPresent(product -> {
-                reservationResult.put("name", product.getName());
-                reservationResult.put("price", product.getPrice());
+            // Optional이 비어 있지 않으면 값을 가져와서 처리
+            commerceLiveOptional.ifPresent(commerceLive -> {
+                LiveListResponse liveListResponse = LiveListResponse.builder()
+                        .title(commerceLive.getTitle())
+                        .liveDate(commerceLive.getLiveDate())
+                        .dongName(commerceLive.getRegionInfo().getEupmyeon())
+                        .isLive(commerceLive.getIsLive())
+                        .liveId(commerceLive.getLiveId())
+                        .viewCount(commerceLive.getViewCount())
+                        .build();
+                userCommerceLiveList.add(liveListResponse);
             });
-
-            reservationResult.put("trade_place", trade.getTradePlace());
-            reservationResult.put("trade_time", trade.getTradeTime());
-            reservationList.add(reservationResult);
         }
 
-        return Optional.of(reservationList);
+        return userCommerceLiveList;
     }
 
+    public List<ScrapLiveResponse> getUserScrapLiveByUserId(int userId) {
+        Optional<List<LiveScrap>> scrapLiveListOptional = liveScrapRepository.findByUser_userId(userId);
+        if (scrapLiveListOptional.isEmpty()) {
+            return null;
+        }
+        List<LiveScrap> scrapLiveList = scrapLiveListOptional.get();
+        List<ScrapLiveResponse> userScrapLiveList = new ArrayList<>();
+
+        for (LiveScrap liveScrap : scrapLiveList) {
+            Optional<Live> scrapLiveOptional = liveRepository.findByLiveId(liveScrap.getLive().getLiveId());
+
+            // Optional이 비어 있지 않으면 값을 가져와서 처리
+            scrapLiveOptional.ifPresent(scrapLive -> {
+                ScrapLiveResponse scrapLiveResponse = ScrapLiveResponse.builder()
+                        .title(scrapLive.getTitle())
+                        .sellerId(scrapLive.getSeller().getUserId())
+                        .isLive(scrapLive.getIsLive())
+                        .thumbnail(scrapLive.getLiveThumbnail())
+                        .liveDate(scrapLive.getLiveDate())
+                        .dongName(scrapLive.getRegionInfo().getEupmyeon())
+                        .liveId(scrapLive.getLiveId())
+                        .viewCount(scrapLive.getViewCount())
+                        .build();
+
+                userScrapLiveList.add(scrapLiveResponse);
+            });
+
+        }
+        return userScrapLiveList;
+    }
+
+    public Optional<List<ScrapShortsResponse>> getUserScrapShortsByUserId(int userId) {
+        Optional<List<ShortsScrap>> scrapShortsOptional = shortsScrapRepository.findByUser_userId(userId);
+        if (scrapShortsOptional.isEmpty()) {
+            return Optional.empty();
+        }
+        List<ScrapShortsResponse> scrapShortsResponseList = new ArrayList<>();
+        for (ShortsScrap shortsScrap : scrapShortsOptional.get()) {
+            Optional<Shorts> findShorts = shortsRepository.findByShortsId(shortsScrap.getShorts().getShortsId());
+            Optional<Product> findProduct = productRepository.findByProductId(findShorts.get().getProduct().getProductId());
+            Optional<Live> findLive = liveRepository.findByLiveId(findProduct.get().getLive().getLiveId());
+
+            ScrapShortsResponse scrapShortsResponse = ScrapShortsResponse.builder()
+                    .length(findShorts.get().getLength())
+                    .productId(findProduct.get().getProductId())
+                    .shortsId(findShorts.get().getShortsId())
+                    .uploadDate(findShorts.get().getUploadDate())
+                    .shortsThumbnail(findShorts.get().getShortsThumbnail())
+                    .videoAddress(findShorts.get().getVideoAddress())
+                    .productPrice(findProduct.get().getPrice())
+                    .productName(findProduct.get().getName())
+                    .dongName(findLive.get().getRegionInfo().getEupmyeon())
+                    .build();
+
+            scrapShortsResponseList.add(scrapShortsResponse);
+        }
+        return Optional.of(scrapShortsResponseList);
+    }
+
+    public void addUserExtraInfo(Map<String, Object> extraInfo, String email) {
+        System.out.println("email : "+ email);
+        User findUser = userRepository.findByEmail(email).orElseThrow(()->new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        System.out.println("user.getEmail : " + findUser.getEmail());
+        findUser.updateDate(extraInfo.get("nickname").toString(), extraInfo.get("phone").toString());
+        userRepository.save(findUser);
+    }
+
+    @Transactional
+    public void addUserRegion(int userId, String regionCode) {
+        Optional<User> user = userRepository.findByUserId(userId);
+        if (user.isPresent()) {
+            Optional<RegionInfo> regionInfo = regionInfoRepository.findByRegionCode(regionCode);
+            if (regionInfo.isPresent()) {
+                UserRegion userRegion = UserRegion.builder()
+                        .user(user.get())
+                        .region(regionInfo.get())
+                        .build();
+                userRegionRepository.save(userRegion);
+                System.out.println("Saved user region: " + userRegion);
+            } else {
+                System.out.println("Region info not found for code: " + regionCode);
+            }
+        } else {
+            System.out.println("User not found for id: " + userId);
+        }
+    }
+
+    public UserRegion getUserRegion(int userId,String regionCode) {
+        Optional<UserRegion> userRegion = userRegionRepository.findByUser_userIdAndRegion_RegionCode(userId, regionCode);
+        return userRegion.get();
+    }
+
+    @Transactional
+    public void deleteUserRegion(int userId, String regionCode) {
+        Optional<UserRegion> findUserReion = userRegionRepository.findByUser_userIdAndRegion_RegionCode(userId, regionCode);
+        if (findUserReion.isPresent()) {
+            userRegionRepository.delete(findUserReion.get());
+        }
+    }
+
+    public void addUserLiveScrap(int userId, int liveId) {
+        User findUser = userRepository.findById(userId).orElseThrow(()->new IllegalArgumentException("User not found"));
+        Live findLive = liveRepository.findById(liveId).orElseThrow(()->new IllegalArgumentException("Live not found"));
+        if (userId == findLive.getSeller().getUserId())
+            new IllegalArgumentException("User already exists");
+        LiveScrap liveScrap = LiveScrap.builder()
+                .user(findUser)
+                .live(findLive)
+                .build();
+        liveScrapRepository.save(liveScrap);
+    }
+
+    public void deleteUserLivewScrap(int userId, int liveId) {
+        try {
+            Optional<LiveScrap> findLiveScrap = liveScrapRepository.findByUser_userIdAndLive_liveId(userId, liveId);
+            if (findLiveScrap.isPresent()) {
+                liveScrapRepository.delete(findLiveScrap.get());
+            } else {
+                throw new IllegalArgumentException("Cannot find live scrap");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    public Live getUserCommerLiveDetails(int userId, int liveId) {
+        try {
+            Optional<Live> findLive = liveRepository.findByLiveIdAndSeller_userId(liveId, userId);
+            // Optional이 비어 있을 경우 예외를 던짐
+            return findLive.orElseThrow(() -> new RuntimeException("Live not found for userId: " + userId + ", liveId: " + liveId));
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    public SalesShortsListResponse getUserShortsListByUserId(int userId) {
+        User findUser = userRepository.findByUserId(userId).orElseThrow(()->new RuntimeException("User not found for userId: " + userId));
+        Optional<List<Shorts>> shortsList = shortsRepository.findByUser_userId(findUser.getUserId());
+
+        List<SellingShortsResponse> sellingShortsResponseList = new ArrayList<>();
+        List<TradeDoneResponse> tradeDoneLists = new ArrayList<>();
+
+        if (shortsList.isPresent()) {
+            for (Shorts shorts : shortsList.get()) {
+                Product findProduct= productRepository.findByProductId(shorts.getProduct().getProductId()).orElseThrow(()->new RuntimeException("Product not found for productId: " + shorts.getProduct().getProductId()));
+                Live findLive = liveRepository.findByLiveId(findProduct.getLive().getLiveId()).orElseThrow(()->new RuntimeException("Live not found for liveId: " + findProduct.getLive().getLiveId()));
+                String dong = findLive.getRegionInfo().getEupmyeon();
+                // shorts의 productId가 trade 테이블에 존재하는지 확인
+                boolean isTradeNow = tradeRepository.findByProductId(findProduct.getProductId()).isPresent();
+
+                SellingShortsResponse sellingShortsResponse = SellingShortsResponse.builder()
+                        .productId(findProduct.getProductId())
+                        .shortsId(shorts.getShortsId())
+                        .productName(findProduct.getName())
+                        .productPrice(findProduct.getPrice())
+                        .dongName(dong)
+                        .liveDate(findLive.getLiveDate())
+                        .tradeNow(isTradeNow)
+                        .build();
+
+                sellingShortsResponseList.add(sellingShortsResponse);
+            }
+        }
+
+        Optional<List<TradeDone>> findTradeDone = tradeDoneRepository.findBySeller_UserId(userId);
+        if (findTradeDone.isPresent()) {
+            for (TradeDone tradeDone : findTradeDone.get()){
+                TradeDoneResponse tradeDoneResponse = TradeDoneResponse.builder()
+                        .productId(tradeDone.getProductId())
+                        .productName(tradeDone.getProductName())
+                        .productPrice(tradeDone.getProductPrice())
+                        .tradePlace(tradeDone.getTradePlace())
+                        .tradeDate(tradeDone.getTradeDate())
+                        .tradeTime(tradeDone.getTradeTime())
+                        .build();
+
+                tradeDoneLists.add(tradeDoneResponse);
+            }
+        }
+
+        SalesShortsListResponse salesShortsResponse = SalesShortsListResponse.builder()
+                .sellingShortsResponses(sellingShortsResponseList)
+                .tradeDoneLists(tradeDoneLists)
+                .build();
+        return salesShortsResponse;
+    }
+
+    public Optional<List<Map<String, Object>>> getUserInfoByLiveId(int liveId){
+        Optional<List<LiveScrap>> findLiveScrapList = liveScrapRepository.findByLive_liveId(liveId);
+        System.out.println(findLiveScrapList);
+        List<Map<String , Object>> userInfoList = new ArrayList<>();
+        if (findLiveScrapList.isPresent()) {
+            for (LiveScrap liveScrap : findLiveScrapList.get()) {
+                Map<String, Object> userMap = new HashMap<>();
+                userMap.put("user_id", liveScrap.getUser().getUserId());
+                userMap.put("user_nickname", liveScrap.getUser().getNickname());
+                userMap.put("profile_picture", liveScrap.getUser().getProfilePicture());
+                userMap.put("level", liveScrap.getUser().getLevel());
+                userInfoList.add(userMap);
+            }
+            return Optional.of(userInfoList);
+        }
+        else {
+            throw new IllegalArgumentException("Cannot find live scrap");
+        }
+    }
+
+    public List<UserFcmResponse> getUserFcmByLiveId(int liveId){
+        Optional<List<LiveScrap>> findLiveScrapList = liveScrapRepository.findByLive_liveId(liveId);
+        if (findLiveScrapList.isPresent()) {
+            List<UserFcmResponse> userFcmResponseList = new ArrayList<>();
+            for (LiveScrap liveScrap : findLiveScrapList.get()) {
+                UserFcmResponse userFcmResponse = UserFcmResponse.builder()
+                        .fcmToken(liveScrap.getUser().getFcm())
+                        .userId(liveScrap.getUser().getUserId())
+                        .build();
+
+                userFcmResponseList.add(userFcmResponse);
+            }
+            return userFcmResponseList;
+        }
+        else {
+            return null;
+        }
+    }
+
+    public CommerceLiveExpectedResponse getUserCommerceLiveExpectedByUserId(int userId) {
+
+        // 가장 오래된 방송을 조회
+        Optional<Live> findLive = liveRepository.findFirstLiveBySellerAndIsLiveAndPastDate(userId, 0);
+
+        if (findLive.isPresent()) {
+            CommerceLiveExpectedResponse commerceLiveExpectedResponse = CommerceLiveExpectedResponse.builder()
+                    .liveId(findLive.get().getLiveId())
+                    .isExist(true)
+                    .title(findLive.get().getTitle())
+                    .build();
+            return commerceLiveExpectedResponse;
+        }
+
+        // 찾지 못한 경우
+        CommerceLiveExpectedResponse commerceLiveExpectedResponse = CommerceLiveExpectedResponse.builder()
+                .liveId(0)
+                .isExist(false)
+                .title("라이브가 없습니다.")
+                .build();
+        return commerceLiveExpectedResponse;
+    }
+
+    public User updateFcmToken(User user, String fcmToken) {
+        user.updateFcm(fcmToken);
+        userRepository.save(user);
+        return user;
+    }
+
+    public String getUserFcmByUserId(int userId) {
+        Optional<User> findUser = userRepository.findById(userId);
+        if (findUser.isPresent()) {
+            return findUser.get().getFcm();
+        }
+        return null;
+    }
+
+    public String getProfile(int productId) {
+        User user = productRepository.findByProductId(productId).orElseThrow(()->new IllegalArgumentException("찾을 수 없는 상품입니다.")).getSeller();
+        return user.getProfilePicture();
+    }
 }

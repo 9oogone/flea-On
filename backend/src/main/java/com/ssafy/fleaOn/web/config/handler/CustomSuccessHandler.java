@@ -1,4 +1,4 @@
-package com.ssafy.fleaOn.web.config.oauth2;
+package com.ssafy.fleaOn.web.config.handler;
 
 import com.ssafy.fleaOn.web.config.jwt.JWTUtil;
 import com.ssafy.fleaOn.web.dto.CustomOAuth2User;
@@ -31,17 +31,23 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         //OAuth2User
         CustomOAuth2User customUserDetails = (CustomOAuth2User) authentication.getPrincipal();
 
+        System.out.println("details: " + customUserDetails);
         String userIdentifier = customUserDetails.getUserIdentifier();
+        String email = customUserDetails.getEmail();
+
+        System.out.println("OAuth : " + userIdentifier);
+        System.out.println("OAuth : " + email);
 
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
         GrantedAuthority auth = iterator.next();
         String role = auth.getAuthority();
 
-        String token = jwtUtil.createJwt(userIdentifier, role, 60*60*60*60L);
+        String token = jwtUtil.createJwt(userIdentifier, role, email, 365L * 24 * 60 * 60 * 1000);
 
+        System.out.println("token : " + token);
         response.addCookie(createCookie("Authorization", token));
-        response.sendRedirect("http://localhost:3000/check?access_token=" + token);
+        response.sendRedirect("https://fleaon.shop/check?access_token=" + token);
 
     }
 
