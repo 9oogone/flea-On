@@ -146,9 +146,9 @@
 
 | [Flow Chart](https://tall-rate-83a.notion.site/21a374dcf4984c379d2a8ba718e17f49) |                                   |
 | :-------------------------------------------------------------------------------------: | :-------------------------------: |
-|                            ![FlowChart](./README_ASSETS/플로우_회원가입.PNG)                              ![FlowChart](./README_ASSETS/플로우_판매자라이브.PNG)  
-|                            ![FlowChart](./README_ASSETS/플로우_구매자라이브.PNG)                              ![FlowChart](./README_ASSETS/플로우_예약자거래.PNG)  
-|                            ![FlowChart](./README_ASSETS/플로우_판매자거래.PNG)                              ![FlowChart](./README_ASSETS/플로우_구매자거래.PNG)  |
+|                            ![FlowChart](./README_ASSETS/플로우_회원가입.png)                              ![FlowChart](./README_ASSETS/플로우_판매자라이브.png)  
+|                            ![FlowChart](./README_ASSETS/플로우_구매자라이브.png)                              ![FlowChart](./README_ASSETS/플로우_예약자거래.png)  
+|                            ![FlowChart](./README_ASSETS/플로우_판매자거래.png)                              ![FlowChart](./README_ASSETS/플로우_구매자거래.png)  |
 |
 
 ### 사이트맵
