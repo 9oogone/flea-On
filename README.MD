@@ -159,7 +159,7 @@
 
 ### 피그마 화면 정의서
 
-![Figma](./README_ASSETS/화면정의서.PNG)
+![Figma](./README_ASSETS/화면정의서.png)
 
 ### ERD
 
@@ -180,7 +180,7 @@
 | :------------------------------------------------------: | :-----------------------------------------------------------: | :-------------------------------------------------------: | :---------------------------------------------------: |
 |         ![로그인](./README_ASSETS/소셜회원.png)          | ![추가정보입력닉네임](./README_ASSETS/추가정보입력닉네임.png) | ![추가정보입력지역](./README_ASSETS/추가정보입력지역.png) |       ![초기화면](./README_ASSETS/초기화면.png)       |
 |                       로그인 화면                        |                       닉네임 입력 화면                        |                  회원 추가정보 지역 입력                  |                       초기화면                        |
-| ![이메일 찾기 결과](./README_ASSETS/현재%20진행중인%20라이브%20목록.png) |         ![비밀번호 찾기](./README_ASSETS/쇼츠.JPG)          |      ![방송예정상품](./README_ASSETS/방송예정목록.jpg)       |        ![메인페이지](./README_ASSETS/마이페이지.JPG)        |
+| ![이메일 찾기 결과](./README_ASSETS/현재%20진행중인%20라이브%20목록.png) |         ![비밀번호 찾기](./README_ASSETS/쇼츠.jpg)          |      ![방송예정상품](./README_ASSETS/방송예정목록.jpg)       |        ![메인페이지](./README_ASSETS/마이페이지.JPG)        |
 |                     라이브 목록                     |                         쇼츠 목록                         |                       라이브 예정 상품                       |                      프로필페이지                      |
 |     ![라이브](./README_ASSETS/라이브.png)      |    ![라이브 구매](./README_ASSETS/라이브%20구매.png)    | ![라이브 물건목록](./README_ASSETS/라이브물건목록.png)  | ![쇼츠](./README_ASSETS/쇼츠.png) |
 |                       라이브                        |                          구매하기                          |                    라이브 방송 목록                     |                     쇼츠                     |
@@ -188,8 +188,8 @@
 |                     회원정보수정                     |                       지역수정 화면                        |                     캘린더 일정                      |                     라이브 예정 정보                     |
 |    ![방송 생성](./README_ASSETS/라이브생성모달1.png)     |          ![물건 등록](./README_ASSETS/라이브생성모달2.png)           |      ![카테고리 분류](./README_ASSETS/카테고리분류.jpg)       |     ![쇼츠 보기](./README_ASSETS/쇼츠.jpg)      |
 |                        방송 생성 1                         |                           방송 생성 2                           |                       카테고리 분류                       |                       쇼츠 보기                       |
-|      ![쇼츠 AI 요약](./README_ASSETS/쇼츠ai요약.PNG)       |           ![구매하기](./README_ASSETS/쇼츠구매하기.jpg)           |    ![거래 상세](./README_ASSETS/거래상세.JPG)    |      ![채팅 목록](./README_ASSETS/채팅.PNG)       |
+|      ![쇼츠 AI 요약](./README_ASSETS/쇼츠ai요약.png)       |           ![구매하기](./README_ASSETS/쇼츠구매하기.jpg)           |    ![거래 상세](./README_ASSETS/거래상세.jpg)    |      ![채팅 목록](./README_ASSETS/채팅.png)       |
 |                       쇼츠 AI 요약                       |                         쇼츠 판매 내역                         |                      거래 상세 보기                       |                       채팅 화면                       |
-|            ![채팅](./README_ASSETS/거래파기.jpg)             |          ![챗봇 도우미](./README_ASSETS/거래시간변경요청.JPG)          |                                                           |                                                       |
+|            ![채팅](./README_ASSETS/거래파기.jpg)             |          ![챗봇 도우미](./README_ASSETS/거래시간변경요청.jpg)          |                                                           |                                                       |
 |                        거래 파기 화면                         |                       거래 시간 변경 요청                       |                                                           |                                                       |
                                 
